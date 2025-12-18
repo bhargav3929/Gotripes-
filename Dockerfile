@@ -1,5 +1,5 @@
-# Use official PHP image with Apache
-FROM php:8.2-apache
+# Use official PHP CLI image
+FROM php:8.2-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -28,24 +28,23 @@ WORKDIR /var/www/html
 # Copy existing application directory contents
 COPY . /var/www/html
 
-# Copy existing application directory permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
-
 # Install dependencies
 RUN composer install --optimize-autoloader --no-dev
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Create storage and cache directories with proper permissions
+RUN mkdir -p /var/www/html/storage/framework/cache \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views \
+    && mkdir -p /var/www/html/bootstrap/cache \
+    && chmod -R 777 /var/www/html/storage \
+    && chmod -R 777 /var/www/html/bootstrap/cache
 
-# Configure Apache DocumentRoot to point to Laravel's public directory
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Create SQLite database file if it doesn't exist
+RUN touch /var/www/html/database/database.sqlite \
+    && chmod 777 /var/www/html/database/database.sqlite
 
-# Expose port 80
-EXPOSE 80
+# Expose port (Railway will set this via $PORT)
+EXPOSE ${PORT:-8080}
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start PHP built-in server
+CMD php artisan migrate --force && php -S 0.0.0.0:${PORT:-8080} -t public
