@@ -257,10 +257,17 @@ Route::post('/ccavenue/response', [CCAvenueController::class, 'handleResponse'])
 Route::match(['get', 'post'], '/payment/ccavenue/cancel', [CCAvenueController::class, 'cancel'])->name('ccavenue.cancel');
 
 Route::get('/ccavenue-debug', function () {
+    $merchantId = config('services.ccavenue.merchant_id');
+    $accessCode = config('services.ccavenue.access_code');
+    $workingKey = config('services.ccavenue.working_key');
+
     return response()->json([
-        'merchant_id' => config('services.ccavenue.merchant_id'),
-        'access_code' => config('services.ccavenue.access_code'),
-        'working_key_prefix' => substr(config('services.ccavenue.working_key'), 0, 4) . '****',
+        'merchant_id' => $merchantId,
+        'merchant_id_length' => strlen($merchantId),
+        'access_code' => $accessCode,
+        'access_code_length' => strlen($accessCode),
+        'working_key_prefix' => substr($workingKey, 0, 4) . '****',
+        'working_key_length' => strlen($workingKey),
         'url' => config('services.ccavenue.url'),
         'redirect_url' => config('services.ccavenue.redirect_url'),
         'cancel_url' => config('services.ccavenue.cancel_url'),
