@@ -61,6 +61,7 @@ class CCAvenueController extends Controller
         return response()->json([
             'encryptedData' => $encryptedData,
             'accessCode' => $accessCode,
+            'merchant_id' => $merchantId,
         ]);
     }
 
