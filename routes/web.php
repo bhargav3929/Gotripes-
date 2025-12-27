@@ -255,6 +255,17 @@ Route::post('/ccavenue/initiate', [CCAvenueController::class, 'initiatePayment']
 Route::post('/ccavenue/response', [CCAvenueController::class, 'handleResponse'])->name('ccavenue.response');
 // Route::get('/payment/ccavenue/cancel', [CCAvenueController::class, 'cancel'])->name('ccavenue.cancel');
 Route::match(['get', 'post'], '/payment/ccavenue/cancel', [CCAvenueController::class, 'cancel'])->name('ccavenue.cancel');
+
+Route::get('/ccavenue-debug', function () {
+    return response()->json([
+        'merchant_id' => config('services.ccavenue.merchant_id'),
+        'access_code' => config('services.ccavenue.access_code'),
+        'working_key_prefix' => substr(config('services.ccavenue.working_key'), 0, 4) . '****',
+        'url' => config('services.ccavenue.url'),
+        'redirect_url' => config('services.ccavenue.redirect_url'),
+        'cancel_url' => config('services.ccavenue.cancel_url'),
+    ]);
+});
 // Add this route alongside your existing activity routes
 Route::post('/activity/payment/initiate', [ActivityBookingController::class, 'initiateActivityPayment'])->name('activity.payment.initiate');
 Route::post('/agent/pay', [AgentBookingController::class, 'submit'])->name('agent.pay');
