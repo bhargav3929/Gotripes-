@@ -576,6 +576,7 @@ People from different nationalities must satisfy different criteria to get a val
       action="{{ config('services.ccavenue.url') }}" style="display:none;">
     <input type="hidden" name="encRequest" id="encRequest" value="">
     <input type="hidden" name="access_code" id="access_code" value="">
+    <input type="hidden" name="merchant_id" id="merchant_id" value="">
 </form>
 
   </div>
@@ -664,6 +665,7 @@ document.getElementById('payButton').addEventListener('click', function () {
             // Fill the hidden form
             document.getElementById('encRequest').value = data.encryptedData;
             document.getElementById('access_code').value = data.accessCode;
+            document.getElementById('merchant_id').value = data.merchant_id;
             // Submit form on the main window (redirect)
             document.getElementById('ccavenuePaymentForm').submit();
         } else {
