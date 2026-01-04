@@ -21,13 +21,13 @@ class AgentBookingController extends Controller
 
         $validator = Validator::make($request->all(), [
             'client_name' => 'required|string|max:255',
-            'client_email' => 'required|email|max:255',
-            'client_phone' => 'required|string|max:20',
-            'service' => 'required|string', // Visa or World Tour Package
+            'client_email' => 'nullable|email|max:255',
+            'client_phone' => 'required|string|max:50',
+            'service' => 'required|string',
             'amount' => 'required|numeric|min:1',
             'agent_name' => 'nullable|string|max:255'
         ]);
-        
+
         if ($validator->fails()) {
             ob_end_clean();
             if ($isAjax) {
@@ -52,7 +52,7 @@ class AgentBookingController extends Controller
                     'working_key_set' => !empty($workingKey),
                     'access_code_set' => !empty($accessCode)
                 ]);
-                
+
                 if ($isAjax) {
                     ob_end_clean();
                     return response()->json([
@@ -67,7 +67,7 @@ class AgentBookingController extends Controller
             $booking = AgentBooking::create([
                 'agent_name' => $request->input('agent_name', 'Agent'),
                 'client_name' => $request->client_name,
-                'client_email' => $request->client_email,
+                'client_email' => $request->input('client_email', 'no-email-provided@gotrips.com'),
                 'client_phone' => $request->client_phone,
                 'service_type' => $request->service,
                 'amount' => $request->amount,
@@ -86,7 +86,7 @@ class AgentBookingController extends Controller
             // The redirect_url MUST match what's registered in CCAvenue merchant account
             $cancelUrl = config('services.ccavenue.cancel_url');
             $ccavenueUrl = config('services.ccavenue.url');
-            
+
             // Use the configured redirect URL that is whitelisted with CCAvenue
             $redirectUrl = config('services.ccavenue.redirect_url');
 
@@ -94,7 +94,7 @@ class AgentBookingController extends Controller
                 'merchant_id' => $merchantId,
                 'order_id' => $orderId,
                 'currency' => 'AED',
-                'amount' => number_format((float)$booking->amount, 2, '.', ''),
+                'amount' => number_format((float) $booking->amount, 2, '.', ''),
                 'redirect_url' => $redirectUrl,
                 'cancel_url' => $cancelUrl,
                 'language' => 'EN',
@@ -116,16 +116,16 @@ class AgentBookingController extends Controller
             ]);
 
             $paramString = http_build_query($paymentData);
-            
+
             // Log the parameter string length (for debugging)
             \Log::info('Agent Payment - Parameter String', [
                 'order_id' => $orderId,
                 'param_string_length' => strlen($paramString),
                 'param_string_preview' => substr($paramString, 0, 100) . '...'
             ]);
-            
+
             $encryptedData = ccavenue_encrypt($paramString, $workingKey);
-            
+
             // Log encryption result
             \Log::info('Agent Payment - Encryption Result', [
                 'order_id' => $orderId,
@@ -138,7 +138,7 @@ class AgentBookingController extends Controller
                     'order_id' => $orderId,
                     'param_string_length' => strlen($paramString)
                 ]);
-                
+
                 if ($isAjax) {
                     ob_end_clean();
                     return response()->json([
