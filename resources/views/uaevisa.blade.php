@@ -1,872 +1,730 @@
 @include('header')
 
 <style>
-        .submit-btn {
-        grid-column: span 2;
-        justify-self: center;
-        background-color: #28a745; /* Green background */
-        color: white;
-        font-weight: bold;
-        padding: 16px 40px;
-        font-size: 20px;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        }
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-        .submit-btn:hover {
-          background-color: #218838;
-        }
+    * {
+        box-sizing: border-box;
+    }
 
-        /* ========================
-          Background Image Wrapper
-        ========================== */
-        .image-overlay {
-          position: relative;
-          min-height: 100vh;
-          width: 100%;
-        }
+    /* --- VARIABLES --- */
+    :root {
+        --c-gold: #FFD700;
+        --c-gold-dim: #b89c12;
+        --c-gold-gradient: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+        --c-dark-bg: #050505;
+        --c-card-bg: #0b0b0b;
+        --c-input-bg: #111;
+        --c-input-border: #222;
+        --c-text-muted: #888;
+        --c-text-light: #eee;
+    }
 
-        .image-overlay img {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          object-fit: cover;
-          z-index: -1;
-        }
+    body {
+        margin: 0;
+        background-color: var(--c-dark-bg);
+    }
 
-        /* ========================
-          Overlay with Semi-Dark Background
-        ========================== */
-        .overlay {
-          position: relative; /* not absolute, so it grows with content */
-          width: 100%;
-          background: rgba(0, 0, 0, 0.0);
-          padding: 60px 20px;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-        }
-
-        /* ========================
-          Form Container
-        ========================== */
-        .form-container {
-          background: rgba(0, 0, 0, 0.75);
-          color: white;
-          padding: 30px;
-          max-width: 1000px;
-          width: 100%;
-          border-radius: 8px;
-          box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        }
-
-        .form-container h2 {
-          text-align: center;
-          margin-bottom: 20px;
-        }
-         input.form-control,
-  select.form-control,
-  textarea.form-control {
-    height: 45px;   /* Same height for text, select, date */
-  }
-
-  input[type="file"].form-control {
-    height: auto;   /* Allow file input default height */
-    padding: 8px;
-  }
-
-        /* ========================
-          Form Layout
-        ========================== */
-        form {
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .form-group.full-width {
-          grid-column: span 2;
-        }
-
-        label {
-          margin-bottom: 5px;
-          font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="file"],
-        input[type="date"],
-        select {
-          padding: 8px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          box-sizing: border-box;
-        }
-
-      /* Checkboxes */
-      .form-check {
+    .visa-page {
+        background: linear-gradient(180deg, #000 0%, #0a0a0a 100%);
+        min-height: 100vh;
+        padding-top: 100px;
+        padding-bottom: 60px;
         display: flex;
         align-items: center;
-        margin-bottom: 8px;
-      }
-      .form-check-input {
-        margin-right: 10px;
-        margin-top: 0;
-        accent-color: #FFD23F; /* optional: adds theme color to checkboxes/radios */
-      }
-      .form-check-inline {
-        display: inline-flex;
+        justify-content: center;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .visa-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 40px;
+    }
+
+    /* --- HEADER --- */
+    .visa-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .visa-title {
+        color: var(--c-gold);
+        font-weight: 700;
+        font-size: 36px;
+        text-transform: uppercase;
+        letter-spacing: 8px;
+        margin: 0 0 10px 0;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    }
+
+    .visa-subtitle {
+        color: var(--c-text-muted);
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+    }
+
+    /* --- GRID LAYOUT --- */
+    .visa-main {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 50px;
+        align-items: start;
+    }
+
+    /* --- CARDS --- */
+    .card {
+        background: var(--c-card-bg);
+        border: 1px solid rgba(255, 215, 0, 0.1);
+        border-radius: 20px;
+        padding: 40px;
+        position: relative;
+        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--c-gold), transparent);
+        opacity: 0.5;
+    }
+
+    .card-title {
+        color: var(--c-gold);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-bottom: 30px;
+        display: flex;
         align-items: center;
-        margin-right: 20px;
-      }
+        justify-content: space-between;
+        gap: 12px;
+        opacity: 0.9;
+    }
 
-        /* ========================
-          Submit Button
-        ========================== */
-        .submit-btn {
-          grid-column: span 2;
-          justify-self: center;
-          background-color: #FFD23F;
-          color: black;
-          padding: 12px 24px;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: bold;
-          font-size: 16px;
-        }
+    /* --- FORM ELEMENTS --- */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px 30px;
+    }
 
-        .submit-btn:hover {
-          background-color: #e0b000;
-        }
+    .form-field {
+        display: flex;
+        flex-direction: column;
+    }
 
-        /* ========================
-          Responsive
-        ========================== */
-        @media (max-width: 768px) {
-          form {
+    .form-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .field-label {
+        color: var(--c-text-muted);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+    }
+
+    .field-input {
+        width: 100%;
+        height: 56px;
+        background: var(--c-input-bg);
+        border: 1px solid var(--c-input-border);
+        border-radius: 10px;
+        padding: 0 20px;
+        color: white;
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .field-input:hover {
+        border-color: #333;
+        background: #141414;
+    }
+
+    .field-input:focus {
+        outline: none;
+        border-color: var(--c-gold);
+        background: #161616;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.05);
+    }
+
+    /* Custom Select */
+    select.field-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='%23FFD700'%3E%3Cpath d='M11.9997 13.1714L16.9495 8.22168L18.3637 9.63589L11.9997 15.9999L5.63574 9.63589L7.04996 8.22168L11.9997 13.1714Z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: calc(100% - 20px) center;
+        cursor: pointer;
+    }
+
+    /* --- APPLICANT BOX --- */
+    .applicant-box {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 215, 0, 0.05);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .applicant-header {
+        color: #eee;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .applicant-header span {
+        color: var(--c-gold);
+    }
+
+    /* --- FILE UPLOAD --- */
+    .file-input-wrapper {
+        position: relative;
+        width: 100%;
+        height: 56px;
+    }
+
+    .file-input-real {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .file-input-custom {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #111;
+        border: 1px dashed #333;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        transition: all 0.2s ease;
+        z-index: 1;
+    }
+
+    .file-input-wrapper:hover .file-input-custom {
+        border-color: #555;
+        background: #161616;
+    }
+
+    .file-input-wrapper:focus-within .file-input-custom {
+        border-color: var(--c-gold);
+        background: #161616;
+    }
+
+    .file-name {
+        color: #666;
+        font-size: 14px;
+        font-weight: 400;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80%;
+    }
+
+    .file-name.selected {
+        color: var(--c-gold);
+        font-weight: 500;
+    }
+
+    .file-icon {
+        color: #444;
+        font-size: 16px;
+    }
+
+    .file-input-wrapper:hover .file-icon {
+        color: var(--c-gold);
+    }
+
+    /* --- CHECKBOXES --- */
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 10px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .custom-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .custom-checkbox-input {
+        display: none;
+    }
+
+    .custom-checkbox-box {
+        width: 20px;
+        height: 20px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        background: #0f0f0f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .custom-checkbox-input:checked+.custom-checkbox-box {
+        background: var(--c-gold);
+        border-color: var(--c-gold);
+    }
+
+    .custom-checkbox-box i {
+        color: #000;
+        font-size: 14px;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.2s;
+    }
+
+    .custom-checkbox-input:checked+.custom-checkbox-box i {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .checkbox-text {
+        color: #999;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- SUMMARY --- */
+    .summary-card-wrapper {
+        position: sticky;
+        top: 120px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .summary-label {
+        color: #777;
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .summary-value {
+        color: #eee;
+        font-weight: 600;
+        font-size: 15px;
+    }
+
+    .summary-total {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 215, 0, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+
+    .total-label {
+        color: var(--c-gold);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .total-value {
+        color: var(--c-gold);
+        font-size: 32px;
+        font-weight: 700;
+        text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+    }
+
+    .pay-btn {
+        width: 100%;
+        height: 60px;
+        background: var(--c-gold-gradient);
+        border: none;
+        border-radius: 12px;
+        margin-top: 30px;
+        color: #000;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        transition: all 0.3s cubic;
+        box-shadow: 0 10px 30px -5px rgba(255, 215, 0, 0.15);
+    }
+
+    .pay-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        background: #fff;
+    }
+
+    .pay-btn:disabled {
+        background: #222;
+        color: #555;
+        cursor: not-allowed;
+    }
+
+    .secure-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+        color: #444;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    @media (max-width: 1024px) {
+        .visa-main {
             grid-template-columns: 1fr;
-          }
-
-          .submit-btn {
-            width: 100%;
-            grid-column: span 1;
-          }
-
-          .form-container {
-            padding: 20px;
-          }
-
-          .overlay {
-            padding: 30px 10px;
-          }
         }
 
-        .golden-heading {
-    background-color: rgb(255, 210, 63);
-    color: white !important;
-    padding: 10px 20px;
-    border-radius: 0;
-    margin-top: 40px;
-    margin-bottom: 20px !important; /* Ensure space below */
-    display: block;
-    width: 100%;
-}
-/* Small submit button is handled by Bootstrap .btn-sm */
-.submit-btn {
-  font-size: 0.9rem;
-  padding: 0.4rem 1.2rem;
-  position: relative;
-}
-
-/* White Spinner on Golden Background */
-.spinner-border-white {
-  width: 1rem;
-  height: 1rem;
-  border: 0.125rem solid transparent;
-  border-top: 0.125rem solid #ffffff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Snackbar above the button, centered */
-.snackbar {
-  visibility: hidden;
-  min-width: 160px;
-  max-width: 260px;
-  background-color: #28a745;
-  color: #fff;
-  text-align: center;
-  border-radius: 4px;
-  padding: 8px 16px;
-  position: absolute;
-  left: 50%;
-  bottom: 120%;
-  transform: translateX(-50%);
-  z-index: 10;
-  font-size: 0.95rem;
-  opacity: 0;
-  transition: opacity 0.3s, visibility 0s linear 0.3s;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-  pointer-events: none;
-}
-.snackbar.show {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.3s;
-  pointer-events: auto;
-}
-
-/* Processing Snackbar - Blue-White Theme */
-.processing-snackbar {
-  visibility: hidden;
-  min-width: 200px;
-  max-width: 300px;
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: #ffffff;
-  font-weight: bold;
-  text-align: center;
-  border-radius: 6px;
-  padding: 10px 18px;
-  position: absolute;
-  left: 50%;
-  bottom: 120%;
-  transform: translateX(-50%);
-  z-index: 1060;
-  font-size: 0.95rem;
-  opacity: 0;
-  transition: opacity 0.4s, visibility 0s linear 0.4s;
-  box-shadow: 0 4px 20px rgba(0, 123, 255, 0.3);
-  border: 1px solid #007bff;
-  pointer-events: none;
-}
-.processing-snackbar.show {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.4s;
-}
-
-.golden-text {
-    color: #FFD23F !important;
-    font-weight: bold;
-}
-
-.golden-strong {
-    color: #FFD23F !important;
-    font-weight: bold;
-}
-
-/* Enhanced Black-Golden Overlay */
-#priceOverlay {
-  background: rgba(0, 0, 0, 0.85) !important;
-}
-
-#priceOverlay > div {
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%) !important;
-  border: 2px solid #FFD23F !important;
-  box-shadow: 0 0 30px rgba(255, 210, 63, 0.4), inset 0 0 20px rgba(255, 210, 63, 0.1) !important;
-  color: #FFD23F !important;
-}
-
-#priceOverlay h4 {
-  color: #FFD23F !important;
-  text-shadow: 0 0 10px rgba(255, 210, 63, 0.5);
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-#priceOverlay p {
-  color: #ffffff !important;
-  margin: 8px 0;
-}
-
-#priceOverlay strong {
-  color: #FFD23F !important;
-  font-weight: bold;
-}
-
-#priceOverlay hr {
-  border-color: #FFD23F !important;
-  opacity: 0.6;
-}
-
-#payButton {
-  background: linear-gradient(135deg, #FFD23F 0%, #e0b000 100%) !important;
-  color: #000000 !important;
-  font-weight: bold;
-  border: 2px solid #FFD23F !important;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 210, 63, 0.3);
-}
-
-#payButton:hover {
-  background: linear-gradient(135deg, #e0b000 0%, #FFD23F 100%) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 210, 63, 0.4);
-}
-
-#closeOverlay {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid #FFD23F !important;
-  color: #FFD23F !important;
-  transition: all 0.3s ease;
-}
-
-#closeOverlay:hover {
-  background: rgba(255, 210, 63, 0.2) !important;
-  color: #ffffff !important;
-}
-
-.about-text {
-    text-align: justify;
-    text-justify: inter-word;
-    text-align-last: left;
-    hyphens: auto;
-    line-height: 1.65;
-    
-    /* THE REAL FIX */
-    max-width: 900px;          /* prevents stretched spacing */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.visa-section p {
-    text-align: justify;
-    text-justify: inter-word;
-      line-height: 1.2;
-}
-
-.visa-section p {
-    text-align: justify;
-    text-justify: inter-word;
-    line-height: 1.2;     /* clean spacing */
-
-}
-
-
-
-.golden-heading +ul {
-  padding-left: 0 !important;
-  margin-left: 0 !important;
-  list-style-position: inside;
-}
-
-
-
-
-
+        .summary-card-wrapper {
+            position: relative;
+            top: 0;
+        }
+    }
 </style>
 
-<div class="aboutus" style="background-color: #000000;">
-<div class="container" style="background-color: #000000; color:#ccc; padding-top:50px; padding-bottom:50px;" >
-    {{-- <h2 class="golden-heading">VISA REQUIREMENTS</h2> --}}
-    <h2 class="golden-heading" style="font-size: 24px;">VISA REQUIREMENTS</h2>
+<div class="visa-page">
+    <div class="visa-wrapper">
+        <div class="visa-header">
+            <h1 class="visa-title">UAE Visa Services</h1>
+            <p class="visa-subtitle">Premium Processing Application</p>
+        </div>
 
-   <p>
-    <strong class="question-yellow">Do I need a visa to travel to the UAE?</strong><br><br>
-       
-People from different nationalities must satisfy different criteria to get a valid visa to enter United Arab Emirates (UAE). Read on to know about getting a UAE visa while travelling to any of the Emirates (Abu Dhabi, Dubai, Sharjah, Ajman, Umm Al Quwain, Ras Al Khaimah and Fujairah).</p>
-  
-<h3  class="golden-heading">VISA REQUIREMENTS FOR US CITIZENS</h3>
-    <p>American citizens who have regular passports do not need to have a visa to visit the UAE. However, please make sure you fulfil following criteria's:</p>
-    <ul>
-      <li>1. Original passport signed by the bearer, should not expire within six (6) months from the expected time of arrival in the UAE.</li>
-      <li>2. Confirmed round-trip airline ticket or airline ticket to other destination(s).</li>
-      
-    </ul>
-    <ul>The visas are available upon arrival at the UAE airports and the American citizens can stay for 1 month in the UAE. However, if you are going to stay longer, you have to contact the immigration officer at the airport or the local immigration office in the UAE and apply for the same.</ul>
-</div>
-</div>
+        <div class="visa-main">
+            <!-- FORM -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="bi bi-file-earmark-text-fill"></i> Application Details</span>
+                </div>
 
-<div class="image-overlay" style="padding-top:80px;">
-  <img src="assets/index_files/s4.jpg" alt="Banner" style="background-color: rgba(0,0,0,0.7); z-index: 0; height:100%"/>
-  <div class="overlay">
-  <div class="form-container">
-  <h2 style="color:#FFD23F">Visit Visa Application</h2>
-  
-<form method="POST" action="{{ route('uaev.submit') }}" enctype="multipart/form-data">
-    @csrf
-  <div class="row">
-    <!-- Nationality -->
-    <div class="col-md-6 mb-3">
-      <label for="nationality">Nationality</label>
-      <select id="nationality" name="nationality" class="form-control" required >
-        <option value="">-------</option>
-      </select>
-    </div>
+                <form id="visaForm" method="POST" action="{{ route('uaev.submit') }}" enctype="multipart/form-data">
+                    @csrf
 
-    <!-- Residence -->
-    <div class="col-md-6 mb-3">
-      <label for="residence">I currently reside in</label>
-      <select id="residence" name="residence" class="form-control" required>
-        <option value="">-------</option>
-      </select>
-    </div>
+                    <div class="form-grid">
+                        <!-- GLOBAL FIELDS -->
+                        <div class="form-field">
+                            <label class="field-label">Nationality</label>
+                            <select id="nationality" name="nationality" class="field-input" required>
+                                <option value="">Select Nationality</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">Current Residence</label>
+                            <select id="residence" name="residence" class="field-input" required>
+                                <option value="">Select Country</option>
+                            </select>
+                        </div>
 
-    <!-- First & Last Name -->
-    <div class="col-md-6 mb-3">
-      <label for="first_name">Principal Applicant's First Name</label>
-      <input type="text" id="first_name" name="first_name" class="form-control" required >
-    </div>
-    <div class="col-md-6 mb-3">
-      <label for="last_name">Principal Applicant's Last Name</label>
-      <input type="text" id="last_name" name="last_name" class="form-control" required>
-    </div>
+                        <!-- VISA TYPE & COUNT -->
+                        <div class="form-field">
+                            <label class="field-label">Visa Duration</label>
+                            <select class="field-input" id="visaDuration" name="visaDuration" required>
+                                <option value="">Select Duration</option>
+                                <option value="30" data-price="300">30 DAYS VISA - 300 AED</option>
+                                <option value="60" data-price="600">60 DAYS VISA - 600 AED</option>
+                            </select>
+                            <input type="hidden" name="price" id="hiddenPrice" value="0">
+                        </div>
 
-    <!-- ✅ Checkboxes -->
-    <div class="col-12 mb-3">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="passport_valid" name="passport_valid" value="1">
-        <label class="form-check-label" for="passport_valid">
-          Passport is valid for at least 6 months
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="not_stay_long" name="not_stay_long" value="1">
-        <label class="form-check-label" for="not_stay_long">
-          I do NOT wish to stay in the UAE for more than 30 days
-        </label>
-      </div>
-    </div>
+                        <div class="form-field">
+                            <label class="field-label">Number of Visas</label>
+                            <select class="field-input" id="visaCount" name="visa_count" required>
+                                @for ($i = 1; $i <= 10; $i++)
+                                    <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'Person' : 'People' }}</option>
+                                @endfor
+                            </select>
+                        </div>
 
-    <!-- ✅ Radios -->
-    <div class="col-12 mb-3">
-      <label class="form-label">Gender</label><br>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="gender" id="male" value="Male"required>
-        <label class="form-check-label" for="male">Male</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="gender" id="female" value="Female">
-        <label class="form-check-label" for="female">Female</label>
-      </div>
-    </div>
+                        <!-- DATES (GLOBAL) -->
+                        <div class="form-field">
+                            <label class="field-label">Arrival Date</label>
+                            <input type="date" class="field-input" name="arrival_date" required>
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">Departure Date</label>
+                            <input type="date" class="field-input" name="departure_date" required>
+                        </div>
+                    </div>
 
-    <!-- DOB, Arrival, Departure -->
-    <div class="col-md-4 mb-3">
-      <label for="dob">Date of Birth</label>
-      <input type="date" id="dob" name="dob" class="form-control"required>
-    </div>
-    <div class="col-md-4 mb-3">
-      <label for="arrival_date">Date of Arrival in UAE</label>
-      <input type="date" id="arrival_date" name="arrival_date" class="form-control"required>
-    </div>
-    <div class="col-md-4 mb-3">
-      <label for="departure_date">Date of Departure in UAE</label>
-      <input type="date" id="departure_date" name="departure_date" class="form-control" required>
-    </div>
+                    <div style="margin: 30px 0; border-top: 1px solid rgba(255,255,255,0.05);"></div>
 
-    <!-- Phone & Email -->
-    <div class="col-md-6 mb-3">
-      <label for="phone">Phone Number (with country code)</label>
-      <input type="tel" id="phone" name="phone" class="form-control" required placeholder="e.g., +971501234567">
-    </div>
-    <div class="col-md-6 mb-3">
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" class="form-control" required>
-    </div>
+                    <!-- APPLICANTS CONTAINER -->
+                    <div id="applicantsContainer">
+                        <!-- Dynamic fields will be injected here -->
+                    </div>
 
-    <!-- Profession & Marital Status -->
-    <div class="col-md-6 mb-3">
-      <label for="profession">Profession</label>
-      <input type="text" id="profession" name="profession" class="form-control" required>
-    </div>
-    <div class="col-md-6 mb-3">
-      <label for="marital_status">Marital Status</label>
-      <select id="marital_status" name="marital_status" class="form-control"required>
-        <option value="">-------</option>
-        <option value="Single">Single</option>
-        <option value="Married">Married</option>
-      </select>
-    </div>
+                    <div style="margin: 30px 0; border-top: 1px solid rgba(255,255,255,0.05);"></div>
 
-    <!-- Uploads -->
-    <div class="col-md-6 mb-3">
-      <label for="passport_copy">Upload your passport copy</label>
-      <input type="file" id="passport_copy" name="passport_copy" class="form-control" accept="application/pdf,image/*"required>
-    </div>
-    <div class="col-md-6 mb-3">
-      <label for="passport_photo">Upload your passport size picture</label>
-      <input type="file" id="passport_photo" name="passport_photo" class="form-control" accept="image/*" required>
-    </div>
+                    <!-- CONTACT CONTACT -->
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="field-label">Email Address</label>
+                            <input type="email" class="field-input" name="email" placeholder="name@example.com"
+                                required>
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">Phone Number</label>
+                            <input type="tel" class="field-input" name="phone" placeholder="+971 50 000 0000" required>
+                        </div>
+                    </div>
 
-    <!-- Visa Duration & Price -->
-    <div class="col-md-6 mb-3">
-    <label for="visaDuration">Visit Visa Duration</label>
-    <select id="visaDuration" name="visaDuration" class="form-control" required>
-        <option value="">-- Select Duration --</option>
-        @foreach($visaData as $visa)
-            <option value="{{ $visa->UAEVisaDuration }}" data-price="{{ $visa->UAEVPrice }}">
-                {{ $visa->UAEVisaDuration }} Days
-            </option>
-        @endforeach
-    </select>
-</div>
-<div class="col-md-6 mb-3">
-    <label for="price">Price (AED)</label>
-    <input type="text" id="price" name="price" class="form-control" readonly placeholder="Select duration to view price">
+                    <!-- CHECKBOXES -->
+                    <div class="checkbox-group">
+                        <label class="custom-checkbox-label">
+                            <input type="checkbox" class="custom-checkbox-input" name="passport_valid" value="1"
+                                required>
+                            <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
+                            <span class="checkbox-text">I confirm passports are valid for at least 6 months.</span>
+                        </label>
+                        <label class="custom-checkbox-label">
+                            <input type="checkbox" class="custom-checkbox-input" name="not_stay_long" value="1"
+                                required>
+                            <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
+                            <span class="checkbox-text">I confirm we will not overstay.</span>
+                        </label>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- RIGHT: SUMMARY -->
+            <div class="summary-card-wrapper">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="bi bi-receipt-cutoff"></i> Payment Summary
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Visa Fee (<span id="countDisplay">1</span>x)</span>
+                        <span class="summary-value" id="summaryBase">AED 0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">VAT (5%)</span>
+                        <span class="summary-value" id="summaryVat">AED 0.00</span>
+                    </div>
+
+                    <div class="summary-total">
+                        <span class="total-label">Total Payable</span>
+                        <span class="total-value" id="summaryTotal">AED 0.00</span>
+                    </div>
+
+                    <button type="submit" form="visaForm" class="pay-btn" id="submitBtn">
+                        <i class="bi bi-shield-lock-fill"></i> PAY SECURELY
+                    </button>
+
+                    <div class="secure-badge">
+                        <i class="bi bi-shield-check"></i> 256-BIT SSL SECURED BY CCAVENUE
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-    <!-- Submit -->
-    <div class="col-12 text-center position-relative" style="display:inline-block;">
-
-  <!-- Processing Snackbar (shown immediately on submit) - Now positioned above button -->
-  <div id="processingSnackbar" class="processing-snackbar">Processing your application...</div>
-
-  <!-- Regular Snackbar (shown after response) -->
-  <div id="snackbar" class="snackbar"></div>
-
-  <!-- Small Submit Button -->
-  <button type="submit" class="submit-btn btn btn-success btn-sm" id="formSubmitBtn" style="min-width:100px;">
-    <span class="btn-text">Submit</span>
-    <span class="btn-spinner" style="display:none;">
-      <span class="spinner-border-golden" role="status" aria-hidden="true"></span>
-    </span>
-  </button>
-</div>
-
-  </div>
-  
-</form>
-<!-- Enhanced Overlay/Modal for Price Display with Black-Golden Theme -->
-<div id="priceOverlay" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.85); z-index: 1050; justify-content:center; align-items:center;">
-  <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%); 
-              border: 2px solid #FFD23F; border-radius: 12px; max-width: 450px; padding:30px; text-align:center;
-              box-shadow: 0 0 30px rgba(255, 210, 63, 0.4), inset 0 0 20px rgba(255, 210, 63, 0.1);
-              color: #FFD23F;">
-    <h4 style="color: #FFD23F; text-shadow: 0 0 10px rgba(255, 210, 63, 0.5); margin-bottom: 20px; font-weight: bold;">
-      Payment Summary
-    </h4>
-    <p style="color: #ffffff; margin: 8px 0;">Price: <strong style="color: #FFD23F;"><span id="overlayPrice"></span> AED</strong></p>
-    <p style="color: #ffffff; margin: 8px 0;">Tax (5%): <strong style="color: #FFD23F;"><span id="overlayTax"></span> AED</strong></p>
-    <hr style="border-color: #FFD23F; opacity: 0.6;">
-    <p style="font-size: 18px; color: #ffffff; margin: 15px 0;"><strong style="color: #FFD23F;">Total: <span id="overlayTotal"></span> AED</strong></p>
-    
-    <button id="payButton" style="padding: 12px 25px; 
-            background: linear-gradient(135deg, #FFD23F 0%, #e0b000 100%); 
-            border: 2px solid #FFD23F; color: #000000; border-radius: 6px; cursor: pointer; 
-            font-weight: bold; font-size: 16px; margin: 10px 5px;
-            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 210, 63, 0.3);">
-        Pay Now
-    </button>
-    <br>
-    <button id="closeOverlay" style="margin-top:15px; 
-            background: rgba(255, 255, 255, 0.1); border: 1px solid #FFD23F; 
-            padding: 8px 20px; cursor: pointer; color: #FFD23F; border-radius: 4px;
-            transition: all 0.3s ease; font-size: 14px;">
-        Close
-    </button>
-  </div>
-</div>
-
-<form id="ccavenuePaymentForm" method="POST"
-      action="{{ config('services.ccavenue.url') }}" style="display:none;">
+<!-- CCAvenue Hidden Form -->
+<form id="ccavenuePaymentForm" method="POST" action="{{ config('services.ccavenue.url') }}" style="display:none;">
     <input type="hidden" name="encRequest" id="encRequest" value="">
     <input type="hidden" name="access_code" id="access_code" value="">
     <input type="hidden" name="merchant_id" id="merchant_id" value="">
 </form>
 
-  </div>
-  </div>
-</div>
-
-<div class="aboutus" style="background-color: #000000;">
-<div class="container visa-section" style="background-color: #000000; color:#ccc; padding-top:50px; padding-bottom:50px;" >
-    
-    <h3 class="golden-heading">VISA POLICY</h3>
-    <p>Nationals of member nations of the Gulf Cooperation Council have freedom of movement in the UAE. All UAE visitors must hold a passport valid for at least six months. GCC nationals need to show their government-issued ID card.</p>
-
-    <h3 class="golden-heading">VISA ON ARRIVAL</h3>
-    <p><strong class="golden-strong">For GCC nationals:</strong> The citizens of GCC countries, i.e. the Gulf Cooperation Council, which includes Bahrain, Oman, Kuwait, Qatar and Saudi Arabia, do not require a visa to visit the UAE. The GCC residents who are not citizens but working as high-level officials such as doctors, managers, engineers or public sector employees and their families can have a 30-day non-renewable visa at all the airports in the UAE upon arrival.</p>
-
-    <p><strong class="golden-strong">Stay up to 180 days:</strong> Nationals of Mexico are eligible to obtain a free UAE visa on arrival and can stay up to 180 days.</p>
-
-    <p><strong class="golden-strong">Stay up to 90 days:</strong> Nationals of the following countries are eligible to obtain a free UAE visa on arrival and can stay up to 90 days: European Union countries (except Ireland), Argentina, Bahamas, Barbados, Belarus, Brazil, Chile, Colombia, Costa Rica, El Salvador, Honduras, Iceland, Israel, Kiribati, Liechtenstein, Maldives, Montenegro, Nauru, Norway, Paraguay, Peru, Russia, Saint Vincent and the Grenadines, San Marino, South Korea, Serbia, Seychelles, Solomon Islands, Switzerland, Uruguay.</p>
-
-    <p><strong class="golden-strong">Stay up to 30 days:</strong> Nationals of the following countries are eligible to obtain a free UAE visa on arrival and can stay up to 30 days: Andorra, Australia, Brunei, Canada, China, Hong Kong, Ireland, Japan, Kazakhstan, Macao, Malaysia, Mauritius, Monaco, New Zealand, Singapore, Ukraine, United Kingdom, United States, Vatican City.</p>
-
-
-<h3 class="golden-heading">OTHER VISAS</h3>
-
-    <p><strong class="golden-strong">Substitute visas:</strong> Nationals of India who have a valid visa or residents of the United States or are residents of the European Union can obtain a free 14-day visa on arrival.</p>
-
-    <p><strong class="golden-strong">Golden visa:</strong> The Golden visa is issued for investors, entrepreneurs and professional talent.</p>
-
-    <p><strong class="golden-strong">Transit visa:</strong> Passengers on all international airlines may enter the UAE for up to 96 hours after obtaining a transit visa at the airport. Passengers also must have a hotel booking. This does not apply to Afghanistan, Iraq, Niger, Syria, Somalia, and Yemen nationals. Travellers in transit are exempt from entry fees for the first 48 hours; this can be extended for up to 96 hours for an additional fee of 50 AED.</p>
-
-    <p><strong class="golden-strong">Tourist visa:</strong> The Tourist visa is a special category under the Visit visa and entitles the holder to a 30-day stay.</p>
-
-    <p><strong class="golden-strong">Multiple-entry visa:</strong> Multiple-entry visas are issued to cruise ship passengers since their schedule entitles them to enter the country more than once in a single trip. Such visas are also issued to business visitors who are frequent visitors to the UAE due to their ties with a multinational company or a reputable local company. Multiple-entry Visas are valid for six months from the date of issue and the duration of each stay is 30 days. The visa is non-renewable. The individual must enter the UAE on a Visit Visa and then obtain a Multiple-entry Visa.</p>
-
-    <p><strong class="golden-strong">Airline visa:</strong> Visitors usually require a sponsor, but visas can be arranged online through an airline if they travel by Air Arabia, Air Astana, Emirates, Etihad, flydubai, Turkish Airlines and a few more.</p>
-
-    <h3  class="golden-heading">DOCUMENTS REQUIRED</h3>
-    <ul>
-      <li>Clear passport copy of the sponsor</li>
-      <li>Clear passport copy of the sponsored person</li>
-      <li>A copy of the salary certificate or employment contract of the sponsor (resident) must be attached</li>
-      <li>Proof of family relationship (kinship)</li>
-      <li>Travel Insurance</li>
-      <li>Copy of confirmed flight booking</li>
-      <li>Bank approval letter</li>
-      <li>Passport-sized colour photographs</li>
-      <li>Visa fee</li>
-      <li>Visa application form, duly filled</li>
-    </ul>
-
-    <h3  class="golden-heading">RULES AND CONDITIONS</h3>
-    <ul>
-      <li>Entry into the UAE is subject to immigration approval.</li>
-      <li>The ticket is non-refundable if the visa has been issued and utilised.</li>
-      <li>Visa processing time is approximately three to four working days.</li>
-      <li>Visa fees, once paid, are non-refundable.</li>
-    </ul>
-
-  </div>
-</div>
-
 <script>
-document.getElementById('payButton').addEventListener('click', function () {
-    const total = document.getElementById('overlayTotal').textContent;
-    const orderId = window.orderId || '';
-
-    if (!orderId) {
-        alert('Order ID not set. Please try again.');
-        return;
+    function updateFileName(input) {
+        const fileNameSpan = input.parentElement.querySelector('.file-name');
+        if (input.files && input.files.length > 0) {
+            fileNameSpan.textContent = input.files[0].name;
+            fileNameSpan.classList.add('selected');
+        } else {
+            // Derive default text from name structure name="passport_copy[]"
+            const name = input.getAttribute('name');
+            if (name.includes('passport_copy')) fileNameSpan.textContent = 'Click to upload (PDF/Image)...';
+            else if (name.includes('passport_photo')) fileNameSpan.textContent = 'Click to upload (ID Photo)...';
+            else fileNameSpan.textContent = 'Other documents (if any)...';
+            fileNameSpan.classList.remove('selected');
+        }
     }
 
-    this.disabled = true;
-    this.textContent = 'Processing...';
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Populate Country Dropdowns ---
+        const countrySelects = [document.getElementById('nationality'), document.getElementById('residence')];
+        fetch('https://restcountries.com/v3.1/all?fields=name')
+            .then(res => res.json())
+            .then(data => {
+                data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+                data.forEach(country => {
+                    const optionHtml = `<option value="${country.name.common}">${country.name.common}</option>`;
+                    countrySelects.forEach(select => select.insertAdjacentHTML('beforeend', optionHtml));
+                });
+            })
+            .catch(err => console.error(err));
 
-    fetch("{{ url('/ccavenue/initiate') }}", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ order_id: orderId, amount: total })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.encryptedData && data.accessCode) {
-            // Fill the hidden form
-            document.getElementById('encRequest').value = data.encryptedData;
-            document.getElementById('access_code').value = data.accessCode;
-            document.getElementById('merchant_id').value = data.merchant_id;
-            // Submit form on the main window (redirect)
-            document.getElementById('ccavenuePaymentForm').submit();
-        } else {
-            alert('Payment initiation failed. Please try again.');
-            this.disabled = false;
-            this.textContent = 'Pay Now';
+        const visaCountSelect = document.getElementById('visaCount');
+        const applicantsContainer = document.getElementById('applicantsContainer');
+        const durationSelect = document.getElementById('visaDuration');
+
+        // --- Dynamic Form Generation ---
+        function generateApplicants(count) {
+            applicantsContainer.innerHTML = ''; // Clear existing
+            for (let i = 0; i < count; i++) {
+                const num = i + 1;
+                const html = `
+                    <div class="applicant-box">
+                        <div class="applicant-header">
+                            <span><i class="bi bi-person-fill"></i> Applicant #${num}</span>
+                            <small class="text-muted" style="font-size:10px;">DOCUMENTS REQUIRED</small>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label class="field-label">Passport Copy</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" name="passport_copy[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
+                                    <div class="file-input-custom">
+                                        <span class="file-name">Click to upload (PDF/Image)...</span>
+                                        <i class="bi bi-cloud-arrow-up-fill file-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Passport Photo</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" name="passport_photo[]" class="file-input-real" accept="image/*" required onchange="updateFileName(this)">
+                                    <div class="file-input-custom">
+                                        <span class="file-name">Click to upload (ID Photo)...</span>
+                                        <i class="bi bi-person-bounding-box file-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-field full">
+                                <label class="field-label">Supporting Document (Optional)</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" name="supporting_document[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" onchange="updateFileName(this)">
+                                    <div class="file-input-custom">
+                                        <span class="file-name">Other documents (if any)...</span>
+                                        <i class="bi bi-paperclip file-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 `;
+                applicantsContainer.insertAdjacentHTML('beforeend', html);
+            }
         }
-    })
-    .catch(() => {
-        alert('Error contacting payment server.');
-        this.disabled = false;
-        this.textContent = 'Pay Now';
-    });
-});
-</script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Phone number validation - numeric only
-        document.getElementById('phone').addEventListener('input', function(e) {
-            // Allow +, numbers, spaces, hyphens, and parentheses for international formatting
-            let value = e.target.value;
-            // Remove any characters that are not digits, +, -, (, ), or space
-            let cleaned = value.replace(/[^\d\+\-\(\)\s]/g, '');
-            // Ensure + only appears at the beginning
-            if (cleaned.indexOf('+') > 0) {
-                cleaned = cleaned.replace(/\+/g, '');
-                if (value.charAt(0) === '+') {
-                    cleaned = '+' + cleaned;
+        // Initialize with 1 applicant
+        generateApplicants(1);
+
+        visaCountSelect.addEventListener('change', function () {
+            generateApplicants(parseInt(this.value));
+            updatePrice();
+        });
+
+        // --- Pricing Logic ---
+        function updatePrice() {
+            const count = parseInt(visaCountSelect.value) || 1;
+            const option = durationSelect.options[durationSelect.selectedIndex];
+            const unitPrice = parseFloat(option.getAttribute('data-price')) || 0;
+
+            const totalBase = unitPrice * count;
+            const vat = totalBase * 0.05;
+            const total = totalBase + vat;
+
+            document.getElementById('hiddenPrice').value = total.toFixed(2);
+            document.getElementById('countDisplay').textContent = count;
+
+            document.getElementById('summaryBase').textContent = 'AED ' + totalBase.toFixed(2);
+            document.getElementById('summaryVat').textContent = 'AED ' + vat.toFixed(2);
+            document.getElementById('summaryTotal').textContent = 'AED ' + total.toFixed(2);
+        }
+
+        durationSelect.addEventListener('change', updatePrice);
+
+        // --- Form Submit ---
+        const form = document.getElementById('visaForm');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> PROCESSING...';
+
+            const formData = new FormData(this);
+            // Append count explicitly just in case
+            formData.set('visa_count', visaCountSelect.value);
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
                 }
-            }
-            e.target.value = cleaned;
-        });
-
-        // Prevent non-numeric key presses (except allowed characters)
-        document.getElementById('phone').addEventListener('keypress', function(e) {
-            const allowedChars = /[\d\+\-\(\)\s]/;
-            const key = String.fromCharCode(e.which);
-            if (!allowedChars.test(key) && e.which !== 8 && e.which !== 0) {
-                e.preventDefault();
-            }
-        });
-
-        document.getElementById('visaDuration').addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const price = selectedOption.getAttribute('data-price');
-            document.getElementById('price').value = price ? price : '';
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.encryptedData) {
+                        document.getElementById('encRequest').value = data.encryptedData;
+                        document.getElementById('access_code').value = data.accessCode;
+                        document.getElementById('merchant_id').value = "{{ config('services.ccavenue.merchant_id') }}";
+                        document.getElementById('ccavenuePaymentForm').submit();
+                    } else {
+                        throw new Error(data.message || 'Submission failed');
+                    }
+                })
+                .catch(err => {
+                    alert(err.message || 'Error occurred');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                });
         });
     });
-</script>
-
-<script>
-  function updatePrice() {
-    const duration = document.getElementById("visaDuration").value;
-    const priceInput = document.getElementById("price");
-
-    if (duration === "30") {
-      priceInput.value = "₹3,000"; // Example price for 30 days
-    } else if (duration === "60") {
-      priceInput.value = "₹5,500"; // Example price for 60 days
-    } else {
-      priceInput.value = "";
-    }
-  }
-
-  document.querySelector('form').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // Show immediate processing snackbar
-    showProcessingSnackbar('Processing your application...');
-
-    var submitBtn = document.getElementById('formSubmitBtn');
-    var btnText = submitBtn.querySelector('.btn-text');
-    var btnSpinner = submitBtn.querySelector('.btn-spinner');
-    btnText.style.display = 'none';
-    btnSpinner.style.display = 'inline-block';
-    submitBtn.disabled = true;
-
-    var formData = new FormData(this);
-
-    fetch(this.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-        }
-    }).then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            return response.json().then(data => {
-                throw new Error(data.message || 'Submission failed');
-            });
-        }
-    }).then(data => {
-        // Hide processing snackbar
-        hideProcessingSnackbar();
-        
-        if (data.success) {
-            showSnackbar(data.message);
-
-            // Reset form
-            this.reset();
-            window.orderId = data.orderId;
-
-            // Calculate tax and total
-            var price = parseFloat(data.price) || 0;
-            var tax = (price * 0.05).toFixed(2);
-            var total = (price + parseFloat(tax)).toFixed(2);
-            console.log('Received price:', data.price);
-
-            // Fill overlay values
-            document.getElementById('overlayPrice').innerText = price.toFixed(2);
-            document.getElementById('overlayTax').innerText = tax;
-            document.getElementById('overlayTotal').innerText = total;
-
-            // Show overlay after a brief delay
-            setTimeout(() => {
-                document.getElementById('priceOverlay').style.display = 'flex';
-            }, 500);
-        } else {
-            showSnackbar(data.message || 'Submission failed', true);
-        }
-    }).catch(error => {
-        // Hide processing snackbar
-        hideProcessingSnackbar();
-        showSnackbar(error.message || 'Submission failed', true);
-    }).finally(() => {
-        btnText.style.display = 'inline';
-        btnSpinner.style.display = 'none';
-        submitBtn.disabled = false;
-    });
-});
-
-document.getElementById('closeOverlay').addEventListener('click', function() {
-    document.getElementById('priceOverlay').style.display = 'none';
-});
-
-// Processing Snackbar functions
-function showProcessingSnackbar(msg) {
-    var snackbar = document.getElementById('processingSnackbar');
-    snackbar.textContent = msg;
-    snackbar.className = "processing-snackbar show";
-}
-
-function hideProcessingSnackbar() {
-    var snackbar = document.getElementById('processingSnackbar');
-    snackbar.className = "processing-snackbar";
-}
-
-// Regular Snackbar function
-function showSnackbar(msg, isError) {
-    var snackbar = document.getElementById('snackbar');
-    snackbar.textContent = msg;
-    snackbar.style.backgroundColor = isError ? '#dc3545' : '#28a745';
-    snackbar.className = "snackbar show";
-    setTimeout(function(){
-        snackbar.className = "snackbar";
-    }, 2200);
-}
-</script>
-
-<script>
-  const countries = [
-    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia",
-    "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
-    "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil",
-    "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Chad",
-    "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus",
-    "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt",
-    "El Salvador", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia",
-    "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guyana", "Haiti",
-    "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy",
-    "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kuwait", "Kyrgyzstan", "Laos", "Latvia",
-    "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar",
-    "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mauritania", "Mauritius", "Mexico", "Moldova",
-    "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nepal",
-    "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia",
-    "Norway", "Oman", "Pakistan", "Panama", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
-    "Qatar", "Romania", "Russia", "Rwanda", "Saudi Arabia", "Senegal", "Serbia", "Seychelles",
-    "Singapore", "Slovakia", "Slovenia", "Somalia", "South Africa", "South Korea", "Spain", "Sri Lanka",
-    "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand",
-    "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Uganda", "Ukraine",
-    "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu",
-    "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
-  ];
-
-  function populateSelect(id) {
-    const select = document.getElementById(id);
-    countries.forEach(country => {
-      const option = document.createElement("option");
-      option.value = country;
-      option.textContent = country;
-      select.appendChild(option);
-    });
-  }
-
-  // Populate both dropdowns
-  populateSelect("nationality");
-  populateSelect("residence");
 </script>
 
 @include('footer')

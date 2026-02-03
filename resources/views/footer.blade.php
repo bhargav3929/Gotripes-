@@ -169,51 +169,71 @@
 
 
 <div id="modal-popup3"
-  class="zoom-anim-dialog mfp-hide col-xl-11 col-lg-8 col-md-7 col-11 contact-form-style-01 mfp-hide subscribe-popup mx-auto text-center modal-popup-main p-50px">
+  class="zoom-anim-dialog mfp-hide col-xl-10 col-lg-10 col-md-11 col-11 contact-form-style-01 mfp-hide subscribe-popup mx-auto text-center modal-popup-main p-0"
+  style="background: transparent;">
 
-  <div class="container">
-    <div class="row justify-content-center">
+  <div class="container p-0">
+    <div class="row justify-content-center m-0">
 
-      <div class="col-xl-9 col-md-10 bg-white" style="border-radius: 10px !important;
-    overflow: hidden;">
-        <div class="row position-relative box-shadow-quadruple-large">
+      <div class="col-12 p-0"
+        style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 215, 0, 0.2); box-shadow: 0 50px 100px rgba(0,0,0,0.9);">
+        <div class="row g-0">
 
+          <!-- Image Section -->
+          <div class="col-lg-5 cover-background d-none d-lg-block"
+            style="background-image:url('https://gotrips.ai/assets/images/1855.jpg'); min-height: 500px;">
+            <div
+              style="background: linear-gradient(to right, rgba(0,0,0,0.3), rgba(17,17,17,1)); width: 100%; height: 100%;">
+            </div>
+          </div>
 
-          <div class="col-lg-5 cover-background md-h-400px xs-h-300px"
-            style="background-image:url(&#39;https://gotrips.ai/assets/images/1855.jpg&#39;);"></div>
+          <!-- Form Section -->
+          <div class="col-lg-7 position-relative" style="background: #111;">
 
+            <div class="p-5">
+              <span class="fs-14 fw-600 text-uppercase d-block mb-2" style="color: #FFD700; letter-spacing: 1px;">24/7
+                Support</span>
+              <h3 class="fw-700 text-white mb-4" style="font-family: 'Outfit', sans-serif;">Need Expert Travel Advice?
+              </h3>
 
-          <div class="col-lg-7 newsletter-popup p-5 pt- pb-4 lg-p-5 md-p-6 xs-p-8 position-relative">
-
-            <div class="p-2 lg-p-5 bg-white">
-              <span class="fs-18 mb-10px">Looking for a finance agent?</span>
-              <h3 class="d-inline-block fw-600 text-dark-gray mb-10 ls-minus-1px">How we can help you?</h3>
-              <form action="https://gotrips.ai/email-templates/contact-form.php" method="post">
-                <div class="position-relative form-group mb-10px">
-                  <span class="form-icon"><i class="bi bi-emoji-smile"></i></span>
-                  <input type="text" name="name" class="form-control required" placeholder="Enter your name*">
+              <form action="https://gotrips.ai/email-templates/contact-form.php" method="post" class="text-start">
+                <div class="mb-3 position-relative">
+                  <i class="bi bi-person position-absolute text-muted" style="top: 15px; left: 15px;"></i>
+                  <input type="text" name="name" class="form-control" placeholder="YOUR NAME"
+                    style="background: #050505; border: 1px solid #333; color: #fff; height: 50px; padding-left: 40px; border-radius: 8px;">
                 </div>
-                <div class="position-relative form-group mb-10px">
-                  <span class="form-icon"><i class="bi bi-envelope"></i></span>
-                  <input type="email" name="email" class="form-control required" placeholder="Enter your email*">
+
+                <div class="mb-3 position-relative">
+                  <i class="bi bi-envelope position-absolute text-muted" style="top: 15px; left: 15px;"></i>
+                  <input type="email" name="email" class="form-control" placeholder="YOUR EMAIL"
+                    style="background: #050505; border: 1px solid #333; color: #fff; height: 50px; padding-left: 40px; border-radius: 8px;">
                 </div>
-                <div class="position-relative form-group mb-10px">
-                  <span class="form-icon"><i class="bi bi-telephone-outbound"></i></span>
-                  <input type="tel" name="phone" class="form-control" placeholder="Enter your phone">
+
+                <div class="mb-3 position-relative">
+                  <i class="bi bi-phone position-absolute text-muted" style="top: 15px; left: 15px;"></i>
+                  <input type="tel" name="phone" class="form-control" placeholder="YOUR PHONE"
+                    style="background: #050505; border: 1px solid #333; color: #fff; height: 50px; padding-left: 40px; border-radius: 8px;">
                 </div>
-                <div class="position-relative form-group form-textarea">
-                  <span class="form-icon"><i class="bi bi-chat-square-dots"></i></span>
-                  <textarea placeholder="Your message" name="comment" class="form-control" rows="2"></textarea>
-                  <input type="hidden" name="redirect" value="">
-                  <button class="btn btn-medium btn-dark-gray btn-box-shadow btn-round-edge w-100 mt-20px submit"
-                    type="submit">Send message</button>
-                  <div class="form-results mt-20px d-none"></div>
+
+                <div class="mb-4 position-relative">
+                  <i class="bi bi-chat-dots position-absolute text-muted" style="top: 15px; left: 15px;"></i>
+                  <textarea placeholder="HOW CAN WE HELP?" name="comment" class="form-control" rows="3"
+                    style="background: #050505; border: 1px solid #333; color: #fff; padding-left: 40px; border-radius: 8px; padding-top: 15px;"></textarea>
                 </div>
+
+                <button class="btn w-100" type="submit"
+                  style="background: linear-gradient(135deg, #FFD700 0%, #B8960C 100%); color: #000; font-weight: 800; padding: 15px; border-radius: 50px; text-transform: uppercase;">
+                  Send Message
+                </button>
+
+                <div class="form-results mt-3 d-none text-white text-center"></div>
               </form>
             </div>
 
+            <button title="Close (Esc)" type="button" class="mfp-close text-white"
+              style="opacity: 1; top: 15px; right: 15px;">×</button>
           </div>
-          <button title="Close (Esc)" type="button" class="mfp-close text-dark-gray"></button>
+
         </div>
       </div>
     </div>

@@ -74,6 +74,7 @@ Route::prefix('/')->group(function () {
     // Route::get('dubai-global-village', fn() => view('dubai-global-village'));
     Route::get('lotus-cruise-dubai', fn() => view('lotus-cruise-dubai'));
     Route::get('shopnow', fn() => view('shopnow'));
+    Route::get('payonline', fn() => view('payonline'));
     Route::get('lookingforajob', fn() => view('lookingforajob'));
     Route::get('visaservice', fn() => view('visaservice'));
     Route::get('uaevisa', fn() => view('uaevisa'));

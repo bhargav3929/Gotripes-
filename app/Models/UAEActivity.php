@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UAEActivity extends Model
 {
-    protected $table = 'tbl_uaeactivities';
+    protected $table = 'tbl_UAEActivities';
     protected $primaryKey = 'activityID';
     public $incrementing = true;
     protected $keyType = 'int';
