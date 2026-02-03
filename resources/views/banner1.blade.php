@@ -8,27 +8,30 @@
       color: white;
       font-family: 'Segoe UI', sans-serif;
     }
-    
+
     .flight-banner-section .flight-btn-search {
-      background-color: rgb(255,210,63,.7);
+      background-color: #C9A227;
       border: none;
       color: white;
       padding: 10px 24px;
       font-size: 16px;
-      border-radius: 0.7rem;
+      border-radius: 50px;
       font-weight: 600;
       width: 100%;
       cursor: pointer;
+      transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
     }
-    
+
     .flight-banner-section .flight-btn-search:hover:enabled {
-      background-color: rgb(255,210,63,1);
+      background-color: #D4AF37;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
     }
-    
+
     .flight-banner-section .flight-form-group-autocomplete {
       position: relative;
     }
-    
+
     .flight-banner-section .flight-autocomplete-dropdown {
       position: absolute;
       top: 100%;
@@ -43,20 +46,20 @@
       color: #fff;
       border-radius: 0 0 12px 12px;
     }
-    
+
     .flight-banner-section .flight-autocomplete-option {
       padding: 8px 18px;
       cursor: pointer;
     }
-    
-    .flight-banner-section .flight-autocomplete-option.active, 
+
+    .flight-banner-section .flight-autocomplete-option.active,
     .flight-banner-section .flight-autocomplete-option:hover {
       background: #232323;
       color: #FFD235;
     }
-    
+
     .flight-banner-section .flight-autocomplete-dropdown {
-      min-width: 330px; 
+      min-width: 330px;
       width: max(330px, 100%);
       left: 0;
       right: auto;
@@ -105,14 +108,14 @@
       position: fixed;
       inset: 0;
       z-index: 3050;
-      background: rgba(0,0,0,0.95) !important;
+      background: rgba(0, 0, 0, 0.95) !important;
       display: none;
       justify-content: center;
       align-items: flex-start;
       padding: 0;
       overflow-y: auto;
     }
-    
+
     .flight-banner-section #flight-dialog-modal {
       background: #181b22;
       color: #fff;
@@ -121,7 +124,7 @@
       max-width: 1040px;
       min-width: 320px;
       max-height: none;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 8px 30px rgba(255,210,63,0.1);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 8px 30px rgba(255, 210, 63, 0.1);
       position: relative;
       padding: 0;
       animation: modalSlideIn 0.3s ease-out;
@@ -136,17 +139,18 @@
         transform: translateY(-30px) scale(0.95);
         opacity: 0;
       }
+
       to {
         transform: translateY(0) scale(1);
         opacity: 1;
       }
     }
-    
+
     .flight-banner-section .flight-close-dialog {
       position: absolute;
       top: 15px;
       right: 20px;
-      background: rgba(255,210,63,0.1);
+      background: rgba(255, 210, 63, 0.1);
       border: 2px solid #FFD235;
       color: #FFD235;
       font-size: 24px;
@@ -163,19 +167,19 @@
       justify-content: center;
       transition: all 0.3s ease;
     }
-    
+
     .flight-banner-section .flight-close-dialog:hover {
-      background: rgba(255,210,63,0.2);
+      background: rgba(255, 210, 63, 0.2);
       color: #fff;
       transform: rotate(90deg);
     }
-    
+
     .flight-banner-section .flight-dialog-list-area {
       padding: 60px 25px 25px 25px;
       width: 100%;
       overflow-y: visible;
     }
-    
+
     .flight-banner-section .flight-overlay-header {
       color: #FFD235;
       font-weight: 800;
@@ -185,7 +189,7 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-    
+
     /* COMPLETELY REDESIGNED FLIGHT CARDS FOR MOBILE */
     .flight-banner-section .flight-result-card {
       width: 100%;
@@ -195,7 +199,7 @@
       flex-direction: column;
       border-radius: 15px;
       background: linear-gradient(135deg, #1e2126, #252830);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
       overflow: hidden;
       border: 2px solid #333;
       transition: all 0.3s ease;
@@ -203,15 +207,15 @@
 
     .flight-banner-section .flight-result-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 35px rgba(0,0,0,0.5);
-      border-color: rgba(255,210,63,0.4);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 210, 63, 0.4);
     }
-    
+
     /* MOBILE OPTIMIZED CARD HEADER */
     .flight-banner-section .flight-card-header {
       background: linear-gradient(135deg, #2a2d35, #1f2228);
       padding: 15px 20px;
-      border-bottom: 1px solid rgba(255,210,63,0.2);
+      border-bottom: 1px solid rgba(255, 210, 63, 0.2);
       position: relative;
     }
 
@@ -243,7 +247,7 @@
     }
 
     .flight-banner-section .flight-airline-code {
-      background: rgba(255,210,63,0.1);
+      background: rgba(255, 210, 63, 0.1);
       color: #FFD235;
       font-size: 16px;
       font-weight: 900;
@@ -289,7 +293,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    
+
     /* MOBILE OPTIMIZED FLIGHT TIMELINE */
     .flight-banner-section .flight-card-body {
       padding: 20px;
@@ -306,10 +310,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(255,210,63,0.05);
+      background: rgba(255, 210, 63, 0.05);
       padding: 15px;
       border-radius: 10px;
-      border: 1px solid rgba(255,210,63,0.1);
+      border: 1px solid rgba(255, 210, 63, 0.1);
     }
 
     .flight-banner-section .flight-location {
@@ -353,7 +357,7 @@
     .flight-banner-section .flight-duration-mobile {
       font-size: 11px;
       color: #888;
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
       padding: 2px 6px;
       border-radius: 4px;
       white-space: nowrap;
@@ -361,8 +365,8 @@
 
     .flight-banner-section .flight-card-footer {
       padding: 15px 20px;
-      background: rgba(0,0,0,0.2);
-      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .flight-banner-section .flight-book-btn {
@@ -376,17 +380,17 @@
       padding: 12px 20px;
       text-decoration: none;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(255,210,63,0.3);
+      box-shadow: 0 4px 15px rgba(255, 210, 63, 0.3);
       transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       width: 100%;
     }
-    
+
     .flight-banner-section .flight-book-btn:hover {
       background: linear-gradient(135deg, #FFC41B, #FFB800) !important;
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255,210,63,0.4);
+      box-shadow: 0 6px 20px rgba(255, 210, 63, 0.4);
     }
 
     .flight-banner-section .flight-book-btn:disabled {
@@ -394,14 +398,14 @@
       cursor: not-allowed;
       transform: none;
     }
-    
+
     .flight-banner-section #flight-dialog-modal::-webkit-scrollbar {
       width: 8px;
       background: transparent;
     }
-    
+
     .flight-banner-section #flight-dialog-modal::-webkit-scrollbar-thumb {
-      background: rgba(255,210,63,0.3);
+      background: rgba(255, 210, 63, 0.3);
       border-radius: 4px;
     }
 
@@ -420,14 +424,14 @@
       position: absolute !important;
       z-index: 100000 !important;
     }
-    
+
     .flight-autocomplete-option {
       padding: 8px 18px;
       cursor: pointer;
       color: #ffffff;
       background-color: transparent;
     }
-    
+
     .flight-autocomplete-option.active,
     .flight-autocomplete-option:hover {
       background-color: #232323;
@@ -440,28 +444,28 @@
         width: 92%;
       }
     }
-    
+
     @media (max-width: 768px) {
       .flight-banner-section #flight-dialog-backdrop {
         align-items: flex-start;
         padding: 10px;
       }
-      
+
       .flight-banner-section #flight-dialog-modal {
         width: 100%;
         margin: 10px auto;
         border-radius: 15px;
       }
-      
+
       .flight-banner-section .flight-overlay-header {
         font-size: 1.5rem;
         margin-bottom: 20px;
       }
-      
+
       .flight-banner-section .flight-dialog-list-area {
         padding: 55px 20px 20px 20px;
       }
-      
+
       .flight-banner-section .flight-close-dialog {
         font-size: 20px;
         width: 40px;
@@ -470,31 +474,31 @@
         right: 15px;
       }
     }
-    
+
     @media (max-width: 576px) {
       .flight-banner-section .radio-container {
         gap: 1rem;
         justify-content: flex-start;
       }
-      
+
       .flight-banner-section .form-check-label {
         font-size: 14px;
       }
-      
+
       .flight-banner-section #flight-dialog-backdrop {
         padding: 5px;
       }
-      
+
       .flight-banner-section #flight-dialog-modal {
         width: calc(100% - 10px);
         margin: 5px auto;
         border-radius: 12px;
       }
-      
+
       .flight-banner-section .flight-dialog-list-area {
         padding: 50px 15px 15px 15px;
       }
-      
+
       .flight-banner-section .flight-overlay-header {
         font-size: 1.3rem;
         margin-bottom: 15px;
@@ -525,14 +529,14 @@
         max-width: 70px;
       }
     }
-    
+
     @media (max-width: 400px) {
       .flight-banner-section .radio-container {
         flex-direction: column;
         gap: 0.5rem;
         align-items: flex-start;
       }
-      
+
       .flight-banner-section .flight-search-box {
         padding: 20px 15px;
       }
@@ -540,7 +544,7 @@
       .flight-banner-section #flight-dialog-backdrop {
         padding: 0;
       }
-      
+
       .flight-banner-section #flight-dialog-modal {
         width: 100%;
         margin: 0;
@@ -566,7 +570,8 @@
         <!-- FIXED RADIO BUTTON STRUCTURE WITH PERFECT ALIGNMENT -->
         <div class="radio-container">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flight-tripType" id="flight-return" value="false" checked>
+            <input class="form-check-input" type="radio" name="flight-tripType" id="flight-return" value="false"
+              checked>
             <label class="form-check-label" for="flight-return">Return</label>
           </div>
           <div class="form-check">
@@ -575,14 +580,16 @@
           </div>
         </div>
 
-        <div class="row g-2 mb-1 align-items-end">
-          <div class="col-12 col-md-3 flight-form-group-autocomplete">
+        <div class="row g-3 mb-1 align-items-end">
+          <div class="col-12 col-md flight-form-group-autocomplete">
             <label>From</label>
-            <input type="text" class="form-control" id="flight-origin-input" autocomplete="off" placeholder="Type city or code (e.g. Delhi or DEL)">
+            <input type="text" class="form-control" id="flight-origin-input" autocomplete="off"
+              placeholder="Type city or code (e.g. Delhi or DEL)">
           </div>
-          <div class="col-12 col-md-3 flight-form-group-autocomplete">
+          <div class="col-12 col-md flight-form-group-autocomplete">
             <label>To</label>
-            <input type="text" class="form-control" id="flight-destination-input" autocomplete="off" placeholder="Type city or code (e.g. Paris or CDG)">
+            <input type="text" class="form-control" id="flight-destination-input" autocomplete="off"
+              placeholder="Type city or code (e.g. Paris or CDG)">
           </div>
           <div class="col-6 col-md-2">
             <label>Depart</label>
@@ -592,8 +599,9 @@
             <label>Return</label>
             <input type="month" class="form-control" id="flight-return_at" value="{{ date('Y-m') }}">
           </div>
-          <div class="col-12 col-md-2 d-flex align-items-end">
-            <button class="flight-btn-search w-100" id="flight-searchBtn" type="button" onclick="flightPerformSearch()">Search</button>
+          <div class="col-12 col-md-auto d-flex align-items-end">
+            <button class="flight-btn-search" id="flight-searchBtn" type="button"
+              onclick="flightPerformSearch()">Search</button>
           </div>
         </div>
 
@@ -617,7 +625,7 @@
 
   <script>
     // Enhanced autocomplete functionality with better positioning
-    function flightSetupAutocomplete({inputId}) {
+    function flightSetupAutocomplete({ inputId }) {
       const input = document.getElementById(inputId);
 
       // Create dropdown div dynamically and append to body
@@ -637,7 +645,7 @@
         const dropdownHeight = 250;
         const spaceBelow = viewportHeight - rect.bottom;
         const spaceAbove = rect.top;
-        
+
         if (spaceBelow >= dropdownHeight || spaceBelow >= spaceAbove) {
           dropdown.style.top = (rect.bottom + window.scrollY + 2) + 'px';
           dropdown.style.borderRadius = '0 0 12px 12px';
@@ -645,34 +653,34 @@
           dropdown.style.top = (rect.top + window.scrollY - Math.min(dropdownHeight, spaceAbove)) + 'px';
           dropdown.style.borderRadius = '12px 12px 0 0';
         }
-        
+
         dropdown.style.left = (rect.left + window.scrollX) + 'px';
         dropdown.style.width = Math.max(300, rect.width) + 'px';
       }
 
-      input.addEventListener('input', function() {
+      input.addEventListener('input', function () {
         const term = input.value.trim();
         input.dataset.iata = '';
         input.dataset.name = '';
-        
+
         if (term.length < 2) {
           dropdown.style.display = 'none';
           dropdown.innerHTML = '';
           return;
         }
-        
+
         fetch(`https://autocomplete.travelpayouts.com/places2?locale=en&types[]=city&term=${encodeURIComponent(term)}`)
           .then(res => res.json())
           .then(data => {
             options = data;
             dropdown.innerHTML = '';
             selectedIndex = -1;
-            
+
             if (options.length === 0) {
               dropdown.style.display = 'none';
               return;
             }
-            
+
             options.forEach(place => {
               const display = `${place.name} (${place.code}), ${place.country_name}`;
               const div = document.createElement('div');
@@ -688,7 +696,7 @@
               };
               dropdown.appendChild(div);
             });
-            
+
             updateDropdownPosition();
             dropdown.style.display = 'block';
           })
@@ -698,7 +706,7 @@
           });
       });
 
-      input.addEventListener('keydown', function(e) {
+      input.addEventListener('keydown', function (e) {
         const items = dropdown.querySelectorAll('.flight-autocomplete-option');
         if (!items.length) return;
 
@@ -723,7 +731,7 @@
         items.forEach(item => item.classList.remove('active'));
         if (selectedIndex > -1 && items[selectedIndex]) {
           items[selectedIndex].classList.add('active');
-          items[selectedIndex].scrollIntoView({block: 'nearest'});
+          items[selectedIndex].scrollIntoView({ block: 'nearest' });
         }
       }
 
@@ -748,21 +756,21 @@
           updateDropdownPosition();
         }
       };
-      
+
       window.addEventListener('scroll', updatePosition, { passive: true });
       window.addEventListener('resize', updatePosition, { passive: true });
     }
 
     // Initialize both autocomplete inputs
-    flightSetupAutocomplete({inputId: 'flight-origin-input'});
-    flightSetupAutocomplete({inputId: 'flight-destination-input'});
+    flightSetupAutocomplete({ inputId: 'flight-origin-input' });
+    flightSetupAutocomplete({ inputId: 'flight-destination-input' });
 
     // Return date visibility toggle
     function flightUpdateReturnBox() {
       const tripType = document.querySelector('input[name="flight-tripType"]:checked').value;
       const box = document.getElementById('flight-return-date-box');
       const input = box.querySelector('input');
-      
+
       if (tripType === "true") {
         box.style.opacity = '0.5';
         box.style.pointerEvents = 'none';
@@ -785,7 +793,7 @@
     function flightSetSearchButtonLoading(loading) {
       const btn = document.getElementById('flight-searchBtn');
       btn.disabled = !!loading;
-      
+
       if (loading) {
         btn.innerHTML = `
           <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -800,20 +808,20 @@
       flightSetSearchButtonLoading(true);
       const one_way = document.querySelector('input[name="flight-tripType"]:checked').value;
       let origin = document.getElementById('flight-origin-input').dataset.iata || '',
-          originName = document.getElementById('flight-origin-input').dataset.name || '',
-          destination = document.getElementById('flight-destination-input').dataset.iata || '',
-          destinationName = document.getElementById('flight-destination-input').dataset.name || '';
-      
+        originName = document.getElementById('flight-origin-input').dataset.name || '',
+        destination = document.getElementById('flight-destination-input').dataset.iata || '',
+        destinationName = document.getElementById('flight-destination-input').dataset.name || '';
+
       if (!origin || !destination) {
         flightSetSearchButtonLoading(false);
         alert('Please select both origin and destination from the dropdown list.');
         return;
       }
-      
+
       const departure_at = document.getElementById('flight-departure_at').value,
-            direct = document.getElementById('flight-directFlights').checked ? 'true' : 'false',
-            token = "cf2c7d9387d4f197f23df39a0c5c38c5";
-      
+        direct = document.getElementById('flight-directFlights').checked ? 'true' : 'false',
+        token = "cf2c7d9387d4f197f23df39a0c5c38c5";
+
       let params = {
         origin,
         destination,
@@ -827,15 +835,15 @@
         one_way,
         token
       };
-      
+
       if (one_way === "false") {
         const return_at = document.getElementById('flight-return_at').value;
         if (return_at) params.return_at = return_at;
       }
-      
+
       const query = new URLSearchParams(params).toString();
       const proxyURL = `/proxy-prices?${query}`;
-      
+
       fetch(proxyURL)
         .then(response => response.json())
         .then(data => {
@@ -850,7 +858,7 @@
 
     function flightShowDialogWithResults(results, errorText, originFull, destinationFull) {
       let html = '';
-      
+
       if (errorText) {
         html = `
           <div class="flight-overlay-header">Flight Search Results</div>
@@ -870,11 +878,11 @@
         `;
       } else {
         html = `<div class="flight-overlay-header">Flight Search Results</div>`;
-        
+
         results.slice(0, 10).forEach(flight => {
           const depTime = flight.departure_time || (flight.departure_at ? (flight.departure_at.split('T')[1] || '').substr(0, 5) : '');
           const arrTime = flight.arrival_time || (flight.arrival_at ? (flight.arrival_at.split('T')[1] || '').substr(0, 5) : '');
-          
+
           html += `
             <div class="flight-result-card">
               <!-- MOBILE OPTIMIZED CARD HEADER -->
@@ -928,7 +936,7 @@
           `;
         });
       }
-      
+
       document.getElementById('flight-dialog-content').innerHTML = html;
       document.getElementById('flight-dialog-backdrop').style.display = 'flex';
       setTimeout(() => {
@@ -942,7 +950,7 @@
     }
 
     // Enhanced keyboard navigation
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (document.getElementById('flight-dialog-backdrop').style.display === 'flex') {
         if (e.key === "Escape" || e.key === "Esc") {
           flightCloseDialog();
@@ -951,7 +959,7 @@
     });
 
     // Close modal when clicking backdrop
-    document.getElementById('flight-dialog-backdrop').addEventListener('click', function(e) {
+    document.getElementById('flight-dialog-backdrop').addEventListener('click', function (e) {
       if (e.target === this) {
         flightCloseDialog();
       }

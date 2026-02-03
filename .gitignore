@@ -18,3 +18,18 @@ yarn-error.log
 /.idea
 /.vscode
 /database/*.sqlite
+
+# Local System Files
+.DS_Store
+**/.DS_Store
+
+# Large Backups and Archives
+*.zip
+*.tar
+*.gz
+*.rar
+project_backup_with_db.zip
+gotrips_homepage_update.zip
+
+# SQL Dumps (optional, keep if needed but often ignored)
+*.sql
