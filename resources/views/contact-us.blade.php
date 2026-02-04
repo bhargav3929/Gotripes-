@@ -474,7 +474,7 @@
             <!-- Email -->
             <div class="col-md-4 col-sm-6">
                 <div class="qr-card">
-                    <div class="qr-img">
+                    <div class="qr-img" style="background: transparent;">
                         <img src="{{ asset('assets/index_files/logo.png') }}" alt="Logo">
                     </div>
                     <div class="qr-title">Email Us</div>
