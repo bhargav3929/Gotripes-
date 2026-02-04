@@ -938,7 +938,7 @@
               </div>
             </div>
 
-            <div class="mt-3 w-100">
+            <div class="mt-0 w-100" style="margin-top: -30px !important;">
               @include('banner0')
             </div>
           </div>

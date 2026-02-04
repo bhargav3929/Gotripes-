@@ -29,7 +29,7 @@
         display: flex;
         flex-direction: column;
         height: 450px; /* Fixed height for all boxes */
-        background: rgb(5, 19, 45);
+        background: #111;
         border-radius: 12px;
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -63,7 +63,7 @@
     }
     
     .blog_box {
-        background: rgb(5, 19, 45);
+        background: #111;
         padding: 20px 15px;
         margin: 0;
         position: relative;

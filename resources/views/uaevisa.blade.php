@@ -487,8 +487,8 @@
                             <input type="date" class="field-input" name="arrival_date" required>
                         </div>
                         <div class="form-field">
-                            <label class="field-label">Departure Date</label>
-                            <input type="date" class="field-input" name="departure_date" required>
+                            <label class="field-label">Departure Date (Optional)</label>
+                            <input type="date" class="field-input" name="departure_date">
                         </div>
                     </div>
 

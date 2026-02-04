@@ -88,7 +88,7 @@
     }
 
     .emirates-page-wrapper .emirate-card {
-        background: linear-gradient(145deg, rgb(5, 19, 45), rgb(10, 25, 55));
+        background: #111;
         border-radius: 15px;
         overflow: hidden;
         transition: all 0.4s ease;
@@ -271,7 +271,7 @@
         display: flex;
         flex-direction: column;
         height: 450px;
-        background: rgb(5, 19, 45);
+        background: #111;
         border-radius: 12px;
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -309,7 +309,7 @@
     }
     
     .emirates-page-wrapper .blog_box {
-        background: rgb(5, 19, 45);
+        background: #111;
         padding: 20px 15px;
         margin: 0;
         position: relative;

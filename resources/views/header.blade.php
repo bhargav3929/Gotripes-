@@ -158,6 +158,27 @@
             width: 70%;
         }
 
+        /* Search Icon Styling */
+        .gt-search-icon {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: #FFD700;
+            text-decoration: none;
+            padding: 10px 14px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gt-search-icon:hover {
+            color: #FFFFFF;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            transform: scale(1.1);
+        }
+
         /* =====================================================
            NEWS TICKER - Keep existing styles
            ===================================================== */
@@ -486,6 +507,9 @@
                         class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>
                     <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact
                         Us</a>
+                    <a href="#" class="gt-search-icon" aria-label="Search">
+                        <i class="bi bi-search"></i>
+                    </a>
                 </div>
             </div>
         </nav>
@@ -518,6 +542,9 @@
             <a href="/payonline" class="gt-mobile-nav-link">Pay Online</a>
             <a href="/lookingforajob" class="gt-mobile-nav-link">Careers</a>
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
+            <a href="#" class="gt-mobile-nav-link gt-search-icon">
+                <i class="bi bi-search" style="margin-right: 10px;"></i>Search
+            </a>
         </nav>
 
         <!-- NEWS TICKER (Homepage Only) -->
@@ -607,3 +634,4 @@
 </body>
 
 </html>
+    @include('partials.search-modal')

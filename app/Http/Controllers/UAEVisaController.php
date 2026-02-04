@@ -22,7 +22,7 @@ class UAEVisaController extends Controller
             'price' => 'required',
             'visa_count' => 'required|integer|min:1|max:10',
             'arrival_date' => 'required|date',
-            'departure_date' => 'required|date|after_or_equal:arrival_date',
+            'departure_date' => 'nullable|date|after_or_equal:arrival_date',
             'email' => 'required|email',
             'phone' => 'required|string|max:20',
             'passport_valid' => 'nullable|boolean',

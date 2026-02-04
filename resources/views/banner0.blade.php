@@ -186,8 +186,49 @@
       class="fas fa-hotel"></i> Hotels</a>
 </div>
 
-<!-- Tab Sections - Only change: CENTRALIZE the .container usage to ensure all tab content is *inside* .container for consistent alignment -->
+<!-- 🎯 Advertisement Cards Section -->
+<div class="container ad-cards-wrapper">
+  <div class="row g-3">
+    <!-- Ad Card 1 -->
+    <div class="col-lg-3 col-md-6 col-6">
+      <div class="ad-card-item">
+        <a href="#">
+          <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Special Offer 1">
+          <div class="ad-card-badge">HOT DEAL</div>
+        </a>
+      </div>
+    </div>
+    <!-- Ad Card 2 -->
+    <div class="col-lg-3 col-md-6 col-6">
+      <div class="ad-card-item">
+        <a href="#">
+          <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Special Offer 2">
+          <div class="ad-card-badge">POPULAR</div>
+        </a>
+      </div>
+    </div>
+    <!-- Ad Card 3 -->
+    <div class="col-lg-3 col-md-6 col-6">
+      <div class="ad-card-item">
+        <a href="#">
+          <img src="{{ asset('assets/homepageads/ad_car.png') }}" alt="Special Offer 3">
+          <div class="ad-card-badge">NEW</div>
+        </a>
+      </div>
+    </div>
+    <!-- Ad Card 4 -->
+    <div class="col-lg-3 col-md-6 col-6">
+      <div class="ad-card-item">
+        <a href="#">
+          <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Special Offer 4">
+          <div class="ad-card-badge">LIMITED</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- Tab Sections -->
 <div class="container" style="width:100%;">
   <div id="flights" class="tab-section active hero-section">
     @include('banner1')
@@ -202,6 +243,70 @@
     @include('banner4')
   </div>
 </div>
+
+<style>
+  .ad-cards-wrapper {
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+
+  .ad-card-item {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 210, 63, 0.2);
+    transition: all 0.3s ease;
+    background: #000;
+  }
+
+  .ad-card-item:hover {
+    transform: translateY(-5px);
+    border-color: #FFD23F;
+    box-shadow: 0 10px 20px rgba(255, 210, 63, 0.2);
+  }
+
+  .ad-card-item a {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding-top: 60%; /* 16:9 Aspect Ratio */
+  }
+
+  .ad-card-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .ad-card-item:hover img {
+    transform: scale(1.1);
+  }
+
+  .ad-card-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #FFD23F;
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  @media (max-width: 768px) {
+    .ad-cards-wrapper {
+      margin-top: 20px;
+    }
+  }
+</style>
 
 <!-- Subtle Rotating Single Ad Strip -->
 <div class="rotating-ad-strip" style="
