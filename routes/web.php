@@ -18,6 +18,10 @@ use App\Http\Controllers\Admin\CarouselAdminController;
 use App\Http\Controllers\Admin\UAEActivityAdminController;
 use App\Http\Controllers\EmiratesController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SearchController;
+
+// Search API
+Route::get('/api/search', [SearchController::class, 'search'])->name('search');
 
 Route::get('/', function () {
 
@@ -279,4 +283,6 @@ Route::post('/activity/payment/initiate', [ActivityBookingController::class, 'in
 Route::post('/agent/pay', [AgentBookingController::class, 'submit'])->name('agent.pay');
 
 Auth::routes(['register' => false]);
+
+
 
