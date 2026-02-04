@@ -72,210 +72,241 @@
     text-shadow: 0 2px 8px rgba(0,0,0,0.85), 0 0px 2px #000;
   }
 
-  /* --- Carousel card styles --- */
-  .owl-carousel .item {
-    padding: 20px 10px;
-    border-radius: 15px;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.90);      /* Card is now darker, less transparent */
-    text-align: center;
-    min-height: 440px;
-    max-height: 440px;
-    height: 440px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-    box-sizing: border-box;
+  /* --- Country Card Grid --- */
+  .country-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    padding: 20px 0;
+    max-height: 70vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #FFD23F #111;
   }
-  .owl-carousel .item img {
+  .country-grid::-webkit-scrollbar {
+    width: 6px;
+  }
+  .country-grid::-webkit-scrollbar-thumb {
+    background-color: #FFD23F;
     border-radius: 10px;
-    width: 180px;
+  }
+
+  .country-card {
+    background: rgba(15, 15, 15, 0.95);
+    border: 1px solid rgba(255, 210, 63, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .country-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: #FFD23F;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    background: rgba(25, 25, 25, 0.98);
+    z-index: 10;
+  }
+
+  .country-card img {
+    width: 100%;
     height: 120px;
     object-fit: cover;
-    margin-bottom: 15px;
-    display: block;
-  }
-  .flag-info {
-    font-size: 15px;
-    color: #fff;
-    line-height: 1.6;
-    max-width: 260px;
-    text-align: left;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.85), 0 0px 2px #000;
-    flex: 1 1 auto;
-  }
-  .country-name {
-    color: rgba(255, 210, 63, 0.7);
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 16px;
-    display: block;
-    margin-bottom: 6px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.85), 0 0px 2px #000;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    pointer-events: none; /* Prevents image from blocking card hover/click */
   }
 
-  /* --- Prevent flash of unstyled carousel --- */
-  .owl-carousel {
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
+  .country-card .country-name {
+    color: #FFD23F;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 8px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
-  .owl-carousel.owl-loaded {
-    opacity: 1;
-    pointer-events: auto;
+
+  /* --- Dropdown Details --- */
+  .country-details {
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
   }
-  #carousel-wrapper { min-height: 440px; }
+
+  .country-details summary {
+    list-style: none;
+    font-size: 11px;
+    color: #FFD23F;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+    padding: 5px 0;
+    border-top: 1px solid rgba(255, 210, 63, 0.1);
+    outline: none;
+  }
+
+  .country-details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .country-details summary:hover {
+    opacity: 0.8;
+  }
+
+  .country-details summary::after {
+    content: '\F282'; /* Bootstrap Icon Chevron Down */
+    font-family: 'bootstrap-icons';
+    font-size: 10px;
+    transition: transform 0.3s;
+  }
+
+  .country-details[open] summary::after {
+    transform: rotate(180deg);
+  }
+
+  .details-content {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #eee;
+    line-height: 1.6;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 210, 63, 0.1);
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #grid-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    color: #FFD23F;
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 1024px) {
+    .country-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
 
   @media (max-width: 768px) {
-    .overlay { top: 0px; padding: 4px; }
-    .overlay-content {
-      flex-direction: column;
-      margin-top: 150px;
-      gap: 0;
+    .overlay-content { margin-top: 100px; }
+    .country-grid {
+      grid-template-columns: repeat(2, 1fr);
+      max-height: 60vh;
     }
-    .tagline { font-size: 18px; margin-left: 0; }
-    .heading { font-size: 24px; }
-    .cta-button { font-size: 18px; min-width: 180px; padding: 6px 16px; }
-    .image-overlay { height: 200vh; }
-    .flag-info { font-size: 13px; max-width: 100%; text-align: center; }
-    .owl-carousel .item {
-      min-height: 310px;
-      height: 310px;
-      max-height: 310px;
-      padding: 15px 5px;
-    }
-    .owl-carousel .item img { width: 140px; height: 100px; }
-    #carousel-wrapper { min-height: 310px; }
   }
 </style>
 
-<!-- Image + Carousel Overlay -->
+<!-- Image + Grid Overlay -->
 <div class="image-overlay">
   <img src="assets/index_files/533419533.jpg" alt="Banner" />
   <div class="overlay">
-    <div class="container">
-      <div id="carousel-wrapper">
-        <div class="owl-carousel owl-theme">
-
-          <div class="item">
-            <img src="assets/countries_flag/bahrain.jpeg" alt="Bahrain Flag">
-            <div class="flag-info">
-              <span class="country-name">Bahrain</span>
-              Capital: Manama<br>
-              Best time: Nov–Mar<br>
-              Currency: BHD (2.65 USD)<br>
-              Duration: 4–5 days<br>
-              Cost/day: $72–$299<br>
-              Airport: BAH<br>
-              Airline: Gulf Air (GF)
-            </div>
-          </div>
-
-          <div class="item">
-            <img src="assets/countries_flag/egypt.jpeg" alt="Egypt Flag">
-            <div class="flag-info">
-              <span class="country-name">Egypt</span>
-              Capital: Cairo<br>
-              Best time: Oct–Apr<br>
-              Currency: EGP (50.67 = 1 USD)<br>
-              Duration: 7–10 days<br>
-              Cost/day: $271<br>
-              Airports: CAI, HRG, SSH<br>
-              Airline: Egypt Air (MS)
-            </div>
-          </div>
-
-          <div class="item">
-            <img src="assets/countries_flag/oman.jpeg" alt="Oman Flag">
-            <div class="flag-info">
-              <span class="country-name">Oman</span>
-              Capital: Muscat<br>
-              Best time: Oct–Apr<br>
-              Currency: OMR (2.60 USD)<br>
-              Duration: 5–7 days<br>
-              Cost/day: $4,224<br>
-              Airport: MCT<br>
-              Airline: Oman Air (WY)
-            </div>
-          </div>
-
-          <div class="item">
-            <img src="assets/countries_flag/saudi arabia.jpeg" alt="Saudi Flag">
-            <div class="flag-info">
-              <span class="country-name">Saudi Arabia</span>
-              Capital: Riyadh<br>
-              Best time: Oct–Mar<br>
-              Currency: SAR (3.75 = 1 USD)<br>
-              Duration: 5–7 days<br>
-              Cost/day: $100–$200<br>
-              Airports: JED, RUH<br>
-              Airlines: Saudia, Flynas, Flyadeal
-            </div>
-          </div>
-
-          <div class="item">
-            <img src="assets/countries_flag/uae.png" alt="UAE Flag">
-            <div class="flag-info">
-              <span class="country-name">UAE</span>
-              Capital: Abu Dhabi<br>
-              Best time: Oct–Apr<br>
-              Currency: AED (3.68 = 1 USD)<br>
-              Duration: 5–7 days<br>
-              Cost/day: $200–$250<br>
-              Airports: DXB, AUH, SHJ<br>
-              Airlines: Emirates, Etihad, FlyDubai
-            </div>
-          </div>
-
-          <div class="item">
-            <img src="assets/countries_flag/SA.jpg" alt="South Africa Flag">
-            <div class="flag-info">
-              <span class="country-name">South Africa</span>
-              Capitals: Cape Town, Pretoria, Bloemfontein<br>
-              Best time: May–Sep (Safari), Nov–Feb (Coast)<br>
-              Currency: ZAR (17.97 = 1 USD)<br>
-              Duration: 10–14 days<br>
-              Cost/day: $200–$250<br>
-              Airports: JNB, CPT<br>
-              Airline: SAA
-            </div>
-          </div>
-
+    <div class="container" style="max-width: 1200px;">
+        <h1 class="heading" style="text-align: center; margin-bottom: 30px; letter-spacing: 2px;">
+            EXPLORE <span style="color: #FFD23F;">195+ COUNTRIES</span>
+        </h1>
+        
+        <div id="grid-loader">
+            <div class="spinner-border" role="status" style="margin-right: 15px;"></div>
+            Loading Destinations...
         </div>
-      </div>
+
+        <div id="country-grid" class="country-grid" style="display: none;">
+            <!-- Fetched countries will be injected here -->
+        </div>
     </div>
   </div>
 </div>
 
-<!-- Owl Carousel JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script>
-  $(function() {
-    $(".owl-carousel").owlCarousel({
-      items: 3,
-      margin: 20,
-      loop: true,
-      autoplay: true,
-      autoplayTimeout: 2500,
-      autoplaySpeed: 800,
-      smartSpeed: 800,
-      dots: false,
-      responsive: {
-        0: { items: 1 },
-        768: { items: 2 },
-        1024: { items: 3 }
-      }
-    });
+  document.addEventListener('DOMContentLoaded', function() {
+    const grid = document.getElementById('country-grid');
+    const loader = document.getElementById('grid-loader');
 
-    document.addEventListener("visibilitychange", function () {
-      if (document.visibilityState === "visible") {
-        $(".owl-carousel").trigger('play.owl.autoplay', [2000]);
-      }
-    });
+    // Local data for original countries to keep their specific info
+    const specialInfo = {
+        "Bahrain": { best: "Nov–Mar", duration: "4–5 days", cost: "$72–$299", airports: "BAH", airline: "Gulf Air (GF)" },
+        "Egypt": { best: "Oct–Apr", duration: "7–10 days", cost: "$271", airports: "CAI, HRG, SSH", airline: "Egypt Air (MS)" },
+        "Oman": { best: "Oct–Apr", duration: "5–7 days", cost: "$4,224", airports: "MCT", airline: "Oman Air (WY)" },
+        "Saudi Arabia": { best: "Oct–Mar", duration: "5–7 days", cost: "$100–$200", airports: "JED, RUH", airline: "Saudia, Flynas, Flyadeal" },
+        "United Arab Emirates": { best: "Oct–Apr", duration: "5–7 days", cost: "$200–$250", airports: "DXB, AUH, SHJ", airline: "Emirates, Etihad, FlyDubai" },
+        "South Africa": { best: "May–Sep (Safari), Nov–Feb (Coast)", duration: "10–14 days", cost: "$200–$250", airports: "JNB, CPT", airline: "SAA" }
+    };
+
+    fetch('https://restcountries.com/v3.1/all?fields=name,flags,capital,currencies,region,subregion')
+      .then(res => res.json())
+      .then(countries => {
+        countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
+
+        let html = '';
+        countries.forEach(country => {
+          const commonName = country.name.common;
+          const info = specialInfo[commonName] || { best: "Year-Round", duration: "5–7 days", cost: "$150–$300", airports: "International", airline: "Multiple" };
+          
+          const currencyKey = Object.keys(country.currencies || {})[0];
+          const currencyName = currencyKey ? country.currencies[currencyKey].name : 'N/A';
+          const currencySymbol = currencyKey ? (country.currencies[currencyKey].symbol || currencyKey) : '';
+          const capital = country.capital ? country.capital[0] : 'N/A';
+
+          html += `
+            <div class="country-card">
+              <img src="${country.flags.svg || country.flags.png}" alt="${commonName} Flag" loading="lazy">
+              <span class="country-name">${commonName}</span>
+              
+              <details class="country-details">
+                <summary>Detailed Info</summary>
+                <div class="details-content">
+                  <strong>Capitals:</strong> ${capital}<br>
+                  <strong>Best time:</strong> ${info.best}<br>
+                  <strong>Currency:</strong> ${currencyName} (${currencySymbol})<br>
+                  <strong>Duration:</strong> ${info.duration}<br>
+                  <strong>Cost/day:</strong> ${info.cost}<br>
+                  <strong>Airports:</strong> ${info.airports}<br>
+                  <strong>Airline:</strong> ${info.airline}
+                </div>
+              </details>
+            </div>
+          `;
+        });
+
+        grid.innerHTML = html;
+        loader.style.display = 'none';
+        grid.style.display = 'grid';
+
+        // --- Accordion Logic ---
+        grid.querySelectorAll('.country-details').forEach(details => {
+            details.addEventListener('toggle', function() {
+                if (this.open) {
+                    grid.querySelectorAll('.country-details').forEach(otherDetails => {
+                        if (otherDetails !== this) {
+                            otherDetails.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+      })
+      .catch(err => {
+        console.error('Error fetching countries:', err);
+        loader.innerHTML = 'Failed to load countries. Please refresh the page.';
+      });
   });
 </script>
+
+@include('footer')
 
 @include('footer')
