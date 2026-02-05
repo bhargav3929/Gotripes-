@@ -781,13 +781,6 @@
 
           <!-- Supplier ads will be a subtle rotating single ad below the search panel -->
 
-          <div class="overlay-content flex-column flex-md-row">
-            <div class="hero-line m-0 mt-md-5">
-              <span class="tagline-text">Join as a</span>
-              <span class="heading-text">Partner / Customer</span>
-            </div>
-            <button class="cta-button" id="partnerRegisterBtn">Register Now</button>
-          </div>
 
           <!-- Registration Modal -->
           <div id="partnerRegistrationModal" class="partner-registration-modal">
@@ -928,7 +921,20 @@
           </div>
 
           <div class="container mb-md-5">
-            <div id="carousel-wrapper" class="mb-4">
+            <div class="mt-0 w-100">
+              @include('banner0')
+            </div>
+
+            <div class="overlay-content d-flex flex-column flex-md-row justify-content-center align-items-center w-100 mt-0 mb-0" 
+                 style="gap: 1.2rem; visibility: visible; opacity: 1; margin-top: 100px !important; margin-bottom: 20px !important;">
+              <div class="hero-line m-0 text-center text-md-start d-flex align-items-baseline gap-2">
+                <span class="tagline-text" style="font-size: 1.0rem; color: #FFD23F; font-style: italic;">Join as a</span>
+                <span class="heading-text" style="font-size: 1.5rem; color: #ffffff; font-weight: 700;">Partner / Customer</span>
+              </div>
+              <button class="cta-button" id="partnerRegisterBtn" style="margin: 0;">Register Now</button>
+            </div>
+
+            <div id="carousel-wrapper" style="margin-top: 10px !important;">
               <div class="owl-carousel owl-theme">
                 @foreach($carouselImages as $image)
                   <div class="item">
@@ -936,10 +942,6 @@
                   </div>
                 @endforeach
               </div>
-            </div>
-
-            <div class="mt-0 w-100" style="margin-top: -30px !important;">
-              @include('banner0')
             </div>
           </div>
 
