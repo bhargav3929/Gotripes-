@@ -175,17 +175,6 @@
   }
 </style>
 
-<!-- Navigation -->
-
-<div class="nav-container mt-3">
-  <a class="nav-link2 active" onclick="showTab('flights', event)"><i class="fas fa-plane"
-      style="transform: rotate(-45deg); display: inline-block;"></i> Flights</a>
-  <a class="nav-link2" onclick="showTab('hotels', event)"><i class="fas fa-hotel"></i> Hotels</a>
-  <a class="nav-link2" onclick="showTab('cars', event)"><i class="fas fa-taxi"></i> Car Hire</a>
-  <a class="nav-link2" onclick="showTab('flights+hotels', event)"><i class="fas fa-plane"></i> Flights + <i
-      class="fas fa-hotel"></i> Hotels</a>
-</div>
-
 <!-- 🎯 Advertisement Cards Section -->
 <div class="container ad-cards-wrapper">
   <div class="row g-3">
@@ -228,6 +217,17 @@
   </div>
 </div>
 
+<!-- Navigation -->
+
+<div class="nav-container mt-3">
+  <a class="nav-link2 active" onclick="showTab('flights', event)"><i class="fas fa-plane"
+      style="transform: rotate(-45deg); display: inline-block;"></i> Flights</a>
+  <a class="nav-link2" onclick="showTab('hotels', event)"><i class="fas fa-hotel"></i> Hotels</a>
+  <a class="nav-link2" onclick="showTab('cars', event)"><i class="fas fa-taxi"></i> Car Hire</a>
+  <a class="nav-link2" onclick="showTab('flights+hotels', event)"><i class="fas fa-plane"></i> Flights + <i
+      class="fas fa-hotel"></i> Hotels</a>
+</div>
+
 <!-- Tab Sections -->
 <div class="container" style="width:100%;">
   <div id="flights" class="tab-section active hero-section">
@@ -246,8 +246,8 @@
 
 <style>
   .ad-cards-wrapper {
-    margin-top: 30px;
-    margin-bottom: 20px;
+    margin-top: 210px;
+    margin-bottom: 30px;
   }
 
   .ad-card-item {

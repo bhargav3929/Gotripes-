@@ -635,19 +635,52 @@
                 </div>
 
                 <div class="emirates-grid">
+                    @php
+                        // Map of manual data to use when we have database emirates
+                        $manualData = [
+                            'Abu Dhabi' => [
+                                'desc' => 'The nation’s majestic capital, blending grand cultural landmarks like the Sheikh Zayed Grand Mosque with the high-speed thrills of Yas Island.',
+                                'img' => 'https://images.unsplash.com/photo-1544918877-460635b6d13e?q=80&w=800'
+                            ],
+                            'Dubai' => [
+                                'desc' => 'A world-renowned icon of luxury and ambition, famous for its record-breaking skyscrapers, vibrant nightlife, and premier desert safari adventures.',
+                                'img' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800'
+                            ],
+                            'Sharjah' => [
+                                'desc' => 'Celebrated as the UAE’s cultural capital, this emirate offers a rich historical experience through its heritage sites, traditional souks, and acclaimed art museums.',
+                                'img' => 'https://images.unsplash.com/photo-1528702748617-c64d49f918af?q=80&w=800'
+                            ],
+                            'Ajman' => [
+                                'desc' => 'A peaceful coastal gem known for its stunning white-sand beaches, luxury waterfront resorts, and a relaxed atmosphere perfect for a quiet getaway.',
+                                'img' => 'https://images.unsplash.com/photo-1582672097782-a042ca517946?q=80&w=800'
+                            ],
+                            'Umm Al Quwain' => [
+                                'desc' => 'A tranquil retreat featuring lush mangrove forests and ancient archaeological sites, offering a glimpse into the traditional coastal life of the UAE.',
+                                'img' => 'https://images.unsplash.com/photo-1621213233866-5e04273c54d1?q=80&w=800'
+                            ],
+                            'Ras Al Khaimah' => [
+                                'desc' => 'An adventure enthusiast\'s paradise, home to the rugged Hajar Mountains, the world’s longest zipline, and beautiful terracotta dunes.',
+                                'img' => 'https://images.unsplash.com/photo-1549467384-5f25bf9c817b?q=80&w=800'
+                            ],
+                            'Fujairah' => [
+                                'desc' => 'The only emirate situated on the Gulf of Oman, famous for its spectacular mountain scenery and first-class scuba diving locations.',
+                                'img' => 'https://images.unsplash.com/photo-1629739499710-cb868132009a?q=80&w=800'
+                            ]
+                        ];
+                    @endphp
+
                     @forelse($emirates as $emirateItem)
-                        <!-- UPDATED LINK: Now uses query parameter -->
+                        @php
+                            $name = $emirateItem->emiratesName;
+                            $hasManual = isset($manualData[$name]);
+                            $displayDesc = $hasManual ? $manualData[$name]['desc'] : Str::limit($emirateItem->emiratesDescription, 120);
+                            $displayImg = $hasManual ? $manualData[$name]['img'] : (asset($emirateItem->emiratesImage) ?: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800');
+                        @endphp
                         <a href="{{ route('emirates.index', ['emiratesID' => $emirateItem->emiratesID]) }}" class="emirate-card">
                             <div class="emirate-image">
-                                @if($emirateItem->emiratesImage)
-                                    <img src="{{ asset($emirateItem->emiratesImage) }}" 
-                                         alt="{{ $emirateItem->emiratesName }}" 
-                                         onerror="this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='<div class=\'default-image-placeholder\'><i class=\'fas fa-map-marked-alt\'></i></div>';">
-                                @else
-                                    <div class="default-image-placeholder">
-                                        <i class="fas fa-map-marked-alt"></i>
-                                    </div>
-                                @endif
+                                <img src="{{ $displayImg }}" 
+                                     alt="{{ $name }}" 
+                                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800';">
                                 <div class="emirate-overlay"></div>
                                 @if($emirateItem->activities_count > 0)
                                     <div class="activities-count">
@@ -657,10 +690,10 @@
                             </div>
                             <div class="emirate-content">
                                 <div class="emirate-name">
-                                    {{ $emirateItem->emiratesName }}
+                                    {{ $name }}
                                 </div>
                                 <p class="emirate-description">
-                                    {{ Str::limit($emirateItem->emiratesDescription, 120) }}
+                                    {{ $displayDesc }}
                                 </p>
                                 <i class="fas fa-arrow-right emirate-arrow"></i>
                             </div>
