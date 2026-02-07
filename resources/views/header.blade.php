@@ -158,26 +158,6 @@
             width: 70%;
         }
 
-        /* Search Icon Styling */
-        .gt-search-icon {
-            font-family: 'Outfit', sans-serif;
-            font-size: 18px;
-            color: #FFD700;
-            text-decoration: none;
-            padding: 10px 14px;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .gt-search-icon:hover {
-            color: #FFFFFF;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-            transform: scale(1.1);
-        }
 
         /* =====================================================
            NEWS TICKER - Keep existing styles
@@ -241,6 +221,17 @@
             letter-spacing: 1px;
             background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
             color: #000;
+            text-transform: uppercase;
+        }
+
+        .tag-green {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: #fff;
             text-transform: uppercase;
         }
 
@@ -468,6 +459,7 @@
             }
 
         @endif
+
     </style>
 </head>
 
@@ -481,8 +473,8 @@
                 <!-- Left Menu -->
                 <div class="gt-nav-left">
                     <a href="/" class="gt-nav-link {{ Request::is('/') ? 'active' : '' }}">Home</a>
-                    <a href="/Activities"
-                        class="gt-nav-link {{ Request::is('Activities') ? 'active' : '' }}">Activities</a>
+                    <a href="/activities"
+                        class="gt-nav-link {{ Request::is('activities') ? 'active' : '' }}">Activities</a>
                     <a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">Visa
                         Services</a>
                     <a href="/countriestour" class="gt-nav-link {{ Request::is('countriestour') ? 'active' : '' }}">Tour
@@ -498,8 +490,7 @@
 
                 <!-- Right Menu -->
                 <div class="gt-nav-right">
-                    <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our
-                        Services</a>
+                    <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our Services</a>
                     <a href="/shopnow" class="gt-nav-link {{ Request::is('shopnow') ? 'active' : '' }}">Shop Online</a>
                     <a href="/payonline" class="gt-nav-link {{ Request::is('payonline') ? 'active' : '' }}">Pay
                         Online</a>
@@ -507,9 +498,6 @@
                         class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>
                     <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact
                         Us</a>
-                    <a href="#" class="gt-search-icon" aria-label="Search">
-                        <i class="bi bi-search"></i>
-                    </a>
                 </div>
             </div>
         </nav>
@@ -533,7 +521,7 @@
         <!-- Mobile Menu Dropdown -->
         <nav class="gt-mobile-nav" id="mobileNav">
             <a href="/" class="gt-mobile-nav-link">Home</a>
-            <a href="/Activities" class="gt-mobile-nav-link">Activities</a>
+            <a href="/activities" class="gt-mobile-nav-link">Activities</a>
             <a href="/uaevisa" class="gt-mobile-nav-link">Visa Services</a>
             <a href="/countriestour" class="gt-mobile-nav-link">Tour Packages</a>
             <a href="/hajj-umrah" class="gt-mobile-nav-link">Hajj & Umrah</a>
@@ -542,9 +530,6 @@
             <a href="/payonline" class="gt-mobile-nav-link">Pay Online</a>
             <a href="/lookingforajob" class="gt-mobile-nav-link">Careers</a>
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
-            <a href="#" class="gt-mobile-nav-link gt-search-icon">
-                <i class="bi bi-search" style="margin-right: 10px;"></i>Search
-            </a>
         </nav>
 
         <!-- NEWS TICKER (Homepage Only) -->
@@ -570,7 +555,7 @@
                     <span class="separator">|</span>
 
                     <a href="#" class="news-item">
-                        <span class="tag-gold">EXCLUSIVE</span>
+                        <span class="tag-green">EXCLUSIVE</span>
                         <span class="news-text">GoTrips Partners with Premium Airlines at Unbeatable Rates</span>
                     </a>
                     <span class="separator">|</span>
@@ -634,4 +619,3 @@
 </body>
 
 </html>
-    @include('partials.search-modal')
