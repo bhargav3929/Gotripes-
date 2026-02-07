@@ -41,10 +41,10 @@
     }
 
     .premium-subtitle {
-        font-size: 16px;
+        font-size: 18px;
         color: var(--text-muted);
         line-height: 1.8;
-        font-weight: 300;
+        font-weight: 400;
     }
 
     /* About Us Section */
@@ -166,7 +166,7 @@
         border-radius: 50%;
         border: 3px solid var(--premium-gold);
         padding: 3px;
-        background: #fff;
+        background: #000;
     }
 
     .qr-img img {
@@ -275,7 +275,7 @@
         }
 
         .premium-subtitle {
-            font-size: 14px;
+            font-size: 16px;
         }
 
         /* Mobile Spacing */
@@ -329,20 +329,6 @@
             font-size: 18px;
         }
 
-        /* Floating WhatsApp Position */
-        .whats {
-            bottom: 20px;
-            left: 20px;
-        }
-
-        .whats div {
-            width: 50px;
-            height: 50px;
-        }
-
-        .whats i {
-            font-size: 26px !important;
-        }
     }
 </style>
 
@@ -359,7 +345,7 @@
                 <h2 class="premium-title">About Us</h2>
                 <div class="premium-subtitle">
                     <p class="mb-4">
-                        Welcome to <strong class="text-white">GOTRIPS</strong>, a part of <strong>Ayn Al Amir
+                        Welcome to <strong class="text-white">GOTRIPS</strong>, a part of <strong class="text-white">Ayn Al Amir
                             Tourism</strong>, a dynamic travel agency dedicated to providing unparalleled solutions.
                         Established in 2024 by <strong>Mr. Amer Ali Mohammed</strong>, we are committed to excellence
                         with over 13 years of expertise.
@@ -542,15 +528,6 @@
     </div>
 </section>
 
-<!-- WhatsApp Floating Button -->
-<div class="whats" style="position: fixed; bottom: 30px; left: 30px; z-index: 9999;">
-    <a target="_blank" href="https://api.whatsapp.com/send/?phone=971543651065">
-        <div
-            style="background: #25D366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-            <i class="bi bi-whatsapp text-white" style="font-size: 32px;"></i>
-        </div>
-    </a>
-</div>
 
 <script>
     document.getElementById('contactForm').addEventListener('submit', function (e) {
