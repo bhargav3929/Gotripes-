@@ -70,9 +70,67 @@
     font-size: 28px;
   }
 
-  footer a:hover {
-    text-decoration: underline;
-    color: #FFD23F;
+  /* --- Premium Footer Consistency --- */
+  .gt-footer {
+    background: #000 !important;
+    color: #fff !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+
+  .gt-footer-title {
+    color: #FFD23F !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 25px !important;
+    text-transform: uppercase !important;
+  }
+
+  .gt-footer-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+    padding: 5px 0 !important;
+  }
+
+  .gt-footer-link:hover {
+    color: #FFD23F !important;
+    padding-left: 5px !important;
+    text-decoration: none !important;
+  }
+
+  .gt-footer-social-link {
+    color: #fff !important;
+    font-size: 18px !important;
+    margin-right: 15px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .gt-footer-social-link:hover {
+    color: #FFD23F !important;
+    transform: translateY(-3px) !important;
+  }
+
+  @media (max-width: 576px) {
+    .gt-footer {
+      text-align: center !important;
+    }
+    .gt-footer-title {
+      margin-bottom: 15px !important;
+    }
+    .gt-footer-social-link {
+        margin: 0 10px !important;
+    }
+  }
+
+  .gt-footer-copyright {
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding-top: 20px !important;
   }
 </style>
 
@@ -91,63 +149,59 @@
   })();
 </script>
 <!--End of Tawk.to Script-->
-<footer class="footer-light pb-0" style="background:#000; color: #fff;">
+<footer class="gt-footer footer-light pb-0">
   <div class="container">
-    <div class="row pt-4 pb-2">
+    <div class="row pt-5 pb-3">
       <!-- Column 1 -->
-      <div class="col-md-3 col-sm-6 mb-3">
-        <h6 class="text-uppercase mb-3" style="color: rgb(255, 210, 63);">Popular Tours</h6>
+      <div class="col-md-3 col-sm-6 mb-4">
+        <h6 class="gt-footer-title">Popular Tours</h6>
         <ul class="list-unstyled">
-          <li><a href="/uaeactivities" class="text-white">UAE Activities</a></li>
-          <li><a href="/countriestour" class="text-white">Countries Tour</a></li>
-          <li><a href="/dubai-global-village" class="text-white">Dubai Global Village</a></li>
-          <li><a href="/lotus-cruise-dubai" class="text-white">Lotus Cruise Dubai</a></li>
+          <li><a href="/activities" class="gt-footer-link">UAE Activities</a></li>
+          <li><a href="/countriestour" class="gt-footer-link">Countries Tour</a></li>
+          <li><a href="/dubai-global-village" class="gt-footer-link">Dubai Global Village</a></li>
+          <li><a href="/lotus-cruise-dubai" class="gt-footer-link">Lotus Cruise Dubai</a></li>
         </ul>
       </div>
 
       <!-- Column 2 -->
-      <div class="col-md-3 col-sm-6 mb-3">
-        <h6 class="text-uppercase mb-3" style="color: rgb(255, 210, 63);">Our Services</h6>
+      <div class="col-md-3 col-sm-6 mb-4">
+        <h6 class="gt-footer-title">Our Services</h6>
         <ul class="list-unstyled">
-          <li><a href="/shopnow" class="text-white">Shop Now</a></li>
-          <li><a href="/lookingforajob" class="text-white">Looking for a Job</a></li>
-          <li><a href="/visaservice" class="text-white">Visa Service</a></li>
-          <li><a href="/uaevisa" class="text-white">UAE Visa</a></li>
+          <li><a href="/shopnow" class="gt-footer-link">Shop Now</a></li>
+          <li><a href="/lookingforajob" class="gt-footer-link">Looking for a Job</a></li>
+          <li><a href="/visaservice" class="gt-footer-link">Visa Service</a></li>
+          <li><a href="/uaevisa" class="gt-footer-link">UAE Visa</a></li>
         </ul>
       </div>
 
       <!-- Column 3 -->
-      <div class="col-md-3 col-sm-6 mb-3">
-        <h6 class="text-uppercase mb-3" style="color: rgb(255, 210, 63);">Company</h6>
+      <div class="col-md-3 col-sm-6 mb-4">
+        <h6 class="gt-footer-title">Company</h6>
         <ul class="list-unstyled">
-          <li><a href="/ourstory" class="text-white">Our Story</a></li>
-          <li><a href="/contact-us" class="text-white">Contact Us</a></li>
-          <li><a href="/caro" class="text-white">UAE Carousel</a></li>
+          <li><a href="/ourstory" class="gt-footer-link">Our Story</a></li>
+          <li><a href="/contact-us" class="gt-footer-link">Contact Us</a></li>
+          <li><a href="/caro" class="gt-footer-link">UAE Carousel</a></li>
         </ul>
       </div>
 
       <!-- Column 4 (Social Icons) -->
-      <div class="col-md-3 col-sm-6 mb-3">
-        <h6 class="text-uppercase mb-3" style="color: rgb(255, 210, 63);">Follow Us</h6>
-        <ul class="list-inline">
-          <li class="list-inline-item"><a class="text-white" href="https://www.facebook.com/" target="_blank"><i
-                class="fa-brands fa-facebook-f"></i></a></li>
-          <li class="list-inline-item"><a class="text-white" href="http://www.twitter.com/" target="_blank"><i
-                class="fa-brands fa-twitter"></i></a></li>
-          <li class="list-inline-item"><a class="text-white" href="http://www.instagram.com/" target="_blank"><i
-                class="fa-brands fa-instagram"></i></a></li>
-          <li class="list-inline-item"><a class="text-white" href="http://www.dribbble.com/" target="_blank"><i
-                class="fa-brands fa-dribbble"></i></a></li>
-        </ul>
+      <div class="col-md-3 col-sm-6 mb-4">
+        <h6 class="gt-footer-title">Follow Us</h6>
+        <div class="social-links">
+          <a class="gt-footer-social-link" href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+          <a class="gt-footer-social-link" href="http://www.twitter.com/" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+          <a class="gt-footer-social-link" href="http://www.instagram.com/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+          <a class="gt-footer-social-link" href="http://www.dribbble.com/" target="_blank"><i class="fa-brands fa-dribbble"></i></a>
+        </div>
       </div>
     </div>
 
     <div class="text-center mt-3 pb-3">
-      <p class="mb-1" style="font-size: 14px;">
+      <p class="gt-footer-copyright">
         Copyright ©
         <script>document.write(new Date().getFullYear());</script>
         All rights reserved | Designed and developed by
-        <a href="https://scoriait.com" class="text-warning" target="_blank">ScoriaIT</a>
+        <a href="https://scoriait.com" class="text-warning" target="_blank" style="text-decoration: none;">ScoriaIT</a>
       </p>
     </div>
   </div>
