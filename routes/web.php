@@ -67,8 +67,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 
 Route::prefix('/')->group(function () {
+    Route::get('hajj-umrah', fn() => view('hajj-umrah'))->name('hajj-umrah');
+    Route::get('our-services', fn() => view('our-services'))->name('our-services');
     Route::get('banner0', fn() => view('banner0'));
-    Route::get('uaeactivities', fn() => view('uaeactivities'));
     Route::get('countriestour', fn() => view('countriestour'));
     Route::get('ourstory', fn() => view('ourstory'));
     Route::get('contact-us', fn() => view('contact-us'));
@@ -90,10 +91,11 @@ Route::prefix('/')->group(function () {
 
 
 
-Route::get('/Activities', [EmiratesController::class, 'index'])->name('emirates.index');
+Route::get('/activities', [EmiratesController::class, 'index'])->name('emirates.index');
+Route::get('/Activities', fn() => redirect()->route('emirates.index'));
+Route::get('/uaeactivities', fn() => redirect()->route('emirates.index'));
+Route::get('/uaeactivities/{any}', fn() => redirect()->route('emirates.index'))->where('any', '.*');
 Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->name('api.emirates');
-Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->name('api.emirates');
-Route::get('uaeactivities', [EmiratesController::class, 'index']);
 
 //backend
 Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
@@ -185,17 +187,10 @@ Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 
 
 
 
-Route::get('/uae-activities', [UAEActivityController::class, 'index'])->name('activities.list');
-// Route::get('/uaeactivities/{activityRoute}', [UAEActivityController::class, 'show'])->name('activity.detail');
-use App\Http\Controllers\UAEDetailsController;
-
-// Route::get('/uaeactivities/{id}', [UAEDetailsController::class, 'show'])->name('uaeactivities.details');
-Route::get('/activities', [UAEDetailsController::class, 'show'])->name('activities.detail');
+Route::get('/activity-details', [UAEDetailsController::class, 'show'])->name('activities.detail');
 Route::get('/dubai-global-village', [UAEDetailsController::class, 'show']); // Keep for backward compatibility
 
-
-
-Route::get('/uaeactivities', [UAEActivityController::class, 'index'])->name('uae.activities');
+Route::get('/all-uae-activities', [UAEActivityController::class, 'index'])->name('uae.activities');
 
 
 

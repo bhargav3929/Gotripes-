@@ -25,10 +25,22 @@
     width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex-direction: column;
-    padding: 20px;
+    padding: 120px 20px 20px 20px;
+  }
+
+  @media (max-width: 991px) {
+    .overlay {
+      padding: 100px 15px 20px 15px;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .overlay {
+      padding: 80px 10px 20px 10px;
+    }
   }
 
   .overlay-content {
@@ -75,7 +87,7 @@
   /* --- Country Card Grid --- */
   .country-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 15px;
     padding: 20px 0;
     max-height: 70vh;
@@ -206,8 +218,107 @@
     .overlay-content { margin-top: 100px; }
     .country-grid {
       grid-template-columns: repeat(2, 1fr);
-      max-height: 60vh;
+      max-height: 55vh;
     }
+    .heading { font-size: 24px !important; text-align: center; }
+  }
+
+  @media (max-width: 480px) {
+    .country-grid {
+      grid-template-columns: 1fr; /* Single column for better readability on small phones */
+      gap: 20px;
+    }
+    .country-card {
+        padding: 20px;
+    }
+    .country-card img {
+        height: 180px; /* Larger image for single column */
+    }
+  }
+
+  /* --- Refined Premium Search Bar --- */
+  .search-container {
+    margin-bottom: 0; /* Removed margin as it's now in a row */
+    display: flex;
+    justify-content: flex-end; /* Align right */
+    width: 100%;
+    animation: fadeInRight 0.8s ease-out;
+  }
+
+  .search-wrapper {
+    position: relative;
+    max-width: 400px;
+    width: 100%;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(212, 175, 55, 0.2) 100%);
+    padding: 1px;
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  @media (max-width: 991px) {
+    .search-container {
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .search-wrapper {
+      max-width: 100%;
+    }
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 25px 12px 55px;
+    background: #0a0a0a;
+    backdrop-filter: blur(15px);
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 15px;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+  }
+
+  .search-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 300;
+  }
+
+  .search-input:focus {
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #FFD700;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    z-index: 2;
+  }
+
+  .search-input:focus + .search-icon {
+    transform: translateY(-50%) scale(1.1);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  }
+
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .no-results {
+    color: #888;
+    text-align: center;
+    padding: 50px;
+    grid-column: 1 / -1;
+    display: none;
+    font-size: 18px;
+    letter-spacing: 1px;
   }
 </style>
 
@@ -215,10 +326,23 @@
 <div class="image-overlay">
   <img src="assets/index_files/533419533.jpg" alt="Banner" />
   <div class="overlay">
-    <div class="container" style="max-width: 1200px;">
-        <h1 class="heading" style="text-align: center; margin-bottom: 30px; letter-spacing: 2px;">
-            EXPLORE <span style="color: #FFD23F;">195+ COUNTRIES</span>
-        </h1>
+    <div class="container" style="max-width: 1400px;">
+        <!-- Header Row: Title and Search -->
+        <div class="row align-items-center mb-4">
+            <div class="col-lg-7 text-center text-lg-start">
+                <h1 class="heading" style="margin: 0; letter-spacing: 2px; font-size: 36px;">
+                    EXPLORE <span style="color: #FFD23F;">195+ COUNTRIES</span>
+                </h1>
+            </div>
+            <div class="col-lg-5">
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <input type="text" id="countrySearch" class="search-input" placeholder="Search for a country...">
+                        <i class="bi bi-search search-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div id="grid-loader">
             <div class="spinner-border" role="status" style="margin-right: 15px;"></div>
@@ -299,6 +423,50 @@
                 }
             });
         });
+
+        // --- Search Logic ---
+        const searchInput = document.getElementById('countrySearch');
+        const noResults = document.createElement('div');
+        noResults.className = 'no-results';
+        noResults.innerText = 'No countries found matching your search.';
+        grid.appendChild(noResults);
+
+        searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const cards = grid.querySelectorAll('.country-card');
+            let found = false;
+
+            cards.forEach(card => {
+                const name = card.querySelector('.country-name').innerText.toLowerCase();
+                if (name.includes(term)) {
+                    card.style.display = 'block';
+                    found = true;
+                } else {
+                    card.style.display = 'none';
+                    // Close details if card is hidden
+                    card.querySelector('.country-details').removeAttribute('open');
+                }
+            });
+
+            noResults.style.display = found ? 'none' : 'block';
+        });
+
+        // Handle Enter keypress
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                // Find first visible card
+                const firstVisibleCard = Array.from(grid.querySelectorAll('.country-card')).find(card => card.style.display !== 'none');
+                
+                if (firstVisibleCard) {
+                    const details = firstVisibleCard.querySelector('.country-details');
+                    // Toggle open
+                    details.setAttribute('open', '');
+                    // Scroll into view gently
+                    firstVisibleCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
       })
       .catch(err => {
         console.error('Error fetching countries:', err);
@@ -306,7 +474,5 @@
       });
   });
 </script>
-
-@include('footer')
 
 @include('footer')

@@ -24,7 +24,7 @@
       <!-- Service Card 1: Activities -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/activities" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_activities_1767532687858.png" alt="Activities"
                 class="service-card-img">
