@@ -18,3 +18,5 @@ yarn-error.log
 /.idea
 /.vscode
 /database/*.sqlite
+project_backup_with_db.zip
+*.DS_Store
