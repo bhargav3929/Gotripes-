@@ -63,11 +63,32 @@
                                 </div>
                             </div>
 
+                            <!-- Tag Type Field -->
+                            <div class="col-12 col-lg-8">
+                                <div class="mb-3 mb-md-4">
+                                    <label for="tagType" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                        <i class="fas fa-tag me-2 d-none d-sm-inline"></i>
+                                        <span class="fs-6 fs-md-5">News Ticker Tag</span>
+                                    </label>
+                                    <select class="form-control form-control-mobile" id="tagType" name="tagType">
+                                        <option value="none">No Tag</option>
+                                        <option value="breaking" {{ old('tagType') == 'breaking' ? 'selected' : '' }}>BREAKING (Red)</option>
+                                        <option value="trending" {{ old('tagType') == 'trending' ? 'selected' : '' }}>TRENDING (Gold)</option>
+                                        <option value="exclusive" {{ old('tagType') == 'exclusive' ? 'selected' : '' }}>EXCLUSIVE (Green)</option>
+                                        <option value="alert" {{ old('tagType') == 'alert' ? 'selected' : '' }}>NEW / ALERT (Blue)</option>
+                                        <option value="hot" {{ old('tagType') == 'hot' ? 'selected' : '' }}>HOT (Yellow)</option>
+                                    </select>
+                                    <div class="form-text text-light-muted">
+                                        <small><i class="fas fa-info-circle me-1"></i>Select a colored tag to display in the homepage news ticker</small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Settings Column - Full width on mobile, 4/12 on desktop -->
                             <div class="col-12 col-lg-4">
                                 <!-- Mobile Settings Section -->
                                 <div class="row g-2 g-sm-3">
-                                    
+
                                     <!-- Importance Toggle Card -->
                                     <div class="col-12 col-sm-6 col-lg-12">
                                         <div class="card bg-light-dark border-gold mb-2 mb-lg-3">

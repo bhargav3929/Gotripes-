@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Announcement;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +27,14 @@ class AppServiceProvider extends ServiceProvider
         } else {
             \URL::forceRootUrl(env('APP_URL'));
         }
+
+        // Share ticker items with header view
+        View::composer('header', function ($view) {
+            $tickerItems = Announcement::where('isActive', true)
+                ->orderBy('createdDate', 'desc')
+                ->limit(6)
+                ->get();
+            $view->with('tickerItems', $tickerItems);
+        });
     }
 }

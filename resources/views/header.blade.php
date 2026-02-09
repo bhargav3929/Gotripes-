@@ -235,6 +235,28 @@
             text-transform: uppercase;
         }
 
+        .tag-blue {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .tag-yellow {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #FFE600 0%, #FFC107 100%);
+            color: #000;
+            text-transform: uppercase;
+        }
+
         .separator {
             color: rgba(255, 215, 0, 0.3);
             margin: 0 5px;
@@ -536,33 +558,21 @@
         @if(Request::is('/'))
             <div class="news-ticker">
                 <div class="scroll text-uppercase">
-                    <a href="#" class="news-item">
-                        <span class="badge-new">BREAKING</span>
-                        <span class="news-text">Global Travel Industry Projected to Reach $8.9 Trillion in 2026</span>
-                    </a>
-                    <span class="separator">|</span>
-
-                    <a href="#" class="news-item">
-                        <span class="tag-gold">TRENDING</span>
-                        <span class="news-text">UAE Visa Rules Update: New 5-Year Tourist Visa Options Launched</span>
-                    </a>
-                    <span class="separator">|</span>
-
-                    <a href="#" class="news-item">
-                        <span class="news-text">Top 10 Luxury Destinations for 2026: Dubai, Maldives, and Swiss Alps Lead
-                            the List</span>
-                    </a>
-                    <span class="separator">|</span>
-
-                    <a href="#" class="news-item">
-                        <span class="tag-green">EXCLUSIVE</span>
-                        <span class="news-text">GoTrips Partners with Premium Airlines at Unbeatable Rates</span>
-                    </a>
-                    <span class="separator">|</span>
-
-                    <a href="#" class="news-item">
-                        <span class="news-text">Plan Your Dream Holiday with Our AI-Powered Itinerary Builder</span>
-                    </a>
+                    @forelse($tickerItems ?? [] as $ticker)
+                        <a href="#" class="news-item">
+                            @if($ticker->tagType && $ticker->tagType !== 'none')
+                                <span class="{{ $ticker->tag_css_class }}">{{ $ticker->tag_label }}</span>
+                            @endif
+                            <span class="news-text">{{ $ticker->description }}</span>
+                        </a>
+                        @if(!$loop->last)
+                            <span class="separator">|</span>
+                        @endif
+                    @empty
+                        <a href="#" class="news-item">
+                            <span class="news-text">Welcome to Go Trips - Your Gateway to Amazing Adventures</span>
+                        </a>
+                    @endforelse
                 </div>
             </div>
         @endif

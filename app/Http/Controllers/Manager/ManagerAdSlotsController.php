@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\HomepageAd;
 use Illuminate\Http\Request;
 
-class CarouselAdminController extends Controller
+class ManagerAdSlotsController extends Controller
 {
     public function index()
     {
-        $carouselImages = HomepageAd::where('isActive', 1)
-                                   ->orderBy('slotOrder', 'asc')
-                                   ->paginate(10);
-        return view('admin.homepageads.index', compact('carouselImages'));
+        $adSlots = HomepageAd::where('isActive', 1)
+                             ->orderBy('slotOrder', 'asc')
+                             ->paginate(10);
+        return view('manager.adslots.index', compact('adSlots'));
     }
 
     public function create()
     {
         $activeCount = HomepageAd::where('isActive', 1)->count();
-        return view('admin.homepageads.create', compact('activeCount'));
+        return view('manager.adslots.create', compact('activeCount'));
     }
 
     public function store(Request $request)
@@ -60,27 +60,27 @@ class CarouselAdminController extends Controller
                 'mediaType' => $mediaType,
                 'slotOrder' => $request->input('slotOrder', 0),
                 'isActive' => 1,
-                'createdby' => auth()->user()->name ?? 'admin',
+                'createdby' => session('manager_name', 'manager'),
                 'createddate' => now(),
                 'modifiedby' => null,
-                'modifieddate' => null
+                'modifieddate' => null,
             ]);
 
-            return redirect()->route('admin.homepageads.index')
+            return redirect()->route('manager.adslots.index')
                            ->with('success', 'Ad slot uploaded successfully!');
         }
 
         return redirect()->back()->withErrors('Please select a file.');
     }
 
-    public function edit(HomepageAd $homepagead)
+    public function edit(HomepageAd $adslot)
     {
-        return view('admin.homepageads.edit', compact('homepagead'));
+        return view('manager.adslots.edit', ['homepagead' => $adslot]);
     }
 
-    public function update(Request $request, HomepageAd $homepagead)
+    public function update(Request $request, HomepageAd $adslot)
     {
-        $mediaType = $request->input('mediaType', $homepagead->mediaType ?? 'image');
+        $mediaType = $request->input('mediaType', $adslot->mediaType ?? 'image');
 
         if ($request->hasFile('media')) {
             if ($mediaType === 'video') {
@@ -100,11 +100,11 @@ class CarouselAdminController extends Controller
             ]);
         }
 
-        $mediaPath = $homepagead->imgPath;
+        $mediaPath = $adslot->imgPath;
 
         if ($request->hasFile('media')) {
-            if ($homepagead->imgPath && file_exists(public_path($homepagead->imgPath))) {
-                unlink(public_path($homepagead->imgPath));
+            if ($adslot->imgPath && file_exists(public_path($adslot->imgPath))) {
+                unlink(public_path($adslot->imgPath));
             }
 
             $file = $request->file('media');
@@ -119,27 +119,27 @@ class CarouselAdminController extends Controller
             $mediaPath = 'assets/homepageads/' . $filename;
         }
 
-        $homepagead->update([
+        $adslot->update([
             'imgPath' => $mediaPath,
             'mediaType' => $mediaType,
-            'slotOrder' => $request->input('slotOrder', $homepagead->slotOrder),
-            'modifiedby' => auth()->user()->name ?? 'admin',
-            'modifieddate' => now()
+            'slotOrder' => $request->input('slotOrder', $adslot->slotOrder),
+            'modifiedby' => session('manager_name', 'manager'),
+            'modifieddate' => now(),
         ]);
 
-        return redirect()->route('admin.homepageads.index')
+        return redirect()->route('manager.adslots.index')
                        ->with('success', 'Ad slot updated successfully!');
     }
 
-    public function destroy(HomepageAd $homepagead)
+    public function destroy(HomepageAd $adslot)
     {
-        $homepagead->update([
+        $adslot->update([
             'isActive' => 0,
-            'modifiedby' => auth()->user()->name ?? 'admin',
-            'modifieddate' => now()
+            'modifiedby' => session('manager_name', 'manager'),
+            'modifieddate' => now(),
         ]);
 
-        return redirect()->route('admin.homepageads.index')
-                       ->with('success', 'Ad slot deleted successfully!');
+        return redirect()->route('manager.adslots.index')
+                       ->with('success', 'Ad slot removed successfully!');
     }
 }

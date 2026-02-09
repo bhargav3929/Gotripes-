@@ -13,6 +13,8 @@ class HomepageAd extends Model
 
     protected $fillable = [
         'imgPath',
+        'mediaType',
+        'slotOrder',
         'title',
         'description',
         'isActive',
@@ -24,9 +26,15 @@ class HomepageAd extends Model
 
     protected $casts = [
         'isActive' => 'boolean',
+        'slotOrder' => 'integer',
         'createddate' => 'datetime',
         'modifieddate' => 'datetime'
     ];
+
+    public function isVideo(): bool
+    {
+        return $this->mediaType === 'video';
+    }
 
     // Scope for active records only
     public function scopeActive($query)

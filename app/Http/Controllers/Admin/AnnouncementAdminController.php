@@ -48,7 +48,8 @@ class AnnouncementAdminController extends Controller
             'description' => $request->description,
             'isActive' => 1,
             'AnnouncementImportance' => $request->has('announcementImportance') ? 1 : 0,
-            'flagImgPath' => $flagPath, // Always has a value (empty string or path)
+            'tagType' => $request->input('tagType', 'none'),
+            'flagImgPath' => $flagPath,
             'createdBy' => auth()->user()->name,
             'createdDate' => now(),
             'modifiedBy' => null,
@@ -96,7 +97,8 @@ class AnnouncementAdminController extends Controller
         $announcement->update([
             'description' => $request->description,
             'AnnouncementImportance' => $request->has('announcementImportance') ? 1 : 0,
-            'flagImgPath' => $flagPath ?? '', // Ensure never null
+            'tagType' => $request->input('tagType', 'none'),
+            'flagImgPath' => $flagPath ?? '',
             'modifiedBy' => auth()->user()->name,
             'modifiedDate' => now()
         ]);

@@ -10,20 +10,20 @@ class Announcement extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'flagImgPath', 
-        'description', 
-        'createdBy', 
-        'createdDate', 
-        'modifiedBy', 
-        'modifiedDate', 
-        'isActive', 
-        'AnnouncementImportance'  // Keep as-is to match database column
+        'flagImgPath',
+        'description',
+        'createdBy',
+        'createdDate',
+        'modifiedBy',
+        'modifiedDate',
+        'isActive',
+        'AnnouncementImportance',
+        'tagType'
     ];
 
-    // CRITICAL: Add attribute casting for proper type handling
     protected $casts = [
         'isActive' => 'boolean',
-        'AnnouncementImportance' => 'integer',  // Ensure integer casting
+        'AnnouncementImportance' => 'integer',
         'createdDate' => 'datetime',
         'modifiedDate' => 'datetime'
     ];
@@ -38,5 +38,29 @@ class Announcement extends Model
     public function setAnnouncementImportanceAttribute($value)
     {
         $this->attributes['AnnouncementImportance'] = (int) $value;
+    }
+
+    public function getTagLabelAttribute(): string
+    {
+        return match ($this->tagType) {
+            'breaking' => 'BREAKING',
+            'trending' => 'TRENDING',
+            'exclusive' => 'EXCLUSIVE',
+            'alert' => 'NEW',
+            'hot' => 'HOT',
+            default => '',
+        };
+    }
+
+    public function getTagCssClassAttribute(): string
+    {
+        return match ($this->tagType) {
+            'breaking' => 'badge-new',
+            'trending' => 'tag-gold',
+            'exclusive' => 'tag-green',
+            'alert' => 'tag-blue',
+            'hot' => 'tag-yellow',
+            default => '',
+        };
     }
 }

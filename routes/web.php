@@ -279,5 +279,18 @@ Route::post('/agent/pay', [AgentBookingController::class, 'submit'])->name('agen
 
 Auth::routes(['register' => false]);
 
+// ─── Manager Dashboard Routes ───────────────────────────────────────
+use App\Http\Controllers\Manager\ManagerAuthController;
+use App\Http\Controllers\Manager\ManagerDashboardController;
+use App\Http\Controllers\Manager\ManagerAdSlotsController;
+use App\Http\Controllers\Manager\ManagerAnnouncementsController;
 
+Route::get('/manager/login', [ManagerAuthController::class, 'showLogin'])->name('manager.login');
+Route::post('/manager/login', [ManagerAuthController::class, 'login'])->name('manager.login.submit');
+Route::post('/manager/logout', [ManagerAuthController::class, 'logout'])->name('manager.logout');
 
+Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(function () {
+    Route::get('/', [ManagerDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('adslots', ManagerAdSlotsController::class);
+    Route::resource('announcements', ManagerAnnouncementsController::class);
+});
