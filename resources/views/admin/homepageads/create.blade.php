@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Add Carousel Image')
+@section('title', 'Add Ad Slot')
 
 @section('content')
 <div class="container-fluid">
@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Add New Carousel Image</h3>
+                    <h3 class="card-title">Add New Ad Slot</h3>
                     <div class="card-tools">
                         <a href="{{ route('admin.homepageads.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Back to List
@@ -20,44 +20,82 @@
                     <div class="card-body">
                         <div class="row justify-content-center">
                             <div class="col-md-8">
+                                @if(($activeCount ?? 0) >= 6)
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <strong>Maximum reached!</strong> You already have 6 active ad slots. Please remove one first.
+                                    </div>
+                                @endif
+
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle"></i>
-                                    <strong>Image Requirements:</strong>
+                                    <strong>Ad Slot Requirements:</strong>
                                     <ul class="mb-0 mt-2">
-                                        <li><strong>Dimensions:</strong> Between 480x160 and 482x165 pixels</li>
-                                        <li><strong>Formats:</strong> JPEG, PNG, JPG, GIF, WEBP</li>
-                                        <li><strong>Maximum Size:</strong> 5MB</li>
+                                        <li><strong>Images:</strong> JPEG, PNG, JPG, GIF, WEBP (max 5MB)</li>
+                                        <li><strong>Videos:</strong> MP4 format (max 50MB)</li>
+                                        <li><strong>Slots:</strong> Up to 6 ad slots, 4 visible at a time</li>
                                     </ul>
                                 </div>
 
+                                <!-- Media Type Selection -->
                                 <div class="form-group mb-4">
-                                    <label for="image" class="form-label h5">Upload Carousel Image <span class="text-danger">*</span></label>
-                                    <input type="file" 
-                                           class="form-control @error('image') is-invalid @enderror" 
-                                           id="image" 
-                                           name="image" 
-                                           accept="image/*"
-                                           required>
-                                    @error('image')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <small class="text-muted">Image must be between 480x160 and 482x165 pixels</small>
+                                    <label class="form-label h5">Media Type <span class="text-danger">*</span></label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mediaType" id="typeImage" value="image" checked>
+                                            <label class="form-check-label" for="typeImage">
+                                                <i class="fas fa-image me-1"></i> Image
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mediaType" id="typeVideo" value="video">
+                                            <label class="form-check-label" for="typeVideo">
+                                                <i class="fas fa-video me-1"></i> Video
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Image Preview -->
-                                <div id="imagePreview" class="text-center mt-4" style="display: none;">
-                                    <h6>Image Preview:</h6>
+                                <!-- Slot Order -->
+                                <div class="form-group mb-4">
+                                    <label for="slotOrder" class="form-label h5">Slot Order <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="slotOrder" name="slotOrder" required>
+                                        @for($i = 1; $i <= 6; $i++)
+                                            <option value="{{ $i }}" {{ old('slotOrder') == $i ? 'selected' : '' }}>Slot {{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                    <small class="text-muted">Choose the display order (1-6)</small>
+                                </div>
+
+                                <!-- File Upload -->
+                                <div class="form-group mb-4">
+                                    <label for="media" class="form-label h5" id="mediaLabel">Upload Image <span class="text-danger">*</span></label>
+                                    <input type="file"
+                                           class="form-control @error('media') is-invalid @enderror"
+                                           id="media"
+                                           name="media"
+                                           accept="image/*"
+                                           required>
+                                    @error('media')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted" id="mediaHint">Accepted: JPEG, PNG, JPG, GIF, WEBP (max 5MB)</small>
+                                </div>
+
+                                <!-- Preview -->
+                                <div id="mediaPreview" class="text-center mt-4" style="display: none;">
+                                    <h6>Preview:</h6>
                                     <img id="previewImg" src="#" alt="Preview" class="img-fluid rounded shadow" style="max-height: 300px;">
-                                    <div id="imageDimensions" class="mt-2 text-muted"></div>
+                                    <video id="previewVideo" controls class="img-fluid rounded shadow" style="max-height: 300px; display: none;"></video>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer text-center">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="fas fa-upload"></i> Upload Image
+                        <button type="submit" class="btn btn-success btn-lg" {{ ($activeCount ?? 0) >= 6 ? 'disabled' : '' }}>
+                            <i class="fas fa-upload"></i> Upload Ad Slot
                         </button>
-                        <a href="{{ route('admin.homepageads.index') }}" class="btn btn-secondary btn-lg ml-3">
+                        <a href="{{ route('admin.homepageads.index') }}" class="btn btn-secondary btn-lg ms-3">
                             Cancel
                         </a>
                     </div>
@@ -69,39 +107,55 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const imageInput = document.getElementById('image');
-    const imagePreview = document.getElementById('imagePreview');
+    const mediaInput = document.getElementById('media');
+    const mediaLabel = document.getElementById('mediaLabel');
+    const mediaHint = document.getElementById('mediaHint');
     const previewImg = document.getElementById('previewImg');
-    const imageDimensions = document.getElementById('imageDimensions');
+    const previewVideo = document.getElementById('previewVideo');
+    const mediaPreview = document.getElementById('mediaPreview');
+    const typeImage = document.getElementById('typeImage');
+    const typeVideo = document.getElementById('typeVideo');
 
-    imageInput.addEventListener('change', function() {
-        const file = this.files;
-        if (file) {
+    function updateMediaType() {
+        const isVideo = typeVideo.checked;
+        if (isVideo) {
+            mediaLabel.innerHTML = 'Upload Video <span class="text-danger">*</span>';
+            mediaInput.accept = 'video/mp4';
+            mediaHint.textContent = 'Accepted: MP4 (max 50MB)';
+        } else {
+            mediaLabel.innerHTML = 'Upload Image <span class="text-danger">*</span>';
+            mediaInput.accept = 'image/*';
+            mediaHint.textContent = 'Accepted: JPEG, PNG, JPG, GIF, WEBP (max 5MB)';
+        }
+        mediaInput.value = '';
+        mediaPreview.style.display = 'none';
+    }
+
+    typeImage.addEventListener('change', updateMediaType);
+    typeVideo.addEventListener('change', updateMediaType);
+
+    mediaInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) {
+            mediaPreview.style.display = 'none';
+            return;
+        }
+
+        const isVideo = typeVideo.checked;
+        if (isVideo) {
+            previewImg.style.display = 'none';
+            previewVideo.style.display = 'block';
+            previewVideo.src = URL.createObjectURL(file);
+        } else {
+            previewVideo.style.display = 'none';
+            previewImg.style.display = 'block';
             const reader = new FileReader();
             reader.onload = function(e) {
                 previewImg.src = e.target.result;
-                
-                // Check image dimensions
-                previewImg.onload = function() {
-                    const width = this.naturalWidth;
-                    const height = this.naturalHeight;
-                    
-                    imageDimensions.innerHTML = `<strong>Dimensions:</strong> ${width} x ${height} pixels`;
-                    
-                    // Validate dimensions
-                    if (width >= 480 && width <= 482 && height >= 160 && height <= 165) {
-                        imageDimensions.innerHTML += ' <span class="badge bg-success">✓ Valid</span>';
-                    } else {
-                        imageDimensions.innerHTML += ' <span class="badge bg-danger">✗ Invalid - Must be 480-482 x 160-165</span>';
-                    }
-                };
-                
-                imagePreview.style.display = 'block';
             };
             reader.readAsDataURL(file);
-        } else {
-            imagePreview.style.display = 'none';
         }
+        mediaPreview.style.display = 'block';
     });
 });
 </script>

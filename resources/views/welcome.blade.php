@@ -1145,149 +1145,238 @@
 </section>
 
 <!-- Counter Section -->
-<section class="csdsdsd">
-  <style>
-    /* Custom counter animation for growth item */
-    .custom-counter {
-      display: inline-flex;
-      align-items: center;
-      font-size: inherit;
-      font-weight: inherit;
-      color: inherit;
-    }
-
-    .custom-counter .count-number {
-      display: inline-block;
-      transition: all 0.3s ease;
-    }
-
-    /* Animation for the counter */
-    @keyframes countUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .animate-count {
-      animation: countUp 1.2s ease-out;
-    }
-
-
-    .feature-box-content p {
-      text-align: center;
-      /* Better for these icons */
-      line-height: 1.6;
-      /* improved readability */
-      padding: 0 10px;
-      /* prevent touching borders */
-      color: #666;
-    }
-  </style>
+<!-- Stats Counter Section -->
+<section class="stats-counter-section">
   <div class="container">
-    <div class="row row-cols-1 row-cols-lg-4 row-cols-sm-2 justify-content-center counter-style-07"
-      data-anime='{ "el": "childs", "translateY": [50, 0], "opacity": [0,1], "duration": 1200, "delay": 0, "staggervalue": 150, "easing": "easeOutQuad" }'>
-      <!-- start counter item -->
-      <div class="col text-center md-mb-50px xs-mb-30px">
-        <div class="zzxxz"><img src="assets/index_files/icon1.png" data-no-retina=""></div>
-        <h2 class="vertical-counter d-inline-flex text-dark-gray fw-800 mb-0 position-relative z-index-0" data-to="500"
-          style="height: 75.0125px;">
-          <span class="text-highlight position-absolute bottom-13px w-100"><span
-              class="bg-base-color h-10px opacity-7"></span></span>
-          <span>+</span>
-        </h2>
-        <span class="d-block fw-600 text-dark-gray">Partners</span>
-      </div>
-      <!-- end counter item -->
+    <div class="stats-grid">
 
-      <!-- start counter item - Growth with fixed design -->
-      <div class="col text-center md-mb-50px xs-mb-30px">
-        <div class="zzxxz"><img src="assets/index_files/icon2.png" data-no-retina=""></div>
-        <h2 class="d-inline-flex text-dark-gray fw-800 mb-0 position-relative z-index-0 align-items-center"
-          style="height: 75.0125px;">
-          <span class="text-highlight position-absolute bottom-13px w-100"><span
-              class="bg-base-color h-10px opacity-7"></span></span>
-          <span class="custom-counter animate-count">
-            <span>%</span>
-            <span class="count-number" id="growthCounter">250</span>
-            <span>+</span>
-          </span>
-        </h2>
-        <span class="d-block fw-600 text-dark-gray">Growth</span>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">
+          <img src="assets/index_files/icon1.png" alt="Partners">
+        </div>
+        <div class="stat-number" data-target="500">0</div>
+        <div class="stat-suffix">+</div>
+        <div class="stat-divider"></div>
+        <div class="stat-label">Partners</div>
       </div>
-      <!-- end counter item -->
 
-      <!-- start counter item -->
-      <div class="col text-center xs-mb-30px">
-        <div class="zzxxz"><img src="assets/index_files/icon3.png" data-no-retina=""></div>
-        <h2 class="vertical-counter d-inline-flex text-dark-gray fw-800 mb-0 position-relative z-index-0" data-to="20"
-          style="height: 75.0125px;">
-          <span class="text-highlight position-absolute bottom-13px w-100"><span
-              class="bg-base-color h-10px opacity-7"></span></span>
-          <span>+</span>
-        </h2>
-        <span class="d-block fw-600 text-dark-gray">Countries</span>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">
+          <img src="assets/index_files/icon2.png" alt="Growth">
+        </div>
+        <div class="stat-prefix">%</div>
+        <div class="stat-number" data-target="250">0</div>
+        <div class="stat-suffix">+</div>
+        <div class="stat-divider"></div>
+        <div class="stat-label">Growth</div>
       </div>
-      <!-- end counter item -->
 
-      <!-- start counter item -->
-      <div class="col text-center">
-        <div class="zzxxz"><img src="assets/index_files/icon4.png" data-no-retina=""></div>
-        <h2 class="vertical-counter d-inline-flex text-dark-gray fw-800 mb-0 position-relative z-index-0" data-to="4500"
-          style="height: 75.0125px;">
-          <span class="text-highlight position-absolute bottom-13px w-100"><span
-              class="bg-base-color h-10px opacity-7"></span></span>
-          <span>+</span>
-        </h2>
-        <span class="d-block fw-600 text-dark-gray">Customers</span>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">
+          <img src="assets/index_files/icon3.png" alt="Countries">
+        </div>
+        <div class="stat-number" data-target="20">0</div>
+        <div class="stat-suffix">+</div>
+        <div class="stat-divider"></div>
+        <div class="stat-label">Countries</div>
       </div>
-      <!-- end counter item -->
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap">
+          <img src="assets/index_files/icon4.png" alt="Customers">
+        </div>
+        <div class="stat-number" data-target="4500">0</div>
+        <div class="stat-suffix">+</div>
+        <div class="stat-divider"></div>
+        <div class="stat-label">Customers</div>
+      </div>
+
     </div>
   </div>
+</section>
 
-  <!-- JavaScript for custom counter animation -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Custom counter animation for growth
-      let growthElement = document.getElementById('growthCounter');
-      if (growthElement) {
-        let startValue = 0;
-        let endValue = 250;
-        let duration = 2000;
-        let startTime = null;
+<style>
+  .stats-counter-section {
+    background: linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
+    padding: 70px 0;
+    position: relative;
+    overflow: hidden;
+  }
 
-        function animateCounter(currentTime) {
-          if (startTime === null) startTime = currentTime;
-          let progress = Math.min((currentTime - startTime) / duration, 1);
-          let currentValue = Math.floor(progress * endValue);
-          growthElement.textContent = currentValue;
+  .stats-counter-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+  }
 
+  .stats-counter-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 35px 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 175, 55, 0.12);
+    transition: all 0.4s ease;
+    position: relative;
+  }
+
+  .stat-card:hover {
+    border-color: rgba(212, 175, 55, 0.35);
+    background: rgba(212, 175, 55, 0.04);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-icon-wrap {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stat-icon-wrap img {
+    height: 50px;
+    width: auto;
+    filter: brightness(0.85);
+    transition: filter 0.3s ease;
+  }
+
+  .stat-card:hover .stat-icon-wrap img {
+    filter: brightness(1);
+  }
+
+  .stat-number,
+  .stat-prefix,
+  .stat-suffix {
+    display: inline;
+    font-family: 'Outfit', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 60%, #B8960C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .stat-divider {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+    margin: 14px auto;
+  }
+
+  .stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .stat-card:hover .stat-label {
+    color: #ccc;
+  }
+
+  @media (max-width: 991px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .stats-counter-section {
+      padding: 50px 0;
+    }
+    .stats-grid {
+      gap: 15px;
+    }
+    .stat-card {
+      padding: 25px 15px;
+    }
+    .stat-number,
+    .stat-prefix,
+    .stat-suffix {
+      font-size: 32px;
+    }
+    .stat-label {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+    }
+  }
+
+  .feature-box-content p {
+    text-align: center;
+    line-height: 1.6;
+    padding: 0 10px;
+    color: #666;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var counters = document.querySelectorAll('.stat-number[data-target]');
+    var observed = false;
+
+    function animateCounters() {
+      if (observed) return;
+      observed = true;
+      counters.forEach(function(counter) {
+        var target = parseInt(counter.getAttribute('data-target'));
+        var duration = 2000;
+        var startTime = null;
+
+        function step(currentTime) {
+          if (!startTime) startTime = currentTime;
+          var progress = Math.min((currentTime - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          counter.textContent = Math.floor(eased * target);
           if (progress < 1) {
-            requestAnimationFrame(animateCounter);
+            requestAnimationFrame(step);
           } else {
-            growthElement.textContent = endValue;
+            counter.textContent = target;
           }
         }
+        requestAnimationFrame(step);
+      });
+    }
 
-        // Start animation when element is visible
-        let observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              requestAnimationFrame(animateCounter);
-              observer.unobserve(entry.target);
-            }
-          });
+    if (counters.length > 0) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            animateCounters();
+            observer.disconnect();
+          }
         });
-        observer.observe(growthElement);
-      }
-    });
-  </script>
-</section>
+      }, { threshold: 0.3 });
+      observer.observe(counters[0].closest('.stats-counter-section'));
+    }
+  });
+</script>
 
 <!-- Enhanced Carousel JavaScript -->
 <script>

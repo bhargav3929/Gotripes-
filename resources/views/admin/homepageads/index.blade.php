@@ -134,11 +134,14 @@
                             <table class="table table-dark table-hover table-bordered">
                                 <thead>
                                     <tr class="table-header-gold">
-                                        <th class="text-center" style="width: 15%;">
-                                            <i class="fas fa-hashtag me-1"></i>S.No
+                                        <th class="text-center" style="width: 8%;">
+                                            <i class="fas fa-sort-numeric-down me-1"></i>Slot
                                         </th>
-                                        <th class="text-center" style="width: 55%;">
-                                            <i class="fas fa-image me-1"></i>Image Preview
+                                        <th class="text-center" style="width: 12%;">
+                                            <i class="fas fa-film me-1"></i>Type
+                                        </th>
+                                        <th class="text-center" style="width: 50%;">
+                                            <i class="fas fa-image me-1"></i>Preview
                                         </th>
                                         <th class="text-center" style="width: 30%;">
                                             <i class="fas fa-cogs me-1"></i>Actions
@@ -149,34 +152,44 @@
                                     @forelse($carouselImages as $index => $image)
                                     <tr class="table-row-hover">
                                         <td class="text-center fw-medium text-gold">
-                                            {{ $carouselImages->firstItem() + $index }}
+                                            {{ $image->slotOrder ?? '-' }}
+                                        </td>
+                                        <td class="text-center">
+                                            @if(($image->mediaType ?? 'image') === 'video')
+                                                <span class="badge bg-info-custom"><i class="fas fa-video me-1"></i>Video</span>
+                                            @else
+                                                <span class="badge bg-warning text-dark"><i class="fas fa-image me-1"></i>Image</span>
+                                            @endif
                                         </td>
                                         <td class="text-center">
                                             @if($image->imgPath)
-                                                <img src="{{ asset($image->imgPath) }}" 
-                                                     alt="Carousel Image" 
-                                                     class="desktop-carousel-img rounded border border-gold"
-                                                     title="Carousel Image #{{ $carouselImages->firstItem() + $index }}"
-                                                     onerror="this.parentElement.innerHTML='<div class=\'no-image-placeholder\'><i class=\'fas fa-exclamation-triangle\'></i><br>Image Error</div>'">
+                                                @if(($image->mediaType ?? 'image') === 'video')
+                                                    <video class="desktop-carousel-img rounded border border-gold" muted style="width:120px;height:80px;object-fit:cover;">
+                                                        <source src="{{ asset($image->imgPath) }}" type="video/mp4">
+                                                    </video>
+                                                @else
+                                                    <img src="{{ asset($image->imgPath) }}"
+                                                         alt="Ad Slot"
+                                                         class="desktop-carousel-img rounded border border-gold"
+                                                         onerror="this.parentElement.innerHTML='<div class=\'no-image-placeholder\'><i class=\'fas fa-exclamation-triangle\'></i><br>Error</div>'">
+                                                @endif
                                             @else
                                                 <div class="no-image-placeholder">
                                                     <i class="fas fa-image fa-2x"></i>
-                                                    <div>No Image</div>
+                                                    <div>No Media</div>
                                                 </div>
                                             @endif
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('admin.homepageads.edit', $image) }}" 
-                                                   class="btn btn-warning-custom btn-sm animate-scale"
-                                                   title="Edit Carousel Image">
+                                                <a href="{{ route('admin.homepageads.edit', $image) }}"
+                                                   class="btn btn-warning-custom btn-sm animate-scale">
                                                     <i class="fas fa-edit me-1"></i>Edit
                                                 </a>
-                                                <button type="button" 
+                                                <button type="button"
                                                         class="btn btn-danger-custom btn-sm animate-scale delete-btn"
                                                         data-image-id="{{ $image->id }}"
-                                                        data-image-title="Carousel Image #{{ $carouselImages->firstItem() + $index }}"
-                                                        title="Delete Carousel Image">
+                                                        data-image-title="Ad Slot #{{ $image->slotOrder ?? $index+1 }}">
                                                     <i class="fas fa-trash me-1"></i>Delete
                                                 </button>
                                             </div>
@@ -184,7 +197,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="3" class="text-center py-5">
+                                        <td colspan="4" class="text-center py-5">
                                             <div class="empty-state-desktop">
                                                 <i class="fas fa-images text-gold mb-3" style="font-size: 4rem; opacity: 0.5;"></i>
                                                 <h4 class="text-light-muted mb-2">No Carousel Images Found</h4>

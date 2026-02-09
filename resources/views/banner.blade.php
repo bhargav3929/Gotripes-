@@ -9,6 +9,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Owl Carousel CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
 
   <style>
     /* 🎯 UNIQUE SCOPED STYLES - Prefixed with .partner-registration-page */
@@ -925,8 +928,8 @@
               @include('banner0')
             </div>
 
-            <div class="overlay-content d-flex flex-column flex-md-row justify-content-center align-items-center w-100 mt-0 mb-0" 
-                 style="gap: 1.2rem; visibility: visible; opacity: 1; margin-top: 100px !important; margin-bottom: 20px !important;">
+            <div class="overlay-content d-flex flex-column flex-md-row justify-content-center align-items-center w-100 mt-0 mb-0"
+                 style="gap: 1.2rem; visibility: visible; opacity: 1; margin-top: 15px !important; margin-bottom: 10px !important;">
               <div class="hero-line m-0 text-center text-md-start d-flex align-items-baseline gap-2">
                 <span class="tagline-text" style="font-size: 1.0rem; color: #FFD23F; font-style: italic;">Join as a</span>
                 <span class="heading-text" style="font-size: 1.5rem; color: #ffffff; font-weight: 700;">Partner / Customer</span>
@@ -934,15 +937,6 @@
               <button class="cta-button" id="partnerRegisterBtn" style="margin: 0;">Register Now</button>
             </div>
 
-            <div id="carousel-wrapper" style="margin-top: 10px !important;">
-              <div class="owl-carousel owl-theme">
-                @foreach($carouselImages as $image)
-                  <div class="item">
-                    <img src="{{ asset($image->imgPath) }}" alt="Carousel Image">
-                  </div>
-                @endforeach
-              </div>
-            </div>
           </div>
 
         </div>
@@ -1323,18 +1317,32 @@
         const overlayContent = document.querySelector('.partner-registration-page .custom-banner .overlay-content');
 
         $(".partner-registration-page .custom-banner .owl-carousel").owlCarousel({
-          items: 3,
-          margin: 20,
+          items: 6,
+          margin: 15,
           loop: true,
           autoplay: true,
-          autoplayTimeout: 2500,
-          smartSpeed: 300,
+          autoplayTimeout: 0,
+          smartSpeed: 4000,
+          autoplaySpeed: 4000,
+          autoplayHoverPause: false,
           dots: false,
           responsive: {
-            0: { items: 1 },
-            768: { items: 2 },
-            1024: { items: 3 }
+            0: { items: 2 },
+            576: { items: 3 },
+            768: { items: 4 },
+            992: { items: 5 },
+            1200: { items: 6 }
           }
+        });
+
+        // Force linear transition for smooth continuous scroll
+        var owlStage = document.querySelector('.partner-registration-page .owl-stage');
+        if (owlStage) {
+          owlStage.style.transitionTimingFunction = 'linear';
+        }
+        // Re-apply linear on every translate event
+        $('.partner-registration-page .owl-carousel').on('translate.owl.carousel', function() {
+          $(this).find('.owl-stage').css('transition-timing-function', 'linear');
         });
 
         if (wrapper) {

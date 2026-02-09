@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Carousel Image')
+@section('title', 'Edit Ad Slot')
 
 @section('content')
 <div class="container-fluid">
@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Edit Carousel Image</h3>
+                    <h3 class="card-title">Edit Ad Slot #{{ $homepagead->slotOrder }}</h3>
                     <div class="card-tools">
                         <a href="{{ route('admin.homepageads.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Back to List
@@ -21,53 +21,81 @@
                     <div class="card-body">
                         <div class="row justify-content-center">
                             <div class="col-md-8">
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i>
-                                    <strong>Image Requirements:</strong>
-                                    <ul class="mb-0 mt-2">
-                                        <li><strong>Dimensions:</strong> Between 480x160 and 482x165 pixels</li>
-                                        <li><strong>Formats:</strong> JPEG, PNG, JPG, GIF, WEBP</li>
-                                        <li><strong>Maximum Size:</strong> 5MB</li>
-                                    </ul>
-                                </div>
-
+                                <!-- Media Type Selection -->
                                 <div class="form-group mb-4">
-                                    <label for="image" class="form-label h5">Replace Image (Optional)</label>
-                                    <input type="file" 
-                                           class="form-control @error('image') is-invalid @enderror" 
-                                           id="image" 
-                                           name="image" 
-                                           accept="image/*">
-                                    @error('image')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <small class="text-muted">Leave empty to keep current image. New image must be between 480x160 and 482x165 pixels</small>
+                                    <label class="form-label h5">Media Type <span class="text-danger">*</span></label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mediaType" id="typeImage" value="image"
+                                                   {{ ($homepagead->mediaType ?? 'image') === 'image' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="typeImage">
+                                                <i class="fas fa-image me-1"></i> Image
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mediaType" id="typeVideo" value="video"
+                                                   {{ ($homepagead->mediaType ?? 'image') === 'video' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="typeVideo">
+                                                <i class="fas fa-video me-1"></i> Video
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
 
+                                <!-- Slot Order -->
+                                <div class="form-group mb-4">
+                                    <label for="slotOrder" class="form-label h5">Slot Order <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="slotOrder" name="slotOrder" required>
+                                        @for($i = 1; $i <= 6; $i++)
+                                            <option value="{{ $i }}" {{ ($homepagead->slotOrder ?? 0) == $i ? 'selected' : '' }}>Slot {{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+
+                                <!-- Current Media -->
                                 @if($homepagead->imgPath)
                                 <div class="form-group mb-4">
-                                    <h6>Current Image:</h6>
+                                    <h6>Current Media:</h6>
                                     <div class="text-center">
-                                        <img src="{{ asset($homepagead->imgPath) }}" alt="Current Image" 
-                                             class="img-fluid rounded shadow" style="max-height: 300px;">
+                                        @if(($homepagead->mediaType ?? 'image') === 'video')
+                                            <video controls class="img-fluid rounded shadow" style="max-height: 300px;">
+                                                <source src="{{ asset($homepagead->imgPath) }}" type="video/mp4">
+                                            </video>
+                                        @else
+                                            <img src="{{ asset($homepagead->imgPath) }}" alt="Current" class="img-fluid rounded shadow" style="max-height: 300px;">
+                                        @endif
                                     </div>
                                 </div>
                                 @endif
 
-                                <!-- New Image Preview -->
-                                <div id="newImagePreview" class="text-center mt-4" style="display: none;">
-                                    <h6>New Image Preview:</h6>
-                                    <img id="newPreviewImg" src="#" alt="New Preview" class="img-fluid rounded shadow" style="max-height: 300px;">
-                                    <div id="imageDimensions" class="mt-2 text-muted"></div>
+                                <!-- File Upload -->
+                                <div class="form-group mb-4">
+                                    <label for="media" class="form-label h5" id="mediaLabel">Replace File (Optional)</label>
+                                    <input type="file"
+                                           class="form-control @error('media') is-invalid @enderror"
+                                           id="media"
+                                           name="media"
+                                           accept="{{ ($homepagead->mediaType ?? 'image') === 'video' ? 'video/mp4' : 'image/*' }}">
+                                    @error('media')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted" id="mediaHint">Leave empty to keep current file</small>
+                                </div>
+
+                                <!-- Preview -->
+                                <div id="mediaPreview" class="text-center mt-4" style="display: none;">
+                                    <h6>New Preview:</h6>
+                                    <img id="previewImg" src="#" alt="Preview" class="img-fluid rounded shadow" style="max-height: 300px;">
+                                    <video id="previewVideo" controls class="img-fluid rounded shadow" style="max-height: 300px; display: none;"></video>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer text-center">
                         <button type="submit" class="btn btn-success btn-lg">
-                            <i class="fas fa-save"></i> Update Image
+                            <i class="fas fa-save"></i> Update Ad Slot
                         </button>
-                        <a href="{{ route('admin.homepageads.index') }}" class="btn btn-secondary btn-lg ml-3">
+                        <a href="{{ route('admin.homepageads.index') }}" class="btn btn-secondary btn-lg ms-3">
                             Cancel
                         </a>
                     </div>
@@ -79,39 +107,47 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const imageInput = document.getElementById('image');
-    const newImagePreview = document.getElementById('newImagePreview');
-    const newPreviewImg = document.getElementById('newPreviewImg');
-    const imageDimensions = document.getElementById('imageDimensions');
+    const mediaInput = document.getElementById('media');
+    const mediaLabel = document.getElementById('mediaLabel');
+    const mediaHint = document.getElementById('mediaHint');
+    const previewImg = document.getElementById('previewImg');
+    const previewVideo = document.getElementById('previewVideo');
+    const mediaPreview = document.getElementById('mediaPreview');
+    const typeImage = document.getElementById('typeImage');
+    const typeVideo = document.getElementById('typeVideo');
 
-    imageInput.addEventListener('change', function() {
+    function updateMediaType() {
+        const isVideo = typeVideo.checked;
+        mediaInput.accept = isVideo ? 'video/mp4' : 'image/*';
+        mediaInput.value = '';
+        mediaPreview.style.display = 'none';
+    }
+
+    typeImage.addEventListener('change', updateMediaType);
+    typeVideo.addEventListener('change', updateMediaType);
+
+    mediaInput.addEventListener('change', function() {
         const file = this.files[0];
-        if (file) {
+        if (!file) {
+            mediaPreview.style.display = 'none';
+            return;
+        }
+
+        const isVideo = typeVideo.checked;
+        if (isVideo) {
+            previewImg.style.display = 'none';
+            previewVideo.style.display = 'block';
+            previewVideo.src = URL.createObjectURL(file);
+        } else {
+            previewVideo.style.display = 'none';
+            previewImg.style.display = 'block';
             const reader = new FileReader();
             reader.onload = function(e) {
-                newPreviewImg.src = e.target.result;
-                
-                // Check image dimensions
-                newPreviewImg.onload = function() {
-                    const width = this.naturalWidth;
-                    const height = this.naturalHeight;
-                    
-                    imageDimensions.innerHTML = `<strong>New Image Dimensions:</strong> ${width} x ${height} pixels`;
-                    
-                    // Validate dimensions
-                    if (width >= 480 && width <= 482 && height >= 160 && height <= 165) {
-                        imageDimensions.innerHTML += ' <span class="badge bg-success">✓ Valid Dimensions</span>';
-                    } else {
-                        imageDimensions.innerHTML += ' <span class="badge bg-danger">✗ Invalid - Must be 480-482 x 160-165</span>';
-                    }
-                };
-                
-                newImagePreview.style.display = 'block';
+                previewImg.src = e.target.result;
             };
             reader.readAsDataURL(file);
-        } else {
-            newImagePreview.style.display = 'none';
         }
+        mediaPreview.style.display = 'block';
     });
 });
 </script>

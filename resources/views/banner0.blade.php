@@ -175,44 +175,36 @@
   }
 </style>
 
-<!-- 🎯 Advertisement Cards Section -->
+<!-- 🎯 Dynamic Ad Slider - Always 4 visible, continuous scroll -->
 <div class="container ad-cards-wrapper">
-  <div class="row g-3">
-    <!-- Ad Card 1 -->
-    <div class="col-lg-3 col-md-6 col-6">
-      <div class="ad-card-item">
-        <a href="#">
-          <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Special Offer 1">
-          <div class="ad-card-badge">HOT DEAL</div>
-        </a>
-      </div>
-    </div>
-    <!-- Ad Card 2 -->
-    <div class="col-lg-3 col-md-6 col-6">
-      <div class="ad-card-item">
-        <a href="#">
-          <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Special Offer 2">
-          <div class="ad-card-badge">POPULAR</div>
-        </a>
-      </div>
-    </div>
-    <!-- Ad Card 3 -->
-    <div class="col-lg-3 col-md-6 col-6">
-      <div class="ad-card-item">
-        <a href="#">
-          <img src="{{ asset('assets/homepageads/ad_car.png') }}" alt="Special Offer 3">
-          <div class="ad-card-badge">NEW</div>
-        </a>
-      </div>
-    </div>
-    <!-- Ad Card 4 -->
-    <div class="col-lg-3 col-md-6 col-6">
-      <div class="ad-card-item">
-        <a href="#">
-          <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Special Offer 4">
-          <div class="ad-card-badge">LIMITED</div>
-        </a>
-      </div>
+  <div class="ad-marquee">
+    <div class="ad-marquee-track" id="adMarqueeTrack">
+      @if(isset($carouselImages) && $carouselImages->count() > 0)
+        @foreach($carouselImages as $media)
+          <div class="ad-marquee-item">
+            @if($media->mediaType === 'video')
+              <video autoplay muted loop playsinline class="ad-carousel-media">
+                <source src="{{ asset($media->imgPath) }}" type="video/mp4">
+              </video>
+            @else
+              <img src="{{ asset($media->imgPath) }}" alt="Ad Slot {{ $media->slotOrder }}" class="ad-carousel-media">
+            @endif
+          </div>
+        @endforeach
+      @else
+        <div class="ad-marquee-item">
+          <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+        </div>
+        <div class="ad-marquee-item">
+          <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
+        </div>
+        <div class="ad-marquee-item">
+          <img src="{{ asset('assets/homepageads/ad_car.png') }}" alt="Car Hire" class="ad-carousel-media">
+        </div>
+        <div class="ad-marquee-item">
+          <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">
+        </div>
+      @endif
     </div>
   </div>
 </div>
@@ -246,64 +238,65 @@
 
 <style>
   .ad-cards-wrapper {
-    margin-top: 210px;
-    margin-bottom: 30px;
+    margin-top: 140px;
+    margin-bottom: 20px;
   }
 
-  .ad-card-item {
-    position: relative;
-    border-radius: 15px;
+  .ad-marquee {
     overflow: hidden;
-    border: 1px solid rgba(255, 210, 63, 0.2);
-    transition: all 0.3s ease;
+    border-radius: 15px;
+  }
+
+  .ad-marquee-track {
+    display: flex;
+    gap: 12px;
+    width: max-content;
+    transition: transform 0.6s ease-in-out;
+  }
+
+  /* 4 cards visible on desktop - width set by JS based on container */
+  .ad-marquee-item {
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #C9A227;
     background: #000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
   }
 
-  .ad-card-item:hover {
-    transform: translateY(-5px);
-    border-color: #FFD23F;
-    box-shadow: 0 10px 20px rgba(255, 210, 63, 0.2);
+  .ad-marquee-item:hover {
+    border: 2px solid #C9A227;
+    box-shadow: 0 8px 25px rgba(201, 162, 39, 0.35),
+      0 0 0 1px rgba(201, 162, 39, 0.5);
   }
 
-  .ad-card-item a {
-    display: block;
-    position: relative;
+  .ad-marquee-item,
+  .ad-carousel-media {
+    height: 100px;
+  }
+
+  .ad-carousel-media {
     width: 100%;
-    padding-top: 60%; /* 16:9 Aspect Ratio */
-  }
-
-  .ad-card-item img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
-  }
-
-  .ad-card-item:hover img {
-    transform: scale(1.1);
-  }
-
-  .ad-card-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #FFD23F;
-    color: #000;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 3px 10px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    z-index: 2;
+    display: block;
+    border-radius: 12px;
   }
 
   @media (max-width: 768px) {
     .ad-cards-wrapper {
       margin-top: 20px;
+    }
+    .ad-marquee-item,
+    .ad-carousel-media {
+      height: 75px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ad-marquee-item,
+    .ad-carousel-media {
+      height: 65px;
     }
   }
 </style>
@@ -364,6 +357,55 @@
       setTimeout(function () {
         loader.style.display = 'none';
       }, 600);
+    }
+
+    // Step-by-step ad slider: show 4, every 2s slide one out left, one in from right
+    var track = document.getElementById('adMarqueeTrack');
+    if (track) {
+      var marquee = track.parentElement;
+      var items = Array.from(track.querySelectorAll('.ad-marquee-item'));
+      if (items.length > 0) {
+        var gap = 12;
+        var visible = 4;
+        // Calculate item width from actual container so all 4 fit perfectly
+        var containerWidth = marquee.offsetWidth;
+        var singleItemWidth = Math.floor((containerWidth - gap * (visible - 1)) / visible);
+
+        // Set width on every item
+        items.forEach(function(item) { item.style.width = singleItemWidth + 'px'; });
+
+        var stepSize = singleItemWidth + gap;
+        var originalCount = items.length;
+        var currentOffset = 0;
+
+        // Clone items so we always have enough ahead
+        var originalHTML = track.innerHTML;
+        track.insertAdjacentHTML('beforeend', originalHTML);
+        track.insertAdjacentHTML('beforeend', originalHTML);
+        // Apply width to cloned items too
+        track.querySelectorAll('.ad-marquee-item').forEach(function(item) {
+          item.style.width = singleItemWidth + 'px';
+        });
+
+        setInterval(function() {
+          currentOffset += stepSize;
+          track.style.transition = 'transform 0.6s ease-in-out';
+          track.style.transform = 'translateX(-' + currentOffset + 'px)';
+
+          // When we've scrolled one full set, reset seamlessly
+          if (currentOffset >= stepSize * originalCount) {
+            setTimeout(function() {
+              track.style.transition = 'none';
+              currentOffset = 0;
+              track.style.transform = 'translateX(0)';
+              for (var i = 0; i < originalCount; i++) {
+                var first = track.querySelector('.ad-marquee-item');
+                track.appendChild(first);
+              }
+            }, 650);
+          }
+        }, 2000);
+      }
     }
   });
 </script>
