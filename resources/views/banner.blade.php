@@ -16,15 +16,14 @@
   <style>
     /* 🎯 UNIQUE SCOPED STYLES - Prefixed with .partner-registration-page */
     .partner-registration-page .custom-banner {
-      padding-top: 80px;
-      /* Added proper header spacing */
+      padding-top: 200px;
+      /* Header(80) + SearchBar(71) + Ticker(45) + buffer */
     }
 
     .partner-registration-page .custom-banner .image-overlay {
       position: relative;
       overflow: hidden;
-      min-height: calc(100vh - 80px);
-      /* Subtract header padding */
+      min-height: calc(100vh - 200px);
       height: auto;
       background: url("{{ asset('assets/index_files/s1.jpg') }}") no-repeat center center;
       background-size: cover;
@@ -44,7 +43,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      min-height: calc(100vh - 80px);
+      min-height: calc(100vh - 200px);
       background: rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
@@ -57,19 +56,19 @@
     /* Mobile adjustments */
     @media (max-width: 767.98px) {
       .partner-registration-page .custom-banner {
-        padding-top: 60px;
-        /* Smaller header padding for mobile */
+        padding-top: 170px;
+        /* Mobile header + search + ticker */
       }
 
       .partner-registration-page .custom-banner .image-overlay {
-        min-height: calc(100vh - 60px);
+        min-height: calc(100vh - 170px);
         height: auto;
         background-position: top center;
         background-attachment: scroll;
       }
 
       .partner-registration-page .custom-banner .overlay {
-        min-height: calc(100vh - 60px);
+        min-height: calc(100vh - 170px);
         position: relative;
         height: auto;
       }
@@ -78,16 +77,16 @@
     /* Desktop adjustments */
     @media (min-width: 768px) {
       .partner-registration-page .custom-banner {
-        padding-top: 90px;
-        /* Larger header padding for desktop */
+        padding-top: 200px;
+        /* Desktop header + search + ticker */
       }
 
       .partner-registration-page .custom-banner .image-overlay {
-        min-height: calc(100vh - 90px);
+        min-height: calc(100vh - 200px);
       }
 
       .partner-registration-page .custom-banner .overlay {
-        min-height: calc(100vh - 90px);
+        min-height: calc(100vh - 200px);
         justify-content: center;
         height: auto;
         padding-bottom: 2rem;
