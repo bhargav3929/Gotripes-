@@ -586,12 +586,6 @@ var swiper = new Swiper(".swiper-container", swiperOptions);
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding:9px 6px 7px;font-weight:600;">Tax (5%)</td>
-                  <td style="text-align:right;padding:9px 6px 7px;">
-                    <span id="modalTax"></span> <span class="modal-currency"></span>
-                  </td>
-                </tr>
-                <tr>
                   <td style="padding:12px 6px 4px;font-weight:bold;font-size:19px;color:#fff;border-top:2px solid #ffc107;">Total Amount</td>
                   <td style="text-align:right;padding:12px 6px 4px;font-weight:bold;font-size:19px;color:#ffc107;border-top:2px solid #ffc107;">
                     <span id="modalTotalAmount"></span> <span class="modal-currency"></span>
@@ -1100,15 +1094,13 @@ const children = parseInt(document.querySelector('input[name="childrens"]').valu
             const adultsTotal = adults * adultPrice;
             const childrenTotal = children * childPrice;
             const subTotal = adultsTotal + childrenTotal + txnCharges + transportCharges;
-            const tax = Math.round(subTotal * 0.05 * 100) / 100;
-            const total = subTotal + tax;
+            const total = subTotal;
             const currency = getCurrentCurrency();
 
             // Update modal content
             document.getElementById('modalAdultPrice').textContent = `${adultPrice} x ${adults} = ${adultsTotal.toFixed(2)}`;
             document.getElementById('modalChildPrice').textContent = `${childPrice} x ${children} = ${childrenTotal.toFixed(2)}`;
             document.getElementById('modalTxnCharges').textContent = txnCharges.toFixed(2);
-            document.getElementById('modalTax').textContent = tax.toFixed(2);
             document.getElementById('modalTotalAmount').textContent = total.toFixed(2);
             
             // Show/hide transport charges row

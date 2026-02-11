@@ -200,8 +200,7 @@
       <p class="gt-footer-copyright">
         Copyright ©
         <script>document.write(new Date().getFullYear());</script>
-        All rights reserved | Designed and developed by
-        <a href="https://scoriait.com" class="text-warning" target="_blank" style="text-decoration: none;">ScoriaIT</a>
+        Go Trips. All rights reserved.
       </p>
     </div>
   </div>

@@ -1156,8 +1156,8 @@
                     <div class="copyright text-center my-auto">
                         <span class="text-primary fw-bold">
                             <i class="fas fa-copyright me-1"></i>
-                            <span class="d-none d-sm-inline">Copyright &copy; {{ date('Y') }} ScoriaIT - Premium Admin Panel</span>
-                            <span class="d-sm-none">&copy; {{ date('Y') }} ScoriaIT</span>
+                            <span class="d-none d-sm-inline">Copyright &copy; {{ date('Y') }} Go Trips. All rights reserved.</span>
+                            <span class="d-sm-none">&copy; {{ date('Y') }} Go Trips</span>
                         </span>
                     </div>
                 </div>

@@ -131,9 +131,8 @@ s0.parentNode.insertBefore(s1,s0);
                                 <li><a class="instagram" href="http://www.instagram.com/" target="_blank"><i class="fa-brands fa-instagram"></i></a></li> 
                             </ul>
                         </div>
-                    <span class="fs-15 w-60 lg-w-70 md-w-90 sm-w-100 d-block mx-auto lh-22">   <br><p style="font-size:14px"><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-              Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved | <i class="fa fa-heart " style="color:#eace6a" aria-hidden="true"></i> by <a href="https://scoriait.com" class=" " target="_blank">ScoriaIT</a>
-              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p> 
+                    <span class="fs-15 w-60 lg-w-70 md-w-90 sm-w-100 d-block mx-auto lh-22">   <br><p style="font-size:14px">
+              Copyright ©<script>document.write(new Date().getFullYear());</script> Go Trips. All rights reserved.</p>
                     <br>
                <div class="gdstyurtytr">    
                
