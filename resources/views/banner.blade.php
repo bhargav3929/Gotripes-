@@ -18,6 +18,7 @@
     .partner-registration-page .custom-banner {
       padding-top: 200px;
       /* Header(80) + SearchBar(71) + Ticker(45) + buffer */
+      background: #000;
     }
 
     .partner-registration-page .custom-banner .image-overlay {
