@@ -99,6 +99,12 @@
         height: 100%;
     }
 
+    .glass-card h4 {
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        letter-spacing: 1.5px !important;
+    }
+
     /* Form Styles */
     .premium-form .form-control,
     .premium-form .form-select {
@@ -129,8 +135,9 @@
         border: none;
         color: #000;
         font-weight: 700;
+        font-size: 15px;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
         padding: 16px 30px;
         border-radius: 50px;
         width: 100%;
@@ -179,13 +186,15 @@
     .qr-title {
         color: #fff;
         font-weight: 700;
+        font-size: 16px;
+        letter-spacing: 1px;
         margin-bottom: 10px;
         text-transform: uppercase;
     }
 
     .qr-text {
         color: var(--premium-gold);
-        font-size: 15px;
+        font-size: 14px;
         margin: 0;
     }
 
@@ -221,8 +230,9 @@
 
     .value-title {
         color: #fff;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 700;
+        letter-spacing: 1px;
         margin-bottom: 15px;
         text-transform: uppercase;
     }
@@ -326,7 +336,7 @@
         }
 
         .value-title {
-            font-size: 18px;
+            font-size: 16px;
         }
 
     }
@@ -347,11 +357,11 @@
                     <p class="mb-4">
                         Welcome to <strong class="text-white">GOTRIPS</strong>, a part of <strong class="text-white">Ayn Al Amir
                             Tourism</strong>, a dynamic travel agency dedicated to providing unparalleled solutions.
-                        Established in 2024 by <strong>Mr. Amer Ali Mohammed</strong>, we are committed to excellence
+                        Established in 2024 by <strong class="text-white">Mr. Amer Ali Mohammed</strong>, we are committed to excellence
                         with over 13 years of expertise.
                     </p>
                     <p class="mb-4">
-                        We pride ourselves on customer satisfaction and innovation. Our partnership with <strong>Portway
+                        We pride ourselves on customer satisfaction and innovation. Our partnership with <strong class="text-white">Portway
                             Systems</strong> enables state-of-the-art Agency Management, ensuring a seamless experience
                         for every client.
                     </p>
@@ -452,7 +462,7 @@
                         <img src="{{ asset('assets/index_files/LocationQR-2.jpg') }}" alt="Location QR">
                     </div>
                     <div class="qr-title">Visit Us</div>
-                    <p class="qr-text" style="line-height: 1.4; font-size: 13px;">Sanaiya, Beda Zayed Al Dhafra,<br>Abu
+                    <p class="qr-text" style="line-height: 1.5;">Sanaiya, Beda Zayed Al Dhafra,<br>Abu
                         Dhabi, U.A.E</p>
                 </div>
             </div>

@@ -535,10 +535,10 @@
   }
 
   .service-card-title {
-    font-family: var(--primary-font);
-    font-size: 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     line-height: 1.4;
     margin: 0;
     color: #fff;
@@ -948,7 +948,7 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-7 text-center">
-        <span class="lh-22 fw-700 mb-3 d-inline-block text-uppercase text-dark-gray" style="font-size: 38px;">News and
+        <span class="d-block text-uppercase mb-3" style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; color: #FFD700; letter-spacing: 3px;">News and
           updates</span>
         <h2 class="premium-section-title">
           Our latest news
@@ -1329,10 +1329,22 @@
   }
 
   .feature-box-content p {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
     text-align: center;
-    line-height: 1.6;
+    line-height: 1.7;
     padding: 0 10px;
-    color: #666;
+    color: rgba(255, 255, 255, 0.65) !important;
+    letter-spacing: 0.2px;
+  }
+
+  .feature-box-content h3 {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    color: #FFD700 !important;
   }
 </style>
 
@@ -1532,6 +1544,11 @@
 
   .card-title {
     color: #fff !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.3px !important;
   }
 
   .card-body .author span,
@@ -1539,18 +1556,55 @@
   .card-body .like-count span,
   .card-body .like-count a {
     color: #fff !important;
+    font-family: 'Outfit', sans-serif !important;
   }
 
-  /* Responsive font sizes for heading on mobile */
-  @media (max-width: 576px) {
-    .blodgdf span.lh-22 {
-      font-size: 24px !important;
-      /* from 38px down to 24px */
-    }
+  .blog-date {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
 
+  .author-name,
+  .author-name a,
+  .author-name span {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+  }
+
+  .like-count {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 14px !important;
+  }
+
+  /* Consistent typography overrides for carousel/blodgdf sections */
+  .blodgdf {
+    padding: 60px 0 50px;
+  }
+
+  .blodgdf a.card-title {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  .blodgdf h1.premium-section-title {
+    margin-bottom: 30px;
+  }
+
+  /* Responsive font sizes for section headings on mobile */
+  @media (max-width: 576px) {
     .blodgdf h2 {
       font-size: 20px !important;
-      /* from 28px down to 20px */
+    }
+
+    .blodgdf {
+      padding: 40px 0 30px;
     }
   }
 </style>
@@ -1570,13 +1624,13 @@
           <figcaption
             class="position-absolute bg-dark-gray border-radius-10px box-shadow-quadruple-large top-30px end-0 w-150px text-center animation-float">
             <div class="bg-white py-3 px-2 border-radius-8px mb-2">
-              <h2 class="fw-700 text-dark-gray mb-0">15+</h2>
+              <h2 style="font-family: 'Outfit', sans-serif; font-size: 36px; font-weight: 800; color: #1a1a1a; margin-bottom: 4px;">15+</h2>
               <div class="text-golden-yellow fs-18 mb-0">
                 <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                 <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                 <i class="bi bi-star-fill"></i>
               </div>
-              <span class="text-dark-gray d-block fw-600">Years Experience</span>
+              <span style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; color: #555; letter-spacing: 1px; text-transform: uppercase;" class="d-block">Years Experience</span>
             </div>
           </figcaption>
         </figure>
@@ -1585,9 +1639,9 @@
       <!-- Text Column -->
       <div class="col-xl-8 col-lg-8 col-md-10"
         data-anime='{"el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad"}'>
-        <h2 class="fw-700 text-white text-center mb-20px">
+        <h2 class="text-white text-center mb-20px" style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 32px; letter-spacing: 1px;">
           Welcome to Ayn Al Amir<br>
-          <small class="d-block fs-24 text-light">Embark on a Journey of Discovery</small>
+          <span class="d-block" style="font-size: 18px; font-weight: 400; color: rgba(255,255,255,0.7); margin-top: 8px; letter-spacing: 0.5px;">Embark on a Journey of Discovery</span>
         </h2>
         <p class="text-white intro-text">
           At Ayn Al Amir Tourism L.L.C, we are your trusted partner for seamless travel solutions. With our unwavering
@@ -1661,29 +1715,36 @@
 
   .vm-header h3 {
     margin: 0;
-    font-size: 20px;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 16px !important;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #FFD700;
   }
 
   .vm-text {
-    text-align: justify;
-    text-justify: inter-word;
-    text-align-last: left;
-    hyphens: auto;
-    line-height: 1.5;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.7;
     margin: 0;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 0.2px;
   }
 
   .intro-text {
-    text-align: justify;
-    text-justify: inter-word;
-    text-align-last: left;
-    hyphens: auto;
-    line-height: 1.6;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 400;
+    text-align: center;
+    line-height: 1.8;
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+    color: rgba(255, 255, 255, 0.8) !important;
+    letter-spacing: 0.3px;
   }
 </style>
 

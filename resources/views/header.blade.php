@@ -48,6 +48,35 @@
             box-sizing: border-box;
         }
 
+        /* =====================================================
+           GLOBAL TYPOGRAPHY SYSTEM
+           Outfit as the single consistent font across the site
+           ===================================================== */
+        :root {
+            --primary-font: 'Outfit', sans-serif !important;
+            --alt-font: 'Outfit', sans-serif !important;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* Override template font classes */
+        .alt-font,
+        [class*="alt-font"] {
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* Global heading hierarchy - consistent sizing */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* Body text / descriptions - consistent baseline */
+        p, span, a, li, label, input, textarea, select, button {
+            font-family: 'Outfit', sans-serif;
+        }
+
         /* HEADER CONTAINER */
         .gt-header {
             position: fixed;
@@ -160,11 +189,13 @@
 
 
         /* =====================================================
-           INLINE SEARCH BAR
+           INLINE SEARCH BAR + PARTNER CTA
            ===================================================== */
         .gt-inline-search-wrapper {
+            position: relative;
             display: flex;
             justify-content: center;
+            align-items: center;
             padding: 12px 40px;
             background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(5, 5, 5, 0.95) 100%);
             border-top: 1px solid rgba(255, 215, 0, 0.08);
@@ -225,6 +256,73 @@
             background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
         }
 
+        /* PARTNER CTA - Positioned right, search stays centered */
+        .gt-partner-cta {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gt-partner-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 400;
+            font-style: italic;
+            color: #FFD23F;
+            white-space: nowrap;
+        }
+
+        .gt-partner-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+        }
+
+        .gt-partner-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            padding: 0 16px;
+            height: 30px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.15);
+        }
+
+        .gt-partner-btn:hover {
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
+        }
+
+        /* Hide text labels on mid screens, keep button */
+        @media (max-width: 1200px) {
+            .gt-partner-label,
+            .gt-partner-title {
+                display: none;
+            }
+        }
+
+        @media (min-width: 1201px) {
+            .gt-partner-cta {
+                border-left: 1px solid rgba(255, 215, 0, 0.12);
+                padding-left: 12px;
+            }
+        }
+
         @media (max-width: 991px) {
             .gt-inline-search-wrapper {
                 padding: 10px 20px;
@@ -244,6 +342,27 @@
                 font-size: 11px;
                 height: 30px;
             }
+
+            .gt-partner-cta {
+                position: static;
+                transform: none;
+                justify-content: center;
+                width: 100%;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid rgba(255, 215, 0, 0.1);
+            }
+
+            .gt-partner-label,
+            .gt-partner-title {
+                display: inline;
+            }
+
+            .gt-inline-search-wrapper {
+                flex-wrap: wrap;
+            }
         }
 
         @media (max-width: 575px) {
@@ -259,6 +378,20 @@
             .gt-inline-search-btn {
                 padding: 0 14px;
                 font-size: 10px;
+            }
+
+            .gt-partner-label {
+                font-size: 10px;
+            }
+
+            .gt-partner-title {
+                font-size: 11px;
+            }
+
+            .gt-partner-btn {
+                padding: 0 14px;
+                height: 28px;
+                font-size: 9px;
             }
         }
 
@@ -657,13 +790,18 @@
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
         </nav>
 
-        <!-- INLINE SEARCH BAR (Homepage Only) -->
+        <!-- INLINE SEARCH BAR + PARTNER CTA (Homepage Only) -->
         @if(Request::is('/'))
             <div class="gt-inline-search-wrapper">
                 <div class="gt-inline-search" data-trigger="search">
                     <i class="bi bi-search gt-inline-search-icon"></i>
                     <span class="gt-inline-search-placeholder">Type to search...</span>
                     <button class="gt-inline-search-btn">SEARCH</button>
+                </div>
+                <div class="gt-partner-cta">
+                    <span class="gt-partner-label">Join as a</span>
+                    <span class="gt-partner-title">Partner / Customer</span>
+                    <button class="gt-partner-btn" id="partnerRegisterBtn">Register Now</button>
                 </div>
             </div>
         @endif

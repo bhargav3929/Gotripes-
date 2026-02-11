@@ -190,8 +190,7 @@ class ActivityBookingController extends Controller
             $adultTotal = $validated['adults'] * $adultPrice;
             $childTotal = $validated['childrens'] * $childPrice;
             $subtotal = $adultTotal + $childTotal + $transCharge + $transportCharges;
-            $taxAmount = round($subtotal * 0.05, 2);
-            $finalAmount = round($subtotal + $taxAmount, 2);
+            $finalAmount = round($subtotal, 2);
 
             // Save to DB
             $booking = new ActivityBooking();

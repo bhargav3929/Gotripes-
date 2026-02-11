@@ -487,8 +487,8 @@
                             <input type="date" class="field-input" name="arrival_date" required>
                         </div>
                         <div class="form-field">
-                            <label class="field-label">Departure Date (Optional)</label>
-                            <input type="date" class="field-input" name="departure_date">
+                            <label class="field-label">Estimated Departure Date</label>
+                            <input type="date" class="field-input" name="departure_date" required>
                         </div>
                     </div>
 
@@ -544,11 +544,6 @@
                         <span class="summary-label">Visa Fee (<span id="countDisplay">1</span>x)</span>
                         <span class="summary-value" id="summaryBase">AED 0.00</span>
                     </div>
-                    <div class="summary-row">
-                        <span class="summary-label">VAT (5%)</span>
-                        <span class="summary-value" id="summaryVat">AED 0.00</span>
-                    </div>
-
                     <div class="summary-total">
                         <span class="total-label">Total Payable</span>
                         <span class="total-value" id="summaryTotal">AED 0.00</span>
@@ -672,14 +667,12 @@
             const unitPrice = parseFloat(option.getAttribute('data-price')) || 0;
 
             const totalBase = unitPrice * count;
-            const vat = totalBase * 0.05;
-            const total = totalBase + vat;
+            const total = totalBase;
 
             document.getElementById('hiddenPrice').value = total.toFixed(2);
             document.getElementById('countDisplay').textContent = count;
 
             document.getElementById('summaryBase').textContent = 'AED ' + totalBase.toFixed(2);
-            document.getElementById('summaryVat').textContent = 'AED ' + vat.toFixed(2);
             document.getElementById('summaryTotal').textContent = 'AED ' + total.toFixed(2);
         }
 

@@ -13,19 +13,16 @@
 ">
   <img src="/assets/index_files/logo.png" alt="Loading..." style="height: 140px; width: auto; margin-bottom:30px;">
   <div style="text-align: center;">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Source+Sans+Pro:wght@700&display=swap"
-      rel="stylesheet">
-
     <div
-      style="font-size: 2rem; font-weight:bold; color: #ffd235; letter-spacing: 1px; font-family: 'Playfair Display', serif;">
+      style="font-size: 1.75rem; font-weight: 700; color: #ffd235; letter-spacing: 3px; font-family: 'Outfit', sans-serif; text-transform: uppercase;">
       Welcome To GOTRIPS
     </div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top:14px;">
-      <span style="font-size: 1.2rem; font-weight: 400; color: #fff;  line-height: 1.3;">
+      <span style="font-size: 0.95rem; font-weight: 400; color: rgba(255,255,255,0.6); font-family: 'Outfit', sans-serif; line-height: 1.3; letter-spacing: 1px;">
         a part of
       </span>
       <span
-        style="font-size: 1.50rem; font-weight: 700; color: #BB8525; font-family: 'Source Sans Pro', Arial, sans-serif; line-height: 1.3;">
+        style="font-size: 1.3rem; font-weight: 700; color: #D4AF37; font-family: 'Outfit', sans-serif; line-height: 1.3; letter-spacing: 1.5px;">
         Ayn Al Amir Tourism
       </span>
     </div>
@@ -65,13 +62,15 @@
     background: rgba(10, 10, 10, 0.8);
     border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 50px;
+    font-family: 'Outfit', sans-serif;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
     transition: all 0.3s ease;
     white-space: nowrap;
     backdrop-filter: blur(5px);
-    font-size: 16px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   }
 
@@ -175,36 +174,59 @@
   }
 </style>
 
-<!-- 🎯 Static Ad Boxes - 5 visible -->
+<!-- Ad TV Boxes - Each box is a dedicated TV with rotating media -->
 <div class="container ad-cards-wrapper">
   <div class="ad-grid">
-    @if(isset($carouselImages) && $carouselImages->count() > 0)
-      @foreach($carouselImages as $media)
-        <div class="ad-grid-item">
-          @if($media->mediaType === 'video')
-            <video autoplay muted loop playsinline class="ad-carousel-media">
-              <source src="{{ asset($media->imgPath) }}" type="video/mp4">
-            </video>
-          @else
-            <img src="{{ asset($media->imgPath) }}" alt="Ad Slot {{ $media->slotOrder }}" class="ad-carousel-media">
+    @if(isset($adSlots) && $adSlots->count() > 0)
+      @foreach($adSlots as $slotNumber => $mediaItems)
+        <div class="ad-grid-item ad-tv-box" data-tv="{{ $slotNumber }}">
+          @foreach($mediaItems as $idx => $media)
+            <div class="ad-tv-slide {{ $idx === 0 ? 'active' : '' }}"
+                 data-type="{{ $media->mediaType }}"
+                 data-duration="{{ $media->duration ?? 5 }}">
+              @if($media->mediaType === 'video')
+                <video muted playsinline preload="metadata" class="ad-carousel-media">
+                  <source src="{{ asset($media->imgPath) }}" type="video/mp4">
+                </video>
+              @else
+                <img src="{{ asset($media->imgPath) }}" alt="Ad Slot {{ $slotNumber }}" class="ad-carousel-media" loading="lazy">
+              @endif
+            </div>
+          @endforeach
+          {{-- Progress bar for this TV --}}
+          @if($mediaItems->count() > 1)
+            <div class="ad-tv-progress">
+              <div class="ad-tv-progress-bar"></div>
+            </div>
           @endif
         </div>
       @endforeach
     @else
+      {{-- Fallback static images --}}
       <div class="ad-grid-item">
-        <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+        <div class="ad-tv-slide active" data-type="image" data-duration="5">
+          <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+        </div>
       </div>
       <div class="ad-grid-item">
-        <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
+        <div class="ad-tv-slide active" data-type="image" data-duration="5">
+          <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
+        </div>
       </div>
       <div class="ad-grid-item">
-        <img src="{{ asset('assets/homepageads/ad_car.png') }}" alt="Car Hire" class="ad-carousel-media">
+        <div class="ad-tv-slide active" data-type="image" data-duration="5">
+          <img src="{{ asset('assets/homepageads/ad_car.png') }}" alt="Car Hire" class="ad-carousel-media">
+        </div>
       </div>
       <div class="ad-grid-item">
-        <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">
+        <div class="ad-tv-slide active" data-type="image" data-duration="5">
+          <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">
+        </div>
       </div>
       <div class="ad-grid-item">
-        <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+        <div class="ad-tv-slide active" data-type="image" data-duration="5">
+          <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+        </div>
       </div>
     @endif
   </div>
@@ -260,6 +282,8 @@
     background: #000;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
+    position: relative;
+    height: 160px;
   }
 
   .ad-grid-item:hover {
@@ -268,9 +292,21 @@
       0 0 0 1px rgba(201, 162, 39, 0.5);
   }
 
-  .ad-grid-item,
-  .ad-carousel-media {
-    height: 160px;
+  /* TV Slide system */
+  .ad-tv-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    z-index: 1;
+  }
+
+  .ad-tv-slide.active {
+    opacity: 1;
+    z-index: 2;
   }
 
   .ad-carousel-media {
@@ -278,7 +314,24 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 12px;
+  }
+
+  /* Progress bar at bottom of each TV */
+  .ad-tv-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 10;
+  }
+
+  .ad-tv-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #D4AF37);
+    width: 0%;
+    transition: width linear;
   }
 
   @media (max-width: 768px) {
@@ -290,8 +343,7 @@
       gap: 6px;
     }
 
-    .ad-grid-item,
-    .ad-carousel-media {
+    .ad-grid-item {
       height: 100px;
     }
   }
@@ -301,8 +353,7 @@
       gap: 4px;
     }
 
-    .ad-grid-item,
-    .ad-carousel-media {
+    .ad-grid-item {
       height: 80px;
     }
   }
@@ -366,4 +417,93 @@
       }, 600);
     }
   });
+</script>
+
+{{-- Airport TV Slideshow Engine --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var tvBoxes = document.querySelectorAll('.ad-tv-box');
+
+  tvBoxes.forEach(function(tvBox) {
+    var slides = tvBox.querySelectorAll('.ad-tv-slide');
+    if (slides.length <= 1) return; // No rotation needed for single item
+
+    var progressBar = tvBox.querySelector('.ad-tv-progress-bar');
+    var currentIndex = 0;
+    var timer = null;
+
+    function showSlide(index) {
+      slides.forEach(function(s) { s.classList.remove('active'); });
+      // Pause all videos in this TV
+      slides.forEach(function(s) {
+        var vid = s.querySelector('video');
+        if (vid) { vid.pause(); vid.currentTime = 0; }
+      });
+
+      slides[index].classList.add('active');
+      var slide = slides[index];
+      var type = slide.getAttribute('data-type');
+      var duration = parseInt(slide.getAttribute('data-duration')) || 5;
+
+      if (type === 'video') {
+        var video = slide.querySelector('video');
+        if (video) {
+          video.currentTime = 0;
+          video.muted = true;
+          video.play().catch(function() {});
+
+          // Progress bar follows video duration
+          if (progressBar) {
+            progressBar.style.transition = 'none';
+            progressBar.style.width = '0%';
+          }
+
+          video.addEventListener('timeupdate', function onTimeUpdate() {
+            if (video.duration && progressBar) {
+              var pct = (video.currentTime / video.duration) * 100;
+              progressBar.style.transition = 'none';
+              progressBar.style.width = pct + '%';
+            }
+          });
+
+          video.addEventListener('ended', function onEnded() {
+            video.removeEventListener('ended', onEnded);
+            video.removeEventListener('timeupdate', arguments.callee);
+            nextSlide();
+          });
+
+          // Fallback: if video is too long or fails, skip after 30s
+          timer = setTimeout(function() { nextSlide(); }, 30000);
+        } else {
+          scheduleNext(duration);
+        }
+      } else {
+        // Image: show for `duration` seconds with progress bar
+        if (progressBar) {
+          progressBar.style.transition = 'none';
+          progressBar.style.width = '0%';
+          // Force reflow
+          void progressBar.offsetWidth;
+          progressBar.style.transition = 'width ' + duration + 's linear';
+          progressBar.style.width = '100%';
+        }
+        scheduleNext(duration);
+      }
+    }
+
+    function scheduleNext(seconds) {
+      clearTimeout(timer);
+      timer = setTimeout(function() { nextSlide(); }, seconds * 1000);
+    }
+
+    function nextSlide() {
+      clearTimeout(timer);
+      currentIndex = (currentIndex + 1) % slides.length;
+      showSlide(currentIndex);
+    }
+
+    // Start the first slide
+    showSlide(0);
+  });
+});
 </script>
