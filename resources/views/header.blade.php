@@ -160,6 +160,109 @@
 
 
         /* =====================================================
+           INLINE SEARCH BAR
+           ===================================================== */
+        .gt-inline-search-wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 12px 40px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(5, 5, 5, 0.95) 100%);
+            border-top: 1px solid rgba(255, 215, 0, 0.08);
+        }
+
+        .gt-inline-search {
+            display: flex;
+            align-items: center;
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 50px;
+            padding: 0 6px 0 20px;
+            width: 100%;
+            max-width: 580px;
+            height: 46px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gt-inline-search:hover {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.08);
+        }
+
+        .gt-inline-search-icon {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .gt-inline-search-placeholder {
+            flex: 1;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.35);
+            padding: 0 15px;
+            user-select: none;
+        }
+
+        .gt-inline-search-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            padding: 0 24px;
+            height: 34px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .gt-inline-search-btn:hover {
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+        }
+
+        @media (max-width: 991px) {
+            .gt-inline-search-wrapper {
+                padding: 10px 20px;
+            }
+
+            .gt-inline-search {
+                max-width: 100%;
+                height: 42px;
+            }
+
+            .gt-inline-search-placeholder {
+                font-size: 13px;
+            }
+
+            .gt-inline-search-btn {
+                padding: 0 18px;
+                font-size: 11px;
+                height: 30px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .gt-inline-search-wrapper {
+                padding: 8px 15px;
+            }
+
+            .gt-inline-search {
+                height: 38px;
+                padding: 0 5px 0 15px;
+            }
+
+            .gt-inline-search-btn {
+                padding: 0 14px;
+                font-size: 10px;
+            }
+        }
+
+        /* =====================================================
            NEWS TICKER - Keep existing styles
            ===================================================== */
         .news-ticker {
@@ -462,21 +565,21 @@
             }
         }
 
-        /* When ticker is shown on homepage */
+        /* When ticker + search bar are shown on homepage */
         @if(Request::is('/'))
             body {
-                margin-top: 125px;
+                margin-top: 195px;
             }
 
             @media (max-width: 991px) {
                 body {
-                    margin-top: 118px;
+                    margin-top: 180px;
                 }
             }
 
             @media (max-width: 575px) {
                 body {
-                    margin-top: 108px;
+                    margin-top: 162px;
                 }
             }
 
@@ -553,6 +656,17 @@
             <a href="/lookingforajob" class="gt-mobile-nav-link">Careers</a>
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
         </nav>
+
+        <!-- INLINE SEARCH BAR (Homepage Only) -->
+        @if(Request::is('/'))
+            <div class="gt-inline-search-wrapper">
+                <div class="gt-inline-search" data-trigger="search">
+                    <i class="bi bi-search gt-inline-search-icon"></i>
+                    <span class="gt-inline-search-placeholder">Type to search...</span>
+                    <button class="gt-inline-search-btn">SEARCH</button>
+                </div>
+            </div>
+        @endif
 
         <!-- NEWS TICKER (Homepage Only) -->
         @if(Request::is('/'))
