@@ -19,7 +19,7 @@ class HomepageAdsController extends Controller
     {
         $carouselImages = HomepageAd::where('isActive', true)
             ->orderBy('slotOrder', 'asc')
-            ->limit(6)
+            ->limit(5)
             ->get();
         return view('welcome', compact('carouselImages'));
     }

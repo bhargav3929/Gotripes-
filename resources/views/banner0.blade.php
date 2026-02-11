@@ -175,43 +175,44 @@
   }
 </style>
 
-<!-- 🎯 Dynamic Ad Slider - Always 4 visible, continuous scroll -->
+<!-- 🎯 Static Ad Boxes - 5 visible -->
 <div class="container ad-cards-wrapper">
-  <div class="ad-marquee">
-    <div class="ad-marquee-track" id="adMarqueeTrack">
-      @if(isset($carouselImages) && $carouselImages->count() > 0)
-        @foreach($carouselImages as $media)
-          <div class="ad-marquee-item">
-            @if($media->mediaType === 'video')
-              <video autoplay muted loop playsinline class="ad-carousel-media">
-                <source src="{{ asset($media->imgPath) }}" type="video/mp4">
-              </video>
-            @else
-              <img src="{{ asset($media->imgPath) }}" alt="Ad Slot {{ $media->slotOrder }}" class="ad-carousel-media">
-            @endif
-          </div>
-        @endforeach
-      @else
-        <div class="ad-marquee-item">
-          <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+  <div class="ad-grid">
+    @if(isset($carouselImages) && $carouselImages->count() > 0)
+      @foreach($carouselImages as $media)
+        <div class="ad-grid-item">
+          @if($media->mediaType === 'video')
+            <video autoplay muted loop playsinline class="ad-carousel-media">
+              <source src="{{ asset($media->imgPath) }}" type="video/mp4">
+            </video>
+          @else
+            <img src="{{ asset($media->imgPath) }}" alt="Ad Slot {{ $media->slotOrder }}" class="ad-carousel-media">
+          @endif
         </div>
-        <div class="ad-marquee-item">
-          <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
-        </div>
-        <div class="ad-marquee-item">
-          <img src="{{ asset('assets/homepageads/ad_car.png') }}" alt="Car Hire" class="ad-carousel-media">
-        </div>
-        <div class="ad-marquee-item">
-          <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">
-        </div>
-      @endif
-    </div>
+      @endforeach
+    @else
+      <div class="ad-grid-item">
+        <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+      </div>
+      <div class="ad-grid-item">
+        <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
+      </div>
+      <div class="ad-grid-item">
+        <img src="{{ asset('assets/homepageads/ad_car.png') }}" alt="Car Hire" class="ad-carousel-media">
+      </div>
+      <div class="ad-grid-item">
+        <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">
+      </div>
+      <div class="ad-grid-item">
+        <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+      </div>
+    @endif
   </div>
 </div>
 
 <!-- Navigation -->
 
-<div class="nav-container mt-3">
+<div class="nav-container" style="margin-top: 4px;">
   <a class="nav-link2 active" onclick="showTab('flights', event)"><i class="fas fa-plane"
       style="transform: rotate(-45deg); display: inline-block;"></i> Flights</a>
   <a class="nav-link2" onclick="showTab('hotels', event)"><i class="fas fa-hotel"></i> Hotels</a>
@@ -238,25 +239,21 @@
 
 <style>
   .ad-cards-wrapper {
-    margin-top: 140px;
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 28px;
+    padding-top: 0;
+    position: relative;
+    z-index: 3;
   }
 
-  .ad-marquee {
-    overflow: hidden;
-    border-radius: 15px;
-  }
-
-  .ad-marquee-track {
+  .ad-grid {
     display: flex;
-    gap: 12px;
-    width: max-content;
-    transition: transform 0.6s ease-in-out;
+    gap: 8px;
+    width: 100%;
   }
 
-  /* 4 cards visible on desktop - width set by JS based on container */
-  .ad-marquee-item {
-    flex-shrink: 0;
+  .ad-grid-item {
+    flex: 1;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid #C9A227;
@@ -265,19 +262,20 @@
     transition: all 0.3s ease;
   }
 
-  .ad-marquee-item:hover {
+  .ad-grid-item:hover {
     border: 2px solid #C9A227;
     box-shadow: 0 8px 25px rgba(201, 162, 39, 0.35),
       0 0 0 1px rgba(201, 162, 39, 0.5);
   }
 
-  .ad-marquee-item,
+  .ad-grid-item,
   .ad-carousel-media {
-    height: 100px;
+    height: 160px;
   }
 
   .ad-carousel-media {
     width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
     border-radius: 12px;
@@ -285,18 +283,27 @@
 
   @media (max-width: 768px) {
     .ad-cards-wrapper {
-      margin-top: 20px;
+      margin-top: 0;
     }
-    .ad-marquee-item,
+
+    .ad-grid {
+      gap: 6px;
+    }
+
+    .ad-grid-item,
     .ad-carousel-media {
-      height: 75px;
+      height: 100px;
     }
   }
 
   @media (max-width: 480px) {
-    .ad-marquee-item,
+    .ad-grid {
+      gap: 4px;
+    }
+
+    .ad-grid-item,
     .ad-carousel-media {
-      height: 65px;
+      height: 80px;
     }
   }
 </style>
@@ -357,55 +364,6 @@
       setTimeout(function () {
         loader.style.display = 'none';
       }, 600);
-    }
-
-    // Step-by-step ad slider: show 4, every 2s slide one out left, one in from right
-    var track = document.getElementById('adMarqueeTrack');
-    if (track) {
-      var marquee = track.parentElement;
-      var items = Array.from(track.querySelectorAll('.ad-marquee-item'));
-      if (items.length > 0) {
-        var gap = 12;
-        var visible = 4;
-        // Calculate item width from actual container so all 4 fit perfectly
-        var containerWidth = marquee.offsetWidth;
-        var singleItemWidth = Math.floor((containerWidth - gap * (visible - 1)) / visible);
-
-        // Set width on every item
-        items.forEach(function(item) { item.style.width = singleItemWidth + 'px'; });
-
-        var stepSize = singleItemWidth + gap;
-        var originalCount = items.length;
-        var currentOffset = 0;
-
-        // Clone items so we always have enough ahead
-        var originalHTML = track.innerHTML;
-        track.insertAdjacentHTML('beforeend', originalHTML);
-        track.insertAdjacentHTML('beforeend', originalHTML);
-        // Apply width to cloned items too
-        track.querySelectorAll('.ad-marquee-item').forEach(function(item) {
-          item.style.width = singleItemWidth + 'px';
-        });
-
-        setInterval(function() {
-          currentOffset += stepSize;
-          track.style.transition = 'transform 0.6s ease-in-out';
-          track.style.transform = 'translateX(-' + currentOffset + 'px)';
-
-          // When we've scrolled one full set, reset seamlessly
-          if (currentOffset >= stepSize * originalCount) {
-            setTimeout(function() {
-              track.style.transition = 'none';
-              currentOffset = 0;
-              track.style.transform = 'translateX(0)';
-              for (var i = 0; i < originalCount; i++) {
-                var first = track.querySelector('.ad-marquee-item');
-                track.appendChild(first);
-              }
-            }, 650);
-          }
-        }, 2000);
-      }
     }
   });
 </script>
