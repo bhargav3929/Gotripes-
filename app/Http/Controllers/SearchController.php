@@ -146,4 +146,37 @@ class SearchController extends Controller
         }
         return $results;
     }
+
+    private function searchCountries($query)
+    {
+        $popularDestinations = [
+            ['title' => 'Egypt', 'keywords' => 'egypt cairo pyramids nile'],
+            ['title' => 'Bahrain', 'keywords' => 'bahrain manama gulf'],
+            ['title' => 'Oman', 'keywords' => 'oman muscat salalah'],
+            ['title' => 'Saudi Arabia', 'keywords' => 'saudi arabia riyadh jeddah makkah medina'],
+            ['title' => 'South Africa', 'keywords' => 'south africa cape town johannesburg'],
+            ['title' => 'Thailand', 'keywords' => 'thailand bangkok phuket'],
+            ['title' => 'Singapore', 'keywords' => 'singapore city'],
+            ['title' => 'Malaysia', 'keywords' => 'malaysia kuala lumpur'],
+            ['title' => 'Georgia', 'keywords' => 'georgia tbilisi'],
+            ['title' => 'Azerbaijan', 'keywords' => 'azerbaijan baku'],
+            ['title' => 'Germany', 'keywords' => 'germany berlin munich'],
+            ['title' => 'United Kingdom', 'keywords' => 'uk london britain england'],
+            ['title' => 'France', 'keywords' => 'france paris'],
+            ['title' => 'Switzerland', 'keywords' => 'switzerland zurich geneva'],
+            ['title' => 'Jordan', 'keywords' => 'jordan amman petra'],
+        ];
+
+        $results = [];
+        foreach ($popularDestinations as $dest) {
+            if (str_contains(strtolower($dest['title'] . ' ' . $dest['keywords']), $query)) {
+                $results[] = [
+                    'title' => $dest['title'] . ' - Tour Packages',
+                    'url' => '/countriestour?search=' . urlencode($dest['title']),
+                    'description' => 'Explore world-class tour packages to ' . $dest['title']
+                ];
+            }
+        }
+        return array_slice($results, 0, 3);
+    }
 }

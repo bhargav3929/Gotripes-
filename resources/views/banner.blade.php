@@ -57,8 +57,7 @@
     /* Mobile adjustments */
     @media (max-width: 767.98px) {
       .partner-registration-page .custom-banner {
-        padding-top: 60px;
-        /* Smaller header padding for mobile */
+        padding-top: 0;
       }
 
       .partner-registration-page .custom-banner .image-overlay {

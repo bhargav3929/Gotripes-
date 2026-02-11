@@ -285,7 +285,7 @@
 
   @media (max-width: 768px) {
     .ad-cards-wrapper {
-      margin-top: 20px;
+      margin-top: 0;
     }
     .ad-marquee-item,
     .ad-carousel-media {

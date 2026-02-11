@@ -48,6 +48,10 @@
             box-sizing: border-box;
         }
 
+        body {
+            background-color: #000;
+        }
+
         /* HEADER CONTAINER */
         .gt-header {
             position: fixed;
@@ -462,24 +466,208 @@
             }
         }
 
-        /* When ticker is shown on homepage */
+        /* HOMEPAGE SEARCH BAR Styles */
         @if(Request::is('/'))
-            body {
-                margin-top: 125px;
+            /* Body padding to accommodate fixed header + search bar */
+            body { margin-top: 185px; }
+            @media (max-width: 991px) { body { margin-top: 178px; } }
+            @media (max-width: 575px) { body { margin-top: 160px !important; } }
+
+            .gt-header-search-bar {
+                background: linear-gradient(180deg, rgba(10, 10, 10, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
+                border-bottom: 1px solid rgba(255, 215, 0, 0.05);
+                height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                z-index: 9990;
             }
 
-            @media (max-width: 991px) {
-                body {
-                    margin-top: 118px;
-                }
+            .gt-hero-search-input-wrapper {
+                position: relative;
+                width: 100%;
+                max-width: 600px;
+                margin: 0 20px;
             }
 
+            /* Real Input Styles */
+            .gt-hero-search-input {
+                width: 100%;
+                height: 48px; /* Slightly taller for premium feel */
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 215, 0, 0.2);
+                border-radius: 50px;
+                padding: 0 110px 0 45px; /* Right padding for button */
+                color: #fff;
+                font-family: 'Outfit', sans-serif;
+                font-size: 15px;
+                outline: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .gt-hero-search-input:focus {
+                background: rgba(255, 255, 255, 0.08);
+                border-color: #FFD700;
+                box-shadow: 0 0 25px rgba(255, 215, 0, 0.15), inset 0 0 10px rgba(255, 215, 0, 0.05);
+            }
+
+            .gt-hero-search-icon {
+                position: absolute;
+                left: 18px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #FFD700;
+                font-size: 18px;
+                pointer-events: none;
+                transition: all 0.3s ease;
+            }
+            
+            .gt-hero-search-input:focus + .gt-hero-search-icon {
+                color: #fff;
+                text-shadow: 0 0 10px #FFD700;
+            }
+
+            .gt-hero-search-btn {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                bottom: 5px;
+                background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+                color: #000;
+                border: none;
+                border-radius: 40px;
+                padding: 0 20px;
+                font-family: 'Outfit', sans-serif;
+                font-weight: 700;
+                font-size: 13px;
+                letter-spacing: 0.5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+            }
+
+            .gt-hero-search-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5);
+                background: linear-gradient(135deg, #FFE600 0%, #FFC107 100%);
+            }
+
+            /* Results Dropdown */
+            .gt-hero-search-results {
+                position: absolute;
+                top: 110%; /* Slight gap */
+                left: 0;
+                width: 100%;
+                background: rgba(15, 15, 15, 0.95); /* Darker premium bg */
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 215, 0, 0.15);
+                border-radius: 16px;
+                max-height: 400px;
+                overflow-y: auto;
+                display: none;
+                z-index: 9999;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+                padding: 15px;
+                animation: slideDownFade 0.3s ease;
+            }
+            
+            @keyframes slideDownFade {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .gt-hero-search-results.active {
+                display: block;
+            }
+
+            /* Reuse modal result styles */
+            .gt-search-category-title {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: rgba(255, 215, 0, 0.6);
+                margin: 15px 0 8px 10px;
+            }
+            .gt-search-category-title:first-child { margin-top: 0; }
+            
+            .gt-search-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px;
+                border-radius: 10px;
+                text-decoration: none;
+                color: #e0e0e0;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 1px solid transparent;
+            }
+
+            .gt-search-item:hover {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 215, 0, 0.1);
+                transform: translateX(5px);
+            }
+
+            .gt-search-item-icon {
+                width: 32px;
+                height: 32px;
+                background: rgba(255, 215, 0, 0.08);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #FFD700;
+                font-size: 15px;
+                flex-shrink: 0;
+            }
+
+            .gt-search-item-title { font-size: 15px; font-weight: 500; color: #fff; }
+            .gt-search-item-desc { font-size: 12px; color: rgba(255,255,255,0.4); margin: 0; }
+
+            /* MOBILE OPTIMIZATIONS */
             @media (max-width: 575px) {
-                body {
-                    margin-top: 108px;
+                .gt-header-search-bar {
+                    height: 52px;
+                    background: rgba(10, 10, 10, 0.98);
+                    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+                }
+                .gt-hero-search-input-wrapper {
+                    margin: 0 10px;
+                }
+                .gt-hero-search-input {
+                    height: 40px;
+                    padding: 0 55px 0 38px; /* Room for icon on right */
+                    font-size: 14px;
+                    background: rgba(255, 255, 255, 0.08);
+                }
+                .gt-hero-search-btn {
+                    width: 34px;
+                    height: 34px;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    right: 4px;
+                    top: 3px;
+                    font-size: 16px;
+                    border-radius: 50%; /* Circular button on mobile */
+                }
+                .gt-hero-search-icon {
+                    left: 12px;
+                    font-size: 14px;
+                    opacity: 0.7;
+                }
+                .gt-hero-search-results {
+                    width: calc(100vw - 20px);
+                    left: -10px; /* Center it back since wrapper has margin */
+                    top: 120%;
+                    border-radius: 12px;
+                    padding: 10px;
+                    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
                 }
             }
-
         @endif
 
     </style>
@@ -577,6 +765,25 @@
             </div>
         @endif
 
+        <!-- SEARCH BAR (Homepage Only) -->
+        @if(Request::is('/'))
+        <div class="gt-header-search-bar">
+            <div class="gt-hero-search-input-wrapper">
+                <input type="text" class="gt-hero-search-input" id="heroSearchInput" placeholder="Search destinations...">
+                <i class="bi bi-search gt-hero-search-icon"></i>
+                
+                <!-- Search Button -->
+                <button class="gt-hero-search-btn" id="heroSearchBtn">
+                    <span class="d-none d-sm-inline">SEARCH</span>
+                    <i class="bi bi-search d-inline d-sm-none"></i>
+                </button>
+
+                <!-- Results Dropdown -->
+                <div id="heroSearchResults" class="gt-hero-search-results"></div>
+            </div>
+        </div>
+        @endif
+
     </header>
 
     <!-- Bootstrap JS -->
@@ -626,6 +833,132 @@
             }
         });
     </script>
+
+    @if(Request::is('/'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('heroSearchInput');
+            const results = document.getElementById('heroSearchResults');
+            const searchBtn = document.getElementById('heroSearchBtn');
+            let debounceTimer;
+
+            if (input) {
+                // Typewriter effect
+                const placeholders = [
+                    'Search "Dubai Safari"...',
+                    'Try "UAE Visa Services"...',
+                    'Search "Luxury Hotels"...',
+                    'Try "Egypt Tour Packages"...'
+                ];
+                let currentIdx = 0;
+                let charIdx = 0;
+                let isDeleting = false;
+                let typeSpeed = 100;
+
+                function type() {
+                    const currentTip = placeholders[currentIdx];
+                    if (isDeleting) {
+                        input.setAttribute('placeholder', currentTip.substring(0, charIdx--));
+                        typeSpeed = 50;
+                    } else {
+                        input.setAttribute('placeholder', currentTip.substring(0, charIdx++));
+                        typeSpeed = 100;
+                    }
+
+                    if (!isDeleting && charIdx === currentTip.length + 1) {
+                        isDeleting = true;
+                        typeSpeed = 2000; // Pause at end
+                    } else if (isDeleting && charIdx === 0) {
+                        isDeleting = false;
+                        currentIdx = (currentIdx + 1) % placeholders.length;
+                        typeSpeed = 500;
+                    }
+
+                    if (document.activeElement !== input) {
+                        setTimeout(type, typeSpeed);
+                    }
+                }
+                type();
+
+                // Stop animation on focus
+                input.addEventListener('focus', () => {
+                    input.setAttribute('placeholder', 'Type to search...');
+                });
+
+                // Search Logic
+                input.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    clearTimeout(debounceTimer);
+
+                    if (query.length < 2) {
+                        results.classList.remove('active');
+                        results.innerHTML = '';
+                        return;
+                    }
+
+                    debounceTimer = setTimeout(() => {
+                        performSearch(query);
+                    }, 300);
+                });
+
+                // Search Button Click
+                if(searchBtn) {
+                    searchBtn.addEventListener('click', function() {
+                        const query = input.value.trim();
+                        if(query.length >= 2) {
+                            performSearch(query);
+                        } else {
+                            input.focus();
+                        }
+                    });
+                }
+
+                // Close on click outside
+                document.addEventListener('click', function(e) {
+                    if (input && !input.contains(e.target) && results && !results.contains(e.target) && e.target !== searchBtn) {
+                        results.classList.remove('active');
+                    }
+                });
+            }
+
+            function performSearch(query) {
+                fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.total > 0) {
+                            let html = '';
+                            if (data.countries?.length) html += renderGroup('Destinations', data.countries, 'globe-americas');
+                            if (data.emirates?.length) html += renderGroup('Emirates', data.emirates, 'geo-alt');
+                            if (data.activities?.length) html += renderGroup('Activities', data.activities, 'ticket-perforated');
+                            if (data.visas?.length) html += renderGroup('Visas', data.visas, 'passport');
+                            
+                            results.innerHTML = html;
+                            results.classList.add('active');
+                        } else {
+                            results.innerHTML = '<div style="padding:15px; text-align:center; color:rgba(255,255,255,0.5); font-size:13px;">No results found</div>';
+                            results.classList.add('active');
+                        }
+                    });
+            }
+
+            function renderGroup(title, items, icon) {
+                let chunk = `<div class="gt-search-category-title">${title}</div>`;
+                items.forEach(item => {
+                    chunk += `
+                        <a href="${item.url}" class="gt-search-item">
+                            <div class="gt-search-item-icon"><i class="bi bi-${icon}"></i></div>
+                            <div class="gt-search-item-content">
+                                <div class="gt-search-item-title">${item.title}</div>
+                                ${item.description ? `<p class="gt-search-item-desc">${item.description}</p>` : ''}
+                            </div>
+                        </a>
+                    `;
+                });
+                return chunk;
+            }
+        });
+    </script>
+    @endif
 </body>
 
 </html>
