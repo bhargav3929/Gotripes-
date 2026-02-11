@@ -202,6 +202,7 @@
         }
 
         .gt-inline-search {
+            position: relative;
             display: flex;
             align-items: center;
             background: rgba(20, 20, 20, 0.9);
@@ -211,7 +212,6 @@
             width: 100%;
             max-width: 580px;
             height: 46px;
-            cursor: pointer;
             transition: all 0.3s ease;
         }
 
@@ -226,15 +226,7 @@
             flex-shrink: 0;
         }
 
-        .gt-inline-search-placeholder {
-            flex: 1;
-            font-family: 'Outfit', sans-serif;
-            font-size: 14px;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.35);
-            padding: 0 15px;
-            user-select: none;
-        }
+        /* gt-inline-search-placeholder replaced by gt-inline-search-input */
 
         .gt-inline-search-btn {
             background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
@@ -254,6 +246,296 @@
 
         .gt-inline-search-btn:hover {
             background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+        }
+
+        /* =====================================================
+           SEARCH INPUT FIELD
+           ===================================================== */
+        .gt-inline-search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: #FFFFFF;
+            padding: 0 12px;
+            height: 100%;
+            caret-color: #FFD700;
+            min-width: 0;
+        }
+
+        .gt-inline-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .gt-inline-search:focus-within {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.08);
+        }
+
+        /* Loading spinner */
+        .gt-search-loader {
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .gt-search-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-top-color: #FFD700;
+            border-radius: 50%;
+            animation: gt-spin 0.6s linear infinite;
+        }
+
+        @keyframes gt-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* =====================================================
+           SEARCH DROPDOWN PANEL
+           ===================================================== */
+        .gt-search-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: rgba(12, 12, 12, 0.96);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 16px;
+            padding: 10px 0;
+            max-height: 420px;
+            overflow-y: auto;
+            z-index: 10002;
+            display: none;
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(255, 215, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            animation: gt-dropdown-in 0.2s ease-out;
+        }
+
+        .gt-search-dropdown.active {
+            display: block;
+        }
+
+        @keyframes gt-dropdown-in {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .gt-search-dropdown::-webkit-scrollbar { width: 5px; }
+        .gt-search-dropdown::-webkit-scrollbar-track { background: transparent; }
+        .gt-search-dropdown::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.12);
+            border-radius: 3px;
+        }
+
+        /* Category titles */
+        .gt-dropdown-cat-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255, 215, 0, 0.5);
+            padding: 10px 20px 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gt-dropdown-cat-title i { font-size: 11px; }
+
+        /* Quick suggestion pills */
+        .gt-quick-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 20px 6px;
+        }
+
+        .gt-quick-pill {
+            padding: 6px 16px;
+            background: rgba(255, 215, 0, 0.06);
+            border: 1px solid rgba(255, 215, 0, 0.12);
+            border-radius: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.65);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .gt-quick-pill:hover {
+            background: rgba(255, 215, 0, 0.12);
+            border-color: rgba(255, 215, 0, 0.35);
+            color: #FFD700;
+            transform: translateY(-1px);
+        }
+
+        /* Search result items */
+        .gt-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            text-decoration: none !important;
+            color: #fff !important;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .gt-dropdown-item:hover,
+        .gt-dropdown-item.gt-selected {
+            background: rgba(255, 215, 0, 0.05);
+            border-left-color: #FFD700;
+        }
+
+        .gt-dropdown-item-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD700;
+            font-size: 15px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .gt-dropdown-item:hover .gt-dropdown-item-icon,
+        .gt-dropdown-item.gt-selected .gt-dropdown-item-icon {
+            background: rgba(255, 215, 0, 0.12);
+            border-color: rgba(255, 215, 0, 0.25);
+        }
+
+        .gt-dropdown-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .gt-dropdown-item-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+
+        .gt-highlight {
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .gt-dropdown-item-desc {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 2px 0 0;
+            line-height: 1.3;
+        }
+
+        .gt-dropdown-item-arrow {
+            color: rgba(255, 215, 0, 0.2);
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.15s;
+            flex-shrink: 0;
+        }
+
+        .gt-dropdown-item:hover .gt-dropdown-item-arrow,
+        .gt-dropdown-item.gt-selected .gt-dropdown-item-arrow {
+            opacity: 1;
+        }
+
+        /* No results state */
+        .gt-search-empty {
+            text-align: center;
+            padding: 25px 20px;
+        }
+
+        .gt-search-empty > i {
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.12);
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .gt-empty-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0 0 4px;
+        }
+
+        .gt-empty-sub {
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.25);
+            margin: 0;
+        }
+
+        /* Keyboard hints footer */
+        .gt-search-kbd-hint {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 8px 20px 4px;
+            border-top: 1px solid rgba(255, 215, 0, 0.06);
+            margin-top: 4px;
+        }
+
+        .gt-search-kbd-hint span {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .gt-search-kbd-hint kbd {
+            background: rgba(255, 255, 255, 0.07);
+            color: rgba(255, 255, 255, 0.4);
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 10px;
+            margin-right: 3px;
+        }
+
+        /* Mobile dropdown adjustments */
+        @media (max-width: 991px) {
+            .gt-search-dropdown {
+                border-radius: 12px;
+                max-height: 350px;
+            }
+            .gt-search-kbd-hint { display: none; }
+            .gt-inline-search-input { font-size: 13px; }
+        }
+
+        @media (max-width: 575px) {
+            .gt-search-dropdown { max-height: 300px; }
+            .gt-dropdown-item { padding: 8px 15px; gap: 10px; }
+            .gt-dropdown-item-icon { width: 30px; height: 30px; font-size: 13px; }
+            .gt-dropdown-item-title { font-size: 13px; }
+            .gt-quick-pills { gap: 6px; padding: 6px 15px; }
+            .gt-quick-pill { padding: 5px 12px; font-size: 11px; }
         }
 
         /* PARTNER CTA - Positioned right, search stays centered */
@@ -793,10 +1075,40 @@
         <!-- INLINE SEARCH BAR + PARTNER CTA (Homepage Only) -->
         @if(Request::is('/'))
             <div class="gt-inline-search-wrapper">
-                <div class="gt-inline-search" data-trigger="search">
+                <div class="gt-inline-search" id="gtInlineSearch">
                     <i class="bi bi-search gt-inline-search-icon"></i>
-                    <span class="gt-inline-search-placeholder">Type to search...</span>
-                    <button class="gt-inline-search-btn">SEARCH</button>
+                    <input type="text"
+                           class="gt-inline-search-input"
+                           id="gtSearchInput"
+                           placeholder="Search destinations, activities, services..."
+                           autocomplete="off"
+                           autocorrect="off"
+                           spellcheck="false">
+                    <div class="gt-search-loader" id="gtSearchLoader" style="display:none;">
+                        <div class="gt-search-spinner"></div>
+                    </div>
+                    <button class="gt-inline-search-btn" id="gtSearchBtn">SEARCH</button>
+
+                    <!-- Search Dropdown Results Panel -->
+                    <div class="gt-search-dropdown" id="gtSearchDropdown">
+                        <div class="gt-search-quick" id="gtSearchQuick">
+                            <div class="gt-dropdown-cat-title"><i class="bi bi-lightning"></i> Popular Searches</div>
+                            <div class="gt-quick-pills">
+                                <span class="gt-quick-pill" data-query="Dubai">Dubai</span>
+                                <span class="gt-quick-pill" data-query="Visa">UAE Visa</span>
+                                <span class="gt-quick-pill" data-query="Abu Dhabi">Abu Dhabi</span>
+                                <span class="gt-quick-pill" data-query="Desert Safari">Desert Safari</span>
+                                <span class="gt-quick-pill" data-query="Hajj">Hajj & Umrah</span>
+                                <span class="gt-quick-pill" data-query="Cruise">Cruise</span>
+                            </div>
+                        </div>
+                        <div class="gt-search-results-list" id="gtSearchResultsList"></div>
+                        <div class="gt-search-empty" id="gtSearchEmpty" style="display:none;">
+                            <i class="bi bi-search"></i>
+                            <p class="gt-empty-title">No results found</p>
+                            <p class="gt-empty-sub">Try different keywords or browse our services</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="gt-partner-cta">
                     <span class="gt-partner-label">Join as a</span>
@@ -877,6 +1189,251 @@
                 });
             }
         });
+    </script>
+
+    <!-- ==================== INLINE SEARCH ENGINE ==================== -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchInput = document.getElementById('gtSearchInput');
+        var searchBtn = document.getElementById('gtSearchBtn');
+        var dropdown = document.getElementById('gtSearchDropdown');
+        var resultsList = document.getElementById('gtSearchResultsList');
+        var quickSection = document.getElementById('gtSearchQuick');
+        var emptyState = document.getElementById('gtSearchEmpty');
+        var loader = document.getElementById('gtSearchLoader');
+        var searchWrapper = document.getElementById('gtInlineSearch');
+
+        if (!searchInput || !dropdown) return;
+
+        var debounceTimer;
+        var selectedIndex = -1;
+        var currentItems = [];
+
+        var categoryConfig = {
+            countries:  { label: 'Popular Destinations', icon: 'bi-airplane',  order: 1 },
+            emirates:   { label: 'UAE Emirates',         icon: 'bi-building',  order: 2 },
+            activities: { label: 'Activities',           icon: 'bi-geo-alt',   order: 3 },
+            services:   { label: 'Our Services',         icon: 'bi-briefcase', order: 4 },
+            visas:      { label: 'Visa Services',        icon: 'bi-passport',  order: 5 },
+            pages:      { label: 'Website Pages',        icon: 'bi-globe',     order: 6 }
+        };
+
+        function openDropdown() {
+            dropdown.classList.add('active');
+        }
+
+        function closeDropdown() {
+            dropdown.classList.remove('active');
+            selectedIndex = -1;
+            updateSelection();
+        }
+
+        function showQuickSuggestions() {
+            quickSection.style.display = 'block';
+            resultsList.innerHTML = '';
+            emptyState.style.display = 'none';
+            currentItems = [];
+        }
+
+        // Focus opens dropdown with quick suggestions
+        searchInput.addEventListener('focus', function() {
+            if (!searchInput.value.trim()) {
+                showQuickSuggestions();
+            }
+            openDropdown();
+        });
+
+        // Click outside closes dropdown
+        document.addEventListener('click', function(e) {
+            if (searchWrapper && !searchWrapper.contains(e.target)) {
+                closeDropdown();
+            }
+        });
+
+        // Keyboard navigation
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDropdown();
+                searchInput.blur();
+                return;
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (currentItems.length > 0) {
+                    selectedIndex = (selectedIndex + 1) % currentItems.length;
+                    updateSelection();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentItems.length > 0) {
+                    selectedIndex = (selectedIndex - 1 + currentItems.length) % currentItems.length;
+                    updateSelection();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0 && currentItems[selectedIndex]) {
+                    window.location.href = currentItems[selectedIndex].url;
+                } else if (searchInput.value.trim().length >= 2) {
+                    performSearch(searchInput.value.trim());
+                }
+            }
+        });
+
+        function updateSelection() {
+            var items = dropdown.querySelectorAll('.gt-dropdown-item');
+            for (var i = 0; i < items.length; i++) {
+                if (i === selectedIndex) {
+                    items[i].classList.add('gt-selected');
+                    items[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                } else {
+                    items[i].classList.remove('gt-selected');
+                }
+            }
+        }
+
+        // Debounced input handler
+        searchInput.addEventListener('input', function() {
+            var query = this.value.trim();
+            clearTimeout(debounceTimer);
+            selectedIndex = -1;
+            currentItems = [];
+
+            if (!query || query.length < 2) {
+                showQuickSuggestions();
+                openDropdown();
+                return;
+            }
+
+            loader.style.display = 'flex';
+            debounceTimer = setTimeout(function() {
+                performSearch(query);
+            }, 300);
+        });
+
+        // Search button click
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var query = searchInput.value.trim();
+            if (query.length >= 2) {
+                performSearch(query);
+            } else {
+                searchInput.focus();
+                openDropdown();
+            }
+        });
+
+        // Quick pill click
+        var pills = document.querySelectorAll('.gt-quick-pill');
+        for (var p = 0; p < pills.length; p++) {
+            pills[p].addEventListener('click', function() {
+                var q = this.getAttribute('data-query');
+                searchInput.value = q;
+                performSearch(q);
+            });
+        }
+
+        function performSearch(query) {
+            loader.style.display = 'flex';
+            openDropdown();
+
+            fetch('/api/search?q=' + encodeURIComponent(query))
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    loader.style.display = 'none';
+                    renderResults(data, query);
+                })
+                .catch(function() {
+                    loader.style.display = 'none';
+                    showError();
+                });
+        }
+
+        function renderResults(data, query) {
+            quickSection.style.display = 'none';
+            resultsList.innerHTML = '';
+            currentItems = [];
+
+            if (data.total === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            var html = '';
+            var itemIndex = 0;
+            var totalShown = 0;
+            var maxResults = 12;
+
+            var sortedKeys = Object.keys(categoryConfig).sort(function(a, b) {
+                return categoryConfig[a].order - categoryConfig[b].order;
+            });
+
+            for (var k = 0; k < sortedKeys.length; k++) {
+                if (totalShown >= maxResults) break;
+
+                var cat = sortedKeys[k];
+                var items = data[cat];
+                if (!items || items.length === 0) continue;
+
+                var config = categoryConfig[cat];
+                html += '<div class="gt-dropdown-cat-title"><i class="bi ' + config.icon + '"></i> ' + config.label + '</div>';
+
+                var limit = Math.min(items.length, maxResults - totalShown);
+                for (var i = 0; i < limit; i++) {
+                    var item = items[i];
+                    var icon = item.icon || config.icon;
+                    var highlightedTitle = highlightMatch(item.title, query);
+                    var desc = item.description ? '<p class="gt-dropdown-item-desc">' + escapeHtml(item.description) + '</p>' : '';
+
+                    html += '<a href="' + escapeHtml(item.url) + '" class="gt-dropdown-item" data-index="' + itemIndex + '">'
+                        + '<div class="gt-dropdown-item-icon"><i class="bi ' + icon + '"></i></div>'
+                        + '<div class="gt-dropdown-item-content">'
+                        + '<div class="gt-dropdown-item-title">' + highlightedTitle + '</div>'
+                        + desc
+                        + '</div>'
+                        + '<i class="bi bi-chevron-right gt-dropdown-item-arrow"></i>'
+                        + '</a>';
+
+                    currentItems.push({ url: item.url, title: item.title });
+                    itemIndex++;
+                    totalShown++;
+                }
+            }
+
+            // Keyboard hint footer
+            html += '<div class="gt-search-kbd-hint">'
+                + '<span><kbd>&uarr;&darr;</kbd> Navigate</span>'
+                + '<span><kbd>Enter</kbd> Select</span>'
+                + '<span><kbd>Esc</kbd> Close</span>'
+                + '</div>';
+
+            resultsList.innerHTML = html;
+        }
+
+        function highlightMatch(text, query) {
+            if (!query) return escapeHtml(text);
+            var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var regex = new RegExp('(' + escaped + ')', 'gi');
+            // Escape the text first, then apply highlight
+            return escapeHtml(text).replace(regex, '<span class="gt-highlight">$1</span>');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function showError() {
+            quickSection.style.display = 'none';
+            resultsList.innerHTML = '';
+            emptyState.style.display = 'block';
+            var title = emptyState.querySelector('.gt-empty-title');
+            var sub = emptyState.querySelector('.gt-empty-sub');
+            if (title) title.textContent = 'Search unavailable';
+            if (sub) sub.textContent = 'Please try again in a moment';
+        }
+    });
     </script>
 </body>
 
