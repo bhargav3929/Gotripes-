@@ -167,7 +167,7 @@ class SearchController extends Controller
 
     private function searchActivities($query, $words)
     {
-        $activities = DB::table('tbl_uaeactivities')
+        $activities = DB::table('tbl_UAEActivities')
             ->where('isActive', true)
             ->where(function($q) use ($words) {
                 foreach ($words as $word) {
