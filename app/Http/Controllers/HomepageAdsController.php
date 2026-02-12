@@ -19,11 +19,17 @@ class HomepageAdsController extends Controller
 
     public function index()
     {
-        $adSlots = HomepageAd::getGroupedBySlot(5);
-        $carouselImages = HomepageAd::where('isActive', true)
+        $adSlots = \App\Models\HomepageAd::getGroupedBySlot(5);
+        $carouselImages = \App\Models\HomepageAd::where('isActive', true)
             ->orderBy('slotOrder', 'asc')
             ->orderBy('displayOrder', 'asc')
             ->get();
-        return view('welcome', compact('carouselImages', 'adSlots'));
+            
+        $tickerItems = \App\Models\Announcement::where('isActive', true)
+                      ->orderBy('AnnouncementImportance', 'desc')
+                      ->orderBy('createdDate', 'desc')
+                      ->get();
+                      
+        return view('welcome', compact('carouselImages', 'adSlots', 'tickerItems'));
     }
 }
