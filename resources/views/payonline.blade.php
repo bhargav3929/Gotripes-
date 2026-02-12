@@ -459,10 +459,6 @@
                             <span class="summary-value" id="showFee">AED 1.00</span>
                         </div>
                         <div class="summary-row">
-                            <span class="summary-label"><i class="bi bi-percent"></i> VAT (5%)</span>
-                            <span class="summary-value" id="showVat">AED 0.00</span>
-                        </div>
-                        <div class="summary-row">
                             <span class="summary-label"><i class="bi bi-credit-card-fill"></i> Gateway (3%)</span>
                             <span class="summary-value" id="showGateway">AED 0.00</span>
                         </div>
@@ -497,9 +493,8 @@ const ccavenueUrl = @json(config('services.ccavenue.url'));
 function calc(base) {
     const b = parseFloat(base) || 0;
     const fee = 1;
-    const vat = (b + fee) * 0.05;
-    const gw = (b + fee + vat) * 0.03;
-    return { base: b, fee, vat, gw, total: b + fee + vat + gw };
+    const gw = (b + fee) * 0.03;
+    return { base: b, fee, gw, total: b + fee + gw };
 }
 
 function fmt(n) { return 'AED ' + n.toFixed(2); }
@@ -514,7 +509,6 @@ function update() {
         const c = calc(b);
         document.getElementById('showBase').textContent = fmt(c.base);
         document.getElementById('showFee').textContent = fmt(c.fee);
-        document.getElementById('showVat').textContent = fmt(c.vat);
         document.getElementById('showGateway').textContent = fmt(c.gw);
         document.getElementById('showTotal').textContent = fmt(c.total);
         document.getElementById('total_amount').value = c.total.toFixed(2);

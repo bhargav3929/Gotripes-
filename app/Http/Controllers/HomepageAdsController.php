@@ -8,19 +8,22 @@ class HomepageAdsController extends Controller
 {
     public function showCarousel()
     {
+        $adSlots = HomepageAd::getGroupedBySlot(5);
+        // Keep backward compat: flatten for any old usage
         $carouselImages = HomepageAd::where('isActive', true)
             ->orderBy('slotOrder', 'asc')
-            ->limit(6)
+            ->orderBy('displayOrder', 'asc')
             ->get();
-        return view('banner', compact('carouselImages'));
+        return view('banner', compact('carouselImages', 'adSlots'));
     }
 
     public function index()
     {
+        $adSlots = HomepageAd::getGroupedBySlot(5);
         $carouselImages = HomepageAd::where('isActive', true)
             ->orderBy('slotOrder', 'asc')
-            ->limit(6)
+            ->orderBy('displayOrder', 'asc')
             ->get();
-        return view('welcome', compact('carouselImages'));
+        return view('welcome', compact('carouselImages', 'adSlots'));
     }
 }

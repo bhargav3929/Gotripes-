@@ -10,36 +10,45 @@ class CarouselAdminController extends Controller
 {
     public function index()
     {
-        $carouselImages = HomepageAd::where('isActive', 1)
-                                   ->orderBy('slotOrder', 'asc')
-                                   ->paginate(10);
-        return view('admin.homepageads.index', compact('carouselImages'));
+        // Group all active media by TV slot
+        $adSlots = HomepageAd::where('isActive', 1)
+            ->orderBy('slotOrder', 'asc')
+            ->orderBy('displayOrder', 'asc')
+            ->get()
+            ->groupBy('slotOrder');
+
+        $totalMedia = HomepageAd::where('isActive', 1)->count();
+        $usedSlots = $adSlots->keys()->count();
+
+        return view('admin.homepageads.index', compact('adSlots', 'totalMedia', 'usedSlots'));
     }
 
     public function create()
     {
-        $activeCount = HomepageAd::where('isActive', 1)->count();
-        return view('admin.homepageads.create', compact('activeCount'));
+        $usedSlots = HomepageAd::where('isActive', 1)
+            ->select('slotOrder')
+            ->distinct()
+            ->pluck('slotOrder')
+            ->toArray();
+
+        return view('admin.homepageads.create', compact('usedSlots'));
     }
 
     public function store(Request $request)
     {
-        $activeCount = HomepageAd::where('isActive', 1)->count();
-        if ($activeCount >= 6) {
-            return redirect()->back()->withErrors('Maximum 6 active ad slots allowed. Please remove one first.');
-        }
-
         $mediaType = $request->input('mediaType', 'image');
 
         if ($mediaType === 'video') {
             $request->validate([
                 'media' => 'required|file|mimes:mp4|max:51200',
-                'slotOrder' => 'required|integer|min:1|max:6',
+                'slotOrder' => 'required|integer|min:1|max:5',
+                'duration' => 'nullable|integer|min:1|max:60',
             ]);
         } else {
             $request->validate([
                 'media' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-                'slotOrder' => 'required|integer|min:1|max:6',
+                'slotOrder' => 'required|integer|min:1|max:5',
+                'duration' => 'nullable|integer|min:1|max:60',
             ]);
         }
 
@@ -55,10 +64,17 @@ class CarouselAdminController extends Controller
             $file->move($destinationPath, $filename);
             $mediaPath = 'assets/homepageads/' . $filename;
 
+            // Auto-increment displayOrder within the slot
+            $maxOrder = HomepageAd::where('isActive', 1)
+                ->where('slotOrder', $request->input('slotOrder'))
+                ->max('displayOrder') ?? 0;
+
             HomepageAd::create([
                 'imgPath' => $mediaPath,
                 'mediaType' => $mediaType,
-                'slotOrder' => $request->input('slotOrder', 0),
+                'slotOrder' => $request->input('slotOrder'),
+                'displayOrder' => $maxOrder + 1,
+                'duration' => $request->input('duration', 5),
                 'isActive' => 1,
                 'createdby' => auth()->user()->name ?? 'admin',
                 'createddate' => now(),
@@ -67,7 +83,7 @@ class CarouselAdminController extends Controller
             ]);
 
             return redirect()->route('admin.homepageads.index')
-                           ->with('success', 'Ad slot uploaded successfully!');
+                           ->with('success', 'Media added to TV ' . $request->input('slotOrder') . ' successfully!');
         }
 
         return redirect()->back()->withErrors('Please select a file.');
@@ -86,17 +102,20 @@ class CarouselAdminController extends Controller
             if ($mediaType === 'video') {
                 $request->validate([
                     'media' => 'required|file|mimes:mp4|max:51200',
-                    'slotOrder' => 'required|integer|min:1|max:6',
+                    'slotOrder' => 'required|integer|min:1|max:5',
+                    'duration' => 'nullable|integer|min:1|max:60',
                 ]);
             } else {
                 $request->validate([
                     'media' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-                    'slotOrder' => 'required|integer|min:1|max:6',
+                    'slotOrder' => 'required|integer|min:1|max:5',
+                    'duration' => 'nullable|integer|min:1|max:60',
                 ]);
             }
         } else {
             $request->validate([
-                'slotOrder' => 'required|integer|min:1|max:6',
+                'slotOrder' => 'required|integer|min:1|max:5',
+                'duration' => 'nullable|integer|min:1|max:60',
             ]);
         }
 
@@ -123,12 +142,13 @@ class CarouselAdminController extends Controller
             'imgPath' => $mediaPath,
             'mediaType' => $mediaType,
             'slotOrder' => $request->input('slotOrder', $homepagead->slotOrder),
+            'duration' => $request->input('duration', $homepagead->duration ?? 5),
             'modifiedby' => auth()->user()->name ?? 'admin',
             'modifieddate' => now()
         ]);
 
         return redirect()->route('admin.homepageads.index')
-                       ->with('success', 'Ad slot updated successfully!');
+                       ->with('success', 'Media updated successfully!');
     }
 
     public function destroy(HomepageAd $homepagead)
@@ -140,6 +160,6 @@ class CarouselAdminController extends Controller
         ]);
 
         return redirect()->route('admin.homepageads.index')
-                       ->with('success', 'Ad slot deleted successfully!');
+                       ->with('success', 'Media removed successfully!');
     }
 }

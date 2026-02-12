@@ -48,8 +48,33 @@
             box-sizing: border-box;
         }
 
+        /* =====================================================
+           GLOBAL TYPOGRAPHY SYSTEM
+           Outfit as the single consistent font across the site
+           ===================================================== */
+        :root {
+            --primary-font: 'Outfit', sans-serif !important;
+            --alt-font: 'Outfit', sans-serif !important;
+        }
+
         body {
-            background-color: #000;
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* Override template font classes */
+        .alt-font,
+        [class*="alt-font"] {
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* Global heading hierarchy - consistent sizing */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* Body text / descriptions - consistent baseline */
+        p, span, a, li, label, input, textarea, select, button {
+            font-family: 'Outfit', sans-serif;
         }
 
         /* HEADER CONTAINER */
@@ -162,6 +187,495 @@
             width: 70%;
         }
 
+
+        /* =====================================================
+           INLINE SEARCH BAR + PARTNER CTA
+           ===================================================== */
+        .gt-inline-search-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 40px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(5, 5, 5, 0.95) 100%);
+            border-top: 1px solid rgba(255, 215, 0, 0.08);
+        }
+
+        .gt-inline-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 50px;
+            padding: 0 6px 0 20px;
+            width: 100%;
+            max-width: 580px;
+            height: 46px;
+            transition: all 0.3s ease;
+        }
+
+        .gt-inline-search:hover {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.08);
+        }
+
+        .gt-inline-search-icon {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        /* gt-inline-search-placeholder replaced by gt-inline-search-input */
+
+        .gt-inline-search-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            padding: 0 24px;
+            height: 34px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .gt-inline-search-btn:hover {
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+        }
+
+        /* =====================================================
+           SEARCH INPUT FIELD
+           ===================================================== */
+        .gt-inline-search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: #FFFFFF;
+            padding: 0 12px;
+            height: 100%;
+            caret-color: #FFD700;
+            min-width: 0;
+        }
+
+        .gt-inline-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .gt-inline-search:focus-within {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.08);
+        }
+
+        /* Loading spinner */
+        .gt-search-loader {
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .gt-search-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-top-color: #FFD700;
+            border-radius: 50%;
+            animation: gt-spin 0.6s linear infinite;
+        }
+
+        @keyframes gt-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* =====================================================
+           SEARCH DROPDOWN PANEL
+           ===================================================== */
+        .gt-search-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: rgba(12, 12, 12, 0.96);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 16px;
+            padding: 10px 0;
+            max-height: 420px;
+            overflow-y: auto;
+            z-index: 10002;
+            display: none;
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(255, 215, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            animation: gt-dropdown-in 0.2s ease-out;
+        }
+
+        .gt-search-dropdown.active {
+            display: block;
+        }
+
+        @keyframes gt-dropdown-in {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .gt-search-dropdown::-webkit-scrollbar { width: 5px; }
+        .gt-search-dropdown::-webkit-scrollbar-track { background: transparent; }
+        .gt-search-dropdown::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.12);
+            border-radius: 3px;
+        }
+
+        /* Category titles */
+        .gt-dropdown-cat-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255, 215, 0, 0.5);
+            padding: 10px 20px 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gt-dropdown-cat-title i { font-size: 11px; }
+
+        /* Quick suggestion pills */
+        .gt-quick-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 20px 6px;
+        }
+
+        .gt-quick-pill {
+            padding: 6px 16px;
+            background: rgba(255, 215, 0, 0.06);
+            border: 1px solid rgba(255, 215, 0, 0.12);
+            border-radius: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.65);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .gt-quick-pill:hover {
+            background: rgba(255, 215, 0, 0.12);
+            border-color: rgba(255, 215, 0, 0.35);
+            color: #FFD700;
+            transform: translateY(-1px);
+        }
+
+        /* Search result items */
+        .gt-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            text-decoration: none !important;
+            color: #fff !important;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .gt-dropdown-item:hover,
+        .gt-dropdown-item.gt-selected {
+            background: rgba(255, 215, 0, 0.05);
+            border-left-color: #FFD700;
+        }
+
+        .gt-dropdown-item-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD700;
+            font-size: 15px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .gt-dropdown-item:hover .gt-dropdown-item-icon,
+        .gt-dropdown-item.gt-selected .gt-dropdown-item-icon {
+            background: rgba(255, 215, 0, 0.12);
+            border-color: rgba(255, 215, 0, 0.25);
+        }
+
+        .gt-dropdown-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .gt-dropdown-item-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+
+        .gt-highlight {
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .gt-dropdown-item-desc {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 2px 0 0;
+            line-height: 1.3;
+        }
+
+        .gt-dropdown-item-arrow {
+            color: rgba(255, 215, 0, 0.2);
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.15s;
+            flex-shrink: 0;
+        }
+
+        .gt-dropdown-item:hover .gt-dropdown-item-arrow,
+        .gt-dropdown-item.gt-selected .gt-dropdown-item-arrow {
+            opacity: 1;
+        }
+
+        /* No results state */
+        .gt-search-empty {
+            text-align: center;
+            padding: 25px 20px;
+        }
+
+        .gt-search-empty > i {
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.12);
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .gt-empty-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0 0 4px;
+        }
+
+        .gt-empty-sub {
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.25);
+            margin: 0;
+        }
+
+        /* Keyboard hints footer */
+        .gt-search-kbd-hint {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 8px 20px 4px;
+            border-top: 1px solid rgba(255, 215, 0, 0.06);
+            margin-top: 4px;
+        }
+
+        .gt-search-kbd-hint span {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .gt-search-kbd-hint kbd {
+            background: rgba(255, 255, 255, 0.07);
+            color: rgba(255, 255, 255, 0.4);
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 10px;
+            margin-right: 3px;
+        }
+
+        /* Mobile dropdown adjustments */
+        @media (max-width: 991px) {
+            .gt-search-dropdown {
+                border-radius: 12px;
+                max-height: 350px;
+            }
+            .gt-search-kbd-hint { display: none; }
+            .gt-inline-search-input { font-size: 13px; }
+        }
+
+        @media (max-width: 575px) {
+            .gt-search-dropdown { max-height: 300px; }
+            .gt-dropdown-item { padding: 8px 15px; gap: 10px; }
+            .gt-dropdown-item-icon { width: 30px; height: 30px; font-size: 13px; }
+            .gt-dropdown-item-title { font-size: 13px; }
+            .gt-quick-pills { gap: 6px; padding: 6px 15px; }
+            .gt-quick-pill { padding: 5px 12px; font-size: 11px; }
+        }
+
+        /* PARTNER CTA - Positioned right, search stays centered */
+        .gt-partner-cta {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gt-partner-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 400;
+            font-style: italic;
+            color: #FFD23F;
+            white-space: nowrap;
+        }
+
+        .gt-partner-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+        }
+
+        .gt-partner-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            padding: 0 16px;
+            height: 30px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.15);
+        }
+
+        .gt-partner-btn:hover {
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
+        }
+
+        /* Hide text labels on mid screens, keep button */
+        @media (max-width: 1200px) {
+            .gt-partner-label,
+            .gt-partner-title {
+                display: none;
+            }
+        }
+
+        @media (min-width: 1201px) {
+            .gt-partner-cta {
+                border-left: 1px solid rgba(255, 215, 0, 0.12);
+                padding-left: 12px;
+            }
+        }
+
+        @media (max-width: 991px) {
+            .gt-inline-search-wrapper {
+                padding: 10px 20px;
+            }
+
+            .gt-inline-search {
+                max-width: 100%;
+                height: 42px;
+            }
+
+            .gt-inline-search-placeholder {
+                font-size: 13px;
+            }
+
+            .gt-inline-search-btn {
+                padding: 0 18px;
+                font-size: 11px;
+                height: 30px;
+            }
+
+            .gt-partner-cta {
+                position: static;
+                transform: none;
+                justify-content: center;
+                width: 100%;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid rgba(255, 215, 0, 0.1);
+            }
+
+            .gt-partner-label,
+            .gt-partner-title {
+                display: inline;
+            }
+
+            .gt-inline-search-wrapper {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .gt-inline-search-wrapper {
+                padding: 8px 15px;
+            }
+
+            .gt-inline-search {
+                height: 38px;
+                padding: 0 5px 0 15px;
+            }
+
+            .gt-inline-search-btn {
+                padding: 0 14px;
+                font-size: 10px;
+            }
+
+            .gt-partner-label {
+                font-size: 10px;
+            }
+
+            .gt-partner-title {
+                font-size: 11px;
+            }
+
+            .gt-partner-btn {
+                padding: 0 14px;
+                height: 28px;
+                font-size: 9px;
+            }
+        }
 
         /* =====================================================
            NEWS TICKER - Keep existing styles
@@ -466,208 +980,24 @@
             }
         }
 
-        /* HOMEPAGE SEARCH BAR Styles */
+        /* When ticker + search bar are shown on homepage */
         @if(Request::is('/'))
-            /* Body padding to accommodate fixed header + search bar */
-            body { margin-top: 185px; }
-            @media (max-width: 991px) { body { margin-top: 178px; } }
-            @media (max-width: 575px) { body { margin-top: 160px !important; } }
-
-            .gt-header-search-bar {
-                background: linear-gradient(180deg, rgba(10, 10, 10, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
-                border-bottom: 1px solid rgba(255, 215, 0, 0.05);
-                height: 60px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                position: relative;
-                z-index: 9990;
+            body {
+                margin-top: 195px;
             }
 
-            .gt-hero-search-input-wrapper {
-                position: relative;
-                width: 100%;
-                max-width: 600px;
-                margin: 0 20px;
+            @media (max-width: 991px) {
+                body {
+                    margin-top: 180px;
+                }
             }
 
-            /* Real Input Styles */
-            .gt-hero-search-input {
-                width: 100%;
-                height: 48px; /* Slightly taller for premium feel */
-                background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(255, 215, 0, 0.2);
-                border-radius: 50px;
-                padding: 0 110px 0 45px; /* Right padding for button */
-                color: #fff;
-                font-family: 'Outfit', sans-serif;
-                font-size: 15px;
-                outline: none;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-
-            .gt-hero-search-input:focus {
-                background: rgba(255, 255, 255, 0.08);
-                border-color: #FFD700;
-                box-shadow: 0 0 25px rgba(255, 215, 0, 0.15), inset 0 0 10px rgba(255, 215, 0, 0.05);
-            }
-
-            .gt-hero-search-icon {
-                position: absolute;
-                left: 18px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #FFD700;
-                font-size: 18px;
-                pointer-events: none;
-                transition: all 0.3s ease;
-            }
-            
-            .gt-hero-search-input:focus + .gt-hero-search-icon {
-                color: #fff;
-                text-shadow: 0 0 10px #FFD700;
-            }
-
-            .gt-hero-search-btn {
-                position: absolute;
-                right: 5px;
-                top: 5px;
-                bottom: 5px;
-                background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
-                color: #000;
-                border: none;
-                border-radius: 40px;
-                padding: 0 20px;
-                font-family: 'Outfit', sans-serif;
-                font-weight: 700;
-                font-size: 13px;
-                letter-spacing: 0.5px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-            }
-
-            .gt-hero-search-btn:hover {
-                transform: scale(1.05);
-                box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5);
-                background: linear-gradient(135deg, #FFE600 0%, #FFC107 100%);
-            }
-
-            /* Results Dropdown */
-            .gt-hero-search-results {
-                position: absolute;
-                top: 110%; /* Slight gap */
-                left: 0;
-                width: 100%;
-                background: rgba(15, 15, 15, 0.95); /* Darker premium bg */
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 215, 0, 0.15);
-                border-radius: 16px;
-                max-height: 400px;
-                overflow-y: auto;
-                display: none;
-                z-index: 9999;
-                box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-                padding: 15px;
-                animation: slideDownFade 0.3s ease;
-            }
-            
-            @keyframes slideDownFade {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            .gt-hero-search-results.active {
-                display: block;
-            }
-
-            /* Reuse modal result styles */
-            .gt-search-category-title {
-                font-size: 11px;
-                font-weight: 700;
-                letter-spacing: 1px;
-                text-transform: uppercase;
-                color: rgba(255, 215, 0, 0.6);
-                margin: 15px 0 8px 10px;
-            }
-            .gt-search-category-title:first-child { margin-top: 0; }
-            
-            .gt-search-item {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 12px;
-                border-radius: 10px;
-                text-decoration: none;
-                color: #e0e0e0;
-                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                border: 1px solid transparent;
-            }
-
-            .gt-search-item:hover {
-                background: rgba(255, 255, 255, 0.05);
-                border-color: rgba(255, 215, 0, 0.1);
-                transform: translateX(5px);
-            }
-
-            .gt-search-item-icon {
-                width: 32px;
-                height: 32px;
-                background: rgba(255, 215, 0, 0.08);
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #FFD700;
-                font-size: 15px;
-                flex-shrink: 0;
-            }
-
-            .gt-search-item-title { font-size: 15px; font-weight: 500; color: #fff; }
-            .gt-search-item-desc { font-size: 12px; color: rgba(255,255,255,0.4); margin: 0; }
-
-            /* MOBILE OPTIMIZATIONS */
             @media (max-width: 575px) {
-                .gt-header-search-bar {
-                    height: 52px;
-                    background: rgba(10, 10, 10, 0.98);
-                    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-                }
-                .gt-hero-search-input-wrapper {
-                    margin: 0 10px;
-                }
-                .gt-hero-search-input {
-                    height: 40px;
-                    padding: 0 55px 0 38px; /* Room for icon on right */
-                    font-size: 14px;
-                    background: rgba(255, 255, 255, 0.08);
-                }
-                .gt-hero-search-btn {
-                    width: 34px;
-                    height: 34px;
-                    padding: 0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    right: 4px;
-                    top: 3px;
-                    font-size: 16px;
-                    border-radius: 50%; /* Circular button on mobile */
-                }
-                .gt-hero-search-icon {
-                    left: 12px;
-                    font-size: 14px;
-                    opacity: 0.7;
-                }
-                .gt-hero-search-results {
-                    width: calc(100vw - 20px);
-                    left: -10px; /* Center it back since wrapper has margin */
-                    top: 120%;
-                    border-radius: 12px;
-                    padding: 10px;
-                    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+                body {
+                    margin-top: 162px;
                 }
             }
+
         @endif
 
     </style>
@@ -742,6 +1072,52 @@
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
         </nav>
 
+        <!-- INLINE SEARCH BAR + PARTNER CTA (Homepage Only) -->
+        @if(Request::is('/'))
+            <div class="gt-inline-search-wrapper">
+                <div class="gt-inline-search" id="gtInlineSearch">
+                    <i class="bi bi-search gt-inline-search-icon"></i>
+                    <input type="text"
+                           class="gt-inline-search-input"
+                           id="gtSearchInput"
+                           placeholder="Search destinations, activities, services..."
+                           autocomplete="off"
+                           autocorrect="off"
+                           spellcheck="false">
+                    <div class="gt-search-loader" id="gtSearchLoader" style="display:none;">
+                        <div class="gt-search-spinner"></div>
+                    </div>
+                    <button class="gt-inline-search-btn" id="gtSearchBtn">SEARCH</button>
+
+                    <!-- Search Dropdown Results Panel -->
+                    <div class="gt-search-dropdown" id="gtSearchDropdown">
+                        <div class="gt-search-quick" id="gtSearchQuick">
+                            <div class="gt-dropdown-cat-title"><i class="bi bi-lightning"></i> Popular Searches</div>
+                            <div class="gt-quick-pills">
+                                <span class="gt-quick-pill" data-query="Dubai">Dubai</span>
+                                <span class="gt-quick-pill" data-query="Visa">UAE Visa</span>
+                                <span class="gt-quick-pill" data-query="Abu Dhabi">Abu Dhabi</span>
+                                <span class="gt-quick-pill" data-query="Desert Safari">Desert Safari</span>
+                                <span class="gt-quick-pill" data-query="Hajj">Hajj & Umrah</span>
+                                <span class="gt-quick-pill" data-query="Cruise">Cruise</span>
+                            </div>
+                        </div>
+                        <div class="gt-search-results-list" id="gtSearchResultsList"></div>
+                        <div class="gt-search-empty" id="gtSearchEmpty" style="display:none;">
+                            <i class="bi bi-search"></i>
+                            <p class="gt-empty-title">No results found</p>
+                            <p class="gt-empty-sub">Try different keywords or browse our services</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gt-partner-cta">
+                    <span class="gt-partner-label">Join as a</span>
+                    <span class="gt-partner-title">Partner / Customer</span>
+                    <button class="gt-partner-btn" id="partnerRegisterBtn">Register Now</button>
+                </div>
+            </div>
+        @endif
+
         <!-- NEWS TICKER (Homepage Only) -->
         @if(Request::is('/'))
             <div class="news-ticker">
@@ -763,25 +1139,6 @@
                     @endforelse
                 </div>
             </div>
-        @endif
-
-        <!-- SEARCH BAR (Homepage Only) -->
-        @if(Request::is('/'))
-        <div class="gt-header-search-bar">
-            <div class="gt-hero-search-input-wrapper">
-                <input type="text" class="gt-hero-search-input" id="heroSearchInput" placeholder="Search destinations...">
-                <i class="bi bi-search gt-hero-search-icon"></i>
-                
-                <!-- Search Button -->
-                <button class="gt-hero-search-btn" id="heroSearchBtn">
-                    <span class="d-none d-sm-inline">SEARCH</span>
-                    <i class="bi bi-search d-inline d-sm-none"></i>
-                </button>
-
-                <!-- Results Dropdown -->
-                <div id="heroSearchResults" class="gt-hero-search-results"></div>
-            </div>
-        </div>
         @endif
 
     </header>
@@ -834,131 +1191,250 @@
         });
     </script>
 
-    @if(Request::is('/'))
+    <!-- ==================== INLINE SEARCH ENGINE ==================== -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.getElementById('heroSearchInput');
-            const results = document.getElementById('heroSearchResults');
-            const searchBtn = document.getElementById('heroSearchBtn');
-            let debounceTimer;
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchInput = document.getElementById('gtSearchInput');
+        var searchBtn = document.getElementById('gtSearchBtn');
+        var dropdown = document.getElementById('gtSearchDropdown');
+        var resultsList = document.getElementById('gtSearchResultsList');
+        var quickSection = document.getElementById('gtSearchQuick');
+        var emptyState = document.getElementById('gtSearchEmpty');
+        var loader = document.getElementById('gtSearchLoader');
+        var searchWrapper = document.getElementById('gtInlineSearch');
 
-            if (input) {
-                // Typewriter effect
-                const placeholders = [
-                    'Search "Dubai Safari"...',
-                    'Try "UAE Visa Services"...',
-                    'Search "Luxury Hotels"...',
-                    'Try "Egypt Tour Packages"...'
-                ];
-                let currentIdx = 0;
-                let charIdx = 0;
-                let isDeleting = false;
-                let typeSpeed = 100;
+        if (!searchInput || !dropdown) return;
 
-                function type() {
-                    const currentTip = placeholders[currentIdx];
-                    if (isDeleting) {
-                        input.setAttribute('placeholder', currentTip.substring(0, charIdx--));
-                        typeSpeed = 50;
-                    } else {
-                        input.setAttribute('placeholder', currentTip.substring(0, charIdx++));
-                        typeSpeed = 100;
-                    }
+        var debounceTimer;
+        var selectedIndex = -1;
+        var currentItems = [];
 
-                    if (!isDeleting && charIdx === currentTip.length + 1) {
-                        isDeleting = true;
-                        typeSpeed = 2000; // Pause at end
-                    } else if (isDeleting && charIdx === 0) {
-                        isDeleting = false;
-                        currentIdx = (currentIdx + 1) % placeholders.length;
-                        typeSpeed = 500;
-                    }
+        var categoryConfig = {
+            countries:  { label: 'Popular Destinations', icon: 'bi-airplane',  order: 1 },
+            emirates:   { label: 'UAE Emirates',         icon: 'bi-building',  order: 2 },
+            activities: { label: 'Activities',           icon: 'bi-geo-alt',   order: 3 },
+            services:   { label: 'Our Services',         icon: 'bi-briefcase', order: 4 },
+            visas:      { label: 'Visa Services',        icon: 'bi-passport',  order: 5 },
+            pages:      { label: 'Website Pages',        icon: 'bi-globe',     order: 6 }
+        };
 
-                    if (document.activeElement !== input) {
-                        setTimeout(type, typeSpeed);
-                    }
-                }
-                type();
+        function openDropdown() {
+            dropdown.classList.add('active');
+        }
 
-                // Stop animation on focus
-                input.addEventListener('focus', () => {
-                    input.setAttribute('placeholder', 'Type to search...');
-                });
+        function closeDropdown() {
+            dropdown.classList.remove('active');
+            selectedIndex = -1;
+            updateSelection();
+        }
 
-                // Search Logic
-                input.addEventListener('input', function() {
-                    const query = this.value.trim();
-                    clearTimeout(debounceTimer);
+        function showQuickSuggestions() {
+            quickSection.style.display = 'block';
+            resultsList.innerHTML = '';
+            emptyState.style.display = 'none';
+            currentItems = [];
+        }
 
-                    if (query.length < 2) {
-                        results.classList.remove('active');
-                        results.innerHTML = '';
-                        return;
-                    }
-
-                    debounceTimer = setTimeout(() => {
-                        performSearch(query);
-                    }, 300);
-                });
-
-                // Search Button Click
-                if(searchBtn) {
-                    searchBtn.addEventListener('click', function() {
-                        const query = input.value.trim();
-                        if(query.length >= 2) {
-                            performSearch(query);
-                        } else {
-                            input.focus();
-                        }
-                    });
-                }
-
-                // Close on click outside
-                document.addEventListener('click', function(e) {
-                    if (input && !input.contains(e.target) && results && !results.contains(e.target) && e.target !== searchBtn) {
-                        results.classList.remove('active');
-                    }
-                });
+        // Focus opens dropdown with quick suggestions
+        searchInput.addEventListener('focus', function() {
+            if (!searchInput.value.trim()) {
+                showQuickSuggestions();
             }
+            openDropdown();
+        });
 
-            function performSearch(query) {
-                fetch(`/api/search?q=${encodeURIComponent(query)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data.total > 0) {
-                            let html = '';
-                            if (data.countries?.length) html += renderGroup('Destinations', data.countries, 'globe-americas');
-                            if (data.emirates?.length) html += renderGroup('Emirates', data.emirates, 'geo-alt');
-                            if (data.activities?.length) html += renderGroup('Activities', data.activities, 'ticket-perforated');
-                            if (data.visas?.length) html += renderGroup('Visas', data.visas, 'passport');
-                            
-                            results.innerHTML = html;
-                            results.classList.add('active');
-                        } else {
-                            results.innerHTML = '<div style="padding:15px; text-align:center; color:rgba(255,255,255,0.5); font-size:13px;">No results found</div>';
-                            results.classList.add('active');
-                        }
-                    });
-            }
-
-            function renderGroup(title, items, icon) {
-                let chunk = `<div class="gt-search-category-title">${title}</div>`;
-                items.forEach(item => {
-                    chunk += `
-                        <a href="${item.url}" class="gt-search-item">
-                            <div class="gt-search-item-icon"><i class="bi bi-${icon}"></i></div>
-                            <div class="gt-search-item-content">
-                                <div class="gt-search-item-title">${item.title}</div>
-                                ${item.description ? `<p class="gt-search-item-desc">${item.description}</p>` : ''}
-                            </div>
-                        </a>
-                    `;
-                });
-                return chunk;
+        // Click outside closes dropdown
+        document.addEventListener('click', function(e) {
+            if (searchWrapper && !searchWrapper.contains(e.target)) {
+                closeDropdown();
             }
         });
+
+        // Keyboard navigation
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDropdown();
+                searchInput.blur();
+                return;
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (currentItems.length > 0) {
+                    selectedIndex = (selectedIndex + 1) % currentItems.length;
+                    updateSelection();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentItems.length > 0) {
+                    selectedIndex = (selectedIndex - 1 + currentItems.length) % currentItems.length;
+                    updateSelection();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0 && currentItems[selectedIndex]) {
+                    window.location.href = currentItems[selectedIndex].url;
+                } else if (searchInput.value.trim().length >= 2) {
+                    performSearch(searchInput.value.trim());
+                }
+            }
+        });
+
+        function updateSelection() {
+            var items = dropdown.querySelectorAll('.gt-dropdown-item');
+            for (var i = 0; i < items.length; i++) {
+                if (i === selectedIndex) {
+                    items[i].classList.add('gt-selected');
+                    items[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                } else {
+                    items[i].classList.remove('gt-selected');
+                }
+            }
+        }
+
+        // Debounced input handler
+        searchInput.addEventListener('input', function() {
+            var query = this.value.trim();
+            clearTimeout(debounceTimer);
+            selectedIndex = -1;
+            currentItems = [];
+
+            if (!query || query.length < 2) {
+                showQuickSuggestions();
+                openDropdown();
+                return;
+            }
+
+            loader.style.display = 'flex';
+            debounceTimer = setTimeout(function() {
+                performSearch(query);
+            }, 300);
+        });
+
+        // Search button click
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var query = searchInput.value.trim();
+            if (query.length >= 2) {
+                performSearch(query);
+            } else {
+                searchInput.focus();
+                openDropdown();
+            }
+        });
+
+        // Quick pill click
+        var pills = document.querySelectorAll('.gt-quick-pill');
+        for (var p = 0; p < pills.length; p++) {
+            pills[p].addEventListener('click', function() {
+                var q = this.getAttribute('data-query');
+                searchInput.value = q;
+                performSearch(q);
+            });
+        }
+
+        function performSearch(query) {
+            loader.style.display = 'flex';
+            openDropdown();
+
+            fetch('/api/search?q=' + encodeURIComponent(query))
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    loader.style.display = 'none';
+                    renderResults(data, query);
+                })
+                .catch(function() {
+                    loader.style.display = 'none';
+                    showError();
+                });
+        }
+
+        function renderResults(data, query) {
+            quickSection.style.display = 'none';
+            resultsList.innerHTML = '';
+            currentItems = [];
+
+            if (data.total === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            var html = '';
+            var itemIndex = 0;
+            var totalShown = 0;
+            var maxResults = 12;
+
+            var sortedKeys = Object.keys(categoryConfig).sort(function(a, b) {
+                return categoryConfig[a].order - categoryConfig[b].order;
+            });
+
+            for (var k = 0; k < sortedKeys.length; k++) {
+                if (totalShown >= maxResults) break;
+
+                var cat = sortedKeys[k];
+                var items = data[cat];
+                if (!items || items.length === 0) continue;
+
+                var config = categoryConfig[cat];
+                html += '<div class="gt-dropdown-cat-title"><i class="bi ' + config.icon + '"></i> ' + config.label + '</div>';
+
+                var limit = Math.min(items.length, maxResults - totalShown);
+                for (var i = 0; i < limit; i++) {
+                    var item = items[i];
+                    var icon = item.icon || config.icon;
+                    var highlightedTitle = highlightMatch(item.title, query);
+                    var desc = item.description ? '<p class="gt-dropdown-item-desc">' + escapeHtml(item.description) + '</p>' : '';
+
+                    html += '<a href="' + escapeHtml(item.url) + '" class="gt-dropdown-item" data-index="' + itemIndex + '">'
+                        + '<div class="gt-dropdown-item-icon"><i class="bi ' + icon + '"></i></div>'
+                        + '<div class="gt-dropdown-item-content">'
+                        + '<div class="gt-dropdown-item-title">' + highlightedTitle + '</div>'
+                        + desc
+                        + '</div>'
+                        + '<i class="bi bi-chevron-right gt-dropdown-item-arrow"></i>'
+                        + '</a>';
+
+                    currentItems.push({ url: item.url, title: item.title });
+                    itemIndex++;
+                    totalShown++;
+                }
+            }
+
+            // Keyboard hint footer
+            html += '<div class="gt-search-kbd-hint">'
+                + '<span><kbd>&uarr;&darr;</kbd> Navigate</span>'
+                + '<span><kbd>Enter</kbd> Select</span>'
+                + '<span><kbd>Esc</kbd> Close</span>'
+                + '</div>';
+
+            resultsList.innerHTML = html;
+        }
+
+        function highlightMatch(text, query) {
+            if (!query) return escapeHtml(text);
+            var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var regex = new RegExp('(' + escaped + ')', 'gi');
+            // Escape the text first, then apply highlight
+            return escapeHtml(text).replace(regex, '<span class="gt-highlight">$1</span>');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function showError() {
+            quickSection.style.display = 'none';
+            resultsList.innerHTML = '';
+            emptyState.style.display = 'block';
+            var title = emptyState.querySelector('.gt-empty-title');
+            var sub = emptyState.querySelector('.gt-empty-sub');
+            if (title) title.textContent = 'Search unavailable';
+            if (sub) sub.textContent = 'Please try again in a moment';
+        }
+    });
     </script>
-    @endif
 </body>
 
 </html>

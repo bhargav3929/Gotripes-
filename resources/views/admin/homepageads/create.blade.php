@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Add Ad Slot')
+@section('title', 'Add Media to TV')
 
 @section('content')
 <div class="container-fluid">
@@ -8,10 +8,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Add New Ad Slot</h3>
+                    <h3 class="card-title"><i class="fas fa-plus-circle me-2"></i>Add Media to TV Slot</h3>
                     <div class="card-tools">
                         <a href="{{ route('admin.homepageads.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to List
+                            <i class="fas fa-arrow-left"></i> Back to TVs
                         </a>
                     </div>
                 </div>
@@ -20,24 +20,32 @@
                     <div class="card-body">
                         <div class="row justify-content-center">
                             <div class="col-md-8">
-                                @if(($activeCount ?? 0) >= 6)
-                                    <div class="alert alert-warning">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                        <strong>Maximum reached!</strong> You already have 6 active ad slots. Please remove one first.
-                                    </div>
-                                @endif
-
                                 <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i>
-                                    <strong>Ad Slot Requirements:</strong>
-                                    <ul class="mb-0 mt-2">
-                                        <li><strong>Images:</strong> JPEG, PNG, JPG, GIF, WEBP (max 5MB)</li>
-                                        <li><strong>Videos:</strong> MP4 format (max 50MB)</li>
-                                        <li><strong>Slots:</strong> Up to 6 ad slots, 4 visible at a time</li>
-                                    </ul>
+                                    <i class="fas fa-tv me-2"></i>
+                                    <strong>TV Slot System:</strong> Each TV slot (1-5) is a dedicated display window on the homepage.
+                                    You can add multiple images and videos to each TV. They will cycle automatically like an airport display.
                                 </div>
 
-                                <!-- Media Type Selection -->
+                                <!-- TV Slot Selection -->
+                                <div class="form-group mb-4">
+                                    <label for="slotOrder" class="form-label h5">TV Slot <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="slotOrder" name="slotOrder" required>
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <option value="{{ $i }}"
+                                                {{ (request('tv') == $i || old('slotOrder') == $i) ? 'selected' : '' }}>
+                                                TV {{ $i }}
+                                                @if(in_array($i, $usedSlots ?? []))
+                                                    (has media)
+                                                @else
+                                                    (empty)
+                                                @endif
+                                            </option>
+                                        @endfor
+                                    </select>
+                                    <small class="text-muted">Choose which TV window this media will appear in</small>
+                                </div>
+
+                                <!-- Media Type -->
                                 <div class="form-group mb-4">
                                     <label class="form-label h5">Media Type <span class="text-danger">*</span></label>
                                     <div class="d-flex gap-3">
@@ -56,15 +64,15 @@
                                     </div>
                                 </div>
 
-                                <!-- Slot Order -->
-                                <div class="form-group mb-4">
-                                    <label for="slotOrder" class="form-label h5">Slot Order <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="slotOrder" name="slotOrder" required>
-                                        @for($i = 1; $i <= 6; $i++)
-                                            <option value="{{ $i }}" {{ old('slotOrder') == $i ? 'selected' : '' }}>Slot {{ $i }}</option>
-                                        @endfor
-                                    </select>
-                                    <small class="text-muted">Choose the display order (1-6)</small>
+                                <!-- Duration (for images) -->
+                                <div class="form-group mb-4" id="durationGroup">
+                                    <label for="duration" class="form-label h5">Display Duration</label>
+                                    <div class="input-group" style="max-width: 200px;">
+                                        <input type="number" class="form-control" id="duration" name="duration"
+                                               value="{{ old('duration', 5) }}" min="1" max="60">
+                                        <span class="input-group-text">seconds</span>
+                                    </div>
+                                    <small class="text-muted">How long this image shows before the next one (videos play in full)</small>
                                 </div>
 
                                 <!-- File Upload -->
@@ -92,8 +100,8 @@
                         </div>
                     </div>
                     <div class="card-footer text-center">
-                        <button type="submit" class="btn btn-success btn-lg" {{ ($activeCount ?? 0) >= 6 ? 'disabled' : '' }}>
-                            <i class="fas fa-upload"></i> Upload Ad Slot
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-upload"></i> Add to TV
                         </button>
                         <a href="{{ route('admin.homepageads.index') }}" class="btn btn-secondary btn-lg ms-3">
                             Cancel
@@ -107,25 +115,28 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const mediaInput = document.getElementById('media');
-    const mediaLabel = document.getElementById('mediaLabel');
-    const mediaHint = document.getElementById('mediaHint');
-    const previewImg = document.getElementById('previewImg');
-    const previewVideo = document.getElementById('previewVideo');
-    const mediaPreview = document.getElementById('mediaPreview');
-    const typeImage = document.getElementById('typeImage');
-    const typeVideo = document.getElementById('typeVideo');
+    var mediaInput = document.getElementById('media');
+    var mediaLabel = document.getElementById('mediaLabel');
+    var mediaHint = document.getElementById('mediaHint');
+    var previewImg = document.getElementById('previewImg');
+    var previewVideo = document.getElementById('previewVideo');
+    var mediaPreview = document.getElementById('mediaPreview');
+    var typeImage = document.getElementById('typeImage');
+    var typeVideo = document.getElementById('typeVideo');
+    var durationGroup = document.getElementById('durationGroup');
 
     function updateMediaType() {
-        const isVideo = typeVideo.checked;
+        var isVideo = typeVideo.checked;
         if (isVideo) {
             mediaLabel.innerHTML = 'Upload Video <span class="text-danger">*</span>';
             mediaInput.accept = 'video/mp4';
             mediaHint.textContent = 'Accepted: MP4 (max 50MB)';
+            durationGroup.style.display = 'none';
         } else {
             mediaLabel.innerHTML = 'Upload Image <span class="text-danger">*</span>';
             mediaInput.accept = 'image/*';
             mediaHint.textContent = 'Accepted: JPEG, PNG, JPG, GIF, WEBP (max 5MB)';
+            durationGroup.style.display = 'block';
         }
         mediaInput.value = '';
         mediaPreview.style.display = 'none';
@@ -135,13 +146,10 @@ document.addEventListener('DOMContentLoaded', function() {
     typeVideo.addEventListener('change', updateMediaType);
 
     mediaInput.addEventListener('change', function() {
-        const file = this.files[0];
-        if (!file) {
-            mediaPreview.style.display = 'none';
-            return;
-        }
+        var file = this.files[0];
+        if (!file) { mediaPreview.style.display = 'none'; return; }
 
-        const isVideo = typeVideo.checked;
+        var isVideo = typeVideo.checked;
         if (isVideo) {
             previewImg.style.display = 'none';
             previewVideo.style.display = 'block';
@@ -149,10 +157,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             previewVideo.style.display = 'none';
             previewImg.style.display = 'block';
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-            };
+            var reader = new FileReader();
+            reader.onload = function(e) { previewImg.src = e.target.result; };
             reader.readAsDataURL(file);
         }
         mediaPreview.style.display = 'block';
