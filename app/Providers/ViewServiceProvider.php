@@ -22,7 +22,10 @@ class ViewServiceProvider extends ServiceProvider
     public function boot()
 {
     View::composer('header', function ($view) {
-        $announcements = Announcement::where('isActive', true)->get();
+        $announcements = Announcement::where('isActive', true)
+                        ->orderBy('AnnouncementImportance', 'desc')
+                        ->orderBy('createdDate', 'desc')
+                        ->get();
         $view->with('announcements', $announcements);
     });
 }

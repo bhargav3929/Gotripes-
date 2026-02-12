@@ -24,12 +24,7 @@ use App\Http\Controllers\SearchController;
 Route::get('/api/search', [SearchController::class, 'search'])->name('search');
 
 Route::get('/', function () {
-    $tickerItems = \App\Models\Announcement::where('isActive', true)
-                  ->orderBy('AnnouncementImportance', 'desc')
-                  ->orderBy('createdDate', 'desc')
-                  ->get();
-    
-    return view('welcome', compact('tickerItems'));
+    return view('welcome');
 });
 Route::get('/admin', function () {
     return view('auth.login');

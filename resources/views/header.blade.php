@@ -746,7 +746,7 @@
         @if(Request::is('/'))
             <div class="news-ticker">
                 <div class="scroll text-uppercase">
-                    @forelse($tickerItems ?? [] as $ticker)
+                    @forelse($announcements ?? [] as $ticker)
                         <a href="#" class="news-item">
                             @if($ticker->tagType && $ticker->tagType !== 'none')
                                 <span class="{{ $ticker->tag_css_class }}">{{ $ticker->tag_label }}</span>
