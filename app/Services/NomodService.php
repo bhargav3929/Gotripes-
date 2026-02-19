@@ -38,7 +38,14 @@ class NomodService
         ];
 
         if (!empty($params['customer'])) {
-            $payload['customer'] = $params['customer'];
+            $c = $params['customer'];
+            $nameParts = explode(' ', trim($c['name'] ?? ''), 2);
+            $payload['customer'] = [
+                'first_name' => $nameParts[0] ?: 'Customer',
+                'last_name' => $nameParts[1] ?? $nameParts[0] ?: 'Customer',
+                'email' => $c['email'] ?? '',
+                'phone_number' => $c['phone'] ?? $c['phone_number'] ?? '',
+            ];
         }
 
         if (!empty($params['metadata'])) {
