@@ -1,5 +1,5 @@
 <?php
-
+// Nomod payment gateway controller — handles success/failure/cancel callbacks
 namespace App\Http\Controllers;
 
 use App\Models\NomodTransaction;
