@@ -18,25 +18,27 @@ class NomodService
 
     public function createCheckout(array $params): array
     {
+        $amount = number_format((float) $params['amount'], 2, '.', '');
+
         $payload = [
-            'amount' => (int) round($params['amount'] * 100), // Nomod expects amount in minor units (fils)
+            'amount' => $amount,
             'currency' => $params['currency'] ?? 'AED',
             'reference_id' => $params['order_id'],
             'success_url' => config('nomod.success_url') . '?reference_id=' . $params['order_id'],
             'failure_url' => config('nomod.failure_url') . '?reference_id=' . $params['order_id'],
-            'cancel_url' => config('nomod.cancelled_url') . '?reference_id=' . $params['order_id'],
+            'cancelled_url' => config('nomod.cancelled_url') . '?reference_id=' . $params['order_id'],
+            'items' => $params['items'] ?? [
+                [
+                    'item_id' => $params['order_id'],
+                    'name' => $params['description'] ?? 'Payment',
+                    'quantity' => 1,
+                    'unit_amount' => $amount,
+                ],
+            ],
         ];
-
-        if (!empty($params['description'])) {
-            $payload['description'] = $params['description'];
-        }
 
         if (!empty($params['customer'])) {
             $payload['customer'] = $params['customer'];
-        }
-
-        if (!empty($params['items'])) {
-            $payload['items'] = $params['items'];
         }
 
         if (!empty($params['metadata'])) {
