@@ -365,7 +365,7 @@
     <div class="checkout-wrapper">
         <div class="checkout-header">
             <h1 class="checkout-title">Secure Payment</h1>
-            <p class="checkout-subtitle">Complete your payment securely with CCAvenue</p>
+            <p class="checkout-subtitle">Complete your payment securely</p>
         </div>
 
         <div class="checkout-main">
@@ -475,21 +475,14 @@
                 </button>
 
                 <div class="secure-badge">
-                    <i class="bi bi-shield-check"></i> Secured by CCAvenue • 256-bit SSL
+                    <i class="bi bi-shield-check"></i> Secured Payment • 256-bit SSL
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<form id="ccavenueForm" method="post" action="{{ config('services.ccavenue.url') }}" style="display:none;">
-    <input type="hidden" name="encRequest" id="encRequest">
-    <input type="hidden" name="access_code" id="access_code">
-</form>
-
 <script>
-const ccavenueUrl = @json(config('services.ccavenue.url'));
-
 function calc(base) {
     const b = parseFloat(base) || 0;
     const fee = 1;
@@ -551,14 +544,8 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(r => r.json())
         .then(d => {
-            if (d.success && (d.encrypted_data || d.encryptedData)) {
-                const f = document.createElement('form');
-                f.method = 'POST';
-                f.action = d.ccavenue_url || ccavenueUrl;
-                f.innerHTML = `<input type="hidden" name="encRequest" value="${d.encrypted_data || d.encryptedData}">
-                               <input type="hidden" name="access_code" value="${d.access_code || d.accessCode}">`;
-                document.body.appendChild(f);
-                f.submit();
+            if (d.success && d.checkout_url) {
+                window.location.href = d.checkout_url;
             } else {
                 throw new Error(d.message || 'Failed');
             }

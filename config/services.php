@@ -31,15 +31,15 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     
-    'ccavenue' => [
-    'merchant_id' => env('CCAVENUE_MERCHANT_ID'),
-    'working_key' => env('CCAVENUE_WORKING_KEY'),
-    'access_code' => env('CCAVENUE_ACCESS_CODE'),
-    'url' => env('CCAVENUE_URL'),
-    'redirect_url' => env('CCAVENUE_REDIRECT'),
-    'cancel_url' => env('CCAVENUE_CANCEL')
-
-],
+    // CCAvenue (deprecated — replaced by Nomod Hosted Checkout)
+    // 'ccavenue' => [
+    //     'merchant_id' => env('CCAVENUE_MERCHANT_ID'),
+    //     'working_key' => env('CCAVENUE_WORKING_KEY'),
+    //     'access_code' => env('CCAVENUE_ACCESS_CODE'),
+    //     'url' => env('CCAVENUE_URL'),
+    //     'redirect_url' => env('CCAVENUE_REDIRECT'),
+    //     'cancel_url' => env('CCAVENUE_CANCEL'),
+    // ],
 
 
 

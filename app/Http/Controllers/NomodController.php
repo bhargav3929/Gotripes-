@@ -1,167 +1,116 @@
 <?php
-// DEPRECATED: This controller has been replaced by NomodController.
-// Kept for historical reference and querying existing ccavenue_transactions.
 
 namespace App\Http\Controllers;
 
-use App\Models\CCAvenueTransaction;
+use App\Models\NomodTransaction;
 use App\Models\UAEVApplication;
 use App\Models\ActivityBooking;
 use App\Models\AgentBooking;
 use App\Models\UAEActivity;
 use App\Mail\PaymentStatusMail;
+use App\Services\NomodService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-// use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
 
-require_once app_path('Helpers/Crypto.php');
-
-class CCAvenueController extends Controller
+class NomodController extends Controller
 {
-    public function initiatePayment(Request $request)
+    public function success(Request $request)
     {
-        $orderId = $request->input('order_id');
-        $amount = $request->input('amount');
-        $bookingType = $request->input('booking_type', 1);
+        return $this->handleCallback($request, 'success');
+    }
 
-        if (!$orderId || !$amount) {
-            return response()->json(['error' => 'Missing order_id or amount'], 400);
+    public function failure(Request $request)
+    {
+        return $this->handleCallback($request, 'failure');
+    }
+
+    public function cancelled(Request $request)
+    {
+        return $this->handleCallback($request, 'cancelled');
+    }
+
+    private function handleCallback(Request $request, string $callbackType)
+    {
+        $referenceId = $request->query('reference_id');
+
+        if (!$referenceId) {
+            return view('payment.status')->with('response', [
+                'order_status' => 'Failed',
+                'failure_message' => 'Missing payment reference.',
+            ]);
         }
 
-        $customerData = $this->getCustomerData($orderId, $bookingType);
+        // Look up the transaction by order_id (which we used as reference_id)
+        $transaction = NomodTransaction::where('order_id', $referenceId)->first();
 
-        if (!$customerData) {
-            return response()->json(['error' => 'Booking not found'], 404);
+        if (!$transaction) {
+            return view('payment.status')->with('response', [
+                'order_id' => $referenceId,
+                'order_status' => 'Failed',
+                'failure_message' => 'Transaction not found.',
+            ]);
         }
 
-        $merchantId = config('services.ccavenue.merchant_id');
-        $workingKey = config('services.ccavenue.working_key');
-        $accessCode = config('services.ccavenue.access_code');
-        $cancelUrl = config('services.ccavenue.cancel_url');
+        // Verify payment status with Nomod API
+        $nomodService = new NomodService();
+        $verifyResult = $nomodService->getCheckout($transaction->checkout_id);
 
-        $paymentData = [
-            'merchant_id' => $merchantId,
-            'order_id' => $orderId,
-            'currency' => 'AED',
-            'amount' => number_format($amount, 2, '.', ''),
-            'redirect_url' => config('services.ccavenue.redirect_url'),
-            'cancel_url' => $cancelUrl,
-            'language' => 'EN',
-            'billing_name' => $customerData['name'],
-            'billing_email' => $customerData['email'],
-            'billing_tel' => $customerData['phone'],
+        $nomodStatus = 'unknown';
+        $responseData = [];
+
+        if ($verifyResult['success']) {
+            $responseData = $verifyResult['data'];
+            $nomodStatus = $responseData['status'] ?? 'unknown';
+
+            $transaction->update([
+                'status' => $nomodStatus,
+                'response_data' => $responseData,
+            ]);
+        } else {
+            // Fallback to callback type if API verification fails
+            $statusMap = [
+                'success' => 'paid',
+                'failure' => 'expired',
+                'cancelled' => 'cancelled',
+            ];
+            $nomodStatus = $statusMap[$callbackType] ?? 'unknown';
+
+            $transaction->update([
+                'status' => $nomodStatus,
+            ]);
+        }
+
+        // Map Nomod status to our display status
+        $orderStatus = match ($nomodStatus) {
+            'paid' => 'Success',
+            'cancelled' => 'Cancelled',
+            'expired', 'failed' => 'Failed',
+            default => 'Failed',
+        };
+
+        $bookingType = $this->determineBookingType($referenceId);
+
+        // Send payment status email
+        $this->sendPaymentStatusEmail($referenceId, $orderStatus, $responseData);
+
+        // Update booking status
+        $this->updateBookingStatus($referenceId, $orderStatus, $bookingType);
+
+        // Build response array compatible with payment/status.blade.php
+        $response = [
+            'order_id' => $referenceId,
+            'order_status' => $orderStatus,
+            'amount' => $transaction->amount,
+            'currency' => $transaction->currency ?? 'AED',
+            'payment_mode' => 'Nomod Checkout',
+            'tracking_id' => $transaction->checkout_id,
+            'bank_ref_no' => $transaction->checkout_id,
+            'failure_message' => $orderStatus !== 'Success' ? ($responseData['failure_reason'] ?? 'Payment was not completed.') : null,
+            'status_message' => $orderStatus !== 'Success' ? ($responseData['status_message'] ?? 'Payment was not completed.') : null,
         ];
 
-        $paramString = http_build_query($paymentData);
-
-        try {
-            $encryptedData = ccavenue_encrypt($paramString, $workingKey);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Encryption failed'], 500);
-        }
-
-        return response()->json([
-            'encryptedData' => $encryptedData,
-            'accessCode' => $accessCode,
-            'merchant_id' => $merchantId,
-        ]);
-    }
-
-    public function handleResponse(Request $request)
-    {
-        $workingKey = config('services.ccavenue.working_key');
-        $encResp = $request->input('encResp');
-
-        if (!$encResp) {
-            return view('payment.status')->with('response', ['error' => 'Invalid response']);
-        }
-
-        try {
-            $decryptedResponse = ccavenue_decrypt($encResp, $workingKey);
-        } catch (\Exception $e) {
-            return view('payment.status')->with('response', ['error' => 'Decryption failed']);
-        }
-
-        parse_str($decryptedResponse, $responseArr);
-
-        $orderId = $responseArr['order_id'] ?? null;
-        if (!$orderId) {
-            return view('payment.status')->with('response', ['error' => 'Invalid order ID']);
-        }
-
-        $bookingType = $this->determineBookingType($orderId);
-
-        $transaction = CCAvenueTransaction::updateOrCreate(
-            ['order_id' => $orderId],
-            [
-                'tracking_id' => $responseArr['tracking_id'] ?? null,
-                'bank_ref_no' => $responseArr['bank_ref_no'] ?? null,
-                'order_status' => $responseArr['order_status'] ?? null,
-                'failure_message' => $responseArr['failure_message'] ?? null,
-                'amount' => $responseArr['amount'] ?? null,
-                'payment_mode' => $responseArr['payment_mode'] ?? null,
-                'booking_type' => $bookingType,
-                'response_data' => json_encode($responseArr),
-            ]
-        );
-
-        $this->sendPaymentStatusEmail($orderId, $responseArr['order_status'] ?? 'Failed', $responseArr);
-
-        $this->updateBookingStatus($orderId, $responseArr['order_status'] ?? 'Failed', $bookingType);
-
-        return view('payment.status')->with('response', $responseArr);
-    }
-
-    public function cancel(Request $request)
-    {
-        $orderId = null;
-        $responseArr = [];
-
-        $encResp = $request->input('encResp');
-        if ($encResp) {
-            try {
-                $workingKey = config('services.ccavenue.working_key');
-                $decryptedResponse = ccavenue_decrypt($encResp, $workingKey);
-
-                parse_str($decryptedResponse, $responseArr);
-                $orderId = $responseArr['order_id'] ?? null;
-
-            } catch (\Exception $e) {
-                // Continue to fallback
-            }
-        }
-
-        if (!$orderId) {
-            $orderId = $request->query('order_id') ??
-                $request->input('order_id') ??
-                $request->input('orderNo') ??
-                null;
-        }
-
-        if ($orderId) {
-            $bookingType = $this->determineBookingType($orderId);
-
-            $cancellationData = array_merge($responseArr, [
-                'order_id' => $orderId,
-                'order_status' => 'Cancelled',
-                'failure_message' => 'Payment cancelled by user',
-                'cancelled_at' => now()->toDateTimeString()
-            ]);
-
-            $transaction = CCAvenueTransaction::updateOrCreate(
-                ['order_id' => $orderId],
-                [
-                    'order_status' => 'Cancelled',
-                    'failure_message' => 'Payment cancelled by user',
-                    'booking_type' => $bookingType,
-                    'response_data' => json_encode($cancellationData),
-                ]
-            );
-
-            $this->sendPaymentStatusEmail($orderId, 'Cancelled', $cancellationData);
-        }
-
-        return view('payment.cancel');
+        return view('payment.status')->with('response', $response);
     }
 
     private function sendPaymentStatusEmail($orderId, $paymentStatus, $responseData = [])
@@ -195,6 +144,7 @@ class CCAvenueController extends Controller
             return true;
 
         } catch (\Exception $e) {
+            Log::error('Nomod payment email failed', ['error' => $e->getMessage(), 'order_id' => $orderId]);
             return false;
         }
     }
@@ -229,7 +179,6 @@ class CCAvenueController extends Controller
         return $email;
     }
 
-    // UPDATED: Added debugging for booking date
     private function getBookingData($orderId)
     {
         if (stripos($orderId, 'UAEV') !== false) {
@@ -257,77 +206,45 @@ class CCAvenueController extends Controller
             $booking = ActivityBooking::find($bookingId);
 
             if ($booking) {
-                // DEBUG: Log what we found in the database
-                // Log::info('DEBUG: Booking found', [
-                //     'booking_id' => $bookingId,
-                //     'date_from_model' => $booking->date,
-                //     'date_raw' => $booking->getAttributes()['date'] ?? 'No date attribute',
-                //     'all_attributes' => $booking->getAttributes()
-                // ]);
-
                 $bookingData = $booking->toArray();
 
-                // Fetch activity name using the activityId from booking
                 if ($booking->activityId) {
                     $activity = UAEActivity::where('activityID', $booking->activityId)->first();
-                    if ($activity) {
-                        $bookingData['activity_name'] = $activity->activityName;
-                    } else {
-                        $bookingData['activity_name'] = 'Activity Not Found';
-                    }
+                    $bookingData['activity_name'] = $activity ? $activity->activityName : 'Activity Not Found';
                 } else {
                     $bookingData['activity_name'] = 'No Activity ID';
                 }
 
-                // ENHANCED: Handle booking date with multiple fallbacks and debugging
                 $bookingDate = null;
 
-                // Try approach 1: Using the model attribute (with casting)
                 if ($booking->date) {
                     try {
                         $bookingDate = $booking->date->format('d M Y');
-                        // Log::info('DEBUG: Date from model casting worked', ['formatted_date' => $bookingDate]);
                     } catch (\Exception $e) {
-                        // Log::error('DEBUG: Model casting failed', ['error' => $e->getMessage()]);
                     }
                 }
 
-                // Try approach 2: Direct raw attribute access
                 if (!$bookingDate && isset($booking->getAttributes()['date']) && $booking->getAttributes()['date']) {
                     try {
                         $rawDate = $booking->getAttributes()['date'];
                         $bookingDate = \Carbon\Carbon::createFromFormat('Y-m-d', $rawDate)->format('d M Y');
-                        // Log::info('DEBUG: Date from raw attribute worked', ['raw_date' => $rawDate, 'formatted_date' => $bookingDate]);
                     } catch (\Exception $e) {
-                        // Log::error('DEBUG: Raw attribute parsing failed', ['raw_date' => $rawDate ?? 'null', 'error' => $e->getMessage()]);
                     }
                 }
 
-                // Try approach 3: From toArray() result
                 if (!$bookingDate && isset($bookingData['date']) && $bookingData['date']) {
                     try {
-                        $arrayDate = $bookingData['date'];
-                        $bookingDate = \Carbon\Carbon::parse($arrayDate)->format('d M Y');
-                        // Log::info('DEBUG: Date from array worked', ['array_date' => $arrayDate, 'formatted_date' => $bookingDate]);
+                        $bookingDate = \Carbon\Carbon::parse($bookingData['date'])->format('d M Y');
                     } catch (\Exception $e) {
-                        // Log::error('DEBUG: Array date parsing failed', ['array_date' => $arrayDate ?? 'null', 'error' => $e->getMessage()]);
                     }
                 }
 
-                // Final assignment
                 $bookingData['booking_date'] = $bookingDate ?: 'Date Not Available';
-
-                // Log::info('DEBUG: Final booking date assigned', [
-                //     'booking_date' => $bookingData['booking_date'],
-                //     'activity_name' => $bookingData['activity_name']
-                // ]);
 
                 return [
                     'type' => 'activity',
                     'data' => $bookingData
                 ];
-            } else {
-                // Log::error('DEBUG: Booking not found', ['booking_id' => $bookingId]);
             }
         }
 
@@ -341,10 +258,8 @@ class CCAvenueController extends Controller
         switch ($bookingType) {
             case 'visa':
             case 'agent_booking':
-
                 break;
             case 'activity':
-
                 break;
         }
 
@@ -412,7 +327,7 @@ class CCAvenueController extends Controller
 
             if ($booking) {
                 return [
-                    'name' => $booking->client_name, // Fixed: accessing property, not array
+                    'name' => $booking->client_name,
                     'email' => $booking->client_email,
                     'phone' => $booking->client_phone
                 ];

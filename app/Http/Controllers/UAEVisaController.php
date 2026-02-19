@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\UAEVApplication;
 use App\Models\UAEVisaMaster;
+use App\Models\NomodTransaction;
 use App\Mail\UAEVVisaMail;
+use App\Services\NomodService;
 use Illuminate\Support\Facades\Mail;
 // use Illuminate\Support\Facades\Log;
-
-require_once app_path('Helpers/Crypto.php');
 
 class UAEVisaController extends Controller
 {
@@ -112,28 +112,45 @@ class UAEVisaController extends Controller
             }
         }
 
-        // CCAvenue Payment
-        $totalAmount = number_format($validated['price'], 2, '.', ''); // Total from frontend
+        // Nomod Payment
+        $totalAmount = round((float) $validated['price'], 2);
         $orderId = 'ORDUAEV-GRP-' . $firstId . '-' . time();
 
-        $paymentData = [
-            'merchant_id' => config('services.ccavenue.merchant_id'),
-            'order_id' => $orderId,
-            'currency' => 'AED',
+        $nomodService = new NomodService();
+        $checkout = $nomodService->createCheckout([
             'amount' => $totalAmount,
-            'redirect_url' => config('services.ccavenue.redirect_url'),
-            'cancel_url' => config('services.ccavenue.cancel_url'),
-            'language' => 'EN',
-        ];
+            'currency' => 'AED',
+            'order_id' => $orderId,
+            'description' => 'UAE Visa Application - ' . $validated['visaDuration'],
+            'customer' => [
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+            ],
+        ]);
 
-        $paramString = http_build_query($paymentData);
-        $encryptedData = ccavenue_encrypt($paramString, config('services.ccavenue.working_key'));
+        if (!$checkout['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $checkout['error'] ?? 'Payment initiation failed.',
+            ], 500);
+        }
+
+        NomodTransaction::create([
+            'checkout_id' => $checkout['checkout_id'],
+            'order_id' => $orderId,
+            'status' => 'created',
+            'amount' => $totalAmount,
+            'currency' => 'AED',
+            'booking_type' => 'visa',
+            'checkout_url' => $checkout['checkout_url'],
+            'customer' => ['email' => $validated['email'], 'phone' => $validated['phone']],
+            'response_data' => $checkout['data'] ?? null,
+        ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Applications submitted successfully.',
-            'encryptedData' => $encryptedData,
-            'accessCode' => config('services.ccavenue.access_code'),
+            'checkout_url' => $checkout['checkout_url'],
             'orderId' => $orderId,
         ]);
     }

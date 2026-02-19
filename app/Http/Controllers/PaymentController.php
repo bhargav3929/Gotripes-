@@ -1,4 +1,6 @@
 <?php
+// DEPRECATED: This controller used CCAvenue and has been replaced by NomodController.
+// Kept for historical reference.
 
 namespace App\Http\Controllers;
 

@@ -1,5 +1,6 @@
 <?php
-
+// DEPRECATED: CCAvenue encryption helpers — no longer used. Replaced by Nomod Hosted Checkout.
+// Kept for historical reference and potential decryption of old CCAvenue responses.
 
 error_reporting(0);
 ini_set('display_errors', '0');

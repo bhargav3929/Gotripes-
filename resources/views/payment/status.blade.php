@@ -121,8 +121,7 @@
             <li><strong>Order ID:</strong> {{ $response['order_id'] ?? 'N/A' }}</li>
             <li><strong>Amount:</strong> {{ $response['amount'] ?? 'N/A' }} {{ $response['currency'] ?? 'N/A' }}</li>
             <li><strong>Payment Mode:</strong> {{ $response['payment_mode'] ?? 'N/A' }}</li>
-            <li><strong>Bank Reference No:</strong> {{ $response['bank_ref_no'] ?? 'N/A' }}</li>
-            <li><strong>Tracking ID:</strong> {{ $response['tracking_id'] ?? 'N/A' }}</li>
+            <li><strong>Transaction Reference:</strong> {{ $response['bank_ref_no'] ?? $response['tracking_id'] ?? 'N/A' }}</li>
         </ul>
 
         <a href="{{ url('/') }}">Return to Home</a>
