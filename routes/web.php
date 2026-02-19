@@ -308,17 +308,25 @@ Route::post('/deploy/github-webhook', function (\Illuminate\Http\Request $reques
 
     putenv('HOME=/home/u705168859');
     $commands = [
-        "/usr/bin/git pull origin main 2>&1",
-        "/usr/local/bin/composer dump-autoload --no-interaction 2>&1",
-        "/usr/bin/php artisan route:clear 2>&1",
-        "/usr/bin/php artisan config:clear 2>&1",
-        "/usr/bin/php artisan cache:clear 2>&1",
-        "/usr/bin/php artisan view:clear 2>&1",
-        "/usr/bin/php artisan migrate --force 2>&1",
+        "/usr/bin/git pull origin main",
+        "/usr/local/bin/composer dump-autoload --no-interaction",
+        "/usr/bin/php artisan route:clear",
+        "/usr/bin/php artisan config:clear",
+        "/usr/bin/php artisan cache:clear",
+        "/usr/bin/php artisan view:clear",
+        "/usr/bin/php artisan migrate --force",
     ];
 
     foreach ($commands as $cmd) {
-        $output = shell_exec("cd {$projectDir} && {$cmd}");
+        $descriptors = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+        $process = proc_open("cd {$projectDir} && {$cmd}", $descriptors, $pipes);
+        $output = '';
+        if (is_resource($process)) {
+            $output = stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            proc_close($process);
+        }
         $log .= "> {$cmd}\n{$output}\n";
     }
 
