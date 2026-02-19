@@ -12,7 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        // CCAvenue exceptions removed — Nomod uses GET callbacks, no CSRF needed
         'payment/response',
+        'deploy/github-webhook',
     ];
 }

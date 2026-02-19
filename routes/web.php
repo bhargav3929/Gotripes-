@@ -275,3 +275,55 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::resource('adslots', ManagerAdSlotsController::class);
     Route::resource('announcements', ManagerAnnouncementsController::class);
 });
+
+// GitHub auto-deploy webhook
+Route::post('/deploy/github-webhook', function (\Illuminate\Http\Request $request) {
+    $secret = 'c67eadc859951399d8b31ff63856164835bc06a4';
+    $signature = $request->header('X-Hub-Signature-256', '');
+    $payload = $request->getContent();
+
+    $expected = 'sha256=' . hash_hmac('sha256', $payload, $secret);
+    if (!hash_equals($expected, $signature)) {
+        return response()->json(['error' => 'Invalid signature'], 403);
+    }
+
+    // Handle ping
+    if ($request->header('X-GitHub-Event') === 'ping') {
+        return response()->json(['message' => 'pong']);
+    }
+
+    // Only deploy on push to main
+    $data = $request->json()->all();
+    if (($data['ref'] ?? '') !== 'refs/heads/main') {
+        return response()->json(['message' => 'Skipped: not main branch']);
+    }
+
+    $projectDir = base_path();
+    $logFile = storage_path('logs/deploy.log');
+    $pusher = $data['pusher']['name'] ?? 'unknown';
+    $commit = substr($data['head_commit']['message'] ?? 'unknown', 0, 80);
+
+    $log = "\n===== WEBHOOK DEPLOY: " . date('Y-m-d H:i:s') . " =====\n";
+    $log .= "Pusher: {$pusher}\nCommit: {$commit}\n\n";
+
+    putenv('HOME=/home/u705168859');
+    $commands = [
+        "/usr/bin/git pull origin main 2>&1",
+        "/usr/local/bin/composer dump-autoload --no-interaction 2>&1",
+        "/usr/bin/php artisan route:clear 2>&1",
+        "/usr/bin/php artisan config:clear 2>&1",
+        "/usr/bin/php artisan cache:clear 2>&1",
+        "/usr/bin/php artisan view:clear 2>&1",
+        "/usr/bin/php artisan migrate --force 2>&1",
+    ];
+
+    foreach ($commands as $cmd) {
+        $output = shell_exec("cd {$projectDir} && {$cmd}");
+        $log .= "> {$cmd}\n{$output}\n";
+    }
+
+    $log .= "Deploy completed at " . date('Y-m-d H:i:s') . "\n";
+    file_put_contents($logFile, $log, FILE_APPEND);
+
+    return response()->json(['success' => true, 'message' => 'Deploy completed', 'pusher' => $pusher]);
+})->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
