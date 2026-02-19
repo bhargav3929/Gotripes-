@@ -554,20 +554,13 @@
                     </button>
 
                     <div class="secure-badge">
-                        <i class="bi bi-shield-check"></i> 256-BIT SSL SECURED BY CCAVENUE
+                        <i class="bi bi-shield-check"></i> 256-BIT SSL SECURED PAYMENT
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- CCAvenue Hidden Form -->
-<form id="ccavenuePaymentForm" method="POST" action="{{ config('services.ccavenue.url') }}" style="display:none;">
-    <input type="hidden" name="encRequest" id="encRequest" value="">
-    <input type="hidden" name="access_code" id="access_code" value="">
-    <input type="hidden" name="merchant_id" id="merchant_id" value="">
-</form>
 
 <script>
     function updateFileName(input) {
@@ -702,11 +695,8 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.success && data.encryptedData) {
-                        document.getElementById('encRequest').value = data.encryptedData;
-                        document.getElementById('access_code').value = data.accessCode;
-                        document.getElementById('merchant_id').value = "{{ config('services.ccavenue.merchant_id') }}";
-                        document.getElementById('ccavenuePaymentForm').submit();
+                    if (data.success && data.checkout_url) {
+                        window.location.href = data.checkout_url;
                     } else {
                         throw new Error(data.message || 'Submission failed');
                     }

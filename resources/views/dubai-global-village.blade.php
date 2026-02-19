@@ -1134,21 +1134,20 @@ const children = parseInt(document.querySelector('input[name="childrens"]').valu
         });
     }
 
-    // CCAvenue payment redirection
+    // Nomod payment redirection
     function proceedToPayment(bookingId, amount) {
-        const ccavenueUrl = @json(config('services.ccavenue.url'));
         console.log('Proceeding to payment for booking:', bookingId, 'Amount:', amount);
-        
+
         const payButton = document.getElementById('ccavenuePayBtn');
         if (!payButton) {
             console.error('Payment button not found');
             return;
         }
-        
+
         const originalText = payButton.innerHTML;
         payButton.disabled = true;
         payButton.innerHTML = '<span class="classic-loader-spin"></span>Processing...';
-        
+
         fetch('{{ route("activity.payment.initiate") }}', {
             method: 'POST',
             headers: {
@@ -1164,15 +1163,15 @@ const children = parseInt(document.querySelector('input[name="childrens"]').valu
         })
         .then(response => {
             console.log('Response status:', response.status);
-            
+
             if (response.status === 302) {
                 throw new Error('Authentication required - please log in and try again');
             }
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 return response.text().then(text => {
@@ -1180,33 +1179,14 @@ const children = parseInt(document.querySelector('input[name="childrens"]').valu
                     throw new Error('Server error - please try again');
                 });
             }
-            
+
             return response.json();
         })
         .then(data => {
             console.log('Payment response received:', data);
-            
-            if (data.success && data.encryptedData && data.accessCode) {
-                // Create CCAvenue form and submit
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = ccavenueUrl;
-                form.style.display = 'none';
-                
-                const encRequest = document.createElement('input');
-                encRequest.type = 'hidden';
-                encRequest.name = 'encRequest';
-                encRequest.value = data.encryptedData;
-                form.appendChild(encRequest);
-                
-                const accessCode = document.createElement('input');
-                accessCode.type = 'hidden';
-                accessCode.name = 'access_code';
-                accessCode.value = data.accessCode;
-                form.appendChild(accessCode);
-                
-                document.body.appendChild(form);
-                form.submit();
+
+            if (data.success && data.checkout_url) {
+                window.location.href = data.checkout_url;
             } else {
                 throw new Error(data.error || 'Payment initiation failed');
             }

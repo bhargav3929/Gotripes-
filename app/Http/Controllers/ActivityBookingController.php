@@ -7,19 +7,12 @@ use Illuminate\Support\Facades\DB;
 // use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ActivityBooking;
+use App\Models\NomodTransaction;
 use App\Mail\ActivityBookingMail;
-
-require_once app_path('Helpers/Crypto.php');
+use App\Services\NomodService;
 
 class ActivityBookingController extends Controller
 {
-    // CCAvenue callback
-    public function ccavenueCallback(Request $request)
-    {
-        // Log::info('CCAvenue callback received', ['data' => $request->all()]);
-        return response('OK', 200);
-    }
-
     // Display the booking form
     public function show(Request $request)
     {
@@ -389,7 +382,7 @@ class ActivityBookingController extends Controller
         }
     }
 
-    // CCAvenue HTML auto-post, works for both server and AJAX overlay pay
+    // Nomod checkout for activity payment
     public function initiateActivityPayment(Request $request)
     {
         try {
@@ -405,52 +398,43 @@ class ActivityBookingController extends Controller
                 return response()->json(['error' => 'Booking not found'], 404);
             }
 
-            // Use same config paths as your working CCAvenueController
-            $merchantId = config('services.ccavenue.merchant_id');
-            $workingKey = config('services.ccavenue.working_key');
-            $accessCode = config('services.ccavenue.access_code');
-            $cancelUrl = config('services.ccavenue.cancel_url');
-            $redirectUrl = config('services.ccavenue.redirect_url');
-
-            // Log::info('Activity booking payment initiation', [
-            //     'booking_id' => $bookingId,
-            //     'amount' => $amount,
-            //     'customer' => $booking->name
-            // ]);
-
             $orderId = 'ORDAB' . $bookingId;
 
-            $paymentData = [
-                'merchant_id' => $merchantId,
-                'order_id' => $orderId,
+            $nomodService = new NomodService();
+            $checkout = $nomodService->createCheckout([
+                'amount' => round((float) $amount, 2),
                 'currency' => 'AED',
-                'amount' => number_format($amount, 2, '.', ''),
-                'redirect_url' => $redirectUrl,
-                'cancel_url' => $cancelUrl,
-                'language' => 'EN',
-                'billing_name' => $booking->name,
-                'billing_email' => $booking->email,
-                'billing_tel' => $booking->phone,
-            ];
+                'order_id' => $orderId,
+                'description' => 'Activity Booking #' . $bookingId,
+                'customer' => [
+                    'name' => $booking->name,
+                    'email' => $booking->email,
+                    'phone' => $booking->phone,
+                ],
+            ]);
 
-            $paramString = http_build_query($paymentData);
+            if (!$checkout['success']) {
+                return response()->json(['error' => $checkout['error'] ?? 'Payment initiation failed'], 500);
+            }
 
-            // CRITICAL: Use ccavenue_encrypt instead of encrypt
-            $encryptedData = ccavenue_encrypt($paramString, $workingKey);
-
-            // Log::info('Activity booking encrypted data', [
-            //     'order_id' => $orderId,
-            //     'encrypted_length' => strlen($encryptedData),
-            //     'encrypted_preview' => substr($encryptedData, 0, 50) . '...'
-            // ]);
+            NomodTransaction::create([
+                'checkout_id' => $checkout['checkout_id'],
+                'order_id' => $orderId,
+                'status' => 'created',
+                'amount' => round((float) $amount, 2),
+                'currency' => 'AED',
+                'booking_type' => 'activity',
+                'checkout_url' => $checkout['checkout_url'],
+                'customer' => ['name' => $booking->name, 'email' => $booking->email, 'phone' => $booking->phone],
+                'response_data' => $checkout['data'] ?? null,
+            ]);
 
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Activity booking payment initiated successfully.',
                     'price' => $amount,
-                    'encryptedData' => $encryptedData,
-                    'accessCode' => $accessCode,
+                    'checkout_url' => $checkout['checkout_url'],
                     'orderId' => $orderId,
                 ]);
             }
@@ -461,8 +445,6 @@ class ActivityBookingController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Log::error('Activity booking payment initiation error: ' . $e->getMessage());
-            
             if ($request->ajax()) {
                 return response()->json(['error' => 'Payment initiation failed'], 500);
             }
@@ -471,6 +453,4 @@ class ActivityBookingController extends Controller
         }
     }
 
-    // AJAX overlay -> CCAvenue
-    
 }

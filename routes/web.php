@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReferrerController;
-use App\Http\Controllers\CCAvenueController;
+// use App\Http\Controllers\CCAvenueController; // Deprecated — replaced by Nomod
+use App\Http\Controllers\NomodController;
 use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\ApiProxyController;
 use App\Http\Controllers\LocationController;
@@ -158,15 +159,17 @@ Route::get('/proxy-prices', [ApiProxyController::class, 'getPrices']);
 
 
 
-Route::get('/ccavenue/initiate', function () {
-    return view('ccavenue.initiate');
-})->name('ccavenue.initiate');
+// CCAvenue routes (deprecated — replaced by Nomod)
+// Route::get('/ccavenue/initiate', function () { return view('ccavenue.initiate'); })->name('ccavenue.initiate');
+// Route::post('/ccavenue/pay', [CCAvenueController::class, 'pay'])->name('ccavenue.pay');
+// Route::any('/ccavenue/response', [CCAvenueController::class, 'response'])->name('ccavenue.response');
 
-Route::post('/ccavenue/pay', [CCAvenueController::class, 'pay'])->name('ccavenue.pay');
-Route::any('/ccavenue/response', [CCAvenueController::class, 'response'])->name('ccavenue.response');
+// Nomod payment callback routes
+Route::get('/payment/nomod/success', [NomodController::class, 'success'])->name('nomod.success');
+Route::get('/payment/nomod/failure', [NomodController::class, 'failure'])->name('nomod.failure');
+Route::get('/payment/nomod/cancelled', [NomodController::class, 'cancelled'])->name('nomod.cancelled');
 
 Route::post('/uaev/submit', [UAEVisaController::class, 'submit'])->name('uaev.submit');
-Route::post('/uae-visa/initiate-payment', [UAEVisaController::class, 'initiateCcavenue'])->name('uaevisa.initiateCcavenue');
 
 
 use App\Http\Controllers\PaymentController;
@@ -222,15 +225,10 @@ Route::get('/activity/pricing/{id}', function ($id) {
         'activityTransactionCharges' => $activity ? (float) $activity->activityTransactionCharges : 0,
     ]);
 })->name('activity.pricing');
-//Route::post('/ccavenue/encrypt', [\App\Http\Controllers\ActivityBookingController::class, 'encryptForCcavenue'])->name('ccavenue.encrypt');
-Route::post('/ccavenue/callback', [\App\Http\Controllers\ActivityBookingController::class, 'ccavenueCallback'])->name('payment.ccavenue.callback');
-
-
-Route::post('/payment/ccavenue/response', [ActivityBookingController::class, 'handleResponse'])->name('payment.ccavenue.response');
-Route::get('/payment/ccavenue/cancel', function () {
-
-    return view('payment_cancel');
-})->name('payment.ccavenue.cancel');
+// CCAvenue activity routes (deprecated — replaced by Nomod)
+// Route::post('/ccavenue/callback', [\App\Http\Controllers\ActivityBookingController::class, 'ccavenueCallback'])->name('payment.ccavenue.callback');
+// Route::post('/payment/ccavenue/response', [ActivityBookingController::class, 'handleResponse'])->name('payment.ccavenue.response');
+// Route::get('/payment/ccavenue/cancel', function () { return view('payment_cancel'); })->name('payment.ccavenue.cancel');
 
 use App\Http\Controllers\HomepageAdsController;
 
@@ -251,28 +249,11 @@ Route::get('/uaevisa', function () {
 });
 
 
-Route::post('/ccavenue/initiate', [CCAvenueController::class, 'initiatePayment']);
-Route::post('/ccavenue/response', [CCAvenueController::class, 'handleResponse'])->name('ccavenue.response');
-// Route::get('/payment/ccavenue/cancel', [CCAvenueController::class, 'cancel'])->name('ccavenue.cancel');
-Route::match(['get', 'post'], '/payment/ccavenue/cancel', [CCAvenueController::class, 'cancel'])->name('ccavenue.cancel');
-
-Route::get('/ccavenue-debug', function () {
-    $merchantId = config('services.ccavenue.merchant_id');
-    $accessCode = config('services.ccavenue.access_code');
-    $workingKey = config('services.ccavenue.working_key');
-
-    return response()->json([
-        'merchant_id' => $merchantId,
-        'merchant_id_length' => strlen($merchantId),
-        'access_code' => $accessCode,
-        'access_code_length' => strlen($accessCode),
-        'working_key_prefix' => substr($workingKey, 0, 4) . '****',
-        'working_key_length' => strlen($workingKey),
-        'url' => config('services.ccavenue.url'),
-        'redirect_url' => config('services.ccavenue.redirect_url'),
-        'cancel_url' => config('services.ccavenue.cancel_url'),
-    ]);
-});
+// CCAvenue initiate/response/cancel routes (deprecated — replaced by Nomod)
+// Route::post('/ccavenue/initiate', [CCAvenueController::class, 'initiatePayment']);
+// Route::post('/ccavenue/response', [CCAvenueController::class, 'handleResponse'])->name('ccavenue.response');
+// Route::match(['get', 'post'], '/payment/ccavenue/cancel', [CCAvenueController::class, 'cancel'])->name('ccavenue.cancel');
+// Route::get('/ccavenue-debug', function () { ... });
 // Add this route alongside your existing activity routes
 Route::post('/activity/payment/initiate', [ActivityBookingController::class, 'initiateActivityPayment'])->name('activity.payment.initiate');
 Route::post('/agent/pay', [AgentBookingController::class, 'submit'])->name('agent.pay');
