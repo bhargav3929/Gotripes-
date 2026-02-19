@@ -1,5 +1,4 @@
 <?php
-// Nomod Hosted Checkout payment callback controller
 
 namespace App\Http\Controllers;
 
