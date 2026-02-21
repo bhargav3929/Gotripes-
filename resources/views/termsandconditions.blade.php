@@ -147,7 +147,7 @@
 <div class="whats">
     <a target="_blank"
         href="https://api.whatsapp.com/send/?phone=971543651065&amp;text&amp;type=phone_number&amp;app_absent=0">
-        <img src="{{ asset('assets/termsandconditions_files/whats.gif') }}" class="img-fluid" data-no-retina="">
+        <img src="assets/termsandconditions_files/whats.gif" class="img-fluid" data-no-retina="">
     </a>
 </div>
 

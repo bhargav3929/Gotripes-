@@ -11,7 +11,7 @@
   justify-content: center;
   transition: opacity 0.8s;
 ">
-  <img src="{{ asset('assets/index_files/logo.png') }}" alt="Loading..." style="height: 140px; width: auto; margin-bottom:30px;">
+  <img src="/assets/index_files/logo.png" alt="Loading..." style="height: 140px; width: auto; margin-bottom:30px;">
   <div style="text-align: center;">
     <div
       style="font-size: 1.75rem; font-weight: 700; color: #ffd235; letter-spacing: 3px; font-family: 'Outfit', sans-serif; text-transform: uppercase;">

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- saved from url=(0048)https://gotrips.ai/activities/lotus-cruise-dubai -->
-<html class="no-js skrollr skrollr-desktop" lang="en" bbai-tooltip-injected="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="emotion-insertion-point" content=">
+<html class="no-js skrollr skrollr-desktop" lang="en" bbai-tooltip-injected="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="emotion-insertion-point" content="">
         <title>Lotus Cruise |  Ayn Al Amir Tourism L.L.C</title>
         
  
@@ -17,10 +17,10 @@
         <link rel="preconnect" href="https://fonts.googleapis.com/" crossorigin="">
         <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
         <!-- style sheets and font icons  -->
-        <link rel="stylesheet" href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/vendors.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/icon.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/responsive.css') }}"> 
+        <link rel="stylesheet" href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/vendors.min.css">
+        <link rel="stylesheet" href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/icon.min.css">
+        <link rel="stylesheet" href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/style.css">
+        <link rel="stylesheet" href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/responsive.css"> 
         
         <style rel="preload" as="style">
     @font-face {font-family: "B";src: url("https://gotrips.ai/assets/fonts/Gordita-Bold.woff2") format("woff2")}
@@ -29,8 +29,7 @@
     @font-face {font-family: "BB";src: url("https://gotrips.ai/assets/fonts/Gordita-Black.woff2") format("woff2")}
 </style> 
 
-    <style id="fit-vids-style">.fluid-width-video-wrapper{width:100%;position:relative;padding:0;}.fluid-width-video-wrapper iframe,.fluid-width-video-wrapper object,.fluid-width-video-wrapper embed {position:absolute;top:0;left:0;width:100%;height:100%;}</style><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0d2b7c.js.download') }}"></script><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d224aff.js.download') }}"></script><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0aef27.js.download') }}"></script><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0b383d.js.download') }}"></script><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0da3af.js.download') }}"></script><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-4fe9d5dd.js.download') }}"></script><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-7941cc06.js.download') }}"></script><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-51872844.js.download') }}"></script><script charset="utf-8" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0c8092.js.download') }}"></script>
-<style type="text/css">#fn3iie46b84o1748511079072 {outline:none !important;
+    <style id="fit-vids-style">.fluid-width-video-wrapper{width:100%;position:relative;padding:0;}.fluid-width-video-wrapper iframe,.fluid-width-video-wrapper object,.fluid-width-video-wrapper embed {position:absolute;top:0;left:0;width:100%;height:100%;}</style><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0d2b7c.js.download"></script><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d224aff.js.download"></script><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0aef27.js.download"></script><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0b383d.js.download"></script><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0da3af.js.download"></script><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-4fe9d5dd.js.download"></script><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-7941cc06.js.download"></script><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-51872844.js.download"></script><script charset="utf-8" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-2d0c8092.js.download"></script><style type="text/css">#fn3iie46b84o1748511079072 {outline:none !important;
 visibility:visible !important;
 resize:none !important;
 box-shadow:none !important;
@@ -75,12 +74,12 @@ color-scheme:light !important;}#fn3iie46b84o1748511079072.widget-hidden {display
  #fn3iie46b84o1748511079072.widget-visible { 
 display: none !important;
  }
-}</style><style type="text/css">.tawk-button-hover[data-v-70fc860f]:focus,.tawk-button-hover[data-v-70fc860f]:hover{background-color:hsla(0,0%,100%,.2)!important;border-radius:5px!important}</style><style type="text/css">@keyframes tawkMaxOpen{0%{opacity:0;transform:translate(0, 30px);;}to{opacity:1;transform:translate(0, 0px);@-moz-keyframes tawkMaxOpen{0%{opacity:0;transform:translate(0, 30px);;}to{opacity:1;transform:translate(0, 0px);@-webkit-keyframes tawkMaxOpen{0%{opacity:0;transform:translate(0, 30px);;}to{opacity:1;transform:translate(0, 0px);#b8t9v6bcj72c1748511079131.open{animation : tawkMaxOpen .25s ease!important;}@keyframes tawkMaxClose{from{opacity: 1;transform:translate(0, 0px);;}to{opacity: 0;transform:translate(0, 30px);;@-moz-keyframes tawkMaxClose{from{opacity: 1;transform:translate(0, 0px);;}to{opacity: 0;transform:translate(0, 30px);;@-webkit-keyframes tawkMaxClose{from{opacity: 1;transform:translate(0, 0px);;}to{opacity: 0;transform:translate(0, 30px);;#b8t9v6bcj72c1748511079131.closed{animation: tawkMaxClose .25s ease!important}</style></head>
+}</style><style type="text/css">.tawk-button-hover[data-v-70fc860f]:focus,.tawk-button-hover[data-v-70fc860f]:hover{background-color:hsla(0,0%,100%,.2)!important;border-radius:5px!important}</style><style type="text/css">@keyframes tawkMaxOpen{0%{opacity:0;transform:translate(0, 30px);;}to{opacity:1;transform:translate(0, 0px);}}@-moz-keyframes tawkMaxOpen{0%{opacity:0;transform:translate(0, 30px);;}to{opacity:1;transform:translate(0, 0px);}}@-webkit-keyframes tawkMaxOpen{0%{opacity:0;transform:translate(0, 30px);;}to{opacity:1;transform:translate(0, 0px);}}#b8t9v6bcj72c1748511079131.open{animation : tawkMaxOpen .25s ease!important;}@keyframes tawkMaxClose{from{opacity: 1;transform:translate(0, 0px);;}to{opacity: 0;transform:translate(0, 30px);;}}@-moz-keyframes tawkMaxClose{from{opacity: 1;transform:translate(0, 0px);;}to{opacity: 0;transform:translate(0, 30px);;}}@-webkit-keyframes tawkMaxClose{from{opacity: 1;transform:translate(0, 0px);;}to{opacity: 0;transform:translate(0, 30px);;}}#b8t9v6bcj72c1748511079131.closed{animation: tawkMaxClose .25s ease!important}</style></head>
     <body data-mobile-nav-style="classic">
       
       
        <!-- start header -->
-        <header class=">
+        <header class="">
             <style>
      .nav-link {
         font-size:16px;
@@ -160,9 +159,9 @@ display: none !important;
                         <div class="d-none d-xl-block"> 
                         </div> 
                          <a class="navbar-brand" href="/">
-                            <img src="{{ asset('assets/index_files/logo.png') }}" data-at2x="https://gotrips.ai/assets/images/logo.png)" alt=" class="default-logo" width="75" height="73">
-                            <img src="{{ asset('assets/index_files/logo.png') }}" data-at2x="https://gotrips.ai/assets/images/logo.png')" alt=" class="alt-logo" width="0" height="0">
-                            <img src="{{ asset('assets/index_files/logo.png') }}" data-at2x="https://gotrips.ai/assets/images/logo.png')" alt=" class="mobile-logo" width="0" height="0">
+                            <img src="assets/index_files/logo.png" data-at2x="https://gotrips.ai/assets/images/logo.png" alt="" class="default-logo" width="75" height="73">
+                            <img src="assets/index_files/logo.png" data-at2x="https://gotrips.ai/assets/images/logo.png" alt="" class="alt-logo" width="0" height="0">
+                            <img src="assets/index_files/logo.png" data-at2x="https://gotrips.ai/assets/images/logo.png" alt="" class="mobile-logo" width="0" height="0">
                         </a>
                     </div>
                     <div class="col-auto col-xl-10 col-lg-10 menu-order">
@@ -277,8 +276,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box swiper-slide-active" style="width: 682px;" role="group" aria-label="1 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d1.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d1.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d1.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d1.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -286,8 +285,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box swiper-slide-next" style="width: 682px;" role="group" aria-label="2 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d2.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d2.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d2.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d2.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -295,8 +294,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="3 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d3.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d3.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d3.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d3.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -304,8 +303,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="4 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d5.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d5.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d5.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d5.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -313,8 +312,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="5 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d6.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d6.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d6.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d6.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -322,8 +321,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="6 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d7.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d7.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d7.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d7.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -331,8 +330,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="7 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d8.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d8.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d8.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d8.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -340,8 +339,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="8 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d9.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d9.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d9.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d9.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -349,8 +348,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="9 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d10.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d10.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d10.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d10.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -358,8 +357,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="10 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d11.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d11.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d11.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d11.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -367,8 +366,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="11 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d12.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d12.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d12.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d12.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -376,8 +375,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" style="width: 682px;" role="group" aria-label="12 / 13">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d13.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d13.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d13.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d13.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -385,8 +384,8 @@ display: none !important;
 
 <!-- end slider item -->
                                         <div class="swiper-slide gallery-box" role="group" aria-label="13 / 13" style="width: 682px;">
-                                            <a href="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d4.jpg') }}" data-group="lightbox-gallery" title="Minimalist wooden chair">
-                                                <img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d4.jpg') }}" alt=" data-no-retina=">
+                                            <a href="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d4.jpg" data-group="lightbox-gallery" title="Minimalist wooden chair">
+                                                <img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d4.jpg" alt="" data-no-retina="">
                                             </a>
                                         </div>
                                         <!-- end slider item -->
@@ -404,67 +403,67 @@ display: none !important;
        
 
 
-<div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible swiper-slide-active swiper-slide-thumb-active" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="1 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d1.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible swiper-slide-active swiper-slide-thumb-active" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="1 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d1.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide swiper-slide-next" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="2 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d2.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide swiper-slide-next" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="2 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d2.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="3 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d3.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="3 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d3.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="4 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d5.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="4 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d5.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="5 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d6.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="5 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d6.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="6 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d7.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="6 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d7.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="7 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d8.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="7 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d8.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="8 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d9.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="8 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d9.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="9 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d10.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="9 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d10.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="10 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d11.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="10 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d11.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="11 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d12.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="11 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d12.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="12 / 13"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d13.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" style="width: 124.4px; margin-right: 15px;" role="group" aria-label="12 / 13"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d13.jpg" alt="" data-no-retina=""></div>
 
  
 
 
-<div class="swiper-slide" role="group" aria-label="13 / 13" style="width: 124.4px; margin-right: 15px;"><img class="w-100" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d4.jpg') }}" alt=" data-no-retina="></div>
+<div class="swiper-slide" role="group" aria-label="13 / 13" style="width: 124.4px; margin-right: 15px;"><img class="w-100" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/d4.jpg" alt="" data-no-retina=""></div>
 
 
                                     </div>
@@ -571,7 +570,7 @@ display: none !important;
                                     <div class="position-relative form-group mb-20px"> 
                                         <span class="form-icon"><i class="bi bi-triangle"></i></span>
                                         <select class="form-control border-white box-shadow-large required" name="adults" fdprocessedid="v2yes">
-                                                <option value=">Select Adults (Age 18+)</option>
+                                                <option value="">Select Adults (Age 18+)</option>
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
                                                 <option value="3">3</option>
@@ -584,7 +583,7 @@ display: none !important;
                                     <div class="position-relative form-group mb-20px"> 
                                         <span class="form-icon"><i class="bi bi-triangle"></i></span>
                                         <select class="form-control border-white box-shadow-large required" name="childrens" fdprocessedid="52wwmt">
-                                                <option value=">Select Childrens (Age 6-17)</option>
+                                                <option value="">Select Childrens (Age 6-17)</option>
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
                                                 <option value="3">3</option>
@@ -595,7 +594,7 @@ display: none !important;
                                     
                                     
                                     <div class="position-relative form-group form-textarea"> 
-                                        <input type="hidden" name="redirect" value=">
+                                        <input type="hidden" name="redirect" value="">
                                         <button class="btn btn-large btn-round-edge btn-dark-gray btn-box-shadow mt-20px submit w-100" name="submit" type="submit" fdprocessedid="9uof">Send message</button>
                                         <div class="mt-20px form-results d-none"></div>
                                     </div>
@@ -613,7 +612,7 @@ display: none !important;
  <div class="whats">
 
     <a target="_blank" href="https://api.whatsapp.com/send/?phone=971543651065&amp;text&amp;type=phone_number&amp;app_absent=0">           
-             <img src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/whats.gif') }}" class="img-fluid" data-no-retina=">
+             <img src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/whats.gif" class="img-fluid" data-no-retina="">
        </a>
    </div>
     
@@ -633,12 +632,12 @@ display: none !important;
 
 
 <!--Start of Tawk.to Script-->
-<script src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-main.js.download') }}" charset="UTF-8" crossorigin=""*"></script><script src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-vendor.js.download" charset="UTF-8" crossorigin=""*"></script><script src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-vendors.js.download') }}" charset="UTF-8" crossorigin=""*"></script><script src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-common.js.download" charset="UTF-8" crossorigin=""*"></script><script src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-runtime.js.download') }}" charset="UTF-8" crossorigin=""*"></script><script src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-app.js.download" charset="UTF-8" crossorigin=""*"></script><script async=" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/1ij5c3v7a') }}" charset="UTF-8" crossorigin=""*"></script><script type="text/javascript">
+<script src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-main.js.download" charset="UTF-8" crossorigin="*"></script><script src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-vendor.js.download" charset="UTF-8" crossorigin="*"></script><script src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-vendors.js.download" charset="UTF-8" crossorigin="*"></script><script src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-chunk-common.js.download" charset="UTF-8" crossorigin="*"></script><script src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-runtime.js.download" charset="UTF-8" crossorigin="*"></script><script src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/twk-app.js.download" charset="UTF-8" crossorigin="*"></script><script async="" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/1ij5c3v7a" charset="UTF-8" crossorigin="*"></script><script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
-s1.src=https://embed.tawk.to/67a073313a8427326078f27b/1ij5c3v7a';
+s1.src='https://embed.tawk.to/67a073313a8427326078f27b/1ij5c3v7a';
 s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
@@ -673,8 +672,8 @@ s0.parentNode.insertBefore(s1,s0);
                     <br>
                <div class="gdstyurtytr">    
                
-                  <script type="text/javascript" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/auth.php') }}"></script>
-<script type="text/javascript" src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/5"></script><a href="https://www.freevisitorcounters.com/en/home/stats/id/1292835" target="_blank"><br><img src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/5(1)') }}" border="0" class="counterimg" data-no-retina="></a>
+                  <script type="text/javascript" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/auth.php"></script>
+<script type="text/javascript" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/5"></script><a href="https://www.freevisitorcounters.com/en/home/stats/id/1292835" target="_blank"><br><img src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/5(1)" border="0" class="counterimg" data-no-retina=""></a>
 
 </div> 
 
@@ -736,7 +735,7 @@ s0.parentNode.insertBefore(s1,s0);
         <div class="position-relative form-group form-textarea">
             <span class="form-icon"><i class="bi bi-chat-square-dots"></i></span>
             <textarea placeholder="Your message" name="comment" class="form-control" rows="2"></textarea>
-            <input type="hidden" name="redirect" value=">
+            <input type="hidden" name="redirect" value="">
             <button class="btn btn-medium btn-dark-gray btn-box-shadow btn-round-edge w-100 mt-20px submit" type="submit">Send message</button>
             <div class="form-results mt-20px d-none"></div>
         </div>
@@ -753,9 +752,9 @@ s0.parentNode.insertBefore(s1,s0);
                         <!-- end subscription popup -->
 
         <!-- javascript libraries -->
-        <script type="text/javascript" src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/jquery.js.download"></script>
-        <script type="text/javascript" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/vendors.min.js.download') }}"></script>
-        <script type="text/javascript" src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/main.js.download"></script>
+        <script type="text/javascript" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/jquery.js.download"></script>
+        <script type="text/javascript" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/vendors.min.js.download"></script>
+        <script type="text/javascript" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/main.js.download"></script>
     
 
 
@@ -818,4 +817,4 @@ s0.parentNode.insertBefore(s1,s0);
   *, *::before, *::after {
     box-sizing: border-box; /* Include padding and border in element's total width/height */
   }
-</style><div id="shadow-root"><div class="fixed z-[9999] inter-font dark" style="top: 754px; left: 1448px; position: fixed;"><button id="blackbox-toggle" type="button" class="flex  size-[48px] rounded-logo  items-center justify-center  bg-black text-white shadow-lg transition focus:outline-none hover:scale-110 duration-300 transform" data-state="closed" style="flex-shrink: 0;"><img src="chrome-extension://mcgbeeipkmelnpldkobichboakdfaeon/logo.png')" class="pointer-events-none rounded-logo select-none h-[48px] w-[48px]" draggable="false" style="flex-shrink: 0;"></button></div></div></template></div><iframe frameborder="0" scrolling="no" style="background-color: transparent; border: 0px; display: none;" src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource.html') }}"></iframe><div id="GOOGLE_INPUT_CHEXT_FLAG" style="display: none;" input=" input_stat="{&quot;tlang&quot;:true,&quot;tsbc&quot;:true,&quot;pun&quot;:true,&quot;mk&quot;:true,&quot;ss&quot;:true}"></div><div id="error_9797eb3430fb7e03ce165854a5acd046607fff3a"><a href="https://www.freevisitorcounters.com/en/home/countercode/hashid/?id=9797eb3430fb7e03ce165854a5acd046607fff3a">Counter Error: Do not change the code. Click here to show the correct code!</a></div><div id="quick-start-container"></div><span id="PING_IFRAME_FORM_DETECTION" style="display: none;"></span><div id="fn3iie46b84o1748511079072" class="widget-visible"><iframe src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(1).html" frameborder="0" scrolling="no" width="64px" height="60px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:20px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:60px !important; min-width:64px !important; max-height:60px !important; max-width:64px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:64px !important; height:60px !important; display:block !important; z-index:1000003 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important;" id="weed35o4ehvg1748511079091" class=" title="chat widget"></iframe><iframe src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(2).html') }}" frameborder="0" scrolling="no" width="350px" height="520px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:98px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:520px !important; min-width:350px !important; max-height:520px !important; max-width:350px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:350px !important; height:520px !important; display:none !important; z-index:1000002 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:18px !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important;" id="b8t9v6bcj72c1748511079131" class=" title="chat widget"></iframe><iframe src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(3).html" frameborder="0" scrolling="no" height="30px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:30px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:45px !important; min-width:350px !important; max-height:45px !important; max-width:350px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:350px !important; height:45px !important; display:none !important; z-index:1000002 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important;" id="zr452t9qh87k1748511079118" class=" title="chat widget"></iframe><iframe src="{{ asset('assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(4).html') }}" frameborder="0" scrolling="no" width="360px" height="145px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:90px; left:auto !important; position:fixed !important; border:0 !important; min-height:145px !important; min-width:360px !important; max-height:145px !important; max-width:360px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:360px !important; height:145px !important; display:none !important; z-index:auto !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important;" id="jciu45q830i81748511079109" class=" title="chat widget"></iframe><iframe src="{{ asset(assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(5).html" frameborder="0" scrolling="no" width="124px" height="95px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:0px !important; bottom:30px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:95px !important; min-width:124px !important; max-height:95px !important; max-width:124px !important; padding:0 !important; margin:0px 0 0 0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:rotate(0deg) translateZ(0); -webkit-transform:rotate(0deg) translateZ(0); -ms-transform:rotate(0deg) translateZ(0); width:124px !important; height:95px !important; display:block !important; z-index:1000004 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important; -moz-transform:rotate(0deg) translateZ(0); -o-transform:rotate(0deg) translateZ(0); transform-origin:0; -moz-transform-origin:0; -webkit-transform-origin:0; -o-transform-origin:0; -ms-transform-origin:0;" id="z1vi0uf6s26k1748511079100" class=" title="chat widget"></iframe></div></body></html>
+</style><div id="shadow-root"><div class="fixed z-[9999] inter-font dark" style="top: 754px; left: 1448px; position: fixed;"><button id="blackbox-toggle" type="button" class="flex  size-[48px] rounded-logo  items-center justify-center  bg-black text-white shadow-lg transition focus:outline-none hover:scale-110 duration-300 transform" data-state="closed" style="flex-shrink: 0;"><img src="chrome-extension://mcgbeeipkmelnpldkobichboakdfaeon/logo.png" class="pointer-events-none rounded-logo select-none h-[48px] w-[48px]" draggable="false" style="flex-shrink: 0;"></button></div></div></template></div><iframe frameborder="0" scrolling="no" style="background-color: transparent; border: 0px; display: none;" src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource.html"></iframe><div id="GOOGLE_INPUT_CHEXT_FLAG" style="display: none;" input="" input_stat="{&quot;tlang&quot;:true,&quot;tsbc&quot;:true,&quot;pun&quot;:true,&quot;mk&quot;:true,&quot;ss&quot;:true}"></div><div id="error_9797eb3430fb7e03ce165854a5acd046607fff3a"><a href="https://www.freevisitorcounters.com/en/home/countercode/hashid/?id=9797eb3430fb7e03ce165854a5acd046607fff3a">Counter Error: Do not change the code. Click here to show the correct code!</a></div><div id="quick-start-container"></div><span id="PING_IFRAME_FORM_DETECTION" style="display: none;"></span><div id="fn3iie46b84o1748511079072" class="widget-visible"><iframe src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(1).html" frameborder="0" scrolling="no" width="64px" height="60px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:20px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:60px !important; min-width:64px !important; max-height:60px !important; max-width:64px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:64px !important; height:60px !important; display:block !important; z-index:1000003 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important;" id="weed35o4ehvg1748511079091" class="" title="chat widget"></iframe><iframe src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(2).html" frameborder="0" scrolling="no" width="350px" height="520px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:98px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:520px !important; min-width:350px !important; max-height:520px !important; max-width:350px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:350px !important; height:520px !important; display:none !important; z-index:1000002 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:18px !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important;" id="b8t9v6bcj72c1748511079131" class="" title="chat widget"></iframe><iframe src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(3).html" frameborder="0" scrolling="no" height="30px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:30px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:45px !important; min-width:350px !important; max-height:45px !important; max-width:350px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:350px !important; height:45px !important; display:none !important; z-index:1000002 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important;" id="zr452t9qh87k1748511079118" class="" title="chat widget"></iframe><iframe src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(4).html" frameborder="0" scrolling="no" width="360px" height="145px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:90px; left:auto !important; position:fixed !important; border:0 !important; min-height:145px !important; min-width:360px !important; max-height:145px !important; max-width:360px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:360px !important; height:145px !important; display:none !important; z-index:auto !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important;" id="jciu45q830i81748511079109" class="" title="chat widget"></iframe><iframe src="assets/Lotus Cruise _ Ayn Al Amir Tourism L.L.C_files/saved_resource(5).html" frameborder="0" scrolling="no" width="124px" height="95px" style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:0px !important; bottom:30px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:95px !important; min-width:124px !important; max-height:95px !important; max-width:124px !important; padding:0 !important; margin:0px 0 0 0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:rotate(0deg) translateZ(0); -webkit-transform:rotate(0deg) translateZ(0); -ms-transform:rotate(0deg) translateZ(0); width:124px !important; height:95px !important; display:block !important; z-index:1000004 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; color-scheme:light !important; -moz-transform:rotate(0deg) translateZ(0); -o-transform:rotate(0deg) translateZ(0); transform-origin:0; -moz-transform-origin:0; -webkit-transform-origin:0; -o-transform-origin:0; -ms-transform-origin:0;" id="z1vi0uf6s26k1748511079100" class="" title="chat widget"></iframe></div></body></html>

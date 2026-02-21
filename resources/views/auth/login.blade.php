@@ -220,7 +220,7 @@
 </head>
 <body>
     <div class="admin-card">
-        <img class="admin-logo" src="{{ asset('assets/index_files/logo.png') }}" alt="Admin Logo" />
+        <img class="admin-logo" src="assets/index_files/logo.png" alt="Admin Logo" />
         
         <h1 class="admin-title">Admin Portal</h1>
         <p class="admin-subtitle">Secure Administrator Access</p>

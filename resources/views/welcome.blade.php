@@ -26,7 +26,7 @@
         <div class="service-card">
           <a href="/activities" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_activities_1767532687858.png') }}" alt="Activities"
+              <img src="assets/index_files/service_activities_1767532687858.png" alt="Activities"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -42,7 +42,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_city_tour_1767532704738.png') }}" alt="City Tour"
+              <img src="assets/index_files/service_city_tour_1767532704738.png" alt="City Tour"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -58,7 +58,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_pick_drop_1767532722482.png') }}" alt="Pick & Drop Guests"
+              <img src="assets/index_files/service_pick_drop_1767532722482.png" alt="Pick & Drop Guests"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -74,7 +74,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_liwa_assistance_1767532741495.png') }}" alt="Liwa Guests Assistance"
+              <img src="assets/index_files/service_liwa_assistance_1767532741495.png" alt="Liwa Guests Assistance"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -90,7 +90,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_esim_1767532759373.png') }}" alt="World Travel eSIM"
+              <img src="assets/index_files/service_esim_1767532759373.png" alt="World Travel eSIM"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -106,7 +106,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_trips_organizing_1767532787246.png') }}" alt="Trips Organising"
+              <img src="assets/index_files/service_trips_organizing_1767532787246.png" alt="Trips Organising"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -122,7 +122,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_hotel_bookings_1767532833171.png') }}" alt="Hotel Bookings"
+              <img src="assets/index_files/service_hotel_bookings_1767532833171.png" alt="Hotel Bookings"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -138,7 +138,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_whatsapp_integration_1767532912170.png') }}"
+              <img src="assets/index_files/service_whatsapp_integration_1767532912170.png"
                 alt="Business WhatsApp Integration" class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -154,7 +154,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_website_development_1767532932173.png') }}" alt="Website Development"
+              <img src="assets/index_files/service_website_development_1767532932173.png" alt="Website Development"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -170,7 +170,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_visa_services_1767532949283.png') }}" alt="Visa Services"
+              <img src="assets/index_files/service_visa_services_1767532949283.png" alt="Visa Services"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -186,7 +186,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_hajj_umrah_1767532980525.png') }}" alt="Hajj Umrah Services"
+              <img src="assets/index_files/service_hajj_umrah_1767532980525.png" alt="Hajj Umrah Services"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -202,7 +202,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_car_rentals_1767532996883.png') }}" alt="Car Rentals"
+              <img src="assets/index_files/service_car_rentals_1767532996883.png" alt="Car Rentals"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -218,7 +218,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_recruitment_1767533016184.png') }}" alt="Recruitment Services"
+              <img src="assets/index_files/service_recruitment_1767533016184.png" alt="Recruitment Services"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -234,7 +234,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_internships_1767533036518.png') }}" alt="Internships"
+              <img src="assets/index_files/service_internships_1767533036518.png" alt="Internships"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -250,7 +250,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_tour_packages_1767533057318.png') }}" alt="World Class Tour Packages"
+              <img src="assets/index_files/service_tour_packages_1767533057318.png" alt="World Class Tour Packages"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -266,7 +266,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_travel_workflow_1767533087171.png') }}" alt="Travel Agency Workflow Setup"
+              <img src="assets/index_files/service_travel_workflow_1767533087171.png" alt="Travel Agency Workflow Setup"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -282,7 +282,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_business_setup_1767533129733.png') }}" alt="New Business Setup Assistance"
+              <img src="assets/index_files/service_business_setup_1767533129733.png" alt="New Business Setup Assistance"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -298,7 +298,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_gds_1767533146390.png') }}" alt="GDS Support" class="service-card-img">
+              <img src="assets/index_files/service_gds_1767533146390.png" alt="GDS Support" class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
             <div class="service-card-content">
@@ -313,7 +313,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_business_consultants_1767533163259.png') }}" alt="Business Consultants"
+              <img src="assets/index_files/service_business_consultants_1767533163259.png" alt="Business Consultants"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -329,7 +329,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/service_ai_ar_vr_1767533181726.png') }}" alt="AI, AR, VR Integration"
+              <img src="assets/index_files/service_ai_ar_vr_1767533181726.png" alt="AI, AR, VR Integration"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -345,7 +345,7 @@
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="{{ asset('assets/index_files/study-overseas-educational-consultancy.jpg') }}" alt="Study Abroad"
+              <img src="assets/index_files/study-overseas-educational-consultancy.jpg" alt="Study Abroad"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
@@ -735,19 +735,19 @@
 
             <!-- Loop 4 Premium Images -->
             <div class="carousel-item active">
-              <img src="{{ asset('assets/index_files/trips_1.png') }}" alt="Dubai Luxury Hotel" class="w-100"
+              <img src="assets/index_files/trips_1.png" alt="Dubai Luxury Hotel" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/trips_2.png') }}" alt="Desert Safari" class="w-100"
+              <img src="assets/index_files/trips_2.png" alt="Desert Safari" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/trips_3.png') }}" alt="Grand Mosque" class="w-100"
+              <img src="assets/index_files/trips_3.png" alt="Grand Mosque" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/trips_4.png') }}" alt="Ferrari World" class="w-100"
+              <img src="assets/index_files/trips_4.png" alt="Ferrari World" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
           </div>
@@ -791,19 +791,19 @@
 
             <!-- Loop 4 Premium Images -->
             <div class="carousel-item active">
-              <img src="{{ asset('assets/index_files/umrah_1.png') }}" alt="Kaaba Mecca" class="w-100"
+              <img src="assets/index_files/umrah_1.png" alt="Kaaba Mecca" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/umrah_2.png') }}" alt="Medina Mosque" class="w-100"
+              <img src="assets/index_files/umrah_2.png" alt="Medina Mosque" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/umrah_3.png') }}" alt="Pilgrims Praying" class="w-100"
+              <img src="assets/index_files/umrah_3.png" alt="Pilgrims Praying" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/umrah_4.png') }}" alt="Islamic Architecture" class="w-100"
+              <img src="assets/index_files/umrah_4.png" alt="Islamic Architecture" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
           </div>
@@ -846,19 +846,19 @@
 
             <!-- Loop 4 Premium Images -->
             <div class="carousel-item active">
-              <img src="{{ asset('assets/index_files/holiday_1.png') }}" alt="Maldives Resort" class="w-100"
+              <img src="assets/index_files/holiday_1.png" alt="Maldives Resort" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/holiday_2.png') }}" alt="Swiss Alps" class="w-100"
+              <img src="assets/index_files/holiday_2.png" alt="Swiss Alps" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/holiday_3.png') }}" alt="Bali Rice Terraces" class="w-100"
+              <img src="assets/index_files/holiday_3.png" alt="Bali Rice Terraces" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/holiday_4.png') }}" alt="Paris Eiffel Tower" class="w-100"
+              <img src="assets/index_files/holiday_4.png" alt="Paris Eiffel Tower" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
           </div>
@@ -901,29 +901,29 @@
 
             <!-- Slide 1 -->
             <div class="carousel-item active">
-              <img src="{{ asset('assets/index_files/blog-1.jpg') }}" alt="UAE Image 1" class="w-100"
+              <img src="assets/index_files/blog-1.jpg" alt="UAE Image 1" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
 
             <!-- Example: add more slides here -->
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/UAE1.jpg') }}" alt="UAE Image 2" class="w-100"
+              <img src="assets/index_files/UAE1.jpg" alt="UAE Image 2" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/UAE2.jpg') }}" alt="UAE Image 3" class="w-100"
+              <img src="assets/index_files/UAE2.jpg" alt="UAE Image 3" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/UAE3.jpg') }}" alt="UAE Image 4" class="w-100"
+              <img src="assets/index_files/UAE3.jpg" alt="UAE Image 4" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/UAE4.jpg') }}" alt="UAE Image 5" class="w-100"
+              <img src="assets/index_files/UAE4.jpg" alt="UAE Image 5" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
             <div class="carousel-item">
-              <img src="{{ asset('assets/index_files/UAE5.jpg') }}" alt="UAE Image 6" class="w-100"
+              <img src="assets/index_files/UAE5.jpg" alt="UAE Image 6" class="w-100"
                 style="height: 600px; object-fit: cover;">
             </div>
           </div>
@@ -972,7 +972,7 @@
               <div class="card border-0 border-radius-4px box-shadow-quadruple-large">
                 <div class="blog-image">
                   <a href="#">
-                    <img src="{{ asset('assets/index_files/blog-1.jpg') }}" alt="" class="w-100">
+                    <img src="assets/index_files/blog-1.jpg" alt="" class="w-100">
                   </a>
                 </div>
                 <div class="card-body p-4 md-p-5">
@@ -1002,7 +1002,7 @@
             <div class="carousel-item">
               <div class="card border-0 border-radius-4px box-shadow-quadruple-large">
                 <div class="blog-image">
-                  <a href="#"><img src="{{ asset('assets/index_files/blog-2.jpg') }}" alt="" class="w-100"></a>
+                  <a href="#"><img src="assets/index_files/blog-2.jpg" alt="" class="w-100"></a>
                 </div>
                 <div class="card-body p-4 md-p-5">
                   <a href="#" class="card-title mb-3 fw-600 text-dark-gray d-inline-block" style="font-size: 24px;">
@@ -1030,7 +1030,7 @@
             <div class="carousel-item">
               <div class="card border-0 border-radius-4px box-shadow-quadruple-large">
                 <div class="blog-image">
-                  <a href="#"><img src="{{ asset('assets/index_files/blog-3.jpg') }}" alt="" class="w-100"></a>
+                  <a href="#"><img src="assets/index_files/blog-3.jpg" alt="" class="w-100"></a>
                 </div>
                 <div class="card-body p-4 md-p-5">
                   <a href="#" class="card-title mb-3 fw-600 text-dark-gray d-inline-block" style="font-size: 24px;">
@@ -1084,7 +1084,7 @@
         <div class="feature-box text-center border-end xs-border-end-0 border-color-extra-medium-gray">
           <div class="feature-box-icon feature-box-icon-rounded w-100px h-100px rounded-circle mb-15px">
             <i class="bi bi-house-door icon-large text-dark-gray d-none"></i>
-            <img src="{{ asset('assets/index_files/travelexpertise.png') }}" data-no-retina="">
+            <img src="assets/index_files/travelexpertise.png" data-no-retina="">
           </div>
           <div class="feature-box-content last-paragraph-no-margin">
             <h3 class="alt-font fw-600 text-dark-gray fs-19 d-inline-block mb-5px">Travel Expertise</h3>
@@ -1099,7 +1099,7 @@
         <div class="feature-box text-center border-end md-border-end-0 border-color-extra-medium-gray">
           <div class="feature-box-icon feature-box-icon-rounded w-100px h-100px rounded-circle mb-15px">
             <i class="bi bi-camera icon-large text-dark-gray d-none"></i>
-            <img src="{{ asset('assets/index_files/innovativesolutions.png') }}" data-no-retina="">
+            <img src="assets/index_files/innovativesolutions.png" data-no-retina="">
           </div>
           <div class="feature-box-content last-paragraph-no-margin">
             <h3 class="alt-font fw-600 text-dark-gray fs-19 d-inline-block mb-5px">Innovative Solutions</h3>
@@ -1114,7 +1114,7 @@
         <div class="feature-box text-center border-end xs-border-end-0 border-color-extra-medium-gray">
           <div class="feature-box-icon feature-box-icon-rounded w-100px h-100px rounded-circle mb-15px">
             <i class="bi bi-key icon-large text-dark-gray d-none"></i>
-            <img src="{{ asset('assets/index_files/personalizedservices.png') }}" data-no-retina="">
+            <img src="assets/index_files/personalizedservices.png" data-no-retina="">
           </div>
           <div class="feature-box-content last-paragraph-no-margin">
             <h3 class="alt-font fw-600 text-dark-gray fs-19 d-inline-block mb-5px">Personalized Services</h3>
@@ -1129,7 +1129,7 @@
         <div class="feature-box text-center">
           <div class="feature-box-icon feature-box-icon-rounded w-100px h-100px rounded-circle mb-15px">
             <i class="bi bi-gear icon-large text-dark-gray d-none"></i>
-            <img src="{{ asset('assets/index_files/customercentricapproach.png') }}" data-no-retina="">
+            <img src="assets/index_files/customercentricapproach.png" data-no-retina="">
           </div>
           <div class="feature-box-content last-paragraph-no-margin">
             <h3 class="d-inline-block alt-font fw-600 text-dark-gray fs-19 d-inline-block mb-5px">Customer-Centric
@@ -1152,7 +1152,7 @@
 
       <div class="stat-card">
         <div class="stat-icon-wrap">
-          <img src="{{ asset('assets/index_files/icon1.png') }}" alt="Partners">
+          <img src="assets/index_files/icon1.png" alt="Partners">
         </div>
         <div class="stat-number" data-target="500">0</div>
         <div class="stat-suffix">+</div>
@@ -1162,7 +1162,7 @@
 
       <div class="stat-card">
         <div class="stat-icon-wrap">
-          <img src="{{ asset('assets/index_files/icon2.png') }}" alt="Growth">
+          <img src="assets/index_files/icon2.png" alt="Growth">
         </div>
         <div class="stat-prefix">%</div>
         <div class="stat-number" data-target="250">0</div>
@@ -1173,7 +1173,7 @@
 
       <div class="stat-card">
         <div class="stat-icon-wrap">
-          <img src="{{ asset('assets/index_files/icon3.png') }}" alt="Countries">
+          <img src="assets/index_files/icon3.png" alt="Countries">
         </div>
         <div class="stat-number" data-target="20">0</div>
         <div class="stat-suffix">+</div>
@@ -1183,7 +1183,7 @@
 
       <div class="stat-card">
         <div class="stat-icon-wrap">
-          <img src="{{ asset('assets/index_files/icon4.png') }}" alt="Customers">
+          <img src="assets/index_files/icon4.png" alt="Customers">
         </div>
         <div class="stat-number" data-target="4500">0</div>
         <div class="stat-suffix">+</div>
@@ -1620,7 +1620,7 @@
       <div class="col-lg-4 col-md-10 mb-4 mb-lg-0"
         data-anime='{"translate": [0, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad"}'>
         <figure class="position-relative m-0">
-          <img src="{{ asset('assets/index_files/d1.jpg') }}" class="img-fluid border-radius-8px" alt="About Ayn Al Amir">
+          <img src="assets/index_files/d1.jpg" class="img-fluid border-radius-8px" alt="About Ayn Al Amir">
           <figcaption
             class="position-absolute bg-dark-gray border-radius-10px box-shadow-quadruple-large top-30px end-0 w-150px text-center animation-float">
             <div class="bg-white py-3 px-2 border-radius-8px mb-2">
@@ -1655,7 +1655,7 @@
           <div class="col-md-6">
             <div class="vm-box">
               <div class="vm-header">
-                <img src="{{ asset('assets/index_files/vision_colored.png') }}" class="vm-icon" alt="Vision">
+                <img src="assets/index_files/vision_colored.png" class="vm-icon" alt="Vision">
                 <h3>OUR VISION</h3>
               </div>
               <p class="vm-text">
@@ -1669,7 +1669,7 @@
           <div class="col-md-6">
             <div class="vm-box">
               <div class="vm-header">
-                <img src="{{ asset('assets/index_files/mission_colored.png') }}" class="vm-icon" alt="Mission">
+                <img src="assets/index_files/mission_colored.png" class="vm-icon" alt="Mission">
                 <h3>OUR MISSION</h3>
               </div>
               <p class="vm-text">

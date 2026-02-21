@@ -50,7 +50,7 @@
  <div class="blog_inner_page" style="">
      <a href="/dubai-global-village">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738314585updated_image1098185674.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738314585updated_image1098185674.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Global Village<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -74,7 +74,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  
                                                 </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
@@ -96,7 +96,7 @@
  <div class="blog_inner_page" style="">
      <a href="/lotus-cruise-dubai">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738315667updated_image340135996.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738315667updated_image340135996.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Lotus Cruise<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -120,7 +120,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -141,7 +141,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/motiongate-dubai-park-and-resorts">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738313117updated_image292624063.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738313117updated_image292624063.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Motiongate Theme Park<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -165,7 +165,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -186,7 +186,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/legoland-water-park-dubai-unitedarabemirates">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738313198updated_image1755118018.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738313198updated_image1755118018.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Legoland Water Park<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -210,7 +210,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -231,7 +231,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/laperle-by-dragone-dubai-bronze">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738317972updated_image1595785006.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738317972updated_image1595785006.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>La Perle by Dragone Dubai (Bronze)<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -255,7 +255,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -276,7 +276,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/ski-dubai-polar-pass">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738318326updated_image945799280.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738318326updated_image945799280.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Ski Dubai - Polar Pass<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -300,7 +300,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -321,7 +321,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/hot-airballoon-bubai">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738318524updated_image280567405.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738318524updated_image280567405.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Hot Air Balloon<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -345,7 +345,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -366,7 +366,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/dubai-safari-park">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738321080updated_image1694267507.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738321080updated_image1694267507.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Dubai Safari Park<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -390,7 +390,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -411,7 +411,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/Desert-safari-dubai">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738321797updated_image2067736589.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738321797updated_image2067736589.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Desert Safari<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -435,7 +435,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -456,7 +456,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/deep-sea-fishing-dubai">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738322099updated_image2092782629.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738322099updated_image2092782629.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Deep Sea Fishing<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -480,7 +480,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -501,7 +501,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/scuba-diving-dubai">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738333847image273765871.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738333847image273765871.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Scuba Diving<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -525,7 +525,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -546,7 +546,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/flyboarding-dubai-uae">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738334169image1409513010.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738334169image1409513010.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Flyboarding<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -570,7 +570,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                               <span class="price text-white" data-amount="100.00"></span>
 
@@ -591,7 +591,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/yellow-boats-dubai">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738342715updated_image1455422401.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738342715updated_image1455422401.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Yellow Boat The Yellow Boats <span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -615,7 +615,7 @@
 <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden fs-16">
                                             <div class="me-auto">
                                                 <span class="blog-date d-inline-block text-dark-gray fw-600">
-                                                    <img src="{{ asset('assets/uaeactivities_files/aed.png') }}" width="30px" alt="" data-no-retina=""> from  </span>
+                                                    <img src="assets/uaeactivities_files/aed.png" width="30px" alt="" data-no-retina=""> from  </span>
                                             </div>
                                             <!--<div class="like-count fs-15 fw-600">-->
                                             <!--    <a href="#"><i class="fa-regular fa-heart text-red"></i><span class="text-dark-gray align-middle">0</span></a>-->
@@ -637,7 +637,7 @@
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/jet-ski-dubai">
          <div class="box_images" style="height:220px;">
-         <img src="{{ asset('assets/uaeactivities_files/1738334626image44524828.jpg') }}" alt="" data-no-retina=""></div>
+         <img src="assets/uaeactivities_files/1738334626image44524828.jpg" alt="" data-no-retina=""></div>
      <div class="blog_box">
          <h3>Jet Ski Dubai - United Arab Emirates<span>.</span></h3> 
          <p><svg width="15px" height="15px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

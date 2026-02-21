@@ -1,0 +1,33 @@
+﻿Auto-merging app/Http/Controllers/Manager/ManagerDashboardController.php
+CONFLICT (add/add): Merge conflict in app/Http/Controllers/Manager/ManagerDashboardController.php
+Auto-merging composer.json
+CONFLICT (add/add): Merge conflict in composer.json
+Auto-merging package-lock.json
+CONFLICT (add/add): Merge conflict in package-lock.json
+Auto-merging resources/views/auth/login.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/auth/login.blade.php
+Auto-merging resources/views/banner0.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/banner0.blade.php
+Auto-merging resources/views/contact-us.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/contact-us.blade.php
+Auto-merging resources/views/countriestour.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/countriestour.blade.php
+Auto-merging resources/views/layouts/manager.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/layouts/manager.blade.php
+Auto-merging resources/views/lotus-cruise-dubai.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/lotus-cruise-dubai.blade.php
+Auto-merging resources/views/manager/dashboard.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/manager/dashboard.blade.php
+Auto-merging resources/views/ourstory.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/ourstory.blade.php
+Auto-merging resources/views/termsandconditions.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/termsandconditions.blade.php
+Auto-merging resources/views/uaecarousel.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/uaecarousel.blade.php
+Auto-merging resources/views/visaservice.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/visaservice.blade.php
+Auto-merging resources/views/welcome.blade.php
+CONFLICT (add/add): Merge conflict in resources/views/welcome.blade.php
+Auto-merging routes/web.php
+CONFLICT (add/add): Merge conflict in routes/web.php
+Automatic merge failed; fix conflicts and then commit the result.
