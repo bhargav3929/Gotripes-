@@ -8,6 +8,7 @@ use App\Models\ActivityBooking;
 use App\Models\AgentBooking;
 use App\Models\UAEActivity;
 use App\Mail\PaymentStatusMail;
+use App\Mail\SupplierBookingMail;
 use App\Services\NomodService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -140,6 +141,31 @@ class NomodController extends Controller
             $mailable = new PaymentStatusMail($mailData, $paymentStatus, $bookingData['type']);
 
             Mail::to($recipients)->send($mailable);
+
+            // Send supplier notification for activity bookings
+            if ($bookingData['type'] === 'activity' && isset($bookingData['data']['activityId'])) {
+                try {
+                    $activity = UAEActivity::where('activityID', $bookingData['data']['activityId'])->first();
+                    if ($activity && !empty($activity->supplierEmail)) {
+                        $supplierMailData = $bookingData['data'];
+                        $supplierMailData['activityName'] = $activity->activityName ?? 'Activity';
+                        $supplierMailData['activityLocation'] = $activity->activityLocation ?? '';
+                        $supplierMailData['status'] = $paymentStatus;
+                        $supplierMailData['currency'] = $supplierMailData['currency'] ?? 'AED';
+
+                        Mail::to($activity->supplierEmail)
+                            ->send(new SupplierBookingMail(
+                                $supplierMailData,
+                                $activity->supplierName ?? 'Supplier'
+                            ));
+                    }
+                } catch (\Exception $supplierEx) {
+                    Log::warning('Supplier payment email failed', [
+                        'error' => $supplierEx->getMessage(),
+                        'order_id' => $orderId
+                    ]);
+                }
+            }
 
             return true;
 

@@ -18,55 +18,83 @@
         border-left: 4px solid #FFD23F;
     }
 
-    /* Activity Box Styling */
+    /* Activity Box Styling - LUXURY UPGRADE */
     .blog_inner_page {
-        margin-bottom: 30px;
+        margin-bottom: 40px;
         height: 100%;
     }
     
-    /* Fixed-size container for each activity box */
     .activity-box-container {
         display: flex;
         flex-direction: column;
-        height: 450px; /* Fixed height for all boxes */
-        background: #111;
-        border-radius: 12px;
+        height: 520px; /* Increased height for better spacing */
+        background: linear-gradient(180deg, #161616 0%, #0c0c0c 100%);
+        border-radius: 20px; /* More modern rounded corners */
         overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 2px solid transparent;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        border: 1px solid rgba(255, 215, 0, 0.05);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        position: relative;
     }
     
     .activity-box-container:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 10px 30px rgba(255, 210, 63, 0.3);
-        border-color: #FFD23F;
+        transform: translateY(-12px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.15);
+        border-color: rgba(255, 215, 0, 0.4);
     }
     
     .box_images {
         width: 100%;
-        height: 240px; /* Fixed height for images */
+        height: 280px; /* Taller image area */
         background: #000;
         overflow: hidden;
         flex-shrink: 0;
         position: relative;
+    }
+
+    /* Gradient overlay on image for better text separation if needed */
+    .box_images::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 40%;
+        background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+        z-index: 1;
     }
     
     .box_images img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.3s ease;
+        transition: transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
     }
     
     .activity-box-container:hover .box_images img {
-        transform: scale(1.08);
+        transform: scale(1.15);
+    }
+
+    /* Category Badge */
+    .activity-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        color: #FFD700;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        z-index: 5;
+        border: 1px solid rgba(255, 215, 0, 0.2);
     }
     
     .blog_box {
-        background: #111;
-        padding: 20px 15px;
-        margin: 0;
-        position: relative;
+        padding: 25px 20px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -74,50 +102,63 @@
     }
     
     .blog_box h3 {
-        font-family: "B";
-        line-height: 1.4;
-        color: #cbcaca;
-        font-size: 19px;
-        margin: 0 0 15px 0;
-        text-align: center;
-        min-height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-        font-weight: 600;
+        font-family: inherit;
+        line-height: 1.3;
+        color: #ffffff;
+        font-size: 22px;
+        margin: 0 0 8px 0;
+        text-align: left; /* Aligned left for more professional look */
+        min-height: 58px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-weight: 700;
+        letter-spacing: -0.2px;
     }
     
-    .blog_box p {
-        color: #cbcaca;
-        font-size: 16px;
-        text-align: center;
-        margin: 10px 0;
+    .location-tag {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+        text-align: left;
+        margin: 0 0 20px 0;
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
-        min-height: 24px;
+        gap: 6px;
     }
     
     .location-icon {
         color: #FFD23F;
-        font-size: 14px;
-        margin-right: 5px;
+        font-size: 13px;
     }
     
     .author {
         margin-top: auto;
-        padding-top: 15px;
-        border-top: 1px solid rgba(255, 210, 63, 0.3);
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+    
+    .price-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .price-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 2px;
     }
     
     .price {
-        font-size: 20px;
-        font-weight: bold;
-        color: #FFD23F !important;
-        text-shadow: 0 0 10px rgba(255, 210, 63, 0.5);
+        font-size: 24px !important;
+        font-weight: 800 !important;
+        color: #FFD700 !important;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
     }
     
     /* Grid Layout */
@@ -229,6 +270,100 @@
         height: 60px; 
         width: 60px;
     }
+
+    /* Modal trigger button - PREMIUM CTA UPGRADE */
+    .book-now-overlay {
+        background: linear-gradient(135deg, #FFD700 0%, #FFB800 100%);
+        color: #000 !important;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: none;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+    }
+
+    .book-now-overlay:hover {
+        background: #FFFFFF;
+        color: #000 !important;
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+    }
+
+    .book-now-overlay:active {
+        transform: translateY(-2px);
+    }
+
+    /* Price display tweak */
+    .author {
+        border-top: 1px solid rgba(255, 215, 0, 0.15) !important;
+        padding-top: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+    
+    .price {
+        font-size: 24px !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.5px;
+    }
+
+    /* Snackbar for notifications */
+    .classic-snackbar {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20000;
+        color: #111;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 12px 25px;
+        text-align: center;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.4s;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+        background: #ffef8e;
+        border-bottom: 4px solid #FFD700;
+    }
+    .classic-snackbar.success { background: #50cb4a; color: #111; border-bottom: 4px solid #9be58d;}
+    .classic-snackbar.failed { background: #fa5353; color: #fff; border-bottom: 4px solid #c44f4f;}
+    .classic-snackbar.show { display: block; opacity: 1; }
+
+    /* Loader inside buttons */
+    .btn-loader {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(0,0,0,0.3);
+        border-radius: 50%;
+        border-top-color: #000;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Form icon adjustment */
+    .form-icon-inside {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        color: #000 !important;
+    }
 </style>
 
 <!-- Start Section -->
@@ -255,30 +390,43 @@
             @forelse($activities as $activity)
                 <div class="activity-item">
                     <div class="blog_inner_page">
-                        <a href="/dubai-global-village?id={{ $activity->activityID }}" style="text-decoration: none;">
-                            <div class="activity-box-container">
+                        <div class="activity-box-container position-relative">
+                            <!-- Premium Badge -->
+                            <div class="activity-badge">UAE Experience</div>
+                            
+                            <a href="/dubai-global-village?id={{ $activity->activityID }}" style="text-decoration: none;">
                                 <div class="box_images">
                                     <img src="{{ asset($activity->activityImage) }}" alt="{{ $activity->activityName }}" data-no-retina="">
                                 </div>
-                                <div class="blog_box">
-                                    <h3>
-                                        {{ $activity->activityName }}<span style="color: #FFD23F;">.</span>
-                                    </h3>
-                                    <p>
+                            </a>
+                            <div class="blog_box">
+                                <a href="/dubai-global-village?id={{ $activity->activityID }}" style="text-decoration: none;">
+                                    <h3>{{ $activity->activityName }}</h3>
+                                    <div class="location-tag">
                                         <i class="fas fa-map-marker-alt location-icon"></i>
                                         {{ $activity->activityLocation }}
-                                    </p>
-                                    <div class="author d-flex justify-content-center align-items-center position-relative overflow-hidden">
-                                        <span class="price" data-amount="{{ number_format($activity->activityPrice, 2) }}">
-                                            ${{ number_format($activity->activityPrice, 2) }}
+                                    </div>
+                                </a>
+                                
+                                <div class="author">
+                                    <div class="price-wrapper">
+                                        <span class="price-label">Starting From</span>
+                                        <span class="price" data-amount="{{ $activity->activityPrice }}">
+                                            AED {{ number_format($activity->activityPrice, 2) }}
                                         </span>
                                     </div>
+                                    <button type="button" class="book-now-overlay open-booking-modal" 
+                                        data-id="{{ $activity->activityID }}"
+                                        data-name="{{ $activity->activityName }}"
+                                        data-price="{{ $activity->activityPrice }}">
+                                        Book Now
+                                    </button>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     </div>
                 </div>
-            @empty
+@empty
                 <div style="text-align: center; color: #fff; font-size: 18px; margin-top: 50px;">
                     <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #FFD23F; margin-bottom: 20px;"></i>
                     <p>No activities found at the moment.</p>
@@ -303,8 +451,10 @@
 <script src="{{ asset('assets/uaeactivities_files/twk-chunk-vendors.js.download') }}" charset="UTF-8" crossorigin="*"></script>
 <script src="{{ asset('assets/uaeactivities_files/twk-chunk-common.js.download') }}" charset="UTF-8" crossorigin="*"></script>
 <script src="{{ asset('assets/uaeactivities_files/twk-runtime.js.download') }}" charset="UTF-8" crossorigin="*"></script>
-<script src="{{ asset('assets/uaeactivities_files/twk-app.js.download') }}" charset="UTF-8" crossorigin="*"></script>
-<script async src="{{ asset('assets/uaeactivities_files/1ij5c3v7a') }}" charset="UTF-8" crossorigin="*"></script>
+@include('partials.activity_booking_modal')
+
+<div class="classic-snackbar" id="mainSnackbar"></div>
+
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
@@ -318,3 +468,6 @@ s0.parentNode.insertBefore(s1,s0);
 </script>
 
 @include('footer')
+
+
+

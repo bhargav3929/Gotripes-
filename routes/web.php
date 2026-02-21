@@ -194,7 +194,7 @@ Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 
 Route::get('/activity-details', [UAEDetailsController::class, 'show'])->name('activities.detail');
 Route::get('/dubai-global-village', [UAEDetailsController::class, 'show']); // Keep for backward compatibility
 
-Route::get('/all-uae-activities', [UAEActivityController::class, 'index'])->name('uae.activities');
+Route::get('/all-uae-activities', fn() => redirect()->route('emirates.index'));
 
 
 

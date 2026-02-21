@@ -5,17 +5,13 @@
 @section('page-title', 'Manage Users')
 
 @section('content')
-<div class="container-fluid px-2 px-md-4">
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="card shadow-lg border-0 animate-fade-in">
-                <div class="card-header bg-gold border-bottom-0">
-                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 gap-sm-3">
-                        <h3 class="card-title mb-0 fw-bold text-dark d-flex align-items-center">
-                            <i class="fas fa-users me-2 d-none d-sm-inline"></i>
-                            <span class="fs-6 fs-sm-5 fs-md-4">
-                                <span class="d-none d-sm-inline">Manage </span>Users
-                            </span>
+                <div class="card-header">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                        <h3 class="card-title">
+                            <i class="fas fa-users-cog me-2"></i>Manage Users
                         </h3>
                         <div class="card-tools">
                             @can('user_create')
@@ -41,9 +37,9 @@
                     <!-- DESKTOP TABLE VIEW WITH FILE DOWNLOADS AND APPROVE/REJECT BUTTONS -->
                     <div class="d-none d-lg-block">
                         <div class="table-responsive">
-                            <table class="table table-dark table-hover table-bordered datatable datatable-User" cellspacing="0" width="100%">
+                            <table class="table table-dark table-hover datatable datatable-User">
                                 <thead>
-                                    <tr class="table-header-gold">
+                                    <tr>
                                         <th style="width: 80px; text-align: center;">
                                             <i class="fas fa-hashtag me-1"></i>Sl. No
                                         </th>
@@ -86,8 +82,8 @@
                                         $filePaths = json_decode($user->partner_document_path, true) ?? [];
                                     @endphp
                                     
-                                    <tr data-entry-id="{{ $user->id }}" class="table-row-hover">
-                                        <td class="text-center fw-medium text-gold fs-6">{{ $index + 1 }}</td>
+                                    <tr data-entry-id="{{ $user->id }}">
+                                        <td class="text-center opacity-50">{{ $index + 1 }}</td>
                                         <td>
                                             <div class="user-info">
                                                 <strong class="text-white fs-6">{{ $user->name }}</strong>
@@ -242,11 +238,9 @@
                         </div>
                     </div>
                     <!-- Mobile/tablet cards code unchanged... -->
-                </div>
             </div>
         </div>
     </div>
-</div>
 <form id="deleteForm" method="POST" class="d-none">
     @csrf
     @method('DELETE')
@@ -580,8 +574,8 @@
         border-color: rgba(255, 215, 0, 0.3) !important;
         vertical-align: middle !important;
         padding: 12px 8px !important;
-        background: rgba(42, 42, 42, 0.9) !important;
-        color: var(--text-light) !important;
+        background: transparent !important;
+        color: var(--text-main) !important;
     }
 
     .table-row-hover:hover {
@@ -645,22 +639,22 @@
     }
 
     .delete-modal-content {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        border: 3px solid var(--primary-gold);
-        border-radius: 15px;
+        background: var(--dark-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
         padding: 0;
         width: 90%;
-        max-width: 550px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+        max-width: 500px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         animation: slideIn 0.3s ease;
         overflow: hidden;
     }
 
     .delete-modal-header {
-        background: linear-gradient(45deg, #dc3545, #ff4757);
+        background: #1a1d27;
         color: white;
-        padding: 20px 25px;
-        border-bottom: 3px solid var(--primary-gold);
+        padding: 24px;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: space-between;

@@ -45,6 +45,10 @@
                                 <input type="text" class="wp-input" name="activityLocation" value="{{ old('activityLocation') }}" required placeholder="e.g. Dubai Marina">
                             </div>
                         </div>
+                    <div class="wp-form-group">
+                        <label class="wp-form-label">Activity Category / Type</label>
+                        <input type="text" class="wp-input" name="activityCategory" value="{{ old('activityCategory') }}" placeholder="e.g. Adventure, Water Sports, Desert Safari">
+                        <p class="wp-form-help">Optional — used for future filtering</p>
                     </div>
                 </div>
             </div>
@@ -71,6 +75,29 @@
                             <div class="wp-form-group">
                                 <label class="wp-form-label">Transaction Charges ($)</label>
                                 <input type="number" class="wp-input" name="activityTransactionCharges" step="0.01" min="0" value="{{ old('activityTransactionCharges') }}" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Supplier Information --}}
+            <div class="wp-card">
+                <div class="wp-card-header"><i class="fas fa-truck text-secondary-wp"></i> Supplier Information</div>
+                <div class="wp-card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Supplier / Tour Operator Name</label>
+                                <input type="text" class="wp-input" name="supplierName" value="{{ old('supplierName') }}" placeholder="e.g. Desert Safari Tours LLC">
+                                <p class="wp-form-help">Optional — supplier will receive booking notifications</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Supplier Email</label>
+                                <input type="email" class="wp-input" name="supplierEmail" value="{{ old('supplierEmail') }}" placeholder="supplier@example.com">
+                                <p class="wp-form-help">Optional — booking confirmations will be sent here</p>
                             </div>
                         </div>
                     </div>

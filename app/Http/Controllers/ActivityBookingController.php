@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\ActivityBooking;
 use App\Models\NomodTransaction;
 use App\Mail\ActivityBookingMail;
+use App\Mail\SupplierBookingMail;
 use App\Services\NomodService;
+use App\Models\UAEActivity;
 
 class ActivityBookingController extends Controller
 {
@@ -80,11 +82,16 @@ class ActivityBookingController extends Controller
         }
 
         return response()->json([
-            'dubaiPrice' => $activity->dubaiPrice ?? 0,
-            'abuDhabiPrice' => $activity->abuDhabiPrice ?? 0,
-            // NEW: Add the new transport price fields
-            'fromAbuDhabiToDubai' => $activity->fromAbuDhabiToDubai ?? 0,
-            'emirates' => $activity->emirates ?? 0,
+            'adultPrice' => (float) ($activity->activityPrice ?? 0),
+            'childPrice' => ($activity->activityChildPrice !== null && $activity->activityChildPrice > 0)
+                ? (float) $activity->activityChildPrice 
+                : (float) ($activity->activityPrice ?? 0),
+            'txnCharges' => (float) ($activity->activityTransactionCharges ?? 0),
+            'dubaiPrice' => (float) ($activity->dubaiPrice ?? 0),
+            'abuDhabiPrice' => (float) ($activity->abuDhabiPrice ?? 0),
+            'fromAbuDhabiToDubai' => (float) ($activity->fromAbuDhabiToDubai ?? 0),
+            'emirates' => (float) ($activity->emirates ?? 0),
+            'taxPercent' => 5.0,
         ]);
     }
 
@@ -183,7 +190,9 @@ class ActivityBookingController extends Controller
             $adultTotal = $validated['adults'] * $adultPrice;
             $childTotal = $validated['childrens'] * $childPrice;
             $subtotal = $adultTotal + $childTotal + $transCharge + $transportCharges;
-            $finalAmount = round($subtotal, 2);
+            
+            $taxAmount = round($subtotal * ($taxPercent / 100), 2);
+            $finalAmount = round($subtotal + $taxAmount, 2);
 
             // Save to DB
             $booking = new ActivityBooking();
@@ -206,14 +215,9 @@ class ActivityBookingController extends Controller
             $booking->amount         = $finalAmount;
             $booking->currency       = $currency;
             $booking->remarks        = $validated['remarks'] ?? '';
-            
-            // Handle actionType field - add default value to prevent database error
-            if (isset($validated['action_type'])) {
-                $booking->actionType = $validated['action_type'];
-            } else {
-                // Set default based on payment option to maintain existing logic
-                $booking->actionType = ($validated['payment_option'] === 'book_with_us') ? 'book_only' : 'book_and_pay';
-            }
+        
+            // Handle actionType field
+            $booking->actionType = $request->input('action_type', $validated['payment_option']);
             
             $booking->save();
 
@@ -224,12 +228,16 @@ class ActivityBookingController extends Controller
             // ]);
 
             // Prepare mail data
+            $activityModel = UAEActivity::where('activityID', $validated['activityId'])->first();
             $mailData = $booking->toArray();
             $mailData['activityName'] = $activityName;
+            $mailData['activityLocation'] = $activityModel->activityLocation ?? '';
             $mailData['currency']     = $currency;
             $mailData['transportCharges'] = $transportCharges;
             $mailData['taxAmount'] = $taxAmount;
             $mailData['status'] = 'pending';
+            $mailData['supplierName'] = $activityModel->supplierName ?? '';
+            $mailData['supplierEmail'] = $activityModel->supplierEmail ?? '';
             
             // Recipients: Always send to user + admins for BOTH payment options
             $recipients = [
@@ -275,6 +283,25 @@ class ActivityBookingController extends Controller
                     ]);
                 }
                 return redirect()->back()->with('error', 'Failed to send your booking email. Please try again later.');
+            }
+
+            // Send supplier email notification (separate from admin/customer)
+            try {
+                if ($activityModel && !empty($activityModel->supplierEmail)) {
+                    $supplierMailData = $mailData;
+                    $supplierMailData['activityLocation'] = $activityModel->activityLocation ?? '';
+
+                    Mail::to($activityModel->supplierEmail)
+                        ->send(
+                            (new SupplierBookingMail(
+                                $supplierMailData,
+                                $activityModel->supplierName ?? 'Supplier'
+                            ))->from(config('mail.from.address'), env('MAIL_FROM_NAME'))
+                        );
+                }
+            } catch (\Exception $supplierEmailEx) {
+                // Supplier email failure should not block the booking
+                // Log::error('Supplier email failed', ['error' => $supplierEmailEx->getMessage()]);
             }
 
             // "Book With Us" (classic): Email sent, return success

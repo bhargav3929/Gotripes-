@@ -1,94 +1,147 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid">
-
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-    </div>
-
-<!-- Content Row -->
-    <div class="row">
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-4 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                               User</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-hotel fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="d-flex align-items-center justify-content-between mb-5">
+        <div>
+            <h1 class="h3 mb-1 fw-800 text-white">System Overview</h1>
+            <p class="text-muted small mb-0">Welcome back, Admin. Here's what's happening today.</p>
         </div>
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-4 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Balance</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-4 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Pending
-                            </div>
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-spinner fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Requests Card Example -->
-        <div class="col-xl-3 col-md-4 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                               Success</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="d-none d-md-block">
+            <span class="badge bg-light-dark text-muted py-2 px-3 border border-secondary border-opacity-10">
+                <i class="far fa-calendar-alt me-2"></i>{{ date('D, M d, Y') }}
+            </span>
         </div>
     </div>
 
     <!-- Content Row -->
+    <div class="row g-4">
 
-</div>
+        <!-- Total Users Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card stats-card-indigo h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stats-icon stats-icon-indigo">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stats-trend text-success">
+                            <i class="fas fa-caret-up me-1"></i>12%
+                        </div>
+                    </div>
+                    <h3 class="stats-value text-white mb-1">1,284</h3>
+                    <p class="stats-label text-muted mb-0">Total Active Users</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Balance Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card stats-card-gold h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stats-icon stats-icon-gold">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="stats-trend text-success">
+                            <i class="fas fa-caret-up me-1"></i>8.4%
+                        </div>
+                    </div>
+                    <h3 class="stats-value text-white mb-1">AED 42,950</h3>
+                    <p class="stats-label text-muted mb-0">Monthly Revenue</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Tasks Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card stats-card-blue h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stats-icon stats-icon-blue">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="stats-trend text-warning">
+                            <i class="fas fa-circle me-1 small"></i>Active
+                        </div>
+                    </div>
+                    <h3 class="stats-value text-white mb-1">24</h3>
+                    <p class="stats-label text-muted mb-0">Pending Approvals</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Rate Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card stats-card-green h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stats-icon stats-icon-green">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stats-trend text-success">
+                            <i class="fas fa-check me-1"></i>98%
+                        </div>
+                    </div>
+                    <h3 class="stats-value text-white mb-1">94.2%</h3>
+                    <p class="stats-label text-muted mb-0">Booking Success</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<style>
+    .fw-800 { font-weight: 800; }
+    
+    .stats-card {
+        background: var(--light-dark);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .stats-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    
+    .stats-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    
+    .stats-icon-indigo { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
+    .stats-icon-gold { background: rgba(255, 210, 63, 0.1); color: #FFD23F; }
+    .stats-icon-blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .stats-icon-green { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+    
+    .stats-trend {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.03);
+    }
+</style>
 @endsection
