@@ -171,9 +171,9 @@
         right: 20px;
         width: 44px;
         height: 44px;
-        border: 1px solid #2a2a2a;
-        background: rgba(255, 255, 255, 0.02);
-        color: #555;
+        border: 1px solid rgba(255, 215, 0, 0.4);
+        background: rgba(255, 215, 0, 0.05);
+        color: #FFD700;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -185,9 +185,9 @@
     }
 
     .gotrips-lead-close-btn:hover {
-        color: #FFD700;
-        border-color: rgba(212, 175, 55, 0.5);
-        background: rgba(212, 175, 55, 0.1);
+        color: #FFF0A0;
+        border-color: rgba(255, 215, 0, 0.7);
+        background: rgba(255, 215, 0, 0.15);
     }
 
     .gotrips-lead-form-title {
@@ -370,7 +370,7 @@
             width: 35px;
             height: 35px;
             font-size: 20px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 215, 0, 0.08);
         }
 
         .gotrips-lead-form-header {

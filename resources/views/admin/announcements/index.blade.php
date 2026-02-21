@@ -5,19 +5,15 @@
 @section('page-title', 'Manage Announcements')
 
 @section('content')
-<div class="container-fluid px-2 px-md-4">
     <div class="row justify-content-center">
         <div class="col-12">
             <!-- Main Card -->
             <div class="card shadow-lg border-0 animate-fade-in">
                 <!-- Mobile-First Card Header -->
-                <div class="card-header bg-gold border-bottom-0">
-                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 gap-sm-3">
-                        <h3 class="card-title mb-0 fw-bold text-dark d-flex align-items-center">
-                            <i class="fas fa-bullhorn me-2 d-none d-sm-inline"></i>
-                            <span class="fs-6 fs-sm-5 fs-md-4">
-                                <span class="d-none d-sm-inline">Manage </span>Announcements
-                            </span>
+                <div class="card-header">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                        <h3 class="card-title">
+                            <i class="fas fa-bullhorn me-2"></i>Manage Announcements
                         </h3>
                         <div class="card-tools">
                             <a href="{{ route('admin.announcements.create') }}" 
@@ -117,9 +113,9 @@
                     <!-- Desktop Table View (Hidden on Mobile) -->
                     <div class="d-none d-lg-block">
                         <div class="table-responsive">
-                            <table class="table table-dark table-hover table-bordered">
+                            <table class="table table-dark table-hover">
                                 <thead>
-                                    <tr class="table-header-gold">
+                                    <tr>
                                         <th class="text-center" style="width: 80px;">
                                             <i class="fas fa-hashtag me-1"></i>S.No
                                         </th>
@@ -139,8 +135,8 @@
                                 </thead>
                                 <tbody>
                                     @forelse($announcements as $index => $announcement)
-                                    <tr class="table-row-hover">
-                                        <td class="text-center fw-medium text-gold">
+                                    <tr>
+                                        <td class="text-center opacity-50">
                                             {{ $announcements->firstItem() + $index }}
                                         </td>
                                         <td>
@@ -218,11 +214,9 @@
                         </div>
                     </div>
                     @endif
-                </div>
             </div>
         </div>
     </div>
-</div>
 
 <!-- Hidden Delete Form -->
 <form id="deleteForm" method="POST" class="d-none">
@@ -429,22 +423,22 @@
     }
 
     .delete-modal-content {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        border: 3px solid #ffd700;
-        border-radius: 15px;
+        background: var(--dark-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
         padding: 0;
         width: 90%;
         max-width: 500px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         animation: slideIn 0.3s ease;
         overflow: hidden;
     }
 
     .delete-modal-header {
-        background: linear-gradient(45deg, #dc3545, #ff4757);
+        background: #1a1d27;
         color: white;
-        padding: 20px 25px;
-        border-bottom: 2px solid #ffd700;
+        padding: 24px;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: space-between;

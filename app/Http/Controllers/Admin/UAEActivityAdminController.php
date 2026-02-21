@@ -141,12 +141,15 @@ class UAEActivityAdminController extends Controller
         'activityLocation' => 'required|string|max:255',
         'emiratesID' => 'required|exists:tbl_emirates,emiratesID',
         'activityPrice' => 'required|numeric|min:0',
+        'activityCategory' => 'nullable|string|max:100',
         'activityChildPrice' => 'nullable|numeric|min:0',
         'activityTransactionCharges' => 'nullable|numeric|min:0',
         'dubaiPrice' => 'nullable|numeric|min:0',
         'abuDhabiPrice' => 'nullable|numeric|min:0',
         'fromAbuDhabiToDubai' => 'nullable|numeric|min:0',
         'emirates' => 'nullable|numeric|min:0',
+        'supplierName' => 'nullable|string|max:255',
+        'supplierEmail' => 'nullable|email|max:255',
         'activityImageFiles' => 'required|array',
         'activityImageFiles.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         'detailsOverview' => 'required|string', // Changed: single string from Quill
@@ -181,12 +184,15 @@ class UAEActivityAdminController extends Controller
         'activityLocation' => $request->activityLocation,
         'emiratesID' => $request->emiratesID,
         'activityPrice' => $request->activityPrice,
+        'activityCategory' => $request->activityCategory,
         'activityChildPrice' => $request->activityChildPrice ?? 0,
         'activityTransactionCharges' => $request->activityTransactionCharges ?? 0,
         'dubaiPrice' => $request->dubaiPrice ?? 0,
         'abuDhabiPrice' => $request->abuDhabiPrice ?? 0,
         'fromAbuDhabiToDubai' => $request->fromAbuDhabiToDubai ?? 0,
         'emirates' => $request->emirates ?? 0,
+        'supplierName' => $request->supplierName,
+        'supplierEmail' => $request->supplierEmail,
         'activityImage' => $firstImage,
         'isActive' => 1,
         'createdBy' => $user->name,
@@ -338,6 +344,7 @@ class UAEActivityAdminController extends Controller
             'activityLocation' => 'required|string|max:255',
             'emiratesID' => 'required|exists:tbl_emirates,emiratesID', // Add emirates validation
             'activityPrice' => 'required|numeric|min:0',
+            'activityCategory' => 'nullable|string',
             'activityChildPrice' => 'nullable|numeric|min:0',
             'activityTransactionCharges' => 'nullable|numeric|min:0',
             'dubaiPrice' => 'nullable|numeric|min:0',
@@ -345,6 +352,8 @@ class UAEActivityAdminController extends Controller
             // NEW: Add validation for the new transport pricing fields
             'fromAbuDhabiToDubai' => 'nullable|numeric|min:0',
             'emirates' => 'nullable|numeric|min:0',
+            'supplierName' => 'nullable|string|max:255',
+            'supplierEmail' => 'nullable|email|max:255',
             'activityImageFiles' => 'nullable|array',
             'activityImageFiles.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'detailsOverview' => 'required|string',
@@ -400,10 +409,14 @@ class UAEActivityAdminController extends Controller
         $activityUpdateData = [];
         $fieldsToCheck = [
             'activityName', 'activityLocation', 'emiratesID', // Add emiratesID here
-            'activityPrice', 'activityChildPrice', 'activityTransactionCharges', 
+            'activityPrice',
+            'activityCategory',
+            'activityChildPrice', 'activityTransactionCharges', 
             'dubaiPrice', 'abuDhabiPrice',
             // NEW: Add the new transport pricing fields
-            'fromAbuDhabiToDubai', 'emirates'
+            'fromAbuDhabiToDubai', 'emirates',
+            // Supplier fields
+            'supplierName', 'supplierEmail'
         ];
 
         foreach ($fieldsToCheck as $field) {

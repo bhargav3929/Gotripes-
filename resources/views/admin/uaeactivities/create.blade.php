@@ -393,6 +393,24 @@
                                     @enderror
                                 </div>
                             </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="activityCategory" class="form-label form-label-gold">
+                                        <i class="fas fa-layer-group"></i> Activity Category / Type (Optional)
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-dark @error('activityCategory') is-invalid @enderror" 
+                                           id="activityCategory" 
+                                           name="activityCategory" 
+                                           value="{{ old('activityCategory') }}" 
+                                           placeholder="e.g., Adventure, Water Sports, Desert Safari, Luxury">
+                                    <small class="text-white-50">Used for future filtering and grouping activities.</small>
+                                    @error('activityCategory')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
 
                         <div class="section-divider">
@@ -536,6 +554,50 @@
                                            min="0">
                                     <small class="text-muted">Transport from any Emirates location</small>
                                     @error('emirates')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider">
+                            <div class="section-title">
+                                <i class="fas fa-truck"></i> Supplier Information
+                            </div>
+                        </div>
+
+                        <!-- Supplier Information (Optional) -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="supplierName" class="form-label form-label-gold">
+                                        <i class="fas fa-user-tie"></i> Supplier / Tour Operator Name
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-dark @error('supplierName') is-invalid @enderror" 
+                                           id="supplierName" 
+                                           name="supplierName" 
+                                           value="{{ old('supplierName') }}" 
+                                           placeholder="e.g., Desert Safari Tours LLC">
+                                    <small class="text-muted">Optional — the supplier will receive booking notifications</small>
+                                    @error('supplierName')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="supplierEmail" class="form-label form-label-gold">
+                                        <i class="fas fa-envelope"></i> Supplier Email
+                                    </label>
+                                    <input type="email" 
+                                           class="form-control form-control-dark @error('supplierEmail') is-invalid @enderror" 
+                                           id="supplierEmail" 
+                                           name="supplierEmail" 
+                                           value="{{ old('supplierEmail') }}" 
+                                           placeholder="supplier@example.com">
+                                    <small class="text-muted">Optional — booking confirmations will be sent to this email</small>
+                                    @error('supplierEmail')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

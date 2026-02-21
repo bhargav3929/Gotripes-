@@ -28,8 +28,11 @@ class UAEActivity extends Model
         'abuDhabiPrice',
         'fromAbuDhabiToDubai',
         'emirates',
+        'supplierName',
+        'supplierEmail',
         'activityRoute',
         'emiratesID', // Add this new foreign key
+        'activityCategory', // Optional for future filtering
     ];
 
     // Relationship with Emirates

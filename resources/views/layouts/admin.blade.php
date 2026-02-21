@@ -40,21 +40,17 @@
     <!-- Complete Mobile-First Black & Gold Responsive Layout with Improved Contrast -->
     <style>
         :root {
-            --primary-gold: #FFD700;
-            --secondary-gold: #FFA500;
-            --dark-bg: #1a1a1a;
-            --darker-bg: #0d0d0d;
-            --light-dark: #2d2d2d;
-            --text-gold: #FFD700;
-            --text-white: #ffffff;
-            --text-light: #f8f9fa;
-            --text-muted: #d6d8db;
-            --shadow-gold: rgba(255, 215, 0, 0.3);
-            --gradient-primary: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            --gradient-dark: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            --primary-gold: #FFD23F;
+            --accent-gold: #FFD23F;
+            --dark-bg: #0f111a; /* Deep modern dark */
+            --darker-bg: #090b11;
+            --light-dark: #1a1d27; /* Softer card background */
+            --border-color: rgba(255, 255, 255, 0.05);
             --sidebar-width: 280px;
             --sidebar-width-mobile: 260px;
-            --topbar-height: 60px;
+            --topbar-height: 70px;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
         }
 
         /* MOBILE-FIRST RESET AND BASE STYLES */
@@ -90,19 +86,18 @@
             left: -100%;
             width: var(--sidebar-width-mobile);
             height: 100vh;
-            background: var(--gradient-dark);
-            border-right: 3px solid var(--primary-gold);
-            box-shadow: 2px 0 15px rgba(255, 215, 0, 0.2);
+            background: var(--darker-bg);
+            border-right: 1px solid var(--border-color);
             z-index: 1060;
             overflow-y: auto;
             overflow-x: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -webkit-overflow-scrolling: touch;
+            padding: 1.5rem 0;
         }
 
         .sidebar.show {
             left: 0;
-            box-shadow: 2px 0 25px rgba(0, 0, 0, 0.5);
+            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
         }
 
         /* Mobile Sidebar Overlay */
@@ -143,22 +138,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem 0.75rem;
-            margin: 0.75rem;
-            background: var(--gradient-primary);
-            color: var(--darker-bg) !important;
+            padding: 0 1.5rem;
+            margin-bottom: 2.5rem;
+            color: var(--accent-gold) !important;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.9rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
             transition: all 0.3s ease;
-            min-height: 48px;
         }
 
         .sidebar-brand:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-            color: var(--darker-bg) !important;
+            opacity: 0.8;
             text-decoration: none;
         }
 
@@ -170,40 +161,33 @@
         .sidebar .nav-link {
             display: flex;
             align-items: center;
-            padding: 0.875rem 1rem;
-            color: var(--text-white) !important;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-muted) !important;
             text-decoration: none;
-            border-radius: 6px;
-            margin: 0 0.75rem;
-            transition: all 0.3s ease;
+            margin: 0.2rem 1rem;
+            border-radius: 12px;
+            transition: all 0.2s ease;
             font-weight: 500;
             font-size: 0.875rem;
-            min-height: 44px;
-            position: relative;
-            background: rgba(255, 255, 255, 0.05);
         }
 
         .sidebar .nav-link:hover {
-            background: rgba(255, 215, 0, 0.15) !important;
-            color: var(--text-white) !important;
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
-            transform: translateX(2px);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--accent-gold) !important;
         }
 
         .sidebar .nav-link.active,
         .sidebar .nav-item.active .nav-link {
-            background: var(--gradient-primary) !important;
-            color: var(--darker-bg) !important;
+            background: rgba(255, 210, 63, 0.1) !important;
+            color: var(--accent-gold) !important;
             font-weight: 600;
-            box-shadow: 0 3px 12px rgba(255, 215, 0, 0.4);
         }
 
         .sidebar .nav-link i {
-            width: 18px;
-            text-align: center;
-            margin-right: 0.75rem;
-            font-size: 0.875rem;
-            flex-shrink: 0;
+            width: 20px;
+            margin-right: 12px;
+            font-size: 1rem;
+            opacity: 0.7;
         }
 
         .sidebar-divider {
@@ -224,10 +208,9 @@
 
         /* MOBILE-FIRST TOPBAR */
         .topbar {
-            background: var(--gradient-dark) !important;
-            border-bottom: 2px solid var(--primary-gold);
-            box-shadow: 0 2px 15px rgba(255, 215, 0, 0.2);
-            padding: 0.75rem 1rem;
+            background: var(--darker-bg) !important;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 1.5rem;
             position: sticky;
             top: 0;
             z-index: 1040;
@@ -302,10 +285,11 @@
         }
 
         .img-profile {
-            border: 2px solid var(--primary-gold);
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
-            width: 32px;
-            height: 32px;
+            border: 1px solid var(--border-color);
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            padding: 2px;
         }
 
         /* MOBILE-FIRST MAIN CONTENT */
@@ -337,19 +321,24 @@
         /* MOBILE-FIRST COMPONENTS */
         .card {
             background: var(--light-dark);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
-            color: var(--text-white);
-            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1.5rem;
         }
 
         .card-header {
-            background: var(--gradient-primary);
-            color: var(--darker-bg);
-            font-weight: 600;
-            border-bottom: 1px solid var(--primary-gold);
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
+            background: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-header .card-title {
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 0;
         }
 
         .card-body {
@@ -373,16 +362,20 @@
         }
 
         .btn-primary {
-            background: var(--gradient-primary);
-            border: 1px solid var(--primary-gold);
-            color: var(--darker-bg);
+            background: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            color: #000;
+            border-radius: 10px;
+            font-weight: 700;
+            padding: 0.6rem 1.25rem;
         }
 
         .btn-primary:hover {
-            background: var(--secondary-gold);
-            border-color: var(--secondary-gold);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            background: #fff;
+            border-color: #fff;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 210, 63, 0.3);
         }
 
         .btn-outline-primary {
@@ -439,26 +432,29 @@
         }
 
         .table-dark {
-            background: var(--light-dark);
+            background: transparent !important;
         }
 
         .table-dark th {
-            background: var(--gradient-primary);
-            color: var(--darker-bg);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
             font-weight: 600;
-            border-color: var(--primary-gold);
-            font-size: 0.8rem;
-            padding: 0.75rem 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            border-color: var(--border-color);
+            padding: 1rem;
         }
 
         .table-dark td {
-            border-color: rgba(255, 215, 0, 0.2);
-            padding: 0.75rem 0.5rem;
-            color: var(--text-white);
+            border-color: var(--border-color);
+            padding: 1rem;
+            color: var(--text-main);
+            vertical-align: middle;
         }
 
         .table-hover tbody tr:hover {
-            background: rgba(255, 215, 0, 0.1);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         /* Mobile-First Alerts */
@@ -770,7 +766,7 @@
             }
 
             .container-fluid {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem;
             }
 
             .sidebar .nav-link {
@@ -790,7 +786,7 @@
             .container-fluid {
                 max-width: 1400px;
                 margin: 0 auto;
-                padding: 2rem 2rem;
+                padding: 1.5rem 2rem;
             }
 
             .topbar .h5 {
@@ -1121,32 +1117,26 @@
             </nav>
             <!-- End of Topbar -->
 
-            <!-- MAIN CONTENT - MOBILE RESPONSIVE -->
             <div id="content">
-                
-                <!-- Session Messages -->
-                @if(session()->has('message'))
-                    <div class="container-fluid">
-                        <div class="alert alert-{{ session()->get('alert-type', 'info') }} alert-dismissible fade show animate-fade-in" 
+                <div class="container-fluid pt-0">
+                    <!-- Session Messages -->
+                    @if(session()->has('message'))
+                        <div class="alert alert-{{ session()->get('alert-type', 'info') }} alert-dismissible fade show animate-fade-in mt-3" 
                              role="alert" id="alert-message">
                             <i class="fas fa-{{ session()->get('alert-type') == 'success' ? 'check-circle' : 'info-circle' }} me-2"></i>
                             {{ session()->get('message') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                    </div>
-                @endif
+                    @endif
 
-                <!-- Dynamic Alert Container for AJAX -->
-                <div class="container-fluid">
+                    <!-- Dynamic Alert Container for AJAX -->
                     <div id="alertContainer"></div>
-                </div>
 
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-                    @yield('content')
+                    <!-- Begin Page Content -->
+                    <div class="mt-4">
+                        @yield('content')
+                    </div>
                 </div>
-                <!-- /.container-fluid -->
-                
             </div>
             <!-- End of Main Content -->
 

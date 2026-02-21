@@ -284,6 +284,7 @@
                 <h2>{{ $booking['activityName'] ?? 'Activity Booking' }}</h2>
                 <p><span class="icon">📍</span>{{ $booking['activityLocation'] ?? 'Location TBA' }}</p>
                 <p><span class="icon">📅</span>{{ \Carbon\Carbon::parse($booking['date'])->format('l, F j, Y') }}</p>
+                <p style="margin-top: 10px;"><span class="icon">🔖</span>Order ID: <strong>ORDAB{{ $booking['id'] ?? 'N/A' }}</strong></p>
             </div>
 
             <div class="booking-details">
@@ -366,6 +367,24 @@
                 @endif
             </div>
 
+            @if(!empty($booking['supplierName']))
+            <div class="booking-details">
+                <h3 class="section-header">
+                    <span class="icon">🏢</span>Supplier / Organizer Details
+                </h3>
+                <div class="detail-row">
+                    <span class="label"><span class="icon">🏢</span>Name:</span>
+                    <span class="value">{{ $booking['supplierName'] }}</span>
+                </div>
+                @if(!empty($booking['supplierEmail']))
+                <div class="detail-row">
+                    <span class="label"><span class="icon">📧</span>Email:</span>
+                    <span class="value">{{ $booking['supplierEmail'] }}</span>
+                </div>
+                @endif
+            </div>
+            @endif
+
             <div class="divider"></div>
 
             <div class="booking-details">
@@ -422,7 +441,12 @@
             <p><strong>{{ config('app.name') }}</strong></p>
             <p>Thank you for choosing us for your activity booking!</p>
             <div class="divider" style="background: linear-gradient(90deg, transparent 0%, #FFD23F 50%, transparent 100%); margin: 20px 0;"></div>
-            <p style="font-size: 12px; color: #cccccc;">
+            <p style="font-size: 14px; font-weight: bold; color: #FFD23F;">Need Assistance?</p>
+            <p style="font-size: 13px; color: #e0e0e0; margin-top: 5px;">
+                📧 Email: {{ config('mail.from.address') }}<br>
+                📞 Support: +971 (0) 4 123 4567 (9 AM - 6 PM GST)
+            </p>
+            <p style="font-size: 12px; color: #cccccc; margin-top: 20px;">
                 This is an automated email. Please do not reply directly to this message.
             </p>
         </div>
