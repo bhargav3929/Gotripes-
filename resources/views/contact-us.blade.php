@@ -348,7 +348,7 @@
         <div class="row align-items-center">
             <div class="col-lg-5 mb-5 mb-lg-0">
                 <div class="premium-image-wrapper">
-                    <img src="{{ asset('assets/ourstory_files/1.jpg') }}" alt="About Gotrips">
+                    <img src="assets/ourstory_files/1.jpg" alt="About Gotrips">
                 </div>
             </div>
             <div class="col-lg-7 ps-lg-5">

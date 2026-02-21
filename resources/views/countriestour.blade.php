@@ -324,7 +324,7 @@
 
 <!-- Image + Grid Overlay -->
 <div class="image-overlay">
-  <img src="{{ asset('assets/index_files/533419533.jpg') }}" alt="Banner" />
+  <img src="assets/index_files/533419533.jpg" alt="Banner" />
   <div class="overlay">
     <div class="container" style="max-width: 1400px;">
         <!-- Header Row: Title and Search -->

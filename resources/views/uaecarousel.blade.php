@@ -27,7 +27,7 @@
       <div class="swiper-slide">
         <div class="slide-inner">
           <div class="overlay"></div>
-          <img class="slide-img" src="{{ asset('assets/Global Village _ Ayn Al Amir Tourism L.L.C_files/gallery2055761129.jpg') }}" alt="">
+          <img class="slide-img" src="assets/Global Village _ Ayn Al Amir Tourism L.L.C_files/gallery2055761129.jpg" alt="">
           <div class="container center">
             <div data-swiper-parallax="300" class="slide-title">
               <h2 style="margin-right:-550px; ">Global Village</h2>
@@ -44,7 +44,7 @@
       <div class="swiper-slide">
         <div class="slide-inner">
           <div class="overlay"></div>
-          <img class="slide-img" src="{{ asset('assets/Global%20Village%20_%20Ayn%20Al%20Amir%20Tourism%20L.L.C_files/gallery60752940.jpg') }}" alt="">
+          <img class="slide-img" src="assets/Global%20Village%20_%20Ayn%20Al%20Amir%20Tourism%20L.L.C_files/gallery60752940.jpg" alt="">
           <div class="container center">
             <div data-swiper-parallax="300" class="slide-title">
               <h2 style="margin-right:-550px; ">Global Village</h2>
@@ -59,7 +59,7 @@
       <div class="swiper-slide">
         <div class="slide-inner">
           <div class="overlay"></div>
-          <img class="slide-img" src="{{ asset('assets/Global%20Village%20_%20Ayn%20Al%20Amir%20Tourism%20L.L.C_files/gallery321521848.jpg') }}" alt="">
+          <img class="slide-img" src="assets/Global%20Village%20_%20Ayn%20Al%20Amir%20Tourism%20L.L.C_files/gallery321521848.jpg" alt="">
           <div class="container center">
             <div data-swiper-parallax="300" class="slide-title">
               <h2 style="margin-right:-550px; ">Global Village</h2>
