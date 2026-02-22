@@ -332,10 +332,8 @@
         .emirate-v2-name {
             font-size: 28px;
         }
-        @media (max-width: 1199px) {
-            .activities-grid-luxury {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .activities-grid-luxury {
+            grid-template-columns: repeat(2, 1fr);
         }
         .activity-v2-card {
             height: auto;
