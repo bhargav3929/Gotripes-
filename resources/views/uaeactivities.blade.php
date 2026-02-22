@@ -161,31 +161,32 @@
         text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
     }
     
-    /* Grid Layout */
     .activities-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 30px;
         justify-content: center;
         max-width: 1200px;
         margin: 0 auto;
+        padding: 0 15px;
     }
     
     .activity-item {
         width: 100%;
-        max-width: 380px;
+        max-width: 100%;
         margin: 0 auto;
+        display: flex;
     }
     
     /* Responsive adjustments */
-    @media (max-width: 1200px) {
+    @media (max-width: 1199px) {
         .activities-grid {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 25px;
         }
     }
     
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
         .activities-grid {
             grid-template-columns: 1fr;
             gap: 20px;
@@ -275,10 +276,10 @@
     .book-now-overlay {
         background: linear-gradient(135deg, #FFD700 0%, #FFB800 100%);
         color: #000 !important;
-        padding: 12px 28px;
-        border-radius: 8px;
+        padding: 8px 18px;
+        border-radius: 6px;
         font-weight: 800;
-        font-size: 15px;
+        font-size: 13px;
         text-transform: uppercase;
         letter-spacing: 0.8px;
         cursor: pointer;
@@ -396,7 +397,10 @@
                             
                             <a href="/dubai-global-village?id={{ $activity->activityID }}" style="text-decoration: none;">
                                 <div class="box_images">
-                                    <img src="{{ asset($activity->activityImage) }}" alt="{{ $activity->activityName }}" data-no-retina="">
+                                    <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" 
+                                         alt="{{ $activity->activityName }}" 
+                                         data-no-retina=""
+                                         onerror="this.src='https://images.unsplash.com/photo-1544911835-33052671127e?q=80&w=800';">
                                 </div>
                             </a>
                             <div class="blog_box">
@@ -437,12 +441,6 @@
     </div>
 </section>
 
-<!-- WhatsApp Button -->
-<div class="whats">
-    <a target="_blank" href="https://api.whatsapp.com/send/?phone=971543651065&amp;text&amp;type=phone_number&amp;app_absent=0">
-        <img src="{{ asset('assets/uaeactivities_files/whats.gif') }}" class="img-fluid" data-no-retina="" alt="WhatsApp Contact">
-    </a>
-</div>
 
 <!-- Tawk.to Scripts -->
 <img src="{{ asset('assets/uaeactivities_files/matomo.php') }}" alt="" style="border: 0px;" data-no-retina="">

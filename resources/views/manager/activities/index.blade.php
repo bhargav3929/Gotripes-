@@ -31,7 +31,7 @@
                     <td style="color: var(--wp-text-muted);">{{ $activities->firstItem() + $index }}</td>
                     <td>
                         @if($activity->activityImage)
-                            <img src="{{ asset($activity->activityImage) }}" alt="{{ $activity->activityName }}"
+                            <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" alt="{{ $activity->activityName }}"
                                  style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--wp-border-light);"
                                  onerror="this.style.display='none';">
                         @else

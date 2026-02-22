@@ -177,7 +177,7 @@
             <div class="swiper-slide">
               <div class="slide-inner">
                 <div class="overlay"></div>
-                <img class="slide-img" src="{{ asset(trim($img)) }}" alt="{{ $activity->activityName }}">
+                <img class="slide-img" src="{{ str_starts_with(trim($img), 'http') ? trim($img) : asset(trim($img)) }}" alt="{{ $activity->activityName }}">
                 <div class="container text-center">
                   <div data-swiper-parallax="300" class="slide-title">
                     <h2>{{ $activity->activityName }}</h2>
@@ -188,7 +188,6 @@
                 </div>
               </div>
             </div>
-          @endif
         @endforeach
     </div>
     <div class="swiper-pagination"></div>
