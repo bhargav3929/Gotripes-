@@ -187,12 +187,12 @@
     /* ─── ACTIVITIES VIEW ───────────────────────────────── */
     .activities-grid-luxury {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 380px));
-        gap: 35px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
         justify-content: center;
-        max-width: 1400px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding-bottom: 100px;
+        padding: 0 20px 100px;
     }
 
     .activity-v2-card {
@@ -279,11 +279,11 @@
     .book-btn-v2 {
         background: #FFD23F;
         color: #000;
-        padding: 12px 25px;
-        border-radius: 12px;
+        padding: 8px 18px;
+        border-radius: 8px;
         font-weight: 800;
         text-transform: uppercase;
-        font-size: 13px;
+        font-size: 11px;
         border: none;
         cursor: pointer;
         transition: all 0.3s;
@@ -332,10 +332,10 @@
         .emirate-v2-name {
             font-size: 28px;
         }
-        .activities-grid-luxury {
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-            padding-bottom: 60px;
+        @media (max-width: 1199px) {
+            .activities-grid-luxury {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         .activity-v2-card {
             height: auto;
@@ -437,7 +437,7 @@
                         <div class="activity-v2-img-container">
                             <span class="activity-v2-tag">Verified Escape</span>
                             <a href="{{ route('activities.detail', ['id' => $activity->activityID, 'emirateId' => $emirate->emiratesID]) }}">
-                                <img src="{{ asset($activity->activityImage) }}" 
+                                <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" 
                                      alt="{{ $activity->activityName }}" 
                                      class="activity-v2-img"
                                      onerror="this.src='https://images.unsplash.com/photo-1544911835-33052671127e?q=80&w=800';">
@@ -535,12 +535,6 @@
     </div>
 </div>
 
-<!-- WhatsApp Float -->
-<div class="whats-float">
-    <a href="https://api.whatsapp.com/send/?phone=971543651065&text=Hello+GoTrips" target="_blank">
-        <img src="{{ asset('assets/uaeactivities_files/whats.gif') }}" width="65" height="65" alt="WhatsApp">
-    </a>
-</div>
 
 <div class="classic-snackbar" id="mainSnackbar"></div>
 
