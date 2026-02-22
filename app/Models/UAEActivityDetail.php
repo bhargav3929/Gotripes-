@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UAEActivityDetail extends Model
 {
-    protected $table = 'tbl_uaeactivitydetails';
+    protected $table = 'tbl_UAEActivityDetails';
     protected $primaryKey = 'detailsID';
     public $timestamps = false;  // set true if you add timestamps
     protected $fillable = [
