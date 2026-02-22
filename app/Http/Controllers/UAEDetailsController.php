@@ -17,11 +17,16 @@ class UAEDetailsController extends Controller
         $detail = null;
         $activityImages = [];
         $emirate = null;
+        $activityAdultPrice = 0;
 
         if ($id) {
             $activity = UAEActivity::find($id);
             $detail = $activity ? $activity->details : null;
-            
+
+            if ($activity) {
+                $activityAdultPrice = ($activity->activityPrice !== null) ? (float) $activity->activityPrice : 0;
+            }
+
             if ($detail && !empty($detail->activityImage)) {
                 // Split using the #cseparator
                 $activityImages = array_filter(
@@ -39,6 +44,6 @@ class UAEDetailsController extends Controller
         }
 
         // Now $activityImages is an array of image paths ready to use in your carousel
-        return view('dubai-global-village', compact('activity', 'detail', 'activityImages', 'emirate'));
+        return view('dubai-global-village', compact('activity', 'detail', 'activityImages', 'emirate', 'activityAdultPrice'));
     }
 }
