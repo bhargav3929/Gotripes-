@@ -17,7 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/database/*.sqlite
 project_backup_with_db.zip
 *.DS_Store
 server_log.txt
