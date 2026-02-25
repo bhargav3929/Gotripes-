@@ -15,8 +15,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tbl_UAEActivities', function (Blueprint $table) {
-            $table->string('supplierName', 255)->nullable()->after('emirates');
-            $table->string('supplierEmail', 255)->nullable()->after('supplierName');
+            if (!Schema::hasColumn('tbl_UAEActivities', 'supplierName')) {
+                $table->string('supplierName', 255)->nullable();
+            }
+            if (!Schema::hasColumn('tbl_UAEActivities', 'supplierEmail')) {
+                $table->string('supplierEmail', 255)->nullable();
+            }
         });
     }
 
