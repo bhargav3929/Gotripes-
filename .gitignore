@@ -6,8 +6,9 @@
 /storage/*.key
 /vendor
 .env
-.env.backup
-.env.production
+.env.*
+merge_output.txt
+server_log.txt
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -17,6 +18,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.playwright-mcp
 project_backup_with_db.zip
 *.DS_Store
-server_log.txt
+*.png
+!public/**/*.png

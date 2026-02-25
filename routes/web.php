@@ -281,7 +281,11 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
 
 // GitHub auto-deploy webhook
 Route::post('/deploy/github-webhook', function (\Illuminate\Http\Request $request) {
-    $secret = 'c67eadc859951399d8b31ff63856164835bc06a4';
+    $secret = env('GITHUB_WEBHOOK_SECRET', '');
+    if (empty($secret)) {
+        return response()->json(['error' => 'Webhook secret not configured'], 500);
+    }
+
     $signature = $request->header('X-Hub-Signature-256', '');
     $payload = $request->getContent();
 
