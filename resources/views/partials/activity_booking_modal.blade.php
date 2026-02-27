@@ -7,12 +7,19 @@
             <div class="modal-body pt-5 px-4">
                 {{-- Step Indicator --}}
                 <div class="modal-step-indicator">
-                    <div class="step-item active">
-                        <div class="step-dot">1</div>
+                    <div class="step-item active" data-step="1">
+                        <div class="step-circle">
+                            <span class="step-number">1</span>
+                        </div>
                         <span class="step-label">Details</span>
                     </div>
-                    <div class="step-item">
-                        <div class="step-dot">2</div>
+                    <div class="step-connector">
+                        <div class="connector-fill"></div>
+                    </div>
+                    <div class="step-item" data-step="2">
+                        <div class="step-circle">
+                            <span class="step-number">2</span>
+                        </div>
                         <span class="step-label">Review</span>
                     </div>
                 </div>
@@ -84,7 +91,7 @@
                             <div class="col-md-6">
                                 <div class="input-group-premium">
                                     <i class="bi bi-person text-warning"></i>
-                                    <input type="number" name="childrens" class="form-control-premium" placeholder="Children (6-17)" min="0" max="50">
+                                    <input type="number" name="childrens" class="form-control-premium" placeholder="Children (6-17)" min="0" max="50" value="0">
                                 </div>
                             </div>
 
@@ -166,30 +173,81 @@
         </div>
     </div>
 </div>
-    </div>
-</div>
 
 <!-- Modal Pricing Overlay (Secondary Modal for Confirmation before payment) -->
-<div id="modalChargePreview" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:10002; justify-content:center; align-items:center; background:rgba(0,0,0,0.85);">
-    <div style="background:#181818; color:#fff; padding:30px; border-radius:14px; min-width:320px; max-width:90vw; border: 1px solid #FFD23F;">
-        <h3 style="margin-bottom:20px; font-size:1.4rem; text-align:center; color: #FFD23F;">Confirm Payment</h3>
-        <table style="width:100%; border-collapse:collapse; font-size:16px; margin-bottom:20px;">
-            <tbody>
-                <tr><td style="padding:8px 0;">Adults Total</td><td style="text-align:right;" id="prevAdultsTotal">0.00</td></tr>
-                <tr><td style="padding:8px 0;">Children Total</td><td style="text-align:right;" id="prevChildrenTotal">0.00</td></tr>
-                <tr id="prevTransportRow" style="display:none;"><td style="padding:8px 0;">Transport</td><td style="text-align:right;" id="prevTransportTotal">0.00</td></tr>
-                <tr><td style="padding:8px 0;">Transaction Fee</td><td style="text-align:right;" id="prevTxnFee">0.00</td></tr>
-                <tr><td style="padding:8px 0;">VAT (5%)</td><td style="text-align:right;" id="prevVatTotal">0.00</td></tr>
-                <tr style="border-top:1px solid #FFD23F; font-weight:bold; color: #FFD23F; font-size: 1.2rem;">
-                    <td style="padding:12px 0;">Final Total</td>
-                    <td style="text-align:right;"><span id="prevFinalTotal">0.00</span> AED</td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="d-flex gap-2">
-            <button type="button" id="closePrevModal" style="flex: 1; background:#444; color:#fff; padding:10px; border:none; border-radius:5px;">Back</button>
-            <button type="button" id="modalFinalPayBtn" style="flex: 1; background:#FFD23F; color:#000; padding:10px; border:none; border-radius:5px; font-weight:bold;">PAY NOW</button>
+<div id="modalChargePreview" class="payment-overlay">
+    <div class="payment-card">
+        {{-- Close button --}}
+        <button type="button" id="closePrevModal" class="payment-close-btn">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        {{-- Header with icon --}}
+        <div class="payment-header">
+            <div class="payment-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <h3 class="payment-title">Order Summary</h3>
+            <p class="payment-subtitle">Review your booking details</p>
         </div>
+
+        {{-- Price breakdown --}}
+        <div class="payment-breakdown">
+            <div class="payment-row">
+                <div class="payment-row-left">
+                    <i class="bi bi-person-fill"></i>
+                    <span>Adults</span>
+                </div>
+                <span class="payment-row-value" id="prevAdultsTotal">0.00</span>
+            </div>
+            <div class="payment-row">
+                <div class="payment-row-left">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Children</span>
+                </div>
+                <span class="payment-row-value" id="prevChildrenTotal">0.00</span>
+            </div>
+            <div class="payment-row" id="prevTransportRow" style="display:none;">
+                <div class="payment-row-left">
+                    <i class="bi bi-truck"></i>
+                    <span>Transport</span>
+                </div>
+                <span class="payment-row-value" id="prevTransportTotal">0.00</span>
+            </div>
+            <div class="payment-row">
+                <div class="payment-row-left">
+                    <i class="bi bi-receipt"></i>
+                    <span>Transaction Fee</span>
+                </div>
+                <span class="payment-row-value" id="prevTxnFee">0.00</span>
+            </div>
+            <div class="payment-row">
+                <div class="payment-row-left">
+                    <i class="bi bi-percent"></i>
+                    <span>VAT (5%)</span>
+                </div>
+                <span class="payment-row-value" id="prevVatTotal">0.00</span>
+            </div>
+        </div>
+
+        {{-- Total --}}
+        <div class="payment-total">
+            <span class="payment-total-label">Total Amount</span>
+            <div class="payment-total-value">
+                <span id="prevFinalTotal">0.00</span>
+                <small>AED</small>
+            </div>
+        </div>
+
+        {{-- Pay button --}}
+        <button type="button" id="modalFinalPayBtn" class="payment-pay-btn">
+            <i class="bi bi-lock-fill"></i>
+            <span>PAY NOW SECURELY</span>
+        </button>
+
+        <p class="payment-secure-note">
+            <i class="bi bi-shield-check"></i> Secured by 256-bit SSL encryption
+        </p>
     </div>
 </div>
 
@@ -204,60 +262,110 @@
         position: relative;
     }
 
-    /* Modal Step Indicator */
+    /* ─── Redesigned Step Indicator ─────────────────── */
     .modal-step-indicator {
         display: flex;
-        justify-content: space-between;
-        padding: 0 100px;
-        margin-bottom: 45px;
-        position: relative;
-    }
-    .modal-step-indicator::before {
-        content: '';
-        position: absolute;
-        top: 16px;
-        left: 130px;
-        right: 130px;
-        height: 2px;
-        background: rgba(255,255,255,0.08);
-        z-index: 1;
-    }
-    .step-item {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        margin-bottom: 35px;
+        gap: 0;
     }
-    .step-dot {
-        width: 32px;
-        height: 32px;
-        background: #1a1a1a;
-        border: 2px solid rgba(255,255,255,0.2);
+
+    .step-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: default;
+        position: relative;
+    }
+
+    .step-circle {
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .step-number {
+        font-size: 15px;
         font-weight: 800;
-        color: rgba(255,255,255,0.4);
+        color: rgba(255, 255, 255, 0.3);
         transition: all 0.4s ease;
+        line-height: 1;
     }
-    .step-item.active .step-dot {
-        background: #FFD23F;
-        border-color: #FFD23F;
-        color: #000;
-        box-shadow: 0 0 15px rgba(255, 210, 63, 0.4);
-    }
+
     .step-label {
-        font-size: 10px;
+        font-size: 13px;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
         font-weight: 700;
-        color: rgba(255,255,255,0.4);
+        color: rgba(255, 255, 255, 0.3);
+        transition: all 0.4s ease;
+        white-space: nowrap;
     }
-    .step-item.active .step-label { color: #FFD23F; }
+
+    /* Connector line between steps */
+    .step-connector {
+        width: 80px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 3px;
+        margin: 0 20px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .connector-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #FFD23F, #FFB800);
+        border-radius: 3px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Active step */
+    .step-item.active .step-circle {
+        background: linear-gradient(135deg, #FFD23F 0%, #FFB800 100%);
+        border-color: transparent;
+        box-shadow: 0 0 20px rgba(255, 210, 63, 0.35), 0 4px 15px rgba(255, 184, 0, 0.25);
+    }
+
+    .step-item.active .step-number {
+        color: #000;
+        font-weight: 900;
+    }
+
+    .step-item.active .step-label {
+        color: #FFD23F;
+        font-weight: 800;
+    }
+
+    /* Completed step (when moving to step 2) */
+    .step-item.completed .step-circle {
+        background: linear-gradient(135deg, #FFD23F 0%, #FFB800 100%);
+        border-color: transparent;
+        box-shadow: 0 0 12px rgba(255, 210, 63, 0.2);
+    }
+
+    .step-item.completed .step-number {
+        color: #000;
+    }
+
+    .step-item.completed .step-label {
+        color: rgba(255, 210, 63, 0.7);
+    }
+
+    /* Filled connector when step 2 is active */
+    .step-connector.filled .connector-fill {
+        width: 100%;
+    }
 
     .input-group-premium {
         background: rgba(255, 255, 255, 0.03);
@@ -410,6 +518,233 @@
     }
     @keyframes modal-spin { to { transform: rotate(360deg); } }
 
+    /* ─── Payment Confirmation Overlay ─────────────── */
+    .payment-overlay {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 10002;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        animation: overlayFadeIn 0.3s ease;
+    }
+
+    @keyframes overlayFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes cardSlideUp {
+        from { opacity: 0; transform: translateY(30px) scale(0.96); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .payment-card {
+        background: linear-gradient(165deg, #141414 0%, #0a0a0a 50%, #111 100%);
+        color: #fff;
+        padding: 35px 30px 30px;
+        border-radius: 24px;
+        min-width: 380px;
+        max-width: 440px;
+        width: 90vw;
+        border: 1px solid rgba(255, 210, 63, 0.15);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 210, 63, 0.06);
+        position: relative;
+        animation: cardSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .payment-close-btn {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+
+    .payment-close-btn:hover {
+        background: rgba(255, 210, 63, 0.1);
+        border-color: rgba(255, 210, 63, 0.3);
+        color: #FFD23F;
+    }
+
+    .payment-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .payment-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(255, 210, 63, 0.15) 0%, rgba(255, 184, 0, 0.08) 100%);
+        border: 1px solid rgba(255, 210, 63, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 22px;
+        color: #FFD23F;
+    }
+
+    .payment-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 6px;
+        letter-spacing: -0.3px;
+    }
+
+    .payment-subtitle {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.35);
+        margin: 0;
+        letter-spacing: 0.3px;
+    }
+
+    .payment-breakdown {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 6px 0;
+        margin-bottom: 20px;
+    }
+
+    .payment-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 13px 20px;
+        transition: background 0.2s ease;
+    }
+
+    .payment-row:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .payment-row-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 14px;
+    }
+
+    .payment-row-left i {
+        font-size: 14px;
+        color: rgba(255, 210, 63, 0.5);
+        width: 18px;
+        text-align: center;
+    }
+
+    .payment-row-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.8);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .payment-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, rgba(255, 210, 63, 0.1) 0%, rgba(255, 184, 0, 0.05) 100%);
+        border: 1px solid rgba(255, 210, 63, 0.2);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 24px;
+    }
+
+    .payment-total-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .payment-total-value {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+
+    .payment-total-value span {
+        font-size: 28px;
+        font-weight: 900;
+        color: #FFD23F;
+        letter-spacing: -0.5px;
+        line-height: 1;
+    }
+
+    .payment-total-value small {
+        font-size: 14px;
+        font-weight: 700;
+        color: rgba(255, 210, 63, 0.6);
+    }
+
+    .payment-pay-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #FFD700 0%, #FFB800 100%);
+        color: #000;
+        border: none;
+        padding: 16px 24px;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+    }
+
+    .payment-pay-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(255, 215, 0, 0.3);
+        filter: brightness(1.08);
+    }
+
+    .payment-pay-btn:active {
+        transform: translateY(0);
+    }
+
+    .payment-pay-btn i {
+        font-size: 16px;
+    }
+
+    .payment-secure-note {
+        text-align: center;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.25);
+        margin: 14px 0 0;
+        letter-spacing: 0.3px;
+    }
+
+    .payment-secure-note i {
+        color: rgba(74, 222, 128, 0.5);
+        margin-right: 4px;
+    }
+
     /* ─── MOBILE RESPONSIVE ─────────────────────────── */
     @media (max-width: 767px) {
         #activityBookingModal .modal-dialog {
@@ -427,12 +762,19 @@
             padding-right: 16px !important;
         }
         .modal-step-indicator {
-            padding: 0 40px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
-        .modal-step-indicator::before {
-            left: 70px;
-            right: 70px;
+        .step-connector {
+            width: 50px;
+            margin: 0 12px;
+        }
+        .step-circle {
+            width: 36px;
+            height: 36px;
+        }
+        .step-label {
+            font-size: 11px;
+            letter-spacing: 1px;
         }
         .booking-section-group {
             padding: 16px;
@@ -465,20 +807,30 @@
     }
 
     @media (max-width: 575px) {
-        .modal-step-indicator {
-            padding: 0 20px;
+        .step-connector {
+            width: 35px;
+            margin: 0 8px;
         }
-        .modal-step-indicator::before {
-            left: 50px;
-            right: 50px;
+        .step-circle {
+            width: 32px;
+            height: 32px;
         }
-        #modalChargePreview > div {
-            padding: 20px 15px;
+        .step-number {
+            font-size: 13px;
+        }
+        .step-label {
+            font-size: 10px;
+        }
+        .payment-card {
             min-width: unset;
             width: calc(100vw - 30px);
+            padding: 28px 18px 24px;
         }
-        #modalChargePreview table {
-            font-size: 14px;
+        .payment-total-value span {
+            font-size: 22px;
+        }
+        .payment-row-left, .payment-row-value {
+            font-size: 13px;
         }
     }
 </style>
@@ -513,6 +865,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modalPriceSummary').style.display = 'none';
         transferSelect.value = '';
         
+        // Reset step indicator to step 1
+        updateStepIndicator(1);
+
         // Show modal
         modal.show();
         
@@ -532,8 +887,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function fetchPricing(id) {
         try {
-            const response = await fetch(`/activity/prices/${id}`);
-            const data = await response.json();
+            const response = await fetch(`/activity/prices/${id}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            const text = await response.text();
+            let data;
+            try { data = JSON.parse(text); } catch(e) {
+                throw new Error('Server returned invalid response.');
+            }
             
             currentPrices = {
                 adult: parseFloat(data.adultPrice) || 0,
@@ -631,26 +992,46 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if(transportPrice > 0) {
             document.getElementById('prevTransportTotal').textContent = transportPrice.toFixed(2);
-            document.getElementById('prevTransportRow').style.display = 'table-row';
+            document.getElementById('prevTransportRow').style.display = 'flex';
         } else {
             document.getElementById('prevTransportRow').style.display = 'none';
         }
 
         document.getElementById('modalChargePreview').style.display = 'flex';
+        updateStepIndicator(2);
     });
 
 
     document.getElementById('closePrevModal').addEventListener('click', () => {
         document.getElementById('modalChargePreview').style.display = 'none';
+        updateStepIndicator(1);
     });
+
+    // Step indicator visual update
+    function updateStepIndicator(step) {
+        const steps = document.querySelectorAll('.modal-step-indicator .step-item');
+        const connector = document.querySelector('.step-connector');
+        if (step === 2) {
+            steps[0].classList.remove('active');
+            steps[0].classList.add('completed');
+            steps[1].classList.add('active');
+            if (connector) connector.classList.add('filled');
+        } else {
+            steps[0].classList.add('active');
+            steps[0].classList.remove('completed');
+            steps[1].classList.remove('active');
+            if (connector) connector.classList.remove('filled');
+        }
+    }
 
     document.getElementById('modalFinalPayBtn').addEventListener('click', async function() {
         const payBtn = this;
-        const originalText = payBtn.textContent;
+        const originalHTML = payBtn.innerHTML;
         payBtn.disabled = true;
-        payBtn.innerHTML = '<span class="btn-loader"></span>Processing...';
+        payBtn.innerHTML = '<span class="btn-loader"></span> Creating Booking...';
 
         try {
+            // Step 1: Create the booking
             const formData = new FormData(bookingForm);
             formData.append('action_type', 'book_and_pay');
             formData.append('final_payment_amount', calculateTotal());
@@ -662,28 +1043,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
             });
 
-            const data = await response.json();
-            
-            if (data.success && data.booking_id) {
-                // Initiate Payment
-                const payResponse = await fetch('{{ route("activity.payment.initiate") }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    body: JSON.stringify({ booking_id: data.booking_id, amount: calculateTotal() })
-                });
-                
-                const payData = await payResponse.json();
-                if (payData.success && payData.checkout_url) {
-                    window.location.href = payData.checkout_url;
-                    return;
-                }
+            const bookText = await response.text();
+            let data;
+            try { data = JSON.parse(bookText); } catch(e) {
+                throw new Error('Server error. Please refresh the page and try again.');
             }
-            throw new Error(data.message || 'Payment failed to initiate.');
+
+            if (!response.ok || !data.success) {
+                const errorMsg = data.errors
+                    ? Object.values(data.errors).flat().join(', ')
+                    : (data.message || 'Failed to create booking.');
+                throw new Error(errorMsg);
+            }
+
+            if (!data.booking_id) {
+                throw new Error('Booking created but no booking ID returned.');
+            }
+
+            // Step 2: Initiate payment
+            payBtn.innerHTML = '<span class="btn-loader"></span> Connecting to Payment...';
+
+            const payResponse = await fetch('{{ route("activity.payment.initiate") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                body: JSON.stringify({ booking_id: data.booking_id, amount: calculateTotal() })
+            });
+
+            const payText = await payResponse.text();
+            let payData;
+            try { payData = JSON.parse(payText); } catch(e) {
+                throw new Error('Payment service error. Please try again.');
+            }
+
+            if (!payResponse.ok || !payData.success || !payData.checkout_url) {
+                throw new Error(payData.error || 'Payment gateway unavailable. Please try again.');
+            }
+
+            // Step 3: Redirect to payment gateway
+            payBtn.innerHTML = '<span class="btn-loader"></span> Redirecting to Payment...';
+            window.location.href = payData.checkout_url;
+
         } catch (error) {
-            console.error('Submission error:', error);
+            console.error('Payment error:', error);
             showModalSnackbar(error.message || 'An error occurred. Please try again.', 'failed');
             payBtn.disabled = false;
-            payBtn.textContent = originalText;
+            payBtn.innerHTML = originalHTML;
         }
     });
 

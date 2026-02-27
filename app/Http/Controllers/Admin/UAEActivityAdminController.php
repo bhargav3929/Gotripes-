@@ -141,7 +141,6 @@ class UAEActivityAdminController extends Controller
         'activityLocation' => 'required|string|max:255',
         'emiratesID' => 'required|exists:tbl_emirates,emiratesID',
         'activityPrice' => 'required|numeric|min:0',
-        'activityCategory' => 'nullable|string|max:100',
         'activityChildPrice' => 'nullable|numeric|min:0',
         'activityTransactionCharges' => 'nullable|numeric|min:0',
         'dubaiPrice' => 'nullable|numeric|min:0',
@@ -150,9 +149,10 @@ class UAEActivityAdminController extends Controller
         'emirates' => 'nullable|numeric|min:0',
         'supplierName' => 'nullable|string|max:255',
         'supplierEmail' => 'nullable|email|max:255',
+        'activityCategory' => 'nullable|string|max:255',
         'activityImageFiles' => 'required|array',
         'activityImageFiles.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-        'detailsOverview' => 'required|string', // Changed: single string from Quill
+        'detailsOverview' => 'required|string',
         'detailsIminfo' => 'required|array',
         'detailsIminfo.*' => 'required|string',
         'detailsHighlights' => 'required|array',
@@ -178,26 +178,30 @@ class UAEActivityAdminController extends Controller
     // First image for main activity table
     $firstImage = count($imagePaths) > 0 ? $imagePaths[0] : '';
 
+    // Generate clean URL route from activity name
+    $activityRoute = Str::slug($request->activityName);
+
     // Create main activity record
     $activity = UAEActivity::create([
         'activityName' => $request->activityName,
         'activityLocation' => $request->activityLocation,
         'emiratesID' => $request->emiratesID,
         'activityPrice' => $request->activityPrice,
-        'activityCategory' => $request->activityCategory,
         'activityChildPrice' => $request->activityChildPrice ?? 0,
         'activityTransactionCharges' => $request->activityTransactionCharges ?? 0,
         'dubaiPrice' => $request->dubaiPrice ?? 0,
         'abuDhabiPrice' => $request->abuDhabiPrice ?? 0,
         'fromAbuDhabiToDubai' => $request->fromAbuDhabiToDubai ?? 0,
         'emirates' => $request->emirates ?? 0,
-        'supplierName' => $request->supplierName,
-        'supplierEmail' => $request->supplierEmail,
         'activityImage' => $firstImage,
-        'isActive' => 1,
+        'activityCurrency' => 'AED',
+        'activityRoute' => $activityRoute,
+        'supplierName' => $request->supplierName ?? '',
+        'supplierEmail' => $request->supplierEmail ?? '',
+        'activityCategory' => $request->activityCategory ?? '',
         'createdBy' => $user->name,
+        'isActive' => 1,
         'createdDate' => now(),
-        'modifiedBy' => null,
         'modifiedDate' => null
     ]);
 
@@ -210,11 +214,6 @@ class UAEActivityAdminController extends Controller
         'detailsIminfo' => implode('#cseparator', $request->detailsIminfo),
         'detailsHighlights' => implode('#cseparator', $request->detailsHighlights),
         'activityImage' => count($imagePaths) > 0 ? implode('#cseparator', $imagePaths) : '',
-        'isActive' => 1,
-        'createdBy' => $user->name,
-        'createdDate' => now(),
-        'modifiedBy' => null,
-        'modifiedDate' => null
     ]);
 
     Log::info('✅ Activity details created successfully');
@@ -225,14 +224,14 @@ class UAEActivityAdminController extends Controller
 }
 
 
-    public function edit(UAEActivity $uaeactivity)
+    public function edit($id)
     {
+        $activity = UAEActivity::where('activityID', $id)->firstOrFail();
+
         $user = Auth::user();
         $userType = session('user_type', 'unknown');
         $isPartnerRestricted = session('is_partner_restricted', false);
         $isApprovedPartner = ($userType === 'approved_partner' && $isPartnerRestricted === true);
-        
-        $activity = $uaeactivity;
         $details = UAEActivityDetail::where('activityID', $activity->activityID)->first();
         
         // Log::info('📝 Editing activity', [
@@ -307,14 +306,15 @@ class UAEActivityAdminController extends Controller
         ));
     }
 
-    public function update(Request $request, UAEActivity $uaeactivity)
+    public function update(Request $request, $id)
     {
+        try {
+        $activity = UAEActivity::where('activityID', $id)->firstOrFail();
+
         $user = Auth::user();
         $userType = session('user_type', 'unknown');
         $isPartnerRestricted = session('is_partner_restricted', false);
         $isApprovedPartner = ($userType === 'approved_partner' && $isPartnerRestricted === true);
-        
-        $activity = $uaeactivity;
         
         // Log::info('🔄 Updating activity', [
         //     'activity_id' => $activity->activityID,
@@ -344,7 +344,6 @@ class UAEActivityAdminController extends Controller
             'activityLocation' => 'required|string|max:255',
             'emiratesID' => 'required|exists:tbl_emirates,emiratesID', // Add emirates validation
             'activityPrice' => 'required|numeric|min:0',
-            'activityCategory' => 'nullable|string',
             'activityChildPrice' => 'nullable|numeric|min:0',
             'activityTransactionCharges' => 'nullable|numeric|min:0',
             'dubaiPrice' => 'nullable|numeric|min:0',
@@ -356,19 +355,25 @@ class UAEActivityAdminController extends Controller
             'supplierEmail' => 'nullable|email|max:255',
             'activityImageFiles' => 'nullable|array',
             'activityImageFiles.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'detailsOverview' => 'required|string',
-            'detailsIminfo' => 'required|array',
-            'detailsIminfo.*' => 'required|string',
-            'detailsHighlights' => 'required|array',
-            'detailsHighlights.*' => 'required|string',
+            'detailsOverview' => 'nullable|string',
+            'detailsIminfo' => 'nullable|array',
+            'detailsIminfo.*' => 'nullable|string',
+            'detailsHighlights' => 'nullable|array',
+            'detailsHighlights.*' => 'nullable|string',
             'replace_images' => 'nullable|boolean'
         ]);
 
-        // Get existing details
-        $details = UAEActivityDetail::firstOrNew(['activityID' => $activity->activityID]);
+        // Get existing details — use firstOrNew so it works even if no row exists yet
+        $details = UAEActivityDetail::where('activityID', $activity->activityID)->first();
+        $isNewDetails = false;
+        if (!$details) {
+            $details = new UAEActivityDetail();
+            $details->activityID = $activity->activityID;
+            $isNewDetails = true;
+        }
         $existingImages = [];
-        
-        if ($details && $details->activityImage) {
+
+        if ($details->activityImage) {
             $existingImages = explode('#cseparator', $details->activityImage);
         }
 
@@ -390,33 +395,33 @@ class UAEActivityAdminController extends Controller
             }
 
             // Determine if we should replace existing images or add to them
-            if ($request->has('replace_images') && $request->replace_images) {
-                // Replace existing images - delete old ones first
+            $imageAction = $request->input('image_action', 'add');
+            if ($imageAction === 'replace' || ($request->has('replace_images') && $request->replace_images)) {
+                // Replace existing images - delete old local files first
                 foreach ($existingImages as $oldImage) {
-                    $oldImagePath = public_path($oldImage);
-                    if (File::exists($oldImagePath)) {
-                        File::delete($oldImagePath);
+                    if (!str_starts_with($oldImage, 'http')) {
+                        $oldImagePath = public_path($oldImage);
+                        if (File::exists($oldImagePath)) {
+                            File::delete($oldImagePath);
+                        }
                     }
                 }
                 $finalImagePaths = $imagePaths; // Use only new images
             } else {
-                // Keep existing images and add new ones
-                $finalImagePaths = array_merge($existingImages, $imagePaths);
+                // Add new images FIRST so the card thumbnail updates to the new image
+                $finalImagePaths = array_merge($imagePaths, $existingImages);
             }
         }
 
         // UPDATED: Prepare data for update - Include new fields AND emiratesID
         $activityUpdateData = [];
         $fieldsToCheck = [
-            'activityName', 'activityLocation', 'emiratesID', // Add emiratesID here
+            'activityName', 'activityLocation', 'emiratesID',
             'activityPrice',
-            'activityCategory',
-            'activityChildPrice', 'activityTransactionCharges', 
+            'activityChildPrice', 'activityTransactionCharges',
             'dubaiPrice', 'abuDhabiPrice',
-            // NEW: Add the new transport pricing fields
             'fromAbuDhabiToDubai', 'emirates',
-            // Supplier fields
-            'supplierName', 'supplierEmail'
+            'supplierName', 'supplierEmail', 'activityCategory',
         ];
 
         foreach ($fieldsToCheck as $field) {
@@ -426,8 +431,13 @@ class UAEActivityAdminController extends Controller
         }
 
         // Update first image only if images were modified
-        if (!empty($imagePaths) || ($request->has('replace_images') && $request->replace_images)) {
+        if (!empty($imagePaths) || $request->input('image_action') === 'replace') {
             $activityUpdateData['activityImage'] = count($finalImagePaths) > 0 ? $finalImagePaths[0] : '';
+        }
+
+        // Update route slug if name changed
+        if (isset($activityUpdateData['activityName'])) {
+            $activityUpdateData['activityRoute'] = Str::slug($activityUpdateData['activityName']);
         }
 
         // Always update modification info
@@ -453,19 +463,12 @@ class UAEActivityAdminController extends Controller
         }
 
         // Update images in details if they were modified
-        if (!empty($imagePaths) || ($request->has('replace_images'))) {
+        if (!empty($imagePaths) || $request->input('image_action') === 'replace') {
             $detailsUpdateData['activityImage'] = count($finalImagePaths) > 0 ? implode('#cseparator', $finalImagePaths) : '';
         }
 
-        // Set common update fields
-        $detailsUpdateData['isActive'] = 1;
-        $detailsUpdateData['modifiedBy'] = $user->name;
-        $detailsUpdateData['modifiedDate'] = now();
-
         // Set creation fields if this is a new record
-        if (!$details->exists) {
-            $detailsUpdateData['createdBy'] = $user->name;
-            $detailsUpdateData['createdDate'] = now();
+        if ($isNewDetails) {
             // Ensure activityImage has a value for new records
             if (!isset($detailsUpdateData['activityImage'])) {
                 $detailsUpdateData['activityImage'] = '';
@@ -479,23 +482,28 @@ class UAEActivityAdminController extends Controller
 
         $details->save();
 
-        // Log::info('✅ Activity updated successfully', [
-        //     'activity_id' => $activity->activityID,
-        //     'updated_by' => $user->name
-        // ]);
-
         return redirect()->route('admin.uaeactivities.index')
                        ->with('success', 'UAE Activity updated successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('UPDATE FAILED: ' . $e->getMessage(), [
+                'id' => $id,
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            return redirect()->route('admin.uaeactivities.index')
+                           ->withErrors(['error' => 'Update failed: ' . $e->getMessage()]);
+        }
     }
 
-    public function destroy(UAEActivity $uaeactivity)
+    public function destroy($id)
     {
+        $activity = UAEActivity::where('activityID', $id)->firstOrFail();
+
         $user = Auth::user();
         $userType = session('user_type', 'unknown');
         $isPartnerRestricted = session('is_partner_restricted', false);
         $isApprovedPartner = ($userType === 'approved_partner' && $isPartnerRestricted === true);
-        
-        $activity = $uaeactivity;
         
         // Log::info('🗑️ Deleting activity', [
         //     'activity_id' => $activity->activityID,
@@ -523,17 +531,11 @@ class UAEActivityAdminController extends Controller
         // Soft delete main activity
         $activity->update([
             'isActive' => 0,
-            'modifiedBy' => $user->name,
             'modifiedDate' => now()
         ]);
 
-        // Soft delete activity details
-        UAEActivityDetail::where('activityID', $activity->activityID)
-                         ->update([
-                             'isActive' => 0,
-                             'modifiedBy' => $user->name,
-                             'modifiedDate' => now()
-                         ]);
+        // Delete activity details
+        UAEActivityDetail::where('activityID', $activity->activityID)->delete();
 
         // Log::info('✅ Activity deleted successfully', [
         //     'activity_id' => $activity->activityID,
@@ -547,37 +549,10 @@ class UAEActivityAdminController extends Controller
     /**
      * Show method to display single activity
      */
-    public function show(UAEActivity $uaeactivity)
+    public function show($id)
     {
-        $user = Auth::user();
-        $userType = session('user_type', 'unknown');
-        $isPartnerRestricted = session('is_partner_restricted', false);
-        $isApprovedPartner = ($userType === 'approved_partner' && $isPartnerRestricted === true);
-        
-        $activity = $uaeactivity->load(['details', 'emirate']);
-        
-        // Check if approved partner can view this activity
-        if ($isApprovedPartner) {
-            // Check if partner created this activity using case-insensitive comparison
-            if (strtolower($activity->createdBy ?? '') !== strtolower($user->name)) {
-                // Log::warning('❌ Partner attempted to view activity they did not create', [
-                //     'user_name' => strtolower($user->name),
-                //     'activity_created_by' => strtolower($activity->createdBy ?? ''),
-                //     'activity_id' => $activity->activityID
-                // ]);
-                
-                return redirect()->route('admin.uaeactivities.index')
-                               ->withErrors(['access' => 'You can only view activities that you created.']);
-            }
-        }
-        
-        return view('admin.uaeactivities.show', compact(
-            'activity',
-            'user', 
-            'userType', 
-            'isPartnerRestricted', 
-            'isApprovedPartner'
-        ));
+        Log::info('SHOW method hit', ['id' => $id]);
+        return redirect()->route('admin.uaeactivities.edit', $id);
     }
 
     /**

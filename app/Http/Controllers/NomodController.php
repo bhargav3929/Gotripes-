@@ -9,6 +9,8 @@ use App\Models\AgentBooking;
 use App\Models\UAEActivity;
 use App\Mail\PaymentStatusMail;
 use App\Mail\SupplierBookingMail;
+use App\Mail\CustomerPaymentConfirmationMail;
+use App\Mail\AdminPaymentNotificationMail;
 use App\Services\NomodService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -114,12 +116,19 @@ class NomodController extends Controller
         return view('payment.status')->with('response', $response);
     }
 
+    /**
+     * Send 3 automated emails on payment completion:
+     * A) Supplier — activity + customer info, NO payment details
+     * B) Admin/Owner — full purchase order + payment confirmation + invoice
+     * C) Customer — booking confirmation + receipt + supplier info + support
+     */
     private function sendPaymentStatusEmail($orderId, $paymentStatus, $responseData = [])
     {
         try {
             $bookingData = $this->getBookingData($orderId);
 
             if (!$bookingData) {
+                Log::warning('No booking data found for email', ['order_id' => $orderId]);
                 return false;
             }
 
@@ -129,48 +138,66 @@ class NomodController extends Controller
             $mailData['sent_at'] = now()->toDateTimeString();
 
             $customerEmail = $this->extractCustomerEmail($bookingData['data'], $bookingData['type']);
+            $adminEmail = config('mail.from.address');
 
-            if (!$customerEmail) {
-                return false;
+            // Enrich with supplier info for activity bookings
+            $activity = null;
+            if ($bookingData['type'] === 'activity' && isset($bookingData['data']['activityId'])) {
+                $activity = UAEActivity::where('activityID', $bookingData['data']['activityId'])->first();
+                if ($activity) {
+                    $mailData['activityName'] = $activity->activityName ?? 'Activity';
+                    $mailData['activityLocation'] = $activity->activityLocation ?? '';
+                    $mailData['supplierName'] = $activity->supplierName ?? '';
+                    $mailData['supplierEmail'] = $activity->supplierEmail ?? '';
+                }
             }
 
-            $adminEmails = $this->getEmailRecipients($bookingData['type']);
-            $recipients = array_merge([$customerEmail], $adminEmails);
-            $recipients = array_unique(array_filter($recipients));
-
-            $mailable = new PaymentStatusMail($mailData, $paymentStatus, $bookingData['type']);
-
-            Mail::to($recipients)->send($mailable);
-
-            // Send supplier notification for activity bookings
-            if ($bookingData['type'] === 'activity' && isset($bookingData['data']['activityId'])) {
+            // ─── EMAIL C: Customer Confirmation ───────────────────────
+            if ($customerEmail) {
                 try {
-                    $activity = UAEActivity::where('activityID', $bookingData['data']['activityId'])->first();
-                    if ($activity && !empty($activity->supplierEmail)) {
-                        $supplierMailData = $bookingData['data'];
-                        $supplierMailData['activityName'] = $activity->activityName ?? 'Activity';
-                        $supplierMailData['activityLocation'] = $activity->activityLocation ?? '';
-                        $supplierMailData['status'] = $paymentStatus;
-                        $supplierMailData['currency'] = $supplierMailData['currency'] ?? 'AED';
+                    Mail::to($customerEmail)->send(
+                        new CustomerPaymentConfirmationMail($mailData, $paymentStatus, $bookingData['type'])
+                    );
+                    Log::info('Customer payment email sent', ['to' => $customerEmail, 'order_id' => $orderId]);
+                } catch (\Exception $e) {
+                    Log::error('Customer payment email failed', ['error' => $e->getMessage(), 'order_id' => $orderId]);
+                }
+            }
 
-                        Mail::to($activity->supplierEmail)
-                            ->send(new SupplierBookingMail(
-                                $supplierMailData,
-                                $activity->supplierName ?? 'Supplier'
-                            ));
-                    }
-                } catch (\Exception $supplierEx) {
-                    Log::warning('Supplier payment email failed', [
-                        'error' => $supplierEx->getMessage(),
-                        'order_id' => $orderId
-                    ]);
+            // ─── EMAIL B: Admin/Owner Notification ────────────────────
+            if ($adminEmail) {
+                try {
+                    Mail::to($adminEmail)->send(
+                        new AdminPaymentNotificationMail($mailData, $paymentStatus, $bookingData['type'])
+                    );
+                    Log::info('Admin payment email sent', ['to' => $adminEmail, 'order_id' => $orderId]);
+                } catch (\Exception $e) {
+                    Log::error('Admin payment email failed', ['error' => $e->getMessage(), 'order_id' => $orderId]);
+                }
+            }
+
+            // ─── EMAIL A: Supplier Notification (NO payment details) ──
+            if ($activity && !empty($activity->supplierEmail)) {
+                try {
+                    $supplierMailData = $bookingData['data'];
+                    $supplierMailData['activityName'] = $activity->activityName ?? 'Activity';
+                    $supplierMailData['activityLocation'] = $activity->activityLocation ?? '';
+                    $supplierMailData['status'] = $paymentStatus;
+                    $supplierMailData['currency'] = $supplierMailData['currency'] ?? 'AED';
+
+                    Mail::to($activity->supplierEmail)->send(
+                        new SupplierBookingMail($supplierMailData, $activity->supplierName ?? 'Supplier')
+                    );
+                    Log::info('Supplier payment email sent', ['to' => $activity->supplierEmail, 'order_id' => $orderId]);
+                } catch (\Exception $e) {
+                    Log::warning('Supplier payment email failed', ['error' => $e->getMessage(), 'order_id' => $orderId]);
                 }
             }
 
             return true;
 
         } catch (\Exception $e) {
-            Log::error('Nomod payment email failed', ['error' => $e->getMessage(), 'order_id' => $orderId]);
+            Log::error('Payment email system failed', ['error' => $e->getMessage(), 'order_id' => $orderId]);
             return false;
         }
     }

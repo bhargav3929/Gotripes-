@@ -94,6 +94,7 @@ Route::prefix('/')->group(function () {
 
 
 Route::get('/activities', [EmiratesController::class, 'index'])->name('emirates.index');
+Route::get('/activities/{slug}', [EmiratesController::class, 'showBySlug'])->name('emirates.show');
 Route::get('/Activities', fn() => redirect()->route('emirates.index'));
 Route::get('/uaeactivities', fn() => redirect()->route('emirates.index'));
 Route::get('/uaeactivities/{any}', fn() => redirect()->route('emirates.index'))->where('any', '.*');
@@ -124,7 +125,13 @@ Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 
 
 
     /////UAEACTIVITIES
-    Route::resource('uaeactivities', UAEActivityAdminController::class);
+    Route::get('uaeactivities', [UAEActivityAdminController::class, 'index'])->name('uaeactivities.index');
+    Route::get('uaeactivities/create', [UAEActivityAdminController::class, 'create'])->name('uaeactivities.create');
+    Route::post('uaeactivities', [UAEActivityAdminController::class, 'store'])->name('uaeactivities.store');
+    Route::get('uaeactivities/{id}', [UAEActivityAdminController::class, 'show'])->name('uaeactivities.show');
+    Route::get('uaeactivities/{id}/edit', [UAEActivityAdminController::class, 'edit'])->name('uaeactivities.edit');
+    Route::put('uaeactivities/{id}', [UAEActivityAdminController::class, 'update'])->name('uaeactivities.update');
+    Route::delete('uaeactivities/{id}', [UAEActivityAdminController::class, 'destroy'])->name('uaeactivities.destroy');
 
 
 
@@ -176,21 +183,12 @@ Route::post('/uaev/submit', [UAEVisaController::class, 'submit'])->name('uaev.su
 use App\Http\Controllers\PaymentController;
 
 Route::get('/payment', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
-Route::post('/payment/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
+Route::match(['get', 'post'], '/payment/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
 Route::post('/payment/response', [PaymentController::class, 'paymentResponse'])->name('payment.response');
 Route::post('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
 
-Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
-    Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
-    Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
-    Route::delete('roles_mass_destroy', [\App\Http\Controllers\Admin\RoleController::class, 'massDestroy'])->name('roles.mass_destroy');
-    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
-    Route::delete('users_mass_destroy', [\App\Http\Controllers\Admin\UserController::class, 'massDestroy'])->name('users.mass_destroy');
-});
 
-
-
-
+Route::get('/activities/{emirateSlug}/{activitySlug}', [UAEDetailsController::class, 'showBySlug'])->name('activities.detail.slug');
 Route::get('/activity-details', [UAEDetailsController::class, 'show'])->name('activities.detail');
 Route::get('/dubai-global-village', [UAEDetailsController::class, 'show']); // Keep for backward compatibility
 
@@ -200,18 +198,7 @@ Route::get('/all-uae-activities', fn() => redirect()->route('emirates.index'));
 
 use App\Http\Controllers\ActivityBookingController;
 
-Route::post('/book-activity', [ActivityBookingController::class, 'submit'])->name('activity.book');
-
-
-
-
-// Accept BOTH GET and POST for payment initiation
-Route::match(['get', 'post'], '/payment/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
-
-
-// Then routes:
 Route::get('/activity/book/{activityId}', [ActivityBookingController::class, 'show'])->name('activity.book.form');
-// Route::post('/activity/book', [ActivityBookingController::class, 'submit'])->name('activity.book');
 Route::post('/activity/book', [ActivityBookingController::class, 'submit'])->name('activity.book');
 Route::get('/activity/prices/{activityId?}', [ActivityBookingController::class, 'getActivityPrices']);
 
@@ -342,3 +329,4 @@ Route::post('/deploy/github-webhook', function (\Illuminate\Http\Request $reques
 
     return response()->json(['success' => true, 'message' => 'Deploy completed', 'pusher' => $pusher]);
 })->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+

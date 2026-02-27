@@ -253,7 +253,7 @@
         <div class="sticky-top" style="top: 100px; z-index: 10;">
             <div class="booking-sidebar-card">
                 <div class="price-label">Starting from</div>
-                <div class="main-price">AED {{ number_format($activityAdultPrice, 2) }}<span>/ Adult</span></div>
+                <div class="main-price">AED {{ number_format($activity->activityPrice ?? 0, 2) }}<span>/ Adult</span></div>
                 
                 <hr style="border-top: 1px solid rgba(255,210,63,0.2); margin: 25px 0;">
                 

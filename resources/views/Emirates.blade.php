@@ -7,17 +7,17 @@
     .emirates-page-wrapper {
         background: #000 !important;
         min-height: 100vh;
-        padding-top: 140px; /* Adjust for header */
+        padding-top: 70px;
         color: #fff;
     }
 
     /* ─── BREADCRUMB ────────────────────────────────────── */
     .breadcrumb-nav {
-        margin-bottom: 50px;
+        margin-bottom: 8px;
     }
     .breadcrumb-luxury {
         background: rgba(255, 255, 255, 0.03);
-        padding: 10px 25px;
+        padding: 8px 20px;
         border-radius: 100px;
         backdrop-filter: blur(15px);
         border: 1px solid rgba(255, 215, 0, 0.15);
@@ -51,46 +51,47 @@
     /* ─── PAGE HEADER ───────────────────────────────────── */
     .hero-header {
         text-align: center;
-        margin-bottom: 80px;
+        margin-bottom: 15px;
         animation: heroFade 1s ease-out;
     }
     @keyframes heroFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    
+
     .hero-header h1 {
-        font-size: clamp(40px, 6vw, 68px);
+        font-size: clamp(32px, 4.5vw, 48px);
         font-weight: 950;
         letter-spacing: -2px;
-        margin-bottom: 20px;
+        margin-bottom: 8px;
         line-height: 1;
     }
     .hero-header h1 span {
-        background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+        background: linear-gradient(90deg, #009639 0%, #009639 33%, #EEEEEE 33%, #EEEEEE 66%, #CE1126 66%, #CE1126 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     .hero-header p {
         color: rgba(255,255,255,0.5);
         max-width: 750px;
         margin: 0 auto;
-        font-size: 18px;
+        font-size: 13px;
         font-weight: 400;
-        line-height: 1.7;
+        line-height: 1.4;
     }
 
     /* ─── EMIRATES CINEMATIC GRID ──────────────────────── */
     .emirates-cinematic-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 30px;
+        gap: 20px;
         max-width: 1500px;
         margin: 0 auto;
-        padding: 0 20px 100px;
+        padding: 0 20px 40px;
     }
 
     .emirate-card-v2 {
         position: relative;
-        height: 520px;
-        border-radius: 30px;
+        height: 335px;
+        border-radius: 20px;
         overflow: hidden;
         text-decoration: none !important;
         background: #111;
@@ -124,7 +125,7 @@
         bottom: 0;
         left: 0;
         right: 0;
-        padding: 40px;
+        padding: 25px 30px;
         z-index: 2;
     }
 
@@ -132,51 +133,51 @@
         background: rgba(255, 210, 63, 0.15);
         border: 1px solid rgba(255, 210, 63, 0.3);
         color: #FFD23F;
-        padding: 6px 14px;
+        padding: 5px 12px;
         border-radius: 50px;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 2px;
         backdrop-filter: blur(10px);
-        margin-bottom: 20px;
+        margin-bottom: 12px;
         display: inline-block;
     }
 
     .emirate-v2-name {
-        font-size: 36px;
+        font-size: 28px;
         font-weight: 900;
         color: #fff;
         line-height: 1.1;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
     .emirate-v2-desc {
-        font-size: 15px;
+        font-size: 13px;
         color: rgba(255,255,255,0.5);
-        line-height: 1.6;
+        line-height: 1.5;
         opacity: 1;
         transform: none;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
         transition: all 0.5s ease;
     }
 
     .emirate-v2-arrow {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         background: #FFD23F;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #000;
-        font-size: 20px;
+        font-size: 16px;
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .emirate-card-v2:hover .emirate-v2-arrow {
@@ -188,22 +189,22 @@
     .activities-grid-luxury {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
+        gap: 20px;
         justify-content: center;
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 20px 100px;
+        padding: 0 20px 40px;
     }
 
     .activity-v2-card {
         background: #111;
-        border-radius: 24px;
+        border-radius: 16px;
         overflow: hidden;
         border: 1px solid rgba(255,255,255,0.05);
         transition: all 0.4s ease;
         display: flex;
         flex-direction: column;
-        height: 540px;
+        height: 340px;
     }
     .activity-v2-card:hover {
         border-color: rgba(255, 210, 63, 0.3);
@@ -211,7 +212,7 @@
     }
 
     .activity-v2-img-container {
-        height: 300px;
+        height: 170px;
         overflow: hidden;
         position: relative;
     }
@@ -227,8 +228,8 @@
 
     .activity-v2-tag {
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 14px;
+        right: 14px;
         background: rgba(0,0,0,0.7);
         backdrop-filter: blur(5px);
         color: #FFD23F;
@@ -241,7 +242,7 @@
     }
 
     .activity-v2-info {
-        padding: 25px;
+        padding: 14px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -249,23 +250,23 @@
     }
 
     .activity-v2-title {
-        font-size: 22px;
+        font-size: 15px;
         font-weight: 800;
         color: #fff;
         line-height: 1.3;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        min-height: 56px;
+        min-height: auto;
     }
 
     .activity-v2-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-top: 20px;
+        padding-top: 10px;
         border-top: 1px solid rgba(255,255,255,0.05);
     }
 
@@ -274,16 +275,16 @@
         flex-direction: column;
     }
     .price-small { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; }
-    .price-big { font-size: 24px; font-weight: 900; color: #FFD23F; }
+    .price-big { font-size: 20px; font-weight: 900; color: #FFD23F; }
 
     .book-btn-v2 {
         background: #FFD23F;
         color: #000;
-        padding: 8px 18px;
+        padding: 6px 14px;
         border-radius: 8px;
         font-weight: 800;
         text-transform: uppercase;
-        font-size: 11px;
+        font-size: 10px;
         border: none;
         cursor: pointer;
         transition: all 0.3s;
@@ -306,10 +307,10 @@
     /* ─── MOBILE RESPONSIVE ─────────────────────────── */
     @media (max-width: 991px) {
         .emirates-page-wrapper {
-            padding-top: 100px;
+            padding-top: 80px;
         }
         .hero-header {
-            margin-bottom: 50px;
+            margin-bottom: 30px;
         }
         .hero-header h1 {
             font-size: clamp(28px, 8vw, 48px);
@@ -324,29 +325,29 @@
             padding: 0 15px 60px;
         }
         .emirate-card-v2 {
-            height: 400px;
+            height: 320px;
         }
         .emirate-v2-content {
-            padding: 25px;
+            padding: 20px;
         }
         .emirate-v2-name {
-            font-size: 28px;
+            font-size: 24px;
         }
         .activities-grid-luxury {
             grid-template-columns: repeat(2, 1fr);
         }
         .activity-v2-card {
             height: auto;
-            min-height: 480px;
+            min-height: 380px;
         }
     }
 
     @media (max-width: 575px) {
         .emirates-page-wrapper {
-            padding-top: 80px;
+            padding-top: 60px;
         }
         .hero-header {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .hero-header h1 {
             font-size: clamp(26px, 10vw, 38px);
@@ -362,8 +363,8 @@
             padding: 0 10px 50px;
         }
         .emirate-card-v2 {
-            height: 340px;
-            border-radius: 20px;
+            height: 280px;
+            border-radius: 18px;
         }
         .emirate-v2-content {
             padding: 20px;
@@ -382,7 +383,7 @@
         }
         .activity-v2-card {
             height: auto;
-            min-height: 420px;
+            min-height: 340px;
         }
         .activity-v2-img-container {
             height: 220px;
@@ -434,16 +435,17 @@
                     <div class="activity-v2-card">
                         <div class="activity-v2-img-container">
                             <span class="activity-v2-tag">Verified Escape</span>
-                            <a href="{{ route('activities.detail', ['id' => $activity->activityID, 'emirateId' => $emirate->emiratesID]) }}">
-                                <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" 
-                                     alt="{{ $activity->activityName }}" 
+                            <a href="{{ route('activities.detail.slug', ['emirateSlug' => Str::slug($emirate->emiratesName), 'activitySlug' => Str::slug($activity->activityName)]) }}">
+                                <img src="{{ !empty($activity->activityImage) ? (str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage)) : 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800' }}"
+                                     alt="{{ $activity->activityName }}"
                                      class="activity-v2-img"
-                                     onerror="this.src='https://images.unsplash.com/photo-1544911835-33052671127e?q=80&w=800';">
+                                     loading="lazy"
+                                     onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src='https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=800';}">
                             </a>
                         </div>
                         <div class="activity-v2-info">
                             <div>
-                                <a href="{{ route('activities.detail', ['id' => $activity->activityID, 'emirateId' => $emirate->emiratesID]) }}" style="text-decoration: none;">
+                                <a href="{{ route('activities.detail.slug', ['emirateSlug' => Str::slug($emirate->emiratesName), 'activitySlug' => Str::slug($activity->activityName)]) }}" style="text-decoration: none;">
                                     <h3 class="activity-v2-title">{{ $activity->activityName }}</h3>
                                 </a>
                                 <div class="text-white-50" style="font-size: 14px;">
@@ -505,7 +507,7 @@
                         $displayImg = $hasManual ? $manualData[$name]['img'] : (asset($emirateItem->emiratesImage) ?: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800');
                         $displayTag = $hasManual ? $manualData[$name]['tag'] : 'Premium Experience';
                     @endphp
-                    <a href="{{ route('emirates.index', ['emiratesID' => $emirateItem->emiratesID]) }}" class="emirate-card-v2">
+                    <a href="{{ route('emirates.show', ['slug' => Str::slug($emirateItem->emiratesName)]) }}" class="emirate-card-v2">
                         <img src="{{ $displayImg }}" alt="{{ $name }}" class="emirate-v2-img" onerror="this.src='https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800';">
                         <div class="emirate-v2-overlay"></div>
                         

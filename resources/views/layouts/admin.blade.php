@@ -542,30 +542,42 @@
             color: var(--darker-bg);
         }
 
-        /* Scroll to Top - Mobile Friendly */
+        /* Scroll to Top */
         .scroll-to-top {
             position: fixed;
-            bottom: 1.5rem;
+            bottom: 1rem;
             right: 1rem;
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-primary);
-            border: 1px solid var(--primary-gold);
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #d4a017, #f0c040);
+            border: 1px solid #d4a017;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--darker-bg);
+            color: #1a1a2e;
+            font-size: 0.75rem;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 2px 8px rgba(212, 160, 23, 0.35);
             transition: all 0.3s ease;
-            z-index: 1000;
+            z-index: 1050;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+        }
+
+        .scroll-to-top.show {
+            opacity: 0.85;
+            visibility: visible;
+            transform: translateY(0);
         }
 
         .scroll-to-top:hover {
-            background: var(--secondary-gold);
-            transform: scale(1.1);
-            color: var(--darker-bg);
+            opacity: 1;
+            background: linear-gradient(135deg, #f0c040, #ffe066);
+            transform: translateY(-2px);
+            color: #1a1a2e;
+            box-shadow: 0 4px 12px rgba(212, 160, 23, 0.5);
         }
 
         /* Animations */
@@ -1418,6 +1430,22 @@
                 $(this).css('font-size', '');
             });
         }
+
+        // Scroll-to-top button: show/hide on scroll, smooth scroll on click
+        $(function() {
+            var $btn = $('.scroll-to-top');
+            $(window).on('scroll', function() {
+                if ($(this).scrollTop() > 300) {
+                    $btn.addClass('show');
+                } else {
+                    $btn.removeClass('show');
+                }
+            });
+            $btn.on('click', function(e) {
+                e.preventDefault();
+                $('html, body').animate({ scrollTop: 0 }, 400);
+            });
+        });
     </script>
 
     @stack('scripts')

@@ -11,6 +11,11 @@ class UAEActivity extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
+    public function getRouteKeyName()
+    {
+        return 'activityID';
+    }
+
     protected $fillable = [
         'isActive',
         'createdBy',

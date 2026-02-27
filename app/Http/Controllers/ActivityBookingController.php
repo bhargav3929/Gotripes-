@@ -141,7 +141,7 @@ class ActivityBookingController extends Controller
                 'email'          => 'required|email',
                 'phone'          => 'required|string|max:20',
                 'adults'         => 'required|integer',
-                'childrens'      => 'required|integer',
+                'childrens'      => 'nullable|integer',
                 'payment_option' => 'required|string|max:255',
                 'transfer'       => 'required|string|max:255',
                 'activityId'     => 'required|integer|exists:tbl_uaeactivities,activityID',
@@ -155,6 +155,8 @@ class ActivityBookingController extends Controller
             //     'timestamp' => now()->toDateTimeString(),
             //     'payment_option' => $validated['payment_option']
             // ]);
+
+            $validated['childrens'] = $validated['childrens'] ?? 0;
 
             $activity = DB::table('tbl_uaeactivities')
                 ->where('activityID', $validated['activityId'])
