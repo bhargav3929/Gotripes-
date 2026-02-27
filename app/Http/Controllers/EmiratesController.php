@@ -13,24 +13,21 @@ class EmiratesController extends Controller
      */
     public function index(Request $request)
     {
-        $emiratesID = $request->get('emiratesID'); // Get from query parameter
-        
+        $emiratesID = $request->get('emiratesID');
+
         if ($emiratesID) {
-            // Show activities for specific emirate
+            // Redirect old ?emiratesID= URLs to clean /activities/slug URLs
             $emirate = Emirates::where('emiratesID', $emiratesID)
                               ->where('isActive', 1)
-                              ->firstOrFail();
-            
-            // Get activities for this emirate (🎯 ADDED: sorted by latest created date first)
-            $activities = UAEActivity::with('emirate')
-                                    ->where('emiratesID', $emiratesID)
-                                    ->where('isActive', 1)
-                                    ->orderBy('createdDate', 'DESC')  // 🎯 THIS LINE ADDED
-                                    ->get();
-            
-            $emirates = null; // Not needed when showing activities
-            
-            return view('Emirates', compact('emirate', 'activities', 'emirates'));
+                              ->first();
+
+            if ($emirate) {
+                return redirect()->route('emirates.show', [
+                    'slug' => \Illuminate\Support\Str::slug($emirate->emiratesName)
+                ], 301);
+            }
+
+            abort(404);
         } else {
             // Show all emirates selection
             $emirates = Emirates::getEmiratesWithActivityCount();
@@ -39,6 +36,30 @@ class EmiratesController extends Controller
             
             return view('Emirates', compact('emirates', 'emirate', 'activities'));
         }
+    }
+
+    /**
+     * Display activities for a specific emirate using URL slug
+     * e.g. /activities/abu-dhabi, /activities/dubai
+     */
+    public function showBySlug($slug)
+    {
+        // Convert slug back to name: "abu-dhabi" → "Abu Dhabi"
+        $name = str_replace('-', ' ', $slug);
+
+        $emirate = Emirates::where('isActive', 1)
+                          ->whereRaw('LOWER(emiratesName) = ?', [strtolower($name)])
+                          ->firstOrFail();
+
+        $activities = UAEActivity::with('emirate')
+                                ->where('emiratesID', $emirate->emiratesID)
+                                ->where('isActive', 1)
+                                ->orderBy('createdDate', 'DESC')
+                                ->get();
+
+        $emirates = null;
+
+        return view('Emirates', compact('emirate', 'activities', 'emirates'));
     }
 
     /**

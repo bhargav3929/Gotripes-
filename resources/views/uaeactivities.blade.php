@@ -27,9 +27,9 @@
     .activity-box-container {
         display: flex;
         flex-direction: column;
-        height: 520px; /* Increased height for better spacing */
+        height: 340px;
         background: linear-gradient(180deg, #161616 0%, #0c0c0c 100%);
-        border-radius: 20px; /* More modern rounded corners */
+        border-radius: 16px;
         overflow: hidden;
         transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         border: 1px solid rgba(255, 215, 0, 0.05);
@@ -397,10 +397,10 @@
                             
                             <a href="/dubai-global-village?id={{ $activity->activityID }}" style="text-decoration: none;">
                                 <div class="box_images">
-                                    <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" 
-                                         alt="{{ $activity->activityName }}" 
-                                         data-no-retina=""
-                                         onerror="this.src='https://images.unsplash.com/photo-1544911835-33052671127e?q=80&w=800';">
+                                    <img src="{{ !empty($activity->activityImage) ? (str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage)) : 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800' }}"
+                                         alt="{{ $activity->activityName }}"
+                                         loading="lazy"
+                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src='https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=800';}">
                                 </div>
                             </a>
                             <div class="blog_box">

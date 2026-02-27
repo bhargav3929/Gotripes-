@@ -338,9 +338,14 @@
                     <span class="value">
                         @php
                             $transferMap = [
+                                'abu_dhabi' => '🚐 Transport from Abu Dhabi',
+                                'dubai' => '🚐 Transport from Dubai',
+                                'abu_dhabi_to_dubai' => '🚐 Abu Dhabi ⇄ Dubai',
+                                'any_emirates' => '🚐 Any Emirates Transport',
+                                'without_transfer' => '🚫 Without Transport',
+                                // Legacy values for old bookings
                                 'abu_bhabi' => '🚐 Transport from Abu Dhabi',
                                 'du_bai' => '🚐 Transport from Dubai',
-                                'without_transfer' => '🚫 Without Transport'
                             ];
                             $transferDisplay = $transferMap[$booking['transfer']] ?? ucwords(str_replace('_', ' ', $booking['transfer']));
                         @endphp
