@@ -63,12 +63,9 @@
         margin-bottom: 8px;
         line-height: 1;
     }
-    .hero-header h1 span {
-        background: linear-gradient(90deg, #009639 0%, #009639 33%, #EEEEEE 33%, #EEEEEE 66%, #CE1126 66%, #CE1126 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
+    .hero-header h1 .green { color: #009639; }
+    .hero-header h1 .white { color: #EEEEEE; }
+    .hero-header h1 .red { color: #CE1126; }
     .hero-header p {
         color: rgba(255,255,255,0.5);
         max-width: 750px;
@@ -479,7 +476,7 @@
         @else
             {{-- ─── EMIRATES SELECTION VIEW ─── --}}
             <div class="hero-header">
-                <h1>EXPLORE <span>UAE EMIRATES</span></h1>
+                <h1><span class="white">EXPLORE</span> <span class="green">UNITED</span> <span class="white">ARAB</span> <span class="red">EMIRATES</span></h1>
                 <p>
                     From Abu Dhabi's majestic heritage to Dubai's futuristic skyline, 
                     discover the heart and soul of the UAE through our handpicked regional adventures.
