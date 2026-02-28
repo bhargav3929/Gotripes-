@@ -406,6 +406,17 @@
         color: rgba(255, 255, 255, 0.3);
     }
 
+    /* Fix browser autofill white background */
+    .form-control-premium:-webkit-autofill,
+    .form-control-premium:-webkit-autofill:hover,
+    .form-control-premium:-webkit-autofill:focus,
+    .form-control-premium:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+        -webkit-text-fill-color: #fff !important;
+        transition: background-color 5000s ease-in-out 0s;
+        caret-color: #fff;
+    }
+
     /* Remove Number Spinners */
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { 
