@@ -204,7 +204,7 @@ Route::get('/activity/prices/{activityId?}', [ActivityBookingController::class, 
 
 
 Route::get('/activity/pricing/{id}', function ($id) {
-    $activity = DB::table('tbl_uaeactivities')->where('activityID', $id)->first();
+    $activity = DB::table('tbl_UAEActivities')->where('activityID', $id)->first();
     return response()->json([
         'activityPrice' => $activity ? (float) $activity->activityPrice : 0,
         'activityChildPrice' => ($activity && $activity->activityChildPrice && $activity->activityChildPrice > 0)

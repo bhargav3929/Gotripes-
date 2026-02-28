@@ -25,7 +25,7 @@ class ActivityBookingController extends Controller
         }
 
         // Fetch main activity and detailed info
-        $activity = DB::table('tbl_uaeactivities')->where('activityID', $activityId)->first();
+        $activity = DB::table('tbl_UAEActivities')->where('activityID', $activityId)->first();
         $detail = DB::table('tbl_UAEActivityDetails')->where('activityID', $activityId)->first();
 
         if (!$activity) {
@@ -70,7 +70,7 @@ class ActivityBookingController extends Controller
             return response()->json(['error' => 'Activity ID is required'], 400);
         }
 
-        $activity = DB::table('tbl_uaeactivities')->where('activityID', $activityId)->first();
+        $activity = DB::table('tbl_UAEActivities')->where('activityID', $activityId)->first();
         // Log::info("Activity found: " . ($activity ? 'Yes' : 'No'));
 
         // if ($activity) {
@@ -105,7 +105,7 @@ class ActivityBookingController extends Controller
             return response()->json(['error' => 'Activity ID is required'], 400);
         }
 
-        $activity = DB::table('tbl_uaeactivities')->where('activityID', $activityId)->first();
+        $activity = DB::table('tbl_UAEActivities')->where('activityID', $activityId)->first();
 
         if (!$activity) {
             return response()->json(['error' => 'Activity not found'], 404);
@@ -144,7 +144,7 @@ class ActivityBookingController extends Controller
                 'childrens'      => 'nullable|integer',
                 'payment_option' => 'required|string|max:255',
                 'transfer'       => 'required|string|max:255',
-                'activityId'     => 'required|integer|exists:tbl_uaeactivities,activityID',
+                'activityId'     => 'required|integer|exists:tbl_UAEActivities,activityID',
                 'final_payment_amount' => 'nullable|numeric',
                 'currency'       => 'required|string',
                 'remarks'        => 'nullable|string|max:500',
@@ -158,7 +158,7 @@ class ActivityBookingController extends Controller
 
             $validated['childrens'] = $validated['childrens'] ?? 0;
 
-            $activity = DB::table('tbl_uaeactivities')
+            $activity = DB::table('tbl_UAEActivities')
                 ->where('activityID', $validated['activityId'])
                 ->first();
             $activityName  = $activity ? $activity->activityName : 'N/A';
