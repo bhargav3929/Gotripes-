@@ -39,8 +39,9 @@ RUN mkdir -p /var/www/html/storage/framework/cache \
     && chmod -R 777 /var/www/html/storage \
     && chmod -R 777 /var/www/html/bootstrap/cache
 
-# Ensure SQLite database has proper permissions (file is included from repo)
-RUN chmod 777 /var/www/html/database/database.sqlite
+# Ensure SQLite database exists and has proper permissions
+RUN touch /var/www/html/database/database.sqlite \
+    && chmod 777 /var/www/html/database/database.sqlite
 
 # Expose port (Railway will set this via $PORT)
 EXPOSE ${PORT:-8080}
