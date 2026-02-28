@@ -363,6 +363,7 @@
 
 <div class="checkout-page">
     <div class="checkout-wrapper">
+        @include('payment-banners')
         <div class="checkout-header">
             <h1 class="checkout-title">Secure Payment</h1>
             <p class="checkout-subtitle">Complete your payment securely</p>
@@ -483,80 +484,80 @@
 </div>
 
 <script>
-function calc(base) {
-    const b = parseFloat(base) || 0;
-    const fee = 1;
-    const gw = (b + fee) * 0.03;
-    return { base: b, fee, gw, total: b + fee + gw };
-}
-
-function fmt(n) { return 'AED ' + n.toFixed(2); }
-
-function update() {
-    const b = parseFloat(document.getElementById('amount').value) || 0;
-    const ph = document.getElementById('summaryPlaceholder');
-    const bd = document.getElementById('summaryBreakdown');
-    const btn = document.getElementById('submitBtn');
-
-    if (b > 0) {
-        const c = calc(b);
-        document.getElementById('showBase').textContent = fmt(c.base);
-        document.getElementById('showFee').textContent = fmt(c.fee);
-        document.getElementById('showGateway').textContent = fmt(c.gw);
-        document.getElementById('showTotal').textContent = fmt(c.total);
-        document.getElementById('total_amount').value = c.total.toFixed(2);
-        ph.style.display = 'none';
-        bd.style.display = 'block';
-        btn.disabled = false;
-    } else {
-        ph.style.display = 'block';
-        bd.style.display = 'none';
-        btn.disabled = true;
+    function calc(base) {
+        const b = parseFloat(base) || 0;
+        const fee = 1;
+        const gw = (b + fee) * 0.03;
+        return { base: b, fee, gw, total: b + fee + gw };
     }
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-    const amt = document.getElementById('amount');
-    amt.addEventListener('input', update);
-    amt.addEventListener('change', update);
+    function fmt(n) { return 'AED ' + n.toFixed(2); }
 
-    const form = document.getElementById('agentPayForm');
-    const btn = document.getElementById('submitBtn');
+    function update() {
+        const b = parseFloat(document.getElementById('amount').value) || 0;
+        const ph = document.getElementById('summaryPlaceholder');
+        const bd = document.getElementById('summaryBreakdown');
+        const btn = document.getElementById('submitBtn');
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const orig = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-hourglass"></i> Processing...';
-
-        const csrf = document.querySelector('input[name="_token"]').value;
-        const cc = document.getElementById('country_code').value;
-        const pn = document.getElementById('client_phone_number').value;
-        document.getElementById('client_phone').value = cc + pn;
-
-        const fd = new FormData(form);
-        fd.set('amount', document.getElementById('total_amount').value);
-
-        fetch("{{ route('agent.pay') }}", {
-            method: 'POST',
-            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
-            body: fd
-        })
-        .then(r => r.json())
-        .then(d => {
-            if (d.success && d.checkout_url) {
-                window.location.href = d.checkout_url;
-            } else {
-                throw new Error(d.message || 'Failed');
-            }
-        })
-        .catch(e => {
-            alert(e.message || 'Error occurred');
+        if (b > 0) {
+            const c = calc(b);
+            document.getElementById('showBase').textContent = fmt(c.base);
+            document.getElementById('showFee').textContent = fmt(c.fee);
+            document.getElementById('showGateway').textContent = fmt(c.gw);
+            document.getElementById('showTotal').textContent = fmt(c.total);
+            document.getElementById('total_amount').value = c.total.toFixed(2);
+            ph.style.display = 'none';
+            bd.style.display = 'block';
             btn.disabled = false;
-            btn.innerHTML = orig;
+        } else {
+            ph.style.display = 'block';
+            bd.style.display = 'none';
+            btn.disabled = true;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const amt = document.getElementById('amount');
+        amt.addEventListener('input', update);
+        amt.addEventListener('change', update);
+
+        const form = document.getElementById('agentPayForm');
+        const btn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass"></i> Processing...';
+
+            const csrf = document.querySelector('input[name="_token"]').value;
+            const cc = document.getElementById('country_code').value;
+            const pn = document.getElementById('client_phone_number').value;
+            document.getElementById('client_phone').value = cc + pn;
+
+            const fd = new FormData(form);
+            fd.set('amount', document.getElementById('total_amount').value);
+
+            fetch("{{ route('agent.pay') }}", {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
+                body: fd
+            })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success && d.checkout_url) {
+                        window.location.href = d.checkout_url;
+                    } else {
+                        throw new Error(d.message || 'Failed');
+                    }
+                })
+                .catch(e => {
+                    alert(e.message || 'Error occurred');
+                    btn.disabled = false;
+                    btn.innerHTML = orig;
+                });
         });
     });
-});
 </script>
 
 @include('footer')

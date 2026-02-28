@@ -12,10 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tbl_UAEActivities', function (Blueprint $table) {
-            $table->decimal('dubaiPrice', 10, 2)->nullable()->after('activityPrice');
-            $table->decimal('abuDhabiPrice', 10, 2)->nullable()->after('dubaiPrice');
-            $table->decimal('fromAbuDhabiToDubai', 10, 2)->nullable()->after('abuDhabiPrice');
-            $table->decimal('emirates', 10, 2)->nullable()->after('fromAbuDhabiToDubai');
+            if (!Schema::hasColumn('tbl_UAEActivities', 'dubaiPrice')) {
+                $table->decimal('dubaiPrice', 10, 2)->nullable()->after('activityPrice');
+            }
+            if (!Schema::hasColumn('tbl_UAEActivities', 'abuDhabiPrice')) {
+                $table->decimal('abuDhabiPrice', 10, 2)->nullable()->after('activityPrice');
+            }
+            if (!Schema::hasColumn('tbl_UAEActivities', 'fromAbuDhabiToDubai')) {
+                $table->decimal('fromAbuDhabiToDubai', 10, 2)->nullable()->after('activityPrice');
+            }
+            if (!Schema::hasColumn('tbl_UAEActivities', 'emirates')) {
+                $table->decimal('emirates', 10, 2)->nullable()->after('activityPrice');
+            }
         });
     }
 
