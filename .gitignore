@@ -25,8 +25,6 @@ project_backup_with_db.zip
 *.png
 !public/**/*.png
 
-# Database (contains customer data — never expose on public repo)
-database/database.sqlite
 
 # Temp debug/fix scripts (one-time tools)
 activities_images.json
