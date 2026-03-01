@@ -28,7 +28,7 @@
     .visa-page {
         background: linear-gradient(180deg, #000 0%, #0a0a0a 100%);
         min-height: 100vh;
-        padding-top: 100px;
+        padding-top: 40px;
         padding-bottom: 60px;
         display: flex;
         align-items: center;
@@ -323,7 +323,7 @@
     /* --- SUMMARY --- */
     .summary-card-wrapper {
         position: sticky;
-        top: 120px;
+        top: 215px; /* header(195) + gap(20) */
     }
 
     .summary-row {

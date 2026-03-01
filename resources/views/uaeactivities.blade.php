@@ -368,7 +368,7 @@
 </style>
 
 <!-- Start Section -->
-<section class="about industries" style="padding-top: 150px; background: #000;">
+<section class="about industries" style="padding-top: 40px; background: #000;">
     <div class="container">
         <!-- Static Content Section - Properly Formatted -->
         <div class="static-content">

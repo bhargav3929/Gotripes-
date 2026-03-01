@@ -10,7 +10,7 @@
     .checkout-page {
         background: linear-gradient(180deg, #000 0%, #080808 100%);
         min-height: 100vh;
-        padding-top: 85px;
+        padding-top: 40px;
         display: flex;
         align-items: center;
         justify-content: center;

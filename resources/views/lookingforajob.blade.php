@@ -60,7 +60,7 @@
 
   /* Cards & Layout */
   .content-section {
-    padding: 80px 0;
+    padding: 40px 0;
   }
 
   .glass-card {

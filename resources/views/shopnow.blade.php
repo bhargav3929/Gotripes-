@@ -8,7 +8,7 @@
     }
 
     .coming-soon-section {
-        padding-top: 150px;
+        padding-top: 40px;
         padding-bottom: 100px;
         min-height: 100vh;
         display: flex;

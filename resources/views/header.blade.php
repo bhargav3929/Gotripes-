@@ -254,8 +254,9 @@
         .gt-inline-search-input {
             flex: 1;
             background: transparent;
-            border: none;
-            outline: none;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
             font-family: 'Outfit', sans-serif;
             font-size: 14px;
             font-weight: 400;
@@ -264,6 +265,9 @@
             height: 100%;
             caret-color: #FFD700;
             min-width: 0;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .gt-inline-search-input::placeholder {
@@ -963,42 +967,22 @@
             }
         }
 
-        /* BODY SPACING */
+        /* Ticker + search bar spacing - Global */
         body {
-            margin-top: 80px;
+            margin-top: 195px;
         }
 
         @media (max-width: 991px) {
             body {
-                margin-top: 80px;
+                margin-top: 180px;
             }
         }
 
         @media (max-width: 575px) {
             body {
-                margin-top: 70px;
+                margin-top: 162px;
             }
         }
-
-        /* When ticker + search bar are shown on homepage */
-        @if(Request::is('/'))
-            body {
-                margin-top: 195px;
-            }
-
-            @media (max-width: 991px) {
-                body {
-                    margin-top: 180px;
-                }
-            }
-
-            @media (max-width: 575px) {
-                body {
-                    margin-top: 162px;
-                }
-            }
-
-        @endif
 
     </style>
 </head>
@@ -1072,74 +1056,70 @@
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
         </nav>
 
-        <!-- INLINE SEARCH BAR + PARTNER CTA (Homepage Only) -->
-        @if(Request::is('/'))
-            <div class="gt-inline-search-wrapper">
-                <div class="gt-inline-search" id="gtInlineSearch">
-                    <i class="bi bi-search gt-inline-search-icon"></i>
-                    <input type="text"
-                           class="gt-inline-search-input"
-                           id="gtSearchInput"
-                           placeholder="Search destinations, activities, services..."
-                           autocomplete="off"
-                           autocorrect="off"
-                           spellcheck="false">
-                    <div class="gt-search-loader" id="gtSearchLoader" style="display:none;">
-                        <div class="gt-search-spinner"></div>
-                    </div>
-                    <button class="gt-inline-search-btn" id="gtSearchBtn">SEARCH</button>
-
-                    <!-- Search Dropdown Results Panel -->
-                    <div class="gt-search-dropdown" id="gtSearchDropdown">
-                        <div class="gt-search-quick" id="gtSearchQuick">
-                            <div class="gt-dropdown-cat-title"><i class="bi bi-lightning"></i> Popular Searches</div>
-                            <div class="gt-quick-pills">
-                                <span class="gt-quick-pill" data-query="Dubai">Dubai</span>
-                                <span class="gt-quick-pill" data-query="Visa">UAE Visa</span>
-                                <span class="gt-quick-pill" data-query="Abu Dhabi">Abu Dhabi</span>
-                                <span class="gt-quick-pill" data-query="Desert Safari">Desert Safari</span>
-                                <span class="gt-quick-pill" data-query="Hajj">Hajj & Umrah</span>
-                                <span class="gt-quick-pill" data-query="Cruise">Cruise</span>
-                            </div>
-                        </div>
-                        <div class="gt-search-results-list" id="gtSearchResultsList"></div>
-                        <div class="gt-search-empty" id="gtSearchEmpty" style="display:none;">
-                            <i class="bi bi-search"></i>
-                            <p class="gt-empty-title">No results found</p>
-                            <p class="gt-empty-sub">Try different keywords or browse our services</p>
-                        </div>
-                    </div>
+        <!-- INLINE SEARCH BAR + PARTNER CTA -->
+        <div class="gt-inline-search-wrapper">
+            <div class="gt-inline-search" id="gtInlineSearch">
+                <i class="bi bi-search gt-inline-search-icon"></i>
+                <input type="text"
+                       class="gt-inline-search-input"
+                       id="gtSearchInput"
+                       placeholder="Search destinations, activities, services..."
+                       autocomplete="off"
+                       autocorrect="off"
+                       spellcheck="false">
+                <div class="gt-search-loader" id="gtSearchLoader" style="display:none;">
+                    <div class="gt-search-spinner"></div>
                 </div>
-                <div class="gt-partner-cta">
-                    <span class="gt-partner-label">Join as a</span>
-                    <span class="gt-partner-title">Partner / Customer</span>
-                    <button class="gt-partner-btn" id="partnerRegisterBtn">Register Now</button>
+                <button class="gt-inline-search-btn" id="gtSearchBtn">SEARCH</button>
+
+                <!-- Search Dropdown Results Panel -->
+                <div class="gt-search-dropdown" id="gtSearchDropdown">
+                    <div class="gt-search-quick" id="gtSearchQuick">
+                        <div class="gt-dropdown-cat-title"><i class="bi bi-lightning"></i> Popular Searches</div>
+                        <div class="gt-quick-pills">
+                            <span class="gt-quick-pill" data-query="Dubai">Dubai</span>
+                            <span class="gt-quick-pill" data-query="Visa">UAE Visa</span>
+                            <span class="gt-quick-pill" data-query="Abu Dhabi">Abu Dhabi</span>
+                            <span class="gt-quick-pill" data-query="Desert Safari">Desert Safari</span>
+                            <span class="gt-quick-pill" data-query="Hajj">Hajj & Umrah</span>
+                            <span class="gt-quick-pill" data-query="Cruise">Cruise</span>
+                        </div>
+                    </div>
+                    <div class="gt-search-results-list" id="gtSearchResultsList"></div>
+                    <div class="gt-search-empty" id="gtSearchEmpty" style="display:none;">
+                        <i class="bi bi-search"></i>
+                        <p class="gt-empty-title">No results found</p>
+                        <p class="gt-empty-sub">Try different keywords or browse our services</p>
+                    </div>
                 </div>
             </div>
-        @endif
+            <div class="gt-partner-cta">
+                <span class="gt-partner-label">Join as a</span>
+                <span class="gt-partner-title">Partner / Customer</span>
+                <button class="gt-partner-btn" id="partnerRegisterBtn">Register Now</button>
+            </div>
+        </div>
 
-        <!-- NEWS TICKER (Homepage Only) -->
-        @if(Request::is('/'))
-            <div class="news-ticker">
-                <div class="scroll text-uppercase">
-                    @forelse($tickerItems ?? [] as $ticker)
-                        <a href="#" class="news-item">
-                            @if($ticker->tagType && $ticker->tagType !== 'none')
-                                <span class="{{ $ticker->tag_css_class }}">{{ $ticker->tag_label }}</span>
-                            @endif
-                            <span class="news-text">{{ $ticker->description }}</span>
-                        </a>
-                        @if(!$loop->last)
-                            <span class="separator">|</span>
+        <!-- NEWS TICKER -->
+        <div class="news-ticker">
+            <div class="scroll text-uppercase">
+                @forelse($tickerItems ?? [] as $ticker)
+                    <a href="#" class="news-item">
+                        @if($ticker->tagType && $ticker->tagType !== 'none')
+                            <span class="{{ $ticker->tag_css_class }}">{{ $ticker->tag_label }}</span>
                         @endif
-                    @empty
-                        <a href="#" class="news-item">
-                            <span class="news-text">Welcome to Go Trips - Your Gateway to Amazing Adventures</span>
-                        </a>
-                    @endforelse
-                </div>
+                        <span class="news-text">{{ $ticker->description }}</span>
+                    </a>
+                    @if(!$loop->last)
+                        <span class="separator">|</span>
+                    @endif
+                @empty
+                    <a href="#" class="news-item">
+                        <span class="news-text">Welcome to Go Trips - Your Gateway to Amazing Adventures</span>
+                    </a>
+                @endforelse
             </div>
-        @endif
+        </div>
 
     </header>
 
