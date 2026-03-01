@@ -101,30 +101,30 @@ Route::get('/uaeactivities/{any}', fn() => redirect()->route('emirates.index'))-
 Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->name('api.emirates');
 
 //backend
+// Admin routes restricted to full Admin only
 Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
-    Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
-
     Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
     Route::delete('roles_mass_destroy', [\App\Http\Controllers\Admin\RoleController::class, 'massDestroy'])->name('roles.mass_destroy');
 
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::delete('users_mass_destroy', [\App\Http\Controllers\Admin\UserController::class, 'massDestroy'])->name('users.mass_destroy');
 
-    // Announcements - Added directly inside the existing admin group
+    // Announcements
     Route::resource('announcements', AnnouncementAdminController::class);
     Route::post('announcements/{announcement}/toggle-status', [AnnouncementAdminController::class, 'toggleStatus'])
         ->name('announcements.toggle-status');
 
-
-    ////HOMEPAGE CASOUSEL
+    // Homepage Carousel
     Route::resource('homepageads', CarouselAdminController::class);
     Route::post('homepageads/{homepagead}/toggle-status', [CarouselAdminController::class, 'toggleStatus'])
         ->name('homepageads.toggle-status');
+});
 
+// Admin routes accessible to both full Admin and Activities Manager
+Route::group(['middleware' => ['auth', 'isActivitiesManager'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
+    Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
 
-
-
-    /////UAEACTIVITIES
+    ///// UAE ACTIVITIES
     Route::get('uaeactivities', [UAEActivityAdminController::class, 'index'])->name('uaeactivities.index');
     Route::get('uaeactivities/create', [UAEActivityAdminController::class, 'create'])->name('uaeactivities.create');
     Route::post('uaeactivities', [UAEActivityAdminController::class, 'store'])->name('uaeactivities.store');
@@ -132,11 +132,6 @@ Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 
     Route::get('uaeactivities/{id}/edit', [UAEActivityAdminController::class, 'edit'])->name('uaeactivities.edit');
     Route::put('uaeactivities/{id}', [UAEActivityAdminController::class, 'update'])->name('uaeactivities.update');
     Route::delete('uaeactivities/{id}', [UAEActivityAdminController::class, 'destroy'])->name('uaeactivities.destroy');
-
-
-
-
-
 });
 
 

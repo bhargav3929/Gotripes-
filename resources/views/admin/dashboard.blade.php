@@ -4,8 +4,13 @@
     <!-- Page Heading -->
     <div class="d-flex align-items-center justify-content-between mb-5">
         <div>
-            <h1 class="h3 mb-1 fw-800 text-white">System Overview</h1>
-            <p class="text-muted small mb-0">Welcome back, Admin. Here's what's happening today.</p>
+            @if(auth()->user()->isAdmin())
+                <h1 class="h3 mb-1 fw-800 text-white">System Overview</h1>
+                <p class="text-muted small mb-0">Welcome back, Admin. Here's what's happening today.</p>
+            @else
+                <h1 class="h3 mb-1 fw-800 text-white">Activities Dashboard</h1>
+                <p class="text-muted small mb-0">Welcome back, {{ auth()->user()->name }}. Manage your activities below.</p>
+            @endif
         </div>
         <div class="d-none d-md-block">
             <span class="badge bg-light-dark text-muted py-2 px-3 border border-secondary border-opacity-10">
@@ -17,7 +22,8 @@
     <!-- Content Row -->
     <div class="row g-4">
 
-        <!-- Total Users Card -->
+        @if(auth()->user()->isAdmin())
+        <!-- Total Users Card (Admin Only) -->
         <div class="col-xl-3 col-md-6">
             <div class="stats-card stats-card-indigo h-100">
                 <div class="card-body p-4">
@@ -29,13 +35,13 @@
                             <i class="fas fa-caret-up me-1"></i>12%
                         </div>
                     </div>
-                    <h3 class="stats-value text-white mb-1">1,284</h3>
-                    <p class="stats-label text-muted mb-0">Total Active Users</p>
+                    <h3 class="stats-value text-white mb-1">{{ $stats['total_users'] }}</h3>
+                    <p class="stats-label text-muted mb-0">Total Users</p>
                 </div>
             </div>
         </div>
 
-        <!-- Total Balance Card -->
+        <!-- Total Balance Card (Admin Only) -->
         <div class="col-xl-3 col-md-6">
             <div class="stats-card stats-card-gold h-100">
                 <div class="card-body p-4">
@@ -53,7 +59,7 @@
             </div>
         </div>
 
-        <!-- Pending Tasks Card -->
+        <!-- Pending Tasks Card (Admin Only) -->
         <div class="col-xl-3 col-md-6">
             <div class="stats-card stats-card-blue h-100">
                 <div class="card-body p-4">
@@ -65,29 +71,60 @@
                             <i class="fas fa-circle me-1 small"></i>Active
                         </div>
                     </div>
-                    <h3 class="stats-value text-white mb-1">24</h3>
+                    <h3 class="stats-value text-white mb-1">{{ $stats['pending_approvals'] }}</h3>
                     <p class="stats-label text-muted mb-0">Pending Approvals</p>
                 </div>
             </div>
         </div>
+        @endif
 
-        <!-- Success Rate Card -->
-        <div class="col-xl-3 col-md-6">
+        <!-- Total Activities Card (Visible to All) -->
+        <div class="{{ auth()->user()->isAdmin() ? 'col-xl-3 col-md-6' : 'col-xl-4 col-md-6' }}">
             <div class="stats-card stats-card-green h-100">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="stats-icon stats-icon-green">
-                            <i class="fas fa-chart-line"></i>
+                            <i class="fas fa-map-marked-alt"></i>
                         </div>
                         <div class="stats-trend text-success">
-                            <i class="fas fa-check me-1"></i>98%
+                            <i class="fas fa-check me-1"></i>Live
                         </div>
                     </div>
-                    <h3 class="stats-value text-white mb-1">94.2%</h3>
-                    <p class="stats-label text-muted mb-0">Booking Success</p>
+                    <h3 class="stats-value text-white mb-1">{{ $stats['total_activities'] }}</h3>
+                    <p class="stats-label text-muted mb-0">Total Activities</p>
                 </div>
             </div>
         </div>
+
+        @if(auth()->user()->isActivitiesManager() && !auth()->user()->isAdmin())
+        <!-- Quick link to Activities for manager -->
+        <div class="col-xl-4 col-md-6">
+            <div class="stats-card h-100" style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border: 1px solid rgba(255,215,0,0.3);">
+                <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center text-center">
+                    <i class="fas fa-plus-circle text-warning mb-3" style="font-size: 2rem;"></i>
+                    <h6 class="text-white mb-2 fw-bold">Add New Activity</h6>
+                    <p class="text-muted small mb-3">Create a new UAE activity listing</p>
+                    <a href="{{ route('admin.uaeactivities.create') }}" class="btn btn-sm" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; font-weight: 700; border-radius: 20px; padding: 8px 20px;">
+                        Create Activity
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="stats-card h-100" style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border: 1px solid rgba(255,215,0,0.15);">
+                <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center text-center">
+                    <i class="fas fa-list text-warning mb-3" style="font-size: 2rem;"></i>
+                    <h6 class="text-white mb-2 fw-bold">View All Activities</h6>
+                    <p class="text-muted small mb-3">Browse and manage all activities</p>
+                    <a href="{{ route('admin.uaeactivities.index') }}" class="btn btn-sm" style="background: rgba(255,215,0,0.1); color: #FFD700; border: 1px solid rgba(255,215,0,0.3); font-weight: 700; border-radius: 20px; padding: 8px 20px;">
+                        View All
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endif
+
     </div>
 
 <style>

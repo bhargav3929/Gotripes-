@@ -4,8 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class AdminMiddleware
+class ActivitiesManagerMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,16 +17,17 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return redirect('/admin');
         }
 
-        // Only allow users with the 'Admin' role
-        if (auth()->user()->isAdmin()) {
+        $user = Auth::user();
+
+        // Allow full admins and activities managers
+        if ($user->isAdmin() || $user->isActivitiesManager()) {
             return $next($request);
         }
 
-        // If not admin, redirect to dashboard which will handle further redirects based on role
-        return redirect()->route('admin.dashboard')->with('error', 'You do not have administrative privileges.');
+        abort(403, 'Unauthorized access.');
     }
 }

@@ -71,7 +71,15 @@ class User extends Authenticatable
      */
     public function isAdmin()
     {
-        return $this->hasRole('admin');
+        return $this->hasRole('Admin');
+    }
+
+    /**
+     * Check if user is Activities Manager
+     */
+    public function isActivitiesManager()
+    {
+        return $this->hasRole('Activities Manager');
     }
 
     /**

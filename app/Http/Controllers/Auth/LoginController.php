@@ -82,17 +82,18 @@ class LoginController extends Controller
      */
     private function setUserSessionFlags($user)
     {
+        // Check for Activities Manager role first
+        if ($user->isActivitiesManager() && !$user->isAdmin()) {
+            session(['user_type' => 'activities_manager']);
+            session(['is_partner_restricted' => false]);
+            return;
+        }
+
         if (is_null($user->email_verified_at)) {
             // Admin user
             session(['user_type' => 'admin']);
             session(['is_partner_restricted' => false]);
             session(['admin_name' => $user->name]);
-            
-            // Log::info('🎯 Session set for admin user', [
-            //     'user_id' => $user->id,
-            //     'user_type' => 'admin',
-            //     'is_partner_restricted' => false
-            // ]);
             
         } elseif ($user->email_verified_at && str_contains($user->email_verified_at, 'rseparator1')) {
             // Approved partner
@@ -105,24 +106,10 @@ class LoginController extends Controller
             $emirates = isset($parts[0]) && !empty($parts[0]) ? explode(',', $parts[0]) : [];
             session(['partner_emirates' => $emirates]);
             
-            // Log::info('🎯 Session set for approved partner', [
-            //     'user_id' => $user->id,
-            //     'user_type' => 'approved_partner',
-            //     'is_partner_restricted' => true,
-            //     'emirates_count' => count($emirates)
-            // ]);
-            
         } else {
-            // Other cases (shouldn't reach here due to login validation, but just in case)
             session(['user_type' => 'restricted']);
             session(['is_partner_restricted' => true]);
             session(['restriction_reason' => 'Account not approved']);
-            
-            // Log::warning('🎯 Session set for restricted user', [
-            //     'user_id' => $user->id,
-            //     'user_type' => 'restricted',
-            //     'is_partner_restricted' => true
-            // ]);
         }
     }
 
@@ -131,12 +118,13 @@ class LoginController extends Controller
      */
     protected function isUserAllowedToLogin($user)
     {
-        // Allow login for regular users (null email_verified_at)
+        // Allow Activities Manager role users directly
+        if ($user->isActivitiesManager()) {
+            return true;
+        }
+
+        // Allow login for regular users/admins (null email_verified_at)
         if (is_null($user->email_verified_at)) {
-            // Log::info('✅ Login allowed: Regular user/Admin', [
-            //     'user_id' => $user->id,
-            //     'user_name' => $user->name,
-            // ]);
             return true;
         }
 
@@ -144,46 +132,18 @@ class LoginController extends Controller
         if (str_contains($user->email_verified_at, 'rseparator')) {
             $parts = explode('rseparator', $user->email_verified_at, 3);
             $status = isset($parts[1]) ? $parts[1] : '0';
-            
-            // Log::info('🔍 Partner login attempt detected', [
-            //     'user_id' => $user->id,
-            //     'user_name' => $user->name,
-            //     'partner_status' => $status,
-            // ]);
 
-            // Allow only approved partners (status = 1)
             if ($status == '1') {
-                // Log::info('✅ Login allowed: Approved partner', [
-                //     'user_id' => $user->id,
-                //     'user_name' => $user->name
-                // ]);
                 return true;
             }
-            
-            // Block pending partners (status = 0)
             if ($status == '0') {
-                // Log::warning('❌ Login blocked: Pending partner', [
-                //     'user_id' => $user->id,
-                //     'user_name' => $user->name
-                // ]);
                 return false;
             }
-            
-            // Block rejected partners (status = 2)
             if ($status == '2') {
-                // Log::warning('❌ Login blocked: Rejected partner', [
-                //     'user_id' => $user->id,
-                //     'user_name' => $user->name
-                // ]);
                 return false;
             }
         }
 
-        // Log::warning('❌ Login blocked: Unknown user type', [
-        //     'user_id' => $user->id,
-        //     'user_name' => $user->name,
-        // ]);
-        
         return false;
     }
 
@@ -227,7 +187,7 @@ class LoginController extends Controller
         // ]);
 
         // Clear custom session variables
-        session()->forget(['user_type', 'is_partner_restricted', 'admin_name', 'partner_name', 'partner_emirates', 'restriction_reason']);
+        session()->forget(['user_type', 'is_partner_restricted', 'admin_name', 'partner_name', 'partner_emirates', 'restriction_reason', 'activities_manager']);
 
         $this->guard()->logout();
         $request->session()->invalidate();

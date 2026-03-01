@@ -17,6 +17,7 @@
     <!-- Navigation Items -->
     <div class="px-3">
         
+        @if(auth()->user()->isAdmin())
         <!-- Supervisor -->
         <li class="nav-item mb-2 {{ request()->is('admin/users') || request()->is('admin/users') ? 'active' : '' }}">
             <a class="nav-link d-flex align-items-center py-3 px-3 rounded" 
@@ -52,6 +53,7 @@
                 <span>Carousel Images</span>
             </a>
         </li>
+        @endif
 
         <!-- UAE Activities -->
         <li class="nav-item mb-2">
