@@ -45,7 +45,7 @@ class User extends Authenticatable
      */
     public function hasRole($roleName)
     {
-        return $this->roles()->where('name', $roleName)->exists();
+        return $this->roles()->where('title', $roleName)->exists();
     }
 
     /**
@@ -67,11 +67,16 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is admin
+     * Check if user is admin (role-based OR legacy null email_verified_at)
      */
     public function isAdmin()
     {
-        return $this->hasRole('Admin');
+        // Role-based admin check
+        if ($this->roles()->where('title', 'Admin')->exists()) {
+            return true;
+        }
+        // Legacy admin: null email_verified_at and no partner/role data
+        return is_null($this->email_verified_at) && !str_contains($this->email_verified_at ?? '', 'rseparator');
     }
 
     /**

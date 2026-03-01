@@ -23,15 +23,17 @@ class AdminMiddleware
 
         $user = auth()->user();
 
-        // Allow full admins through
-        if ($user->isAdmin()) {
+        // Allow users with the 'Admin' role OR legacy admins (null email_verified_at with no partner data)
+        $isAdmin = $user->isAdmin() || (is_null($user->email_verified_at) && !str_contains($user->email_verified_at ?? '', 'rseparator'));
+
+        if ($isAdmin) {
             return $next($request);
         }
 
         // If the user is an Activities Manager, redirect them to the activities section
         if ($user->isActivitiesManager()) {
             return redirect('/admin/uaeactivities')
-                ->with('error', 'You do not have access to this section. Redirected to your activities.');
+                ->with('info', 'You do not have access to this section.');
         }
 
         // All other users are denied
