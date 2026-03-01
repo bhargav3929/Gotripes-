@@ -7,7 +7,7 @@
     .emirates-page-wrapper {
         background: #000 !important;
         min-height: 100vh;
-        padding-top: 70px;
+        padding-top: 40px;
         color: #fff;
     }
 
@@ -304,7 +304,7 @@
     /* ─── MOBILE RESPONSIVE ─────────────────────────── */
     @media (max-width: 991px) {
         .emirates-page-wrapper {
-            padding-top: 80px;
+            padding-top: 30px;
         }
         .hero-header {
             margin-bottom: 30px;
@@ -341,7 +341,7 @@
 
     @media (max-width: 575px) {
         .emirates-page-wrapper {
-            padding-top: 60px;
+            padding-top: 25px;
         }
         .hero-header {
             margin-bottom: 20px;
