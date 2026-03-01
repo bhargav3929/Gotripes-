@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminMiddleware
 {
@@ -20,12 +21,21 @@ class AdminMiddleware
             return redirect('/admin');
         }
 
-        // Only allow users with the 'Admin' role
-        if (auth()->user()->isAdmin()) {
+        $user = auth()->user();
+
+        // Allow full admins through
+        if ($user->isAdmin()) {
             return $next($request);
         }
 
-        // If not admin, redirect to dashboard which will handle further redirects based on role
-        return redirect()->route('admin.dashboard')->with('error', 'You do not have administrative privileges.');
+        // If the user is an Activities Manager, redirect them to the activities section
+        if ($user->isActivitiesManager()) {
+            return redirect('/admin/uaeactivities')
+                ->with('error', 'You do not have access to this section. Redirected to your activities.');
+        }
+
+        // All other users are denied
+        Auth::logout();
+        return redirect('/admin')->withErrors(['name' => 'Access denied.']);
     }
 }

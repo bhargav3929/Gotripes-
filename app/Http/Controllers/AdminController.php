@@ -71,6 +71,14 @@ class AdminController extends Controller
         //     'user_name' => $user->name,
         // ]);
 
+        // Fallback: check role directly
+        if ($user->isActivitiesManager() && !$user->isAdmin()) {
+            session(['user_type' => 'activities_manager']);
+            session(['is_partner_restricted' => false]);
+            return redirect('/admin/uaeactivities')
+                ->with('success', 'Welcome back, ' . $user->name . '! Manage your activities here.');
+        }
+
         // Check if user is an approved partner
         if ($user->email_verified_at && str_contains($user->email_verified_at, 'rseparator1')) {
             // Log::info('🚀 Setting NEW partner session and redirecting to UAE Activities', [
