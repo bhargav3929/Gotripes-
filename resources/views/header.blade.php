@@ -1118,6 +1118,7 @@
             @endif
         </div>
 
+        @if(request()->is('/'))
         <!-- NEWS TICKER -->
         <div class="news-ticker">
             <div class="scroll text-uppercase">
@@ -1138,6 +1139,7 @@
                 @endforelse
             </div>
         </div>
+        @endif
 
     </header>
 
