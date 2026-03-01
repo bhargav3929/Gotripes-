@@ -969,18 +969,27 @@
 
         /* Ticker + search bar spacing - Global */
         body {
-            margin-top: 195px;
+            margin-top: 215px;
+        }
+
+        @media (max-width: 1200px) {
+            body {
+                margin-top: 195px;
+            }
         }
 
         @media (max-width: 991px) {
             body {
-                margin-top: 180px;
+                margin-top: 240px;
+            }
+            .gt-partner-label, .gt-partner-title {
+                display: none !important;
             }
         }
 
         @media (max-width: 575px) {
             body {
-                margin-top: 162px;
+                margin-top: 230px;
             }
         }
 
