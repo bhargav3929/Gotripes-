@@ -59,6 +59,13 @@
 
         body {
             font-family: 'Outfit', sans-serif !important;
+            background-color: #000 !important;
+            color: #fff;
+            outline: none !important;
+        }
+
+        html {
+            background-color: #000 !important;
         }
 
         /* Override template font classes */
