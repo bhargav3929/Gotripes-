@@ -24,7 +24,7 @@
         </li>
         @endif
 
-        @if(auth()->user()->hasPermission('manage_announcements'))
+        @if(auth()->user()->hasPermission('announcement_access'))
         <!-- Announcements -->
         <li class="nav-item mb-1">
             <a class="nav-link d-flex align-items-center py-3 px-3 rounded {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}"
@@ -35,7 +35,7 @@
         </li>
         @endif
 
-        @if(auth()->user()->hasPermission('manage_carousel'))
+        @if(auth()->user()->hasPermission('homepage_ads_access'))
         <!-- Carousel Images -->
         <li class="nav-item mb-1">
             <a class="nav-link d-flex align-items-center py-3 px-3 rounded {{ request()->routeIs('admin.homepageads.*') ? 'active' : '' }}"
@@ -46,7 +46,7 @@
         </li>
         @endif
 
-        @if(auth()->user()->hasPermission('manage_uae_activities'))
+        @if(auth()->user()->hasPermission('activity_access'))
         <!-- UAE Activities -->
         <li class="nav-item mb-1">
             <a class="nav-link d-flex align-items-center py-3 px-3 rounded {{ request()->routeIs('admin.uaeactivities.*') ? 'active' : '' }}"
