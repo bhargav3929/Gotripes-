@@ -14,14 +14,14 @@
                             <i class="fas fa-users-cog me-2"></i>Manage Users
                         </h3>
                         <div class="card-tools">
-                            @can('user_create')
+                            @if(auth()->user()->isAdmin())
                             <a href="{{ route('admin.users.create') }}" 
                                class="btn btn-primary btn-mobile animate-scale">
                                 <i class="fas fa-plus me-1"></i> 
                                 <span class="d-none d-sm-inline">New User</span>
                                 <span class="d-sm-none">Add New</span>
                             </a>
-                            @endcan
+                            @endif
                         </div>
                     </div>
                 </div>
