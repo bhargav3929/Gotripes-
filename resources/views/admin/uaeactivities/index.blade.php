@@ -10,585 +10,135 @@
     $totalFilteredCount = $activities->total();
 @endphp
 
+<!-- Page-Specific Styles (UAE Activities uses scoped variables) -->
 <style>
-    :root {
-        --bg-primary: #0e0e0e;
-        --bg-card: #161616;
-        --bg-row: #1a1a1a;
-        --bg-row-hover: #1f1f1f;
-        --gold: #d4a845;
-        --gold-light: #e8c76a;
-        --gold-dim: rgba(212, 168, 69, 0.12);
-        --gold-border: rgba(212, 168, 69, 0.18);
-        --text-primary: #f0f0f0;
-        --text-secondary: #8a8a8a;
-        --text-dim: #5a5a5a;
-        --red: #d94452;
-        --red-hover: #e55565;
-        --green: #34c759;
-    }
+    /* Local color aliases mapped to layout design tokens */
+    .page-wrap { --gold: var(--primary-gold); --gold-light: #ffe44d; --gold-dim: rgba(255, 215, 0, 0.06); --gold-border: var(--border-gold); --bg-row: var(--light-dark); --bg-row-hover: rgba(255, 255, 255, 0.03); --red: var(--danger); --red-hover: #dc2626; --green: var(--success); }
 
-    body { background: var(--bg-primary) !important; color: var(--text-primary) !important; }
+    /* Page Container */
+    .page-wrap { max-width: 1320px; margin: 0 auto; padding: 1.5rem 1rem; }
 
-    /* ── Page Container ── */
-    .page-wrap {
-        max-width: 1320px;
-        margin: 0 auto;
-        padding: 24px 16px;
-    }
-
-    /* ── Top Bar ── */
-    .top-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 24px;
-    }
-
-    .top-bar h2 {
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin: 0;
-        letter-spacing: -0.3px;
-    }
-
-    .top-bar h2 span { color: var(--gold); }
+    /* Top Bar */
+    .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .top-bar h2 { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.02em; }
+    .top-bar h2 span { color: var(--primary-gold); }
 
     .btn-add {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: var(--gold);
-        color: #000;
-        border: none;
-        padding: 9px 18px;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 13px;
-        text-decoration: none;
-        transition: all 0.2s;
+        display: inline-flex; align-items: center; gap: 6px;
+        background: var(--primary-gold); color: #000; border: none;
+        padding: 0.5rem 1rem; border-radius: var(--radius-sm);
+        font-weight: 700; font-size: 0.8125rem; text-decoration: none; transition: all 0.15s;
     }
+    .btn-add:hover { background: var(--gold-light); color: #000; text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); }
 
-    .btn-add:hover {
-        background: var(--gold-light);
-        color: #000;
-        text-decoration: none;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 16px rgba(212, 168, 69, 0.25);
-    }
+    /* Stats Strip */
+    .stats-strip { display: flex; gap: 12px; margin-bottom: 1.25rem; }
+    .stat-chip { display: flex; align-items: center; gap: 8px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.625rem 1rem; flex: 1; }
+    .stat-chip .stat-val { font-size: 1.25rem; font-weight: 800; color: var(--primary-gold); line-height: 1; }
+    .stat-chip .stat-lbl { font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.2; }
 
-    /* ── Stats Strip ── */
-    .stats-strip {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
+    /* Alert */
+    .alert-slim { background: rgba(34, 197, 94, 0.06); border: 1px solid rgba(34, 197, 94, 0.15); border-radius: var(--radius-sm); padding: 0.75rem 1rem; color: var(--success); font-size: 0.8125rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+    .alert-slim .btn-close { filter: invert(1); opacity: 0.4; margin-left: auto; }
 
-    .stat-chip {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--bg-card);
-        border: 1px solid var(--gold-border);
-        border-radius: 8px;
-        padding: 10px 16px;
-        flex: 1;
-    }
+    /* Partner Info */
+    .partner-info { background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.12); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.8125rem; color: var(--info); }
 
-    .stat-chip .stat-val {
-        font-size: 20px;
-        font-weight: 800;
-        color: var(--gold);
-        line-height: 1;
-    }
+    /* Table */
+    .activity-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
+    .activity-table thead th { background: transparent; color: var(--text-muted); font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.5rem 0.875rem 0.75rem; border: none; white-space: nowrap; }
+    .activity-table tbody tr { background: var(--bg-row); transition: background 0.1s ease; }
+    .activity-table tbody tr:hover { background: var(--bg-row-hover); }
+    .activity-table tbody td { padding: 0.75rem 0.875rem; border: none; vertical-align: middle; font-size: 0.8125rem; color: var(--text-main); }
+    .activity-table tbody tr td:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+    .activity-table tbody tr td:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 
-    .stat-chip .stat-lbl {
-        font-size: 11px;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        line-height: 1.2;
-    }
+    /* Row Number */
+    .row-num { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: var(--gold-dim); color: var(--primary-gold); border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
 
-    /* ── Alert ── */
-    .alert-slim {
-        background: rgba(52, 199, 89, 0.08);
-        border: 1px solid rgba(52, 199, 89, 0.2);
-        border-radius: 8px;
-        padding: 12px 16px;
-        color: var(--green);
-        font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+    /* Activity Info */
+    .act-name { font-weight: 600; color: var(--text-main); font-size: 0.875rem; line-height: 1.3; margin-bottom: 2px; }
+    .act-price { font-size: 0.75rem; color: var(--primary-gold); font-weight: 600; }
+    .act-location, .act-emirate, .act-creator { font-size: 0.8125rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    .act-location i, .act-emirate i, .act-creator i { color: var(--text-muted); font-size: 0.6875rem; width: 14px; text-align: center; opacity: 0.5; }
 
-    .alert-slim .btn-close {
-        filter: invert(1);
-        opacity: 0.4;
-        margin-left: auto;
-    }
+    /* Image Preview */
+    .img-thumb { width: 64px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); transition: transform 0.15s; }
+    .img-thumb:hover { transform: scale(1.1); }
+    .img-empty { width: 64px; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--gold-dim); border-radius: 6px; color: var(--text-muted); font-size: 1rem; }
 
-    /* ── Partner Info ── */
-    .partner-info {
-        background: rgba(23, 162, 184, 0.06);
-        border: 1px solid rgba(23, 162, 184, 0.15);
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-bottom: 20px;
-        font-size: 13px;
-        color: #5bc0de;
-    }
+    /* Action Buttons */
+    .act-actions { display: flex; gap: 6px; white-space: nowrap; }
+    .btn-act { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+    .btn-act.edit { background: rgba(255, 215, 0, 0.04); color: var(--primary-gold); border: 1px solid rgba(255, 215, 0, 0.12); }
+    .btn-act.edit:hover { background: var(--primary-gold); color: #000; text-decoration: none; }
+    .btn-act.del { background: rgba(255, 255, 255, 0.02); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.06); }
+    .btn-act.del:hover { background: var(--danger); color: #fff; }
 
-    /* ── Table ── */
-    .activity-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 4px;
-    }
+    /* Pagination */
+    .pag-bar { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 1.5rem; flex-wrap: wrap; }
+    .pag-info { font-size: 0.75rem; color: var(--text-muted); margin-right: 0.75rem; }
+    .pag-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; padding: 0 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-decoration: none; transition: all 0.15s; background: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); }
+    .pag-btn:hover { background: var(--gold-dim); color: var(--primary-gold); text-decoration: none; border-color: var(--gold-border); }
+    .pag-btn.active { background: var(--primary-gold); color: #000; border-color: var(--primary-gold); }
+    .pag-btn.disabled { opacity: 0.3; pointer-events: none; }
+    .pag-goto { display: flex; align-items: center; gap: 6px; margin-left: 14px; font-size: 0.75rem; color: var(--text-muted); }
+    .pag-goto input { width: 46px; height: 34px; text-align: center; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-size: 0.8125rem; font-weight: 600; outline: none; transition: border-color 0.15s; -moz-appearance: textfield; }
+    .pag-goto input::-webkit-outer-spin-button, .pag-goto input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .pag-goto input:focus { border-color: var(--primary-gold); }
+    .pag-goto button { height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--gold-border); background: var(--gold-dim); color: var(--primary-gold); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .pag-goto button:hover { background: var(--primary-gold); color: #000; }
 
-    .activity-table thead th {
-        background: transparent;
-        color: var(--text-dim);
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        padding: 8px 14px 12px;
-        border: none;
-        white-space: nowrap;
-    }
-
-    .activity-table tbody tr {
-        background: var(--bg-row);
-        transition: all 0.15s ease;
-    }
-
-    .activity-table tbody tr:hover {
-        background: var(--bg-row-hover);
-    }
-
-    .activity-table tbody td {
-        padding: 12px 14px;
-        border: none;
-        vertical-align: middle;
-        font-size: 13px;
-    }
-
-    .activity-table tbody tr td:first-child { border-radius: 10px 0 0 10px; }
-    .activity-table tbody tr td:last-child { border-radius: 0 10px 10px 0; }
-
-    /* ── Row Number ── */
-    .row-num {
-        width: 28px;
-        height: 28px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--gold-dim);
-        color: var(--gold);
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    /* ── Activity Info ── */
-    .act-name {
-        font-weight: 600;
-        color: var(--text-primary);
-        font-size: 14px;
-        line-height: 1.3;
-        margin-bottom: 2px;
-    }
-
-    .act-price {
-        font-size: 12px;
-        color: var(--gold);
-        font-weight: 600;
-    }
-
-    .act-location, .act-emirate, .act-creator {
-        font-size: 13px;
-        color: var(--text-secondary);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .act-location i, .act-emirate i, .act-creator i {
-        color: var(--text-dim);
-        font-size: 11px;
-        width: 14px;
-        text-align: center;
-    }
-
-    /* ── Image Preview ── */
-    .img-thumb {
-        width: 64px;
-        height: 44px;
-        object-fit: cover;
-        border-radius: 6px;
-        border: 1px solid var(--gold-border);
-        transition: transform 0.2s;
-    }
-
-    .img-thumb:hover {
-        transform: scale(1.15);
-    }
-
-    .img-empty {
-        width: 64px;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--gold-dim);
-        border-radius: 6px;
-        color: var(--text-dim);
-        font-size: 16px;
-    }
-
-    /* ── Action Buttons ── */
-    .act-actions {
-        display: flex;
-        gap: 6px;
-        white-space: nowrap;
-    }
-
-    .btn-act {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 6px 14px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        transition: all 0.15s;
-        text-decoration: none;
-    }
-
-    .btn-act.edit {
-        background: var(--gold-dim);
-        color: var(--gold);
-        border: 1px solid var(--gold-border);
-    }
-
-    .btn-act.edit:hover {
-        background: var(--gold);
-        color: #000;
-        text-decoration: none;
-    }
-
-    .btn-act.del {
-        background: rgba(217, 68, 82, 0.08);
-        color: var(--red);
-        border: 1px solid rgba(217, 68, 82, 0.18);
-    }
-
-    .btn-act.del:hover {
-        background: var(--red);
-        color: #fff;
-    }
-
-    /* ── Pagination ── */
-    .pag-bar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        margin-top: 24px;
-        flex-wrap: wrap;
-    }
-
-    .pag-info {
-        font-size: 12px;
-        color: var(--text-secondary);
-        margin-right: 12px;
-    }
-
-    .pag-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 34px;
-        height: 34px;
-        padding: 0 10px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.15s;
-        background: var(--bg-card);
-        color: var(--text-secondary);
-        border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .pag-btn:hover {
-        background: var(--gold-dim);
-        color: var(--gold);
-        text-decoration: none;
-        border-color: var(--gold-border);
-    }
-
-    .pag-btn.active {
-        background: var(--gold);
-        color: #000;
-        border-color: var(--gold);
-    }
-
-    .pag-btn.disabled {
-        opacity: 0.3;
-        pointer-events: none;
-    }
-
-    .pag-goto {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-left: 14px;
-        font-size: 12px;
-        color: var(--text-secondary);
-    }
-
-    .pag-goto input {
-        width: 46px;
-        height: 34px;
-        text-align: center;
-        border-radius: 6px;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        font-size: 13px;
-        font-weight: 600;
-        outline: none;
-        transition: border-color 0.15s;
-        -moz-appearance: textfield;
-    }
-
-    .pag-goto input::-webkit-outer-spin-button,
-    .pag-goto input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-    .pag-goto input:focus { border-color: var(--gold); }
-
-    .pag-goto button {
-        height: 34px;
-        padding: 0 12px;
-        border-radius: 6px;
-        border: 1px solid var(--gold-border);
-        background: var(--gold-dim);
-        color: var(--gold);
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.15s;
-    }
-
-    .pag-goto button:hover { background: var(--gold); color: #000; }
-
-    /* ── Mobile Cards ── */
-    .m-card {
-        background: var(--bg-card);
-        border: 1px solid rgba(255,255,255,0.05);
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 10px;
-        transition: border-color 0.2s;
-    }
-
+    /* Mobile Cards */
+    .m-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.625rem; transition: border-color 0.15s; }
     .m-card:hover { border-color: var(--gold-border); }
+    .m-card .m-name { font-weight: 600; font-size: 0.875rem; color: var(--text-main); margin-bottom: 6px; }
+    .m-card .m-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+    .m-card .m-meta i { color: var(--text-muted); font-size: 0.6875rem; width: 14px; opacity: 0.5; }
+    .m-card .m-img { width: 100%; height: 140px; object-fit: cover; border-radius: var(--radius-sm); margin: 12px 0; }
+    .m-card .m-actions { display: flex; gap: 8px; }
+    .m-card .m-actions .btn-act { flex: 1; justify-content: center; width: auto; height: 36px; }
 
-    .m-card .m-name {
-        font-weight: 600;
-        font-size: 14px;
-        color: var(--text-primary);
-        margin-bottom: 6px;
-    }
+    /* Empty State */
+    .empty-box { text-align: center; padding: 3.75rem 1.25rem; color: var(--text-muted); }
+    .empty-box i { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.3; }
+    .empty-box h4 { color: var(--text-muted); font-size: 1rem; margin-bottom: 0.5rem; }
+    .empty-box p { font-size: 0.8125rem; margin-bottom: 1.25rem; }
 
-    .m-card .m-meta {
-        font-size: 12px;
-        color: var(--text-secondary);
-        margin-bottom: 3px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .m-card .m-meta i { color: var(--text-dim); font-size: 11px; width: 14px; }
-
-    .m-card .m-img {
-        width: 100%;
-        height: 140px;
-        object-fit: cover;
-        border-radius: 8px;
-        margin: 12px 0;
-    }
-
-    .m-card .m-actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    .m-card .m-actions .btn-act { flex: 1; justify-content: center; padding: 8px 0; }
-
-    /* ── Empty State ── */
-    .empty-box {
-        text-align: center;
-        padding: 60px 20px;
-        color: var(--text-dim);
-    }
-
-    .empty-box i { font-size: 40px; margin-bottom: 16px; color: var(--gold-dim); }
-    .empty-box h4 { color: var(--text-secondary); font-size: 16px; margin-bottom: 8px; }
-    .empty-box p { font-size: 13px; margin-bottom: 20px; }
-
-    /* ── Delete Modal ── */
-    .del-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        background: rgba(0,0,0,0.7);
-        backdrop-filter: blur(4px);
-        align-items: center;
-        justify-content: center;
-    }
-
+    /* Delete Modal */
+    .del-modal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
     .del-modal.show { display: flex !important; }
-
-    .del-modal-box {
-        background: var(--bg-card);
-        border: 1px solid var(--gold-border);
-        border-radius: 16px;
-        width: 90%;
-        max-width: 420px;
-        overflow: hidden;
-        animation: modalSlide 0.25s ease;
-    }
-
-    @keyframes modalSlide {
-        from { opacity: 0; transform: translateY(20px) scale(0.97); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .del-modal-head {
-        padding: 20px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .del-modal-head h4 {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--red);
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .del-modal-close {
-        background: none;
-        border: none;
-        color: var(--text-dim);
-        font-size: 18px;
-        cursor: pointer;
-        padding: 4px;
-        transition: color 0.15s;
-    }
-
-    .del-modal-close:hover { color: var(--text-primary); }
-
-    .del-modal-body {
-        padding: 24px;
-        text-align: center;
-    }
-
-    .del-modal-body .del-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: rgba(217, 68, 82, 0.1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 16px;
-        color: var(--red);
-        font-size: 22px;
-    }
-
-    .del-modal-body p { font-size: 14px; color: var(--text-secondary); margin: 0 0 12px; }
-
-    .del-activity-name {
-        background: var(--gold-dim);
-        border: 1px solid var(--gold-border);
-        border-radius: 8px;
-        padding: 10px 14px;
-        color: var(--gold);
-        font-weight: 600;
-        font-size: 14px;
-        margin: 12px 0 4px;
-    }
-
-    .del-sub { font-size: 12px !important; color: var(--text-dim) !important; }
-
-    .del-modal-foot {
-        display: flex;
-        gap: 10px;
-        padding: 0 24px 24px;
-    }
-
-    .del-modal-foot button {
-        flex: 1;
-        padding: 10px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 700;
-        border: none;
-        cursor: pointer;
-        transition: all 0.15s;
-    }
-
-    .btn-cancel-modal {
-        background: rgba(255,255,255,0.06);
-        color: var(--text-secondary);
-    }
-
-    .btn-cancel-modal:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
-
-    .btn-del-confirm {
-        background: var(--red);
-        color: #fff;
-    }
-
+    .del-modal-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); width: 90%; max-width: 420px; overflow: hidden; animation: modalSlideAct 0.2s ease; }
+    @keyframes modalSlideAct { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .del-modal-head { padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+    .del-modal-head h4 { font-size: 1rem; font-weight: 700; color: var(--danger); margin: 0; display: flex; align-items: center; gap: 8px; }
+    .del-modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.125rem; cursor: pointer; padding: 4px; transition: color 0.15s; }
+    .del-modal-close:hover { color: var(--text-main); }
+    .del-modal-body { padding: 1.5rem; text-align: center; }
+    .del-modal-body .del-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.08); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: var(--danger); font-size: 1.375rem; }
+    .del-modal-body p { font-size: 0.875rem; color: var(--text-muted); margin: 0 0 0.75rem; }
+    .del-activity-name { background: var(--gold-dim); border: 1px solid var(--gold-border); border-radius: var(--radius-sm); padding: 0.625rem 0.875rem; color: var(--primary-gold); font-weight: 600; font-size: 0.875rem; margin: 0.75rem 0 4px; }
+    .del-sub { font-size: 0.75rem !important; color: var(--text-muted) !important; }
+    .del-modal-foot { display: flex; gap: 0.625rem; padding: 0 1.5rem 1.5rem; }
+    .del-modal-foot button { flex: 1; padding: 0.625rem; border-radius: var(--radius-sm); font-size: 0.8125rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.15s; }
+    .btn-cancel-modal { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    .btn-cancel-modal:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
+    .btn-del-confirm { background: var(--danger); color: #fff; }
     .btn-del-confirm:hover { background: var(--red-hover); }
+    .btn-del-confirm.processing { background: var(--text-muted); cursor: not-allowed; opacity: 0.6; }
 
-    .btn-del-confirm.processing {
-        background: var(--text-dim);
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
-
-    /* ── Responsive ── */
+    /* Responsive */
     @media (max-width: 768px) {
-        .page-wrap { padding: 16px 10px; }
+        .page-wrap { padding: 1rem 0.625rem; }
         .top-bar { flex-wrap: wrap; gap: 10px; }
-        .top-bar h2 { font-size: 17px; }
+        .top-bar h2 { font-size: 1.0625rem; }
         .stats-strip { flex-direction: column; gap: 8px; }
-        .stat-chip { padding: 8px 12px; }
-        .stat-chip .stat-val { font-size: 17px; }
+        .stat-chip .stat-val { font-size: 1.0625rem; }
         .pag-bar { gap: 4px; }
         .del-modal-foot { flex-direction: column; }
     }
-
     @media (max-width: 576px) {
-        .btn-add { font-size: 12px; padding: 8px 14px; }
+        .btn-add { font-size: 0.75rem; padding: 0.5rem 0.875rem; }
         .m-card .m-img { height: 110px; }
     }
 </style>
@@ -690,13 +240,13 @@
                 @endif
 
                 <div class="m-actions">
-                    <a href="{{ route('admin.uaeactivities.edit', $activity) }}" class="btn-act edit">
-                        <i class="fas fa-edit"></i> Edit
+                    <a href="{{ route('admin.uaeactivities.edit', $activity) }}" class="btn-act edit" title="Edit">
+                        <i class="fas fa-edit"></i>
                     </a>
                     <button type="button" class="btn-act del delete-btn"
                             data-activity-name="{{ $activity->activityName ?? 'this activity' }}"
-                            data-activity-id="{{ $activity->id }}">
-                        <i class="fas fa-trash"></i> Delete
+                            data-activity-id="{{ $activity->id }}" title="Delete">
+                        <i class="fas fa-trash"></i>
                     </button>
                 </div>
 
@@ -787,7 +337,7 @@
                             <td>
                                 <div class="act-actions">
                                     <a href="{{ route('admin.uaeactivities.edit', $activity) }}" class="btn-act edit" title="Edit">
-                                        <i class="fas fa-edit"></i> Edit
+                                        <i class="fas fa-edit"></i>
                                     </a>
                                     <form method="POST" action="{{ route('admin.uaeactivities.destroy', $activity) }}" class="d-inline delete-form"
                                           data-activity-name="{{ $activity->activityName ?? 'this activity' }}">
@@ -795,8 +345,8 @@
                                         @method('DELETE')
                                         <button type="button" class="btn-act del delete-btn"
                                                 data-activity-name="{{ $activity->activityName ?? 'this activity' }}"
-                                                data-activity-id="{{ $activity->id }}">
-                                            <i class="fas fa-trash"></i> Delete
+                                                data-activity-id="{{ $activity->id }}" title="Delete">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
                                 </div>

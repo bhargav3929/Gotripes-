@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Http\Controllers\Controller;
@@ -18,7 +19,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::with('roles')->get();
 
         return view('admin.users.index', compact('users'));
     }
@@ -43,11 +44,20 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $user = User::create($request->validated() + ['password' => bcrypt($request->password)]);
-        $user->roles()->sync($request->input('roles'));
+        $accessType = $request->input('access_type', 'full');
+
+        $data = $request->validated();
+        $data['password'] = bcrypt($request->password);
+        $data['access_type'] = $accessType;
+
+        $user = User::create($data);
+
+        // Assign roles based on access type
+        $roleIds = $this->resolveRoleIds($accessType, $request->input('modules', []));
+        $user->roles()->sync($roleIds);
 
         return redirect()->route('admin.users.index')->with([
-            'message' => 'successfully created !',
+            'message' => 'User created successfully!',
             'alert-type' => 'success'
         ]);
     }
@@ -60,6 +70,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $user->load('roles');
         $roles = Role::pluck('title', 'id');
 
         return view('admin.users.edit', compact('user','roles'));
@@ -72,23 +83,79 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUserRequest $request,User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $user->update($request->validated() + ['password' => bcrypt($request->password)]);
-        $user->roles()->sync($request->input('roles'));
+        $accessType = $request->input('access_type', 'full');
+
+        $updateData = $request->validated();
+        $updateData['access_type'] = $accessType;
+
+        // Only update password if provided
+        if ($request->filled('password')) {
+            $updateData['password'] = bcrypt($request->password);
+        } else {
+            unset($updateData['password']);
+        }
+
+        $user->update($updateData);
+
+        // Assign roles based on access type
+        $roleIds = $this->resolveRoleIds($accessType, $request->input('modules', []));
+        $user->roles()->sync($roleIds);
 
         return redirect()->route('admin.users.index')->with([
-            'message' => 'successfully updated !',
+            'message' => 'User updated successfully!',
             'alert-type' => 'info'
         ]);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Map access_type + modules to role IDs
      */
+    private function resolveRoleIds(string $accessType, array $modules = []): array
+    {
+        if ($accessType === 'full') {
+            $adminRole = Role::where('title', 'Admin')->first();
+            return $adminRole ? [$adminRole->id] : [];
+        }
+
+        // Specific access: map module names to roles and their required permissions
+        $roleIds = [];
+        $moduleConfig = [
+            'uaeactivities' => [
+                'role' => 'Activities Manager',
+                'permissions' => ['manage_uae_activities', 'view_dashboard'],
+            ],
+            'announcements' => [
+                'role' => 'Announcements Manager',
+                'permissions' => ['manage_announcements', 'view_dashboard'],
+            ],
+            'homepageads' => [
+                'role' => 'Carousel Manager',
+                'permissions' => ['manage_carousel', 'view_dashboard'],
+            ],
+        ];
+
+        foreach ($modules as $module) {
+            if (isset($moduleConfig[$module])) {
+                $config = $moduleConfig[$module];
+                $role = Role::firstOrCreate(['title' => $config['role']]);
+
+                // Ensure the role has the required permissions attached
+                $permissionIds = [];
+                foreach ($config['permissions'] as $permTitle) {
+                    $perm = Permission::firstOrCreate(['title' => $permTitle]);
+                    $permissionIds[] = $perm->id;
+                }
+                $role->permissions()->syncWithoutDetaching($permissionIds);
+
+                $roleIds[] = $role->id;
+            }
+        }
+
+        return $roleIds;
+    }
+
     public function destroy(User $user)
     {
         $user->delete();

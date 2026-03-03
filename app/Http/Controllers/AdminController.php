@@ -14,119 +14,46 @@ class AdminController extends Controller
     }
 
     /**
-     * Smart admin dashboard router - FIXED: Don't override existing sessions
+     * Smart admin dashboard router - uses role-based routing
      */
     public function index()
     {
         $user = Auth::user();
-        
+
         if (!$user) {
-           // Log::warning('⚠️ Unauthenticated user tried to access admin route');
             return redirect()->route('login');
         }
 
-        // Log::info('🎯 Admin route accessed - checking existing session first', [
-        //     'user_id' => $user->id,
-        //     'user_name' => $user->name,
-        //     'existing_user_type' => session('user_type'),
-        //     'existing_is_partner_restricted' => session('is_partner_restricted'),
-        //     'email_verified_at' => $user->email_verified_at ?? 'NULL'
-        // ]);
-
-        // 🔥 FIX: Check if session already exists (from LoginController)
-        $existingUserType = session('user_type');
-        $existingRestricted = session('is_partner_restricted');
-
-        if ($existingUserType && $existingRestricted !== null) {
-            // Session already set by LoginController - just redirect based on existing session
-            // Log::info('🎯 Using existing session values from LoginController', [
-            //     'user_id' => $user->id,
-            //     'existing_user_type' => $existingUserType,
-            //     'existing_is_partner_restricted' => $existingRestricted
-            // ]);
-
-            if ($existingUserType === 'approved_partner' && $existingRestricted === true) {
-                // Log::info('🚀 Redirecting approved partner to UAE Activities (using existing session)', [
-                //     'user_id' => $user->id,
-                //     'user_name' => $user->name,
-                // ]);
-                
-                return redirect('/admin/uaeactivities')
-                    ->with('success', 'Welcome back, ' . $user->name . '! You can manage UAE Activities here.');
-                    
-            } elseif ($existingUserType === 'admin' && $existingRestricted === false) {
-                // Log::info('🚀 Redirecting admin to users management (using existing session)', [
-                //     'user_id' => $user->id,
-                //     'user_name' => $user->name,
-                // ]);
-                
-                return redirect('/admin/users')
-                    ->with('success', 'Welcome back, ' . $user->name . '! Admin dashboard loaded.');
-            }
-        }
-
-        // 🔥 FALLBACK: Only set session if not already set by LoginController
-        // Log::info('🔄 No existing session found, setting new session values', [
-        //     'user_id' => $user->id,
-        //     'user_name' => $user->name,
-        // ]);
-
-        // Fallback: check role directly
-        if ($user->isActivitiesManager() && !$user->isAdmin()) {
-            session(['user_type' => 'activities_manager']);
-            session(['is_partner_restricted' => false]);
-            return redirect('/admin/uaeactivities')
-                ->with('success', 'Welcome back, ' . $user->name . '! Manage your activities here.');
-        }
-
-        // Check if user is an approved partner
-        if ($user->email_verified_at && str_contains($user->email_verified_at, 'rseparator1')) {
-            // Log::info('🚀 Setting NEW partner session and redirecting to UAE Activities', [
-            //     'user_id' => $user->id,
-            //     'user_name' => $user->name,
-            // ]);
-            
-            // Set session flags for approved partner
-            session(['user_type' => 'approved_partner']);
-            session(['is_partner_restricted' => true]);
-            session(['partner_name' => $user->name]);
-            
-            return redirect('/admin/uaeactivities')
-                ->with('success', 'Welcome back, ' . $user->name . '! You can manage UAE Activities here.');
-        }
-
-        // Check if user is a regular user/admin (null email_verified_at)
-        if (is_null($user->email_verified_at)) {
-            // Log::info('🚀 Setting NEW admin session and redirecting to users management', [
-            //     'user_id' => $user->id,
-            //     'user_name' => $user->name,
-            // ]);
-            
-            // Set session flags for admin
-            session(['user_type' => 'admin']);
-            session(['is_partner_restricted' => false]);
-            session(['admin_name' => $user->name]);
-            
+        // Admin role: redirect to user management
+        if ($user->isAdmin()) {
             return redirect('/admin/users')
-                ->with('success', 'Welcome back, ' . $user->name . '! Admin dashboard loaded.');
+                ->with('success', 'Welcome back, ' . $user->name . '!');
         }
 
-        // Handle restricted users
-        // Log::warning('⚠️ User has restricted access', [
-        //     'user_id' => $user->id,
-        //     'user_name' => $user->name,
-        //     'email_verified_at' => $user->email_verified_at
-        // ]);
+        // Activities Manager role: redirect to activities
+        if ($user->isActivitiesManager()) {
+            return redirect('/admin/uaeactivities')
+                ->with('success', 'Welcome back, ' . $user->name . '!');
+        }
 
-        session(['user_type' => 'restricted']);
-        session(['is_partner_restricted' => true]);
-        session(['restriction_reason' => 'Account not approved']);
+        // Approved partner (legacy): redirect to activities
+        if ($user->email_verified_at && str_contains($user->email_verified_at, 'rseparator1')) {
+            return redirect('/admin/uaeactivities')
+                ->with('success', 'Welcome back, ' . $user->name . '!');
+        }
 
+        // Users with other roles: redirect to activities (their allowed section)
+        if ($user->roles()->exists()) {
+            return redirect('/admin/uaeactivities')
+                ->with('success', 'Welcome back, ' . $user->name . '!');
+        }
+
+        // No role, not a partner: deny access
         Auth::logout();
         session()->flush();
-        
-        return redirect()->route('login')->withErrors([
-            'name' => 'Your account access is restricted. Please contact support.'
+
+        return redirect('/admin')->withErrors([
+            'name' => 'Your account does not have admin access. Please contact support.'
         ]);
     }
 }

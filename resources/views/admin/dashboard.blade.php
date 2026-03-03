@@ -99,12 +99,12 @@
         @if(auth()->user()->isActivitiesManager() && !auth()->user()->isAdmin())
         <!-- Quick link to Activities for manager -->
         <div class="col-xl-4 col-md-6">
-            <div class="stats-card h-100" style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border: 1px solid rgba(255,215,0,0.3);">
+            <div class="stats-card action-card action-card-primary h-100">
                 <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center text-center">
-                    <i class="fas fa-plus-circle text-warning mb-3" style="font-size: 2rem;"></i>
+                    <i class="fas fa-plus-circle action-card-icon mb-3"></i>
                     <h6 class="text-white mb-2 fw-bold">Add New Activity</h6>
                     <p class="text-muted small mb-3">Create a new UAE activity listing</p>
-                    <a href="{{ route('admin.uaeactivities.create') }}" class="btn btn-sm" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; font-weight: 700; border-radius: 20px; padding: 8px 20px;">
+                    <a href="{{ route('admin.uaeactivities.create') }}" class="btn btn-sm btn-action-gold">
                         Create Activity
                     </a>
                 </div>
@@ -112,12 +112,12 @@
         </div>
 
         <div class="col-xl-4 col-md-6">
-            <div class="stats-card h-100" style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border: 1px solid rgba(255,215,0,0.15);">
+            <div class="stats-card action-card action-card-secondary h-100">
                 <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center text-center">
-                    <i class="fas fa-list text-warning mb-3" style="font-size: 2rem;"></i>
+                    <i class="fas fa-list action-card-icon mb-3"></i>
                     <h6 class="text-white mb-2 fw-bold">View All Activities</h6>
                     <p class="text-muted small mb-3">Browse and manage all activities</p>
-                    <a href="{{ route('admin.uaeactivities.index') }}" class="btn btn-sm" style="background: rgba(255,215,0,0.1); color: #FFD700; border: 1px solid rgba(255,215,0,0.3); font-weight: 700; border-radius: 20px; padding: 8px 20px;">
+                    <a href="{{ route('admin.uaeactivities.index') }}" class="btn btn-sm btn-action-outline">
                         View All
                     </a>
                 </div>
@@ -129,56 +129,90 @@
 
 <style>
     .fw-800 { font-weight: 800; }
-    
+
     .stats-card {
         background: var(--light-dark);
         border: 1px solid var(--border-color);
-        border-radius: 20px;
-        transition: all 0.3s ease;
+        border-radius: var(--radius-lg);
+        transition: all 0.2s ease;
         position: relative;
         overflow: hidden;
     }
-    
+
     .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        border-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.08);
     }
-    
+
     .stats-value {
         font-size: 1.75rem;
         font-weight: 800;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.03em;
     }
-    
+
     .stats-label {
-        font-size: 0.85rem;
+        font-size: 0.8125rem;
         font-weight: 500;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.05em;
     }
-    
+
     .stats-icon {
         width: 48px;
         height: 48px;
-        border-radius: 12px;
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.25rem;
     }
-    
+
     .stats-icon-indigo { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
-    .stats-icon-gold { background: rgba(255, 210, 63, 0.1); color: #FFD23F; }
-    .stats-icon-blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-    .stats-icon-green { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
-    
+    .stats-icon-gold { background: rgba(255, 215, 0, 0.1); color: var(--primary-gold); }
+    .stats-icon-blue { background: rgba(59, 130, 246, 0.1); color: var(--info); }
+    .stats-icon-green { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+
     .stats-trend {
         font-size: 0.75rem;
         font-weight: 700;
         padding: 4px 8px;
         border-radius: 6px;
         background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Action Cards (Partner quick links) */
+    .action-card { background: var(--card-bg); }
+    .action-card-primary { border-color: var(--border-gold); }
+    .action-card-secondary { border-color: var(--border-color); }
+    .action-card-icon { font-size: 2rem; color: var(--primary-gold); }
+
+    .btn-action-gold {
+        background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+        color: #000;
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        padding: 0.5rem 1.25rem;
+        border: none;
+    }
+    .btn-action-gold:hover {
+        color: #000;
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
+        transform: translateY(-1px);
+    }
+
+    .btn-action-outline {
+        background: rgba(255, 215, 0, 0.06);
+        color: var(--primary-gold);
+        border: 1px solid var(--border-gold);
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        padding: 0.5rem 1.25rem;
+    }
+    .btn-action-outline:hover {
+        background: rgba(255, 215, 0, 0.12);
+        color: var(--primary-gold);
+        border-color: var(--primary-gold);
     }
 </style>
 @endsection

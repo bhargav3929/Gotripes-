@@ -16,6 +16,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'access_type',
         'email_verified_at', // Now stores comma-separated emirates IDs
         'partner_document_path',
     ];
@@ -67,12 +68,53 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is admin (role-based only)
+     * Check if user is admin (has Admin role assigned)
      */
     public function isAdmin()
     {
-        // Only check for Admin role - must have the actual Admin role
         return $this->roles()->where('title', 'Admin')->exists();
+    }
+
+    /**
+     * Check if user is an employee (has any admin panel role but is NOT an admin)
+     */
+    public function isEmployee()
+    {
+        return !$this->isAdmin() && $this->roles()->exists();
+    }
+
+    /**
+     * Check if user has a specific permission via their roles
+     */
+    public function hasPermission($permissionTitle)
+    {
+        // Admins have all permissions
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // Check if any of the user's roles have the requested permission
+        return $this->roles()
+            ->whereHas('permissions', function ($query) use ($permissionTitle) {
+                $query->where('title', $permissionTitle);
+            })
+            ->exists();
+    }
+
+    /**
+     * Check if user has full access type
+     */
+    public function hasFullAccess()
+    {
+        return $this->access_type === 'full' || $this->isAdmin();
+    }
+
+    /**
+     * Check if user has specific (limited) access type
+     */
+    public function hasSpecificAccess()
+    {
+        return $this->access_type === 'specific';
     }
 
     /**
@@ -100,19 +142,20 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has full access (not a partner)
-     */
-    public function hasFullAccess()
-    {
-        return !$this->isPartner();
-    }
-
-    /**
      * Get user type name for display
      */
     public function getUserType()
     {
-        return $this->isPartner() ? 'Partner' : 'Customer';
+        if ($this->isAdmin()) {
+            return 'Admin';
+        }
+        if ($this->isActivitiesManager()) {
+            return 'Activities Manager';
+        }
+        if ($this->isPartner()) {
+            return 'Partner';
+        }
+        return 'User';
     }
 
     /**

@@ -11,20 +11,15 @@
             <!-- Main Card -->
             <div class="card shadow-lg border-0 animate-fade-in">
                 <!-- Mobile-First Card Header -->
-                <div class="card-header bg-gold border-bottom-0">
-                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                        <h3 class="card-title mb-0 fw-bold text-dark d-flex align-items-center">
-                            <i class="fas fa-bullhorn me-2 d-none d-sm-inline"></i>
-                            <span class="fs-6 fs-sm-5 fs-md-4">Create New Announcement</span>
+                <div class="card-header">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                        <h3 class="card-title">
+                            <i class="fas fa-bullhorn me-2"></i>Create New Announcement
                         </h3>
-                        <div class="card-tools">
-                            <a href="{{ route('admin.announcements.index') }}" 
-                               class="btn btn-outline-dark btn-sm btn-mobile animate-scale">
-                                <i class="fas fa-arrow-left me-1"></i> 
-                                <span class="d-none d-sm-inline">Back to List</span>
-                                <span class="d-sm-none">Back</span>
-                            </a>
-                        </div>
+                        <a href="{{ route('admin.announcements.index') }}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to List
+                        </a>
                     </div>
                 </div>
 
@@ -194,7 +189,7 @@
                             </div>
                             <div class="d-flex gap-2 order-1 order-sm-2">
                                 <a href="{{ route('admin.announcements.index') }}" 
-                                   class="btn btn-outline-secondary flex-fill flex-sm-grow-0 animate-scale">
+                                   class="btn btn-outline-primary flex-fill flex-sm-grow-0 animate-scale">
                                     <i class="fas fa-times me-1"></i> 
                                     <span class="d-none d-sm-inline">Cancel</span>
                                     <span class="d-sm-none">Cancel</span>
@@ -213,72 +208,44 @@
     </div>
 </div>
 
-<!-- Enhanced Mobile-First Responsive Styles -->
+<!-- Page-Specific Styles -->
 <style>
-    /* Custom Font Size Classes */
-    .fs-8 { font-size: 0.7rem !important; }
-    .fs-7 { font-size: 0.8rem !important; }
-    .fs-6 { font-size: 0.9rem !important; }
+    /* Announcement form helpers */
+    .text-light-info { color: #93c5fd !important; }
+    .text-light-warning { color: #fde68a !important; }
+    .border-top-gold { border-top: 1px solid var(--border-gold) !important; }
 
-    /* Mobile-First Text Visibility */
-    .text-light-muted {
-        color: #e9ecef !important;
-    }
-    
-    .text-light-info {
-        color: #b8daff !important;
-    }
-    
-    .text-light-warning {
-        color: #fff3cd !important;
-    }
-
-    /* Mobile-Optimized Form Controls */
-    .form-control-mobile {
-        background-color: rgba(45, 45, 45, 0.9) !important;
-        border: 2px solid rgba(255, 215, 0, 0.3) !important;
-        color: #ffffff !important;
-        font-size: 16px !important; /* Prevents zoom on iOS */
-        transition: all 0.3s ease;
-        min-height: 44px; /* Touch-friendly height */
-    }
-    
-    .form-control-mobile:focus {
-        background-color: rgba(45, 45, 45, 1) !important;
-        border-color: var(--primary-gold) !important;
-        box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25) !important;
-        color: #ffffff !important;
-    }
-
-    /* Mobile Switch Styling */
+    /* Mobile Switch */
     .mobile-switch {
         min-width: 3rem !important;
         min-height: 1.5rem !important;
-        background-color: rgba(45, 45, 45, 0.8) !important;
-        border: 2px solid rgba(255, 215, 0, 0.5) !important;
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid var(--border-color) !important;
     }
-    
     .mobile-switch:checked {
-        background-color: var(--primary-gold) !important;
-        border-color: var(--primary-gold) !important;
+        background-color: var(--accent-gold) !important;
+        border-color: var(--accent-gold) !important;
     }
 
-    /* Mobile Button Styling */
-    .btn-mobile {
-        min-height: 44px !important;
-        padding: 0.5rem 1rem !important;
-        font-size: 0.875rem !important;
+    /* Alert variants for form hints */
+    .alert-info-custom {
+        background: rgba(59, 130, 246, 0.08) !important;
+        border: 1px solid rgba(59, 130, 246, 0.15) !important;
+        border-radius: var(--radius-sm);
+    }
+    .alert-warning-custom {
+        background: rgba(245, 158, 11, 0.08) !important;
+        border: 1px solid rgba(245, 158, 11, 0.15) !important;
+        border-radius: var(--radius-sm);
     }
 
     /* SVG Preview */
     .mobile-preview-svg {
-        max-height: 80px !important;
-        max-width: 100% !important;
+        max-height: 80px;
         display: flex;
         align-items: center;
         justify-content: center;
     }
-
     .mobile-preview-svg svg {
         max-height: 80px;
         max-width: 100%;
@@ -286,250 +253,6 @@
         height: auto;
     }
 
-    /* Placeholder Visibility */
-    .form-control-mobile::placeholder {
-        color: #adb5bd !important;
-        opacity: 1;
-    }
-
-    /* Card Responsive Styling */
-    .bg-light-dark {
-        background-color: rgba(45, 45, 45, 0.95) !important;
-        border: 1px solid rgba(255, 215, 0, 0.3) !important;
-    }
-    
-    .border-top-gold {
-        border-top: 2px solid var(--primary-gold) !important;
-    }
-    
-    .border-gold {
-        border-color: rgba(255, 215, 0, 0.6) !important;
-    }
-
-    /* Alert Responsive Styling */
-    .alert-info-custom {
-        background-color: rgba(13, 110, 253, 0.2) !important;
-        border: 1px solid rgba(13, 110, 253, 0.4) !important;
-        border-radius: 0.375rem;
-    }
-    
-    .alert-warning-custom {
-        background-color: rgba(255, 193, 7, 0.2) !important;
-        border: 1px solid rgba(255, 193, 7, 0.4) !important;
-        border-radius: 0.375rem;
-    }
-
-    /* Form Labels Mobile */
-    .form-label {
-        color: var(--primary-gold) !important;
-        font-weight: 600 !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    .form-check-label {
-        color: #ffffff !important;
-        cursor: pointer !important;
-    }
-
-    /* Button Responsive Styling */
-    .btn-outline-dark {
-        border-color: #495057 !important;
-        color: #495057 !important;
-        background-color: transparent !important;
-        min-height: 44px !important;
-    }
-    
-    .btn-outline-dark:hover {
-        background-color: #495057 !important;
-        border-color: #495057 !important;
-        color: var(--primary-gold) !important;
-    }
-    
-    .btn-outline-secondary {
-        border-color: #6c757d !important;
-        color: #ffffff !important;
-        background-color: transparent !important;
-        min-height: 44px !important;
-    }
-    
-    .btn-outline-secondary:hover {
-        background-color: #6c757d !important;
-        border-color: #6c757d !important;
-        color: #ffffff !important;
-    }
-
-    /* File Input Mobile Styling */
-    input[type="file"] {
-        padding: 0.6rem 0.75rem !important;
-        font-size: 16px !important; /* Prevents zoom on iOS */
-        min-height: 44px !important;
-    }
-    
-    input[type="file"]::-webkit-file-upload-button {
-        background: var(--gradient-primary);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.25rem;
-        color: var(--darker-bg);
-        font-weight: 500;
-        cursor: pointer;
-        margin-right: 0.75rem;
-        min-height: 32px;
-    }
-
-    /* Invalid Feedback Mobile */
-    .invalid-feedback {
-        color: #f5c6cb !important;
-        background-color: rgba(220, 53, 69, 0.1);
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        border-left: 3px solid #dc3545;
-        font-size: 0.875rem;
-    }
-
-    /* BREAKPOINT: Extra Small (Phone) */
-    @media (max-width: 575.98px) {
-        .container-fluid {
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
-        }
-        
-        .card {
-            margin: 0.5rem 0;
-        }
-        
-        .card-body {
-            padding: 1rem !important;
-        }
-        
-        .card-header {
-            padding: 0.75rem 1rem !important;
-        }
-        
-        .card-footer {
-            padding: 0.75rem 1rem !important;
-        }
-        
-        .btn {
-            font-size: 0.875rem !important;
-            padding: 0.5rem 0.75rem !important;
-        }
-        
-        h3 {
-            font-size: 1.1rem !important;
-        }
-        
-        .form-control-mobile {
-            font-size: 16px !important;
-            padding: 0.6rem 0.75rem !important;
-        }
-        
-        .mobile-preview-svg {
-            max-height: 60px !important;
-        }
-    }
-
-    /* BREAKPOINT: Small (Small Phone Landscape / Large Phone) */
-    @media (min-width: 576px) and (max-width: 767.98px) {
-        .fs-sm-7 { font-size: 0.8rem !important; }
-        .fs-sm-6 { font-size: 0.9rem !important; }
-        .fs-sm-5 { font-size: 1rem !important; }
-        
-        .mobile-preview-svg {
-            max-height: 90px !important;
-        }
-    }
-
-    /* BREAKPOINT: Medium (Tablet) */
-    @media (min-width: 768px) and (max-width: 991.98px) {
-        .card-body {
-            padding: 2rem !important;
-        }
-        
-        .mobile-preview-svg {
-            max-height: 100px !important;
-        }
-    }
-
-    /* BREAKPOINT: Large (Desktop) */
-    @media (min-width: 992px) {
-        .fs-md-5 { font-size: 1rem !important; }
-        .fs-md-4 { font-size: 1.25rem !important; }
-        
-        .mobile-preview-svg {
-            max-height: 100px !important;
-        }
-        
-        .form-control-mobile {
-            font-size: 1rem !important;
-        }
-    }
-
-    /* BREAKPOINT: Extra Large (Large Desktop) */
-    @media (min-width: 1200px) {
-        .container-fluid {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-    }
-
-    /* Touch Device Optimizations */
-    @media (hover: none) and (pointer: coarse) {
-        .btn {
-            min-height: 48px !important;
-        }
-        
-        .form-control-mobile {
-            min-height: 48px !important;
-            font-size: 16px !important;
-        }
-        
-        .mobile-switch {
-            min-width: 3.5rem !important;
-            min-height: 2rem !important;
-        }
-        
-        .animate-scale:hover {
-            transform: none !important;
-        }
-    }
-
-    /* High DPI Displays */
-    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-        .mobile-preview-svg {
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-        }
-    }
-
-    /* Dark Mode Safe Colors */
-    @media (prefers-color-scheme: dark) {
-        .form-control-mobile::placeholder {
-            color: #ced4da !important;
-        }
-    }
-
-    /* Reduced Motion */
-    @media (prefers-reduced-motion: reduce) {
-        .animate-fade-in,
-        .animate-scale,
-        .card,
-        .mobile-preview-svg {
-            animation: none !important;
-            transition: none !important;
-        }
-    }
-
-    /* Landscape Mobile Adjustments */
-    @media (max-height: 500px) and (orientation: landscape) {
-        .card-body {
-            padding: 1rem !important;
-        }
-        
-        .mb-3, .mb-md-4 {
-            margin-bottom: 0.75rem !important;
-        }
-    }
 </style>
 
 <!-- Enhanced Mobile-Responsive JavaScript -->

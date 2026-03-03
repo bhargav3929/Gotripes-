@@ -9,14 +9,15 @@
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="card shadow-lg border-0">
-                <div class="card-header bg-gold border-bottom-0">
-                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                        <h3 class="card-title mb-0 fw-bold text-dark d-flex align-items-center">
-                            <i class="fas fa-tv me-2"></i>
-                            <span>Hero Ad TVs</span>
+                <div class="card-header">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                        <h3 class="card-title">
+                            <i class="fas fa-tv me-2"></i>Hero Ad TVs
                         </h3>
-                        <a href="{{ route('admin.homepageads.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-1"></i> Add Media to TV
+                        <a href="{{ route('admin.homepageads.create') }}" class="btn btn-primary btn-mobile animate-scale">
+                            <i class="fas fa-plus me-1"></i>
+                            <span class="d-none d-sm-inline">Add Media to TV</span>
+                            <span class="d-sm-none">Add Media</span>
                         </a>
                     </div>
                 </div>
@@ -179,221 +180,114 @@
     </div>
 </div>
 
+<!-- Page-Specific Styles -->
 <style>
-    .alert-success-custom {
-        background: rgba(40, 167, 69, 0.2) !important;
-        border: 1px solid rgba(40, 167, 69, 0.5) !important;
-        color: #28a745 !important;
-        border-radius: 8px;
-    }
-
+    /* Alert info for TV page */
     .alert-info-custom {
-        background: rgba(255, 215, 0, 0.08) !important;
-        border: 1px solid rgba(255, 215, 0, 0.25) !important;
-        color: #d4af37 !important;
-        border-radius: 8px;
-        font-size: 14px;
+        background: rgba(255, 215, 0, 0.06) !important;
+        border: 1px solid var(--border-gold) !important;
+        color: var(--primary-gold) !important;
+        border-radius: var(--radius-sm);
+        font-size: 0.8125rem;
     }
 
+    /* Stats Bar */
     .stats-info {
-        background: rgba(255, 215, 0, 0.1);
-        border: 1px solid #ffd700;
-        border-radius: 8px;
-        padding: 15px;
+        background: rgba(255, 215, 0, 0.04);
+        border: 1px solid var(--border-gold);
+        border-radius: var(--radius-md);
+        padding: 1rem;
     }
-
-    .stats-item { text-align: center; color: #ffd700; }
-    .stats-number { font-size: 24px; font-weight: bold; color: #ffd700; }
-    .stats-label { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+    .stats-item { text-align: center; }
+    .stats-number { font-size: 1.375rem; font-weight: 800; color: var(--primary-gold); line-height: 1; }
+    .stats-label { font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; }
 
     /* TV Slot Card */
     .tv-slot-card {
-        background: rgba(30, 30, 30, 0.95);
-        border: 1px solid rgba(255, 215, 0, 0.2);
-        border-radius: 12px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
         overflow: hidden;
     }
-
     .tv-slot-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 16px 20px;
-        background: rgba(255, 215, 0, 0.05);
-        border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid var(--border-color);
     }
-
     .tv-number {
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, #FFD700, #D4AF37);
+        background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
         color: #000;
-        border-radius: 10px;
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 800;
-        font-size: 18px;
+        font-size: 1.125rem;
     }
-
-    .text-muted-gold { color: #8a7a3a !important; font-size: 12px; }
+    .text-muted-gold { color: var(--text-muted) !important; font-size: 0.75rem; }
 
     .btn-outline-gold {
-        border: 1px solid #ffd700;
-        color: #ffd700;
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        color: var(--primary-gold);
         background: transparent;
-        font-size: 12px;
-        padding: 6px 14px;
-        border-radius: 6px;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.875rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        transition: all 0.15s;
     }
     .btn-outline-gold:hover {
-        background: rgba(255, 215, 0, 0.15);
-        color: #fff;
-        border-color: #ffd700;
+        background: rgba(255, 215, 0, 0.08);
+        color: var(--primary-gold);
+        border-color: var(--primary-gold);
     }
 
-    .tv-slot-body { padding: 16px 20px; }
+    .tv-slot-body { padding: 1rem 1.25rem; }
 
     /* Media Grid */
-    .media-grid {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
+    .media-grid { display: flex; gap: 12px; flex-wrap: wrap; }
     .media-card {
         width: 150px;
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 215, 0, 0.15);
-        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
         overflow: hidden;
     }
-
-    .media-preview {
-        position: relative;
-        height: 90px;
-        overflow: hidden;
-        background: #111;
-    }
-
-    .media-thumb {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
+    .media-preview { position: relative; height: 90px; overflow: hidden; background: #0a0a0b; }
+    .media-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
     .media-type-badge {
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 10px;
-        font-weight: 600;
+        position: absolute; top: 6px; left: 6px;
+        padding: 2px 8px; border-radius: 4px;
+        font-size: 10px; font-weight: 600;
     }
-    .media-type-badge.video { background: rgba(23, 162, 184, 0.9); color: #fff; }
-    .media-type-badge.image { background: rgba(255, 193, 7, 0.9); color: #000; }
-
+    .media-type-badge.video { background: rgba(59, 130, 246, 0.9); color: #fff; }
+    .media-type-badge.image { background: rgba(245, 158, 11, 0.9); color: #000; }
     .media-order {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        background: rgba(0, 0, 0, 0.7);
-        color: #ffd700;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 10px;
-        font-weight: 700;
+        position: absolute; top: 6px; right: 6px;
+        background: rgba(0, 0, 0, 0.7); color: var(--primary-gold);
+        padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700;
     }
-
-    .media-info {
-        padding: 8px 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .media-duration {
-        font-size: 11px;
-        color: #888;
-    }
-
+    .media-info { padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; }
+    .media-duration { font-size: 11px; color: var(--text-muted); }
     .media-actions { display: flex; gap: 4px; }
-
     .btn-xs {
-        padding: 3px 8px !important;
+        padding: 0 !important;
         font-size: 11px !important;
         min-height: auto !important;
-        line-height: 1.4;
-    }
-
-    .btn-warning-custom {
-        background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
-        border: none !important;
-        color: #212529 !important;
-    }
-    .btn-danger-custom {
-        background: linear-gradient(135deg, #dc3545, #c82333) !important;
-        border: none !important;
-        color: #fff !important;
-    }
-
-    .empty-tv { color: #666; }
-    .text-gold { color: #ffd700 !important; }
-
-    /* Delete Modal */
-    .delete-modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0; top: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8);
-    }
-    .delete-modal.show {
-        display: flex;
+        line-height: 1;
+        width: 26px;
+        height: 26px;
+        display: inline-flex !important;
         align-items: center;
         justify-content: center;
+        border-radius: 5px;
     }
-    .delete-modal-content {
-        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-        border: 3px solid #ffd700;
-        border-radius: 15px;
-        width: 90%;
-        max-width: 450px;
-        overflow: hidden;
-    }
-    .delete-modal-header {
-        background: linear-gradient(45deg, #dc3545, #ff4757);
-        color: white;
-        padding: 16px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .delete-modal-title { font-size: 18px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px; }
-    .delete-modal-close {
-        background: none; border: none; color: white; font-size: 20px; cursor: pointer;
-        width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-        border-radius: 50%; transition: all 0.3s;
-    }
-    .delete-modal-close:hover { background: rgba(255,255,255,0.2); }
-    .delete-modal-body { padding: 24px 20px; text-align: center; }
-    .delete-modal-icon { color: #ffd700; font-size: 3rem; margin-bottom: 16px; }
-    .delete-modal-text { color: #fff; font-size: 16px; margin-bottom: 8px; font-weight: 600; }
-    .delete-modal-image {
-        background: rgba(255,215,0,0.1); border: 1px solid #ffd700; border-radius: 8px;
-        padding: 12px; margin: 16px 0; color: #ffd700; font-weight: 600;
-    }
-    .delete-modal-subtext { color: #aaa; font-size: 13px; }
-    .delete-modal-footer { display: flex; gap: 12px; padding: 0 20px 20px; }
-    .modal-btn {
-        flex: 1; padding: 10px; border: none; border-radius: 8px;
-        font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s;
-    }
-    .modal-btn-cancel { background: linear-gradient(45deg, #6c757d, #868e96); color: white; }
-    .modal-btn-delete { background: linear-gradient(45deg, #dc3545, #ff4757); color: white; }
+    .empty-tv { color: var(--text-muted); }
 
     @media (max-width: 575px) {
         .media-card { width: 120px; }

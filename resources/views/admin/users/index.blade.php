@@ -55,6 +55,9 @@
                                         <th class="text-center" style="width: 140px;">
                                             <i class="fas fa-info-circle me-1"></i>Status
                                         </th>
+                                        <th class="text-center" style="width: 150px;">
+                                            <i class="fas fa-shield-alt me-1"></i>Access
+                                        </th>
                                         <th class="text-center" style="width: 160px;">
                                             <i class="fas fa-file-download me-1"></i>Documents
                                         </th>
@@ -83,10 +86,10 @@
                                     @endphp
                                     
                                     <tr data-entry-id="{{ $user->id }}">
-                                        <td class="text-center opacity-50">{{ $index + 1 }}</td>
+                                        <td class="text-center text-muted">{{ $index + 1 }}</td>
                                         <td>
                                             <div class="user-info">
-                                                <strong class="text-white fs-6">{{ $user->name }}</strong>
+                                                <strong class="text-white">{{ $user->name }}</strong>
                                                 @if($user->phone)
                                                     <div class="mt-1">
                                                         <small class="text-light-muted">
@@ -96,7 +99,7 @@
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="text-white fs-6">{{ $user->email }}</td>
+                                        <td>{{ $user->email }}</td>
                                         <td>
                                             @if(!empty($emiratesNames))
                                                 <div class="emirates-list">
@@ -148,11 +151,30 @@
                                                         <i class="fas fa-check me-1"></i>Verified
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-secondary status-badge">
-                                                        <i class="fas fa-user me-1"></i>Regular
+                                                    <span class="badge badge-status badge-status-regular">
+                                                        <i class="fas fa-user"></i>Regular
                                                     </span>
                                                 @endif
                                                 <div class="mt-1"><small class="text-light-muted">User</small></div>
+                                            @endif
+                                        </td>
+                                        <!-- ACCESS/ROLE COLUMN -->
+                                        <td class="text-center">
+                                            @php
+                                                $userRolesList = $user->roles->pluck('title')->toArray();
+                                            @endphp
+                                            @if(in_array('Admin', $userRolesList))
+                                                <span class="badge rounded-pill px-3 py-1 badge-gold">
+                                                    <i class="fas fa-shield-alt me-1"></i>Full Access
+                                                </span>
+                                            @elseif(!empty($userRolesList))
+                                                @foreach($userRolesList as $roleName)
+                                                    <span class="badge rounded-pill px-2 py-1 mb-1 badge-role">
+                                                        {{ $roleName }}
+                                                    </span>
+                                                @endforeach
+                                            @else
+                                                <span class="text-muted fs-7">No role</span>
                                             @endif
                                         </td>
                                         <!-- FILES COLUMN WITH DOWNLOAD BUTTONS -->
@@ -172,53 +194,43 @@
                                         </td>
                                         <!-- ACTION COLUMN with Approve/Reject logic -->
                                         <td class="text-center">
-                                            @if($isPartner && $status == '0')
-                                                <!-- Approval/Rejection buttons for pending partners -->
-                                                <div class="btn-group btn-group-sm mb-2 d-block" role="group">
-                                                    <button type="button" 
-                                                            class="btn btn-success btn-sm animate-scale approve-btn me-1 equal-btn"
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                @if($isPartner && $status == '0')
+                                                    <button type="button"
+                                                            class="btn-icon btn-icon-approve approve-btn"
                                                             data-user-id="{{ $user->id }}"
                                                             data-user-name="{{ $user->name }}"
                                                             title="Approve Partner">
-                                                        <i class="fas fa-check me-1"></i>Approve
+                                                        <i class="fas fa-check"></i>
                                                     </button>
-                                                    <button type="button" 
-                                                            class="btn btn-danger btn-sm animate-scale reject-btn equal-btn"
+                                                    <button type="button"
+                                                            class="btn-icon btn-icon-reject reject-btn"
                                                             data-user-id="{{ $user->id }}"
                                                             data-user-name="{{ $user->name }}"
                                                             title="Reject Partner">
-                                                        <i class="fas fa-times me-1"></i>Reject
+                                                        <i class="fas fa-times"></i>
                                                     </button>
-                                                </div>
-                                                <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="{{ route('admin.users.edit', $user->id) }}" 
-                                                       class="btn btn-warning-custom btn-sm animate-scale"
-                                                       title="Edit User">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                </div>
-                                            @else
-                                                <!-- Regular edit/delete buttons -->
-                                                <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="{{ route('admin.users.edit', $user->id) }}" 
-                                                       class="btn btn-warning-custom btn-sm animate-scale"
-                                                       title="Edit User">
-                                                        <i class="fas fa-edit me-1"></i>Edit
-                                                    </a>
-                                                    <button type="button" 
-                                                            class="btn btn-danger-custom btn-sm animate-scale delete-btn"
-                                                            data-user-id="{{ $user->id }}"
-                                                            data-user-name="{{ $user->name }}"
-                                                            title="Delete User">
-                                                        <i class="fas fa-trash me-1"></i>Delete
-                                                    </button>
-                                                </div>
-                                            @endif
+                                                @endif
+                                                <a href="{{ route('admin.users.edit', $user->id) }}"
+                                                   class="btn-icon btn-icon-edit"
+                                                   title="Edit User">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                @if(!($isPartner && $status == '0'))
+                                                <button type="button"
+                                                        class="btn-icon btn-icon-delete delete-btn"
+                                                        data-user-id="{{ $user->id }}"
+                                                        data-user-name="{{ $user->name }}"
+                                                        title="Delete User">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-5">
+                                        <td colspan="8" class="text-center py-5">
                                             <div class="empty-state-desktop">
                                                 <i class="fas fa-users text-gold mb-3" style="font-size: 4rem; opacity: 0.5;"></i>
                                                 <h4 class="text-white mb-2">No Users Found</h4>
@@ -331,267 +343,46 @@
 
 <!-- Enhanced Mobile-First Responsive Styles with Fixed Colors -->
 <style>
-    .equal-btn {
-    width: 110px;     /* adjust as needed */
-    text-align: center;
-}
-
-    /* CSS Variables for Better Color Management */
-    :root {
-        --primary-gold: #ffd700;
-        --darker-bg: #1a1a1a;
-        --light-dark: #2a2a2a;
-        --text-light: #ffffff;
-        --text-muted: #e0e0e0;
-        --gradient-primary: linear-gradient(135deg, #ffd700, #ffed4e);
-    }
-
-    /* Custom Font Size Classes */
-    .fs-8 { font-size: 0.7rem !important; }
-    .fs-7 { font-size: 0.8rem !important; }
-    .fs-6 { font-size: 0.95rem !important; }
-
-    /* Enhanced Text Visibility with Better Contrast */
-    .text-light-muted {
-        color: var(--text-muted) !important;
-        font-weight: 400;
-    }
-
-    .text-white {
-        color: var(--text-light) !important;
-        font-weight: 500;
-    }
-
-    .text-gold {
-        color: var(--primary-gold) !important;
-        font-weight: 600;
-    }
-
-    /* Mobile Button Styling */
-    .btn-mobile {
-        min-height: 44px !important;
-        padding: 0.6rem 1rem !important;
-        font-size: 0.875rem !important;
-        font-weight: 600;
-    }
-
-    /* Enhanced Alert Styling */
-    .alert-success-custom {
-        background: rgba(40, 167, 69, 0.25) !important;
-        border: 2px solid rgba(40, 167, 69, 0.7) !important;
-        color: #2ecc71 !important;
-        border-radius: 8px;
-        font-weight: 500;
-    }
-
-    /* Mobile Card Styling with Better Contrast */
-    .mobile-card {
-        transition: all 0.3s ease;
-        border: 2px solid rgba(255, 215, 0, 0.4) !important;
-        background: rgba(42, 42, 42, 0.98) !important;
-    }
-
-    .mobile-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3) !important;
-        border-color: rgba(255, 215, 0, 0.7) !important;
-    }
-
-    .bg-light-dark {
-        background-color: var(--light-dark) !important;
-    }
-
-    .border-gold {
-        border-color: var(--primary-gold) !important;
-    }
-
-    /* Statistics Info with Enhanced Visibility */
-    .stats-info {
-        background: rgba(255, 215, 0, 0.12) !important;
-        border: 2px solid var(--primary-gold) !important;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 25px;
-    }
-
-    .stats-item {
-        text-align: center;
-        color: var(--primary-gold);
-    }
-
-    .stats-number {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--primary-gold);
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    }
-
-    .stats-label {
-        font-size: 13px;
-        color: #cccccc;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 600;
-    }
-
-    /* Enhanced Badge Styling */
-    .bg-success-custom {
-        background: linear-gradient(135deg, #28a745, #20c997) !important;
-        color: #ffffff !important;
-        font-size: 0.75rem;
-        padding: 0.4em 0.7em;
-        font-weight: 600;
+    /* Compact icon-only action buttons */
+    .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
         border-radius: 6px;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-size: 0.75rem;
+        text-decoration: none;
+        color: var(--text-muted);
     }
+    .btn-icon:hover { color: var(--text-main); }
+    .btn-icon-edit { color: var(--primary-gold); border-color: rgba(255, 215, 0, 0.12); background: rgba(255, 215, 0, 0.04); }
+    .btn-icon-edit:hover { background: var(--primary-gold); color: #000; border-color: var(--primary-gold); }
+    .btn-icon-delete { color: var(--text-muted); border-color: rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.02); }
+    .btn-icon-delete:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .btn-icon-approve { color: var(--success); border-color: rgba(34, 197, 94, 0.15); background: rgba(34, 197, 94, 0.06); }
+    .btn-icon-approve:hover { background: var(--success); color: #fff; border-color: var(--success); }
+    .btn-icon-reject { color: var(--text-muted); border-color: rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.02); }
+    .btn-icon-reject:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
-    .bg-info-custom {
-        background: linear-gradient(135deg, #17a2b8, #138496) !important;
-        color: #ffffff !important;
-        font-size: 0.7rem;
-        padding: 0.3em 0.6em;
+    /* Emirates Badge */
+    .emirates-badge {
+        font-size: 0.6875rem;
+        padding: 0.2em 0.5em;
         font-weight: 600;
         border-radius: 4px;
-    }
-
-    /* Enhanced Emirates Badge Styling */
-    .emirates-badge {
-        font-size: 0.7rem !important;
-        padding: 0.3em 0.6em !important;
-        font-weight: 600 !important;
-        border-radius: 4px !important;
-        background: linear-gradient(135deg, #17a2b8, #138496) !important;
-        color: #ffffff !important;
+        background: rgba(59, 130, 246, 0.12);
+        color: var(--info);
         display: inline-block;
         white-space: nowrap;
     }
 
-    .emirates-badge-mobile {
-        font-size: 0.65rem !important;
-        padding: 0.25em 0.5em !important;
-        font-weight: 600 !important;
-        border-radius: 3px !important;
-        background: linear-gradient(135deg, #17a2b8, #138496) !important;
-        color: #ffffff !important;
-        display: inline-block;
-        white-space: nowrap;
-    }
-
-    .emirates-list {
-        line-height: 1.8;
-    }
-
-    .emirates-mobile-list {
-        line-height: 1.6;
-    }
-
-    /* Enhanced Status Badge Styling */
-    .status-badge {
-        font-size: 0.75rem !important;
-        padding: 0.4em 0.8em !important;
-        font-weight: 600 !important;
-        border-radius: 6px !important;
-        min-width: 90px;
-    }
-
-    /* Enhanced Button Styling with Better Contrast */
-    .btn-warning-custom {
-        background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
-        border: 2px solid #ffc107 !important;
-        color: #000000 !important;
-        font-weight: 600;
-        min-height: 40px;
-        text-shadow: none;
-    }
-
-    .btn-warning-custom:hover {
-        background: linear-gradient(135deg, #e0a800, #dc6502) !important;
-        border-color: #d39e00 !important;
-        color: #000000 !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4) !important;
-    }
-
-    .btn-danger-custom {
-        background: linear-gradient(135deg, #dc3545, #c82333) !important;
-        border: 2px solid #dc3545 !important;
-        color: #ffffff !important;
-        font-weight: 600;
-        min-height: 40px;
-    }
-
-    .btn-danger-custom:hover {
-        background: linear-gradient(135deg, #c82333, #a71e2a) !important;
-        border-color: #bd2130 !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
-    }
-
-    /* Approve/Reject Button Styling */
-    .approve-btn {
-        background: linear-gradient(135deg, #28a745, #20c997) !important;
-        border: 2px solid #28a745 !important;
-        color: #ffffff !important;
-        font-weight: 600;
-    }
-
-    .approve-btn:hover {
-        background: linear-gradient(135deg, #20c997, #17a2b8) !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4) !important;
-    }
-
-    .reject-btn {
-        background: linear-gradient(135deg, #dc3545, #c82333) !important;
-        border: 2px solid #dc3545 !important;
-        color: #ffffff !important;
-        font-weight: 600;
-    }
-
-    .reject-btn:hover {
-        background: linear-gradient(135deg, #c82333, #a71e2a) !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
-    }
-
-    /* Desktop Table Styling with Enhanced Visibility */
-    .table-header-gold th {
-        background: var(--gradient-primary) !important;
-        color: var(--darker-bg) !important;
-        font-weight: 700 !important;
-        border: 2px solid var(--primary-gold) !important;
-        vertical-align: middle !important;
-        font-size: 0.9rem;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        padding: 12px 8px;
-    }
-
-    .table-dark {
-        background: var(--light-dark) !important;
-        color: var(--text-light) !important;
-    }
-
-    .table-dark td {
-        border-color: rgba(255, 215, 0, 0.3) !important;
-        vertical-align: middle !important;
-        padding: 12px 8px !important;
-        background: transparent !important;
-        color: var(--text-main) !important;
-    }
-
-    .table-row-hover:hover {
-        background: rgba(255, 215, 0, 0.15) !important;
-    }
-
-    .table-row-hover:hover td {
-        background: rgba(255, 215, 0, 0.15) !important;
-    }
-
-    /* Responsive Table */
-    .table-responsive {
-        border-radius: 8px;
-        overflow: hidden;
-        border: 2px solid rgba(255, 215, 0, 0.3);
-    }
+    .emirates-list { line-height: 1.8; }
+    .emirates-mobile-list { line-height: 1.6; }
 
     /* User Info */
     .user-info {
@@ -601,439 +392,78 @@
         justify-content: center;
     }
 
-    /* Form Control Styling for Modal */
+    /* Modal textarea */
     .form-control.bg-dark {
-        background-color: rgba(42, 42, 42, 0.9) !important;
-        border-color: var(--primary-gold) !important;
-        color: var(--text-light) !important;
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-main) !important;
     }
-
     .form-control.bg-dark:focus {
-        background-color: rgba(42, 42, 42, 0.95) !important;
         border-color: var(--primary-gold) !important;
-        box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25) !important;
-        color: var(--text-light) !important;
+        box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1) !important;
     }
 
-    .form-control.bg-dark::placeholder {
-        color: #aaa !important;
-    }
-
-    /* Enhanced Delete Modal */
-    .delete-modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.85);
-        animation: fadeIn 0.3s ease;
-    }
-
-    .delete-modal.show {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .delete-modal-content {
-        background: var(--dark-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 24px;
-        padding: 0;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: slideIn 0.3s ease;
-        overflow: hidden;
-    }
-
-    .delete-modal-header {
-        background: #1a1d27;
-        color: white;
-        padding: 24px;
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
+    /* Modal variants for status changes */
     .delete-modal-header.approve {
-        background: linear-gradient(45deg, #28a745, #20c997) !important;
+        background: rgba(34, 197, 94, 0.1) !important;
+        border-bottom: 1px solid rgba(34, 197, 94, 0.15);
     }
-
     .delete-modal-header.reject {
-        background: linear-gradient(45deg, #dc3545, #ff4757) !important;
+        background: rgba(239, 68, 68, 0.1) !important;
+        border-bottom: 1px solid rgba(239, 68, 68, 0.15);
     }
-
-    .delete-modal-title {
-        font-size: 20px;
-        font-weight: 700;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #ffffff !important;
-    }
-
-    .delete-modal-close {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-        padding: 0;
-        width: 35px;
-        height: 35px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-    }
-
-    .delete-modal-close:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: rotate(90deg);
-    }
-
-    .delete-modal-body {
-        padding: 30px 25px;
-        text-align: center;
-    }
-
-    .delete-modal-icon {
-        color: var(--primary-gold);
-        font-size: 4rem;
-        margin-bottom: 20px;
-    }
-
-    .delete-modal-text {
-        color: #ffffff !important;
-        font-size: 18px;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .delete-modal-subtext {
-        color: #cccccc !important;
-        font-size: 14px;
-        margin-bottom: 30px;
-        line-height: 1.6;
-    }
-
-    .delete-modal-user {
-        background: rgba(255, 215, 0, 0.15);
-        border: 2px solid var(--primary-gold);
-        border-radius: 8px;
-        padding: 15px;
-        margin: 20px 0;
-        color: var(--primary-gold) !important;
-        font-weight: 700;
-    }
-
-    .delete-modal-footer {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        padding: 0 25px 25px 25px;
-    }
-
-    .modal-btn {
-        flex: 1;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-width: 120px;
-    }
-
-    .modal-btn-cancel {
-        background: linear-gradient(45deg, #6c757d, #868e96);
-        color: white !important;
-    }
-
-    .modal-btn-cancel:hover {
-        background: linear-gradient(45deg, #868e96, #6c757d);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
-    }
-
-    .modal-btn-delete {
-        background: linear-gradient(45deg, #dc3545, #ff4757);
-        color: white !important;
-    }
-
-    .modal-btn-delete:hover {
-        background: linear-gradient(45deg, #ff4757, #dc3545);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-    }
-
+    .delete-modal-header.approve .delete-modal-title { color: var(--success) !important; }
+    .delete-modal-header.approve .delete-modal-title i { color: var(--success); }
+    .delete-modal-header.reject .delete-modal-title { color: var(--danger) !important; }
+    .delete-modal-header.reject .delete-modal-title i { color: var(--danger); }
+    .delete-modal-header.approve .delete-modal-close,
+    .delete-modal-header.reject .delete-modal-close { color: var(--text-muted) !important; }
     .modal-btn.approve-action {
-        background: linear-gradient(45deg, #28a745, #20c997) !important;
-        color: white !important;
+        background: var(--success) !important;
+        color: #fff !important;
     }
-
-    .modal-btn.approve-action:hover {
-        background: linear-gradient(45deg, #20c997, #17a2b8) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
-    }
-
+    .modal-btn.approve-action:hover { background: #16a34a !important; }
     .modal-btn.reject-action {
-        background: linear-gradient(45deg, #dc3545, #ff4757) !important;
-        color: white !important;
+        background: var(--danger) !important;
+        color: #fff !important;
     }
+    .modal-btn.reject-action:hover { background: #dc2626 !important; }
 
-    .modal-btn.reject-action:hover {
-        background: linear-gradient(45deg, #ff4757, #dc3545) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-    }
+    /* DataTables overrides */
+    .dt-buttons { display: none !important; }
 
-    .modal-btn.processing {
-        background: #666 !important;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-
-    .modal-btn.processing:hover {
-        transform: none;
-        box-shadow: none;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes slideIn {
-        from { 
-            transform: scale(0.8) translateY(-50px);
-            opacity: 0;
-        }
-        to { 
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
-    }
-
-    /* DataTables Custom Styling */
     .dataTables_wrapper .dataTables_length,
     .dataTables_wrapper .dataTables_filter,
     .dataTables_wrapper .dataTables_info,
     .dataTables_wrapper .dataTables_paginate {
-        color: var(--primary-gold) !important;
-    }
-
-    .dataTables_wrapper .dataTables_length select,
-    .dataTables_wrapper .dataTables_filter input {
-        background: var(--light-dark) !important;
-        border: 2px solid var(--primary-gold) !important;
-        color: var(--text-light) !important;
-        border-radius: 4px;
+        color: var(--text-muted) !important;
+        font-size: 0.8125rem;
     }
 
     .dataTables_wrapper .dataTables_paginate .paginate_button {
-        background: linear-gradient(45deg, var(--light-dark), var(--darker-bg)) !important;
-        border: 2px solid var(--primary-gold) !important;
-        color: var(--primary-gold) !important;
+        background: var(--card-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-muted) !important;
+        border-radius: 6px;
         margin: 0 2px;
-        border-radius: 4px;
     }
 
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: var(--gradient-primary) !important;
-        color: var(--darker-bg) !important;
+        background: rgba(255, 215, 0, 0.08) !important;
+        color: var(--primary-gold) !important;
+        border-color: var(--border-gold) !important;
     }
 
     .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: var(--gradient-primary) !important;
-        color: var(--darker-bg) !important;
+        background: var(--primary-gold) !important;
+        color: #000 !important;
+        border-color: var(--primary-gold) !important;
     }
 
-    /* Hide DataTables Buttons Container */
-    .dt-buttons {
-        display: none !important;
-    }
-
-    /* Enhanced Badge */
-    .badge {
-        font-size: 0.8rem !important;
-        padding: 0.4em 0.7em !important;
-        font-weight: 600 !important;
-        border-radius: 6px !important;
-    }
-
-
-
-
-
-
-    .equal-btn {
-    width: 110px;     /* adjust as needed */
-    text-align: center;
-}
-
-    /* BREAKPOINT: Extra Small (Phone) */
+    /* Mobile */
     @media (max-width: 575.98px) {
-        .container-fluid {
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
-        }
-        
-        .card-body {
-            padding: 1rem !important;
-        }
-        
-        .card-header {
-            padding: 0.75rem 1rem !important;
-        }
-        
-        .mobile-card .card-body {
-            padding: 0.75rem !important;
-        }
-        
-        .btn {
-            font-size: 0.8rem !important;
-            padding: 0.5rem 0.75rem !important;
-        }
-        
-        h3 {
-            font-size: 1.1rem !important;
-        }
-        
-        .empty-state-mobile {
-            padding: 1.5rem 0.5rem;
-        }
-        
-        .delete-modal-content {
-            width: 95%;
-            margin: 20px;
-        }
-        
-        .delete-modal-footer {
-            flex-direction: column;
-        }
-        
-        .modal-btn {
-            width: 100%;
-        }
-
-        .stats-number {
-            font-size: 22px;
-        }
-
-        .fs-6 {
-            font-size: 0.85rem !important;
-        }
-    }
-
-    /* BREAKPOINT: Small (Large Phone) */
-    @media (min-width: 576px) and (max-width: 767.98px) {
-        .fs-sm-7 { font-size: 0.8rem !important; }
-        .fs-sm-6 { font-size: 0.9rem !important; }
-        .fs-sm-5 { font-size: 1rem !important; }
-    }
-
-    /* BREAKPOINT: Medium (Tablet) */
-    @media (min-width: 768px) and (max-width: 991.98px) {
-        .card-body {
-            padding: 2rem !important;
-        }
-    }
-
-    /* BREAKPOINT: Large (Desktop) */
-    @media (min-width: 992px) {
-        .fs-md-5 { font-size: 1rem !important; }
-        .fs-md-4 { font-size: 1.25rem !important; }
-        
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-    }
-
-    /* BREAKPOINT: Extra Large (Large Desktop) */
-    @media (min-width: 1200px) {
-        .container-fluid {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-    }
-
-    /* Touch Device Optimizations */
-    @media (hover: none) and (pointer: coarse) {
-        .btn {
-            min-height: 48px !important;
-        }
-        
-        .animate-scale:hover {
-            transform: none !important;
-        }
-        
-        .mobile-card:hover {
-            transform: none !important;
-        }
-    }
-
-    /* Reduced Motion */
-    @media (prefers-reduced-motion: reduce) {
-        .animate-fade-in,
-        .animate-scale,
-        .mobile-card {
-            animation: none !important;
-            transition: none !important;
-        }
-    }
-
-    /* High Contrast Mode Support */
-    @media (prefers-contrast: high) {
-        .text-light-muted {
-            color: #ffffff !important;
-        }
-        
-        .table-dark td {
-            border-width: 3px !important;
-        }
-
-        .mobile-card {
-            border-width: 3px !important;
-        }
-    }
-
-    /* Landscape Mobile */
-    @media (max-height: 500px) and (orientation: landscape) and (max-width: 991px) {
-        .mobile-card .card-body {
-            padding: 0.75rem !important;
-        }
-        
-        .empty-state-mobile {
-            padding: 1rem 0.5rem;
-        }
-        
-        .delete-modal-header {
-            padding: 15px 20px;
-        }
-        
-        .delete-modal-body {
-            padding: 20px 15px;
-        }
-        
-        .delete-modal-title {
-            font-size: 18px;
-        }
-        
-        .delete-modal-text {
-            font-size: 16px;
-        }
+        .delete-modal-footer { flex-direction: column; }
+        .modal-btn { width: 100%; }
     }
 </style>
 @endsection

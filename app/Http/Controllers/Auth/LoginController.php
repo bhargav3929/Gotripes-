@@ -44,13 +44,7 @@ class LoginController extends Controller
 
         if ($this->attemptLogin($request)) {
             $user = Auth::user();
-            
-            // Log::info('🔍 Login attempt successful', [
-            //     'user_id' => $user->id,
-            //     'user_name' => $user->name,
-            //     'email_verified_at' => $user->email_verified_at ?? 'NULL'
-            // ]);
-            
+
             // Check if user is allowed to login
             if (!$this->isUserAllowedToLogin($user)) {
                 Auth::logout();
@@ -59,18 +53,14 @@ class LoginController extends Controller
                 return $this->sendPartnerStatusFailedResponse($request, $user);
             }
 
-            // 🎯 SET SESSION FLAGS BASED ON USER TYPE
+            // Set session flags based on user type
             $this->setUserSessionFlags($user);
 
-            // Log::info('🎯 Login successful - session set and redirecting to HOME route', [
-            //     'user_id' => $user->id,
-            //     'user_name' => $user->name,
-            //     'user_type' => session('user_type'),
-            //     'is_partner_restricted' => session('is_partner_restricted'),
-            //     'home_route' => RouteServiceProvider::HOME
-            // ]);
+            // Regenerate session for security
+            $request->session()->regenerate();
 
-            return $this->sendLoginResponse($request);
+            // Redirect based on user role
+            return $this->redirectBasedOnRole($user);
         }
 
         $this->incrementLoginAttempts($request);
@@ -78,52 +68,93 @@ class LoginController extends Controller
     }
 
     /**
-     * Set session flags based on user type
+     * Redirect user to the appropriate area based on their role
+     */
+    protected function redirectBasedOnRole($user)
+    {
+        // Admin users: full access to admin dashboard
+        if ($user->isAdmin()) {
+            return redirect()->intended('/admin/users');
+        }
+
+        // Activities Manager: redirect to UAE activities section
+        if ($user->isActivitiesManager()) {
+            return redirect()->intended('/admin/uaeactivities');
+        }
+
+        // Approved partners: redirect to UAE activities
+        if (!is_null($user->email_verified_at) && str_contains($user->email_verified_at, 'rseparator1')) {
+            return redirect()->intended('/admin/uaeactivities');
+        }
+
+        // Any other user with roles (specific access employees): redirect to UAE activities
+        if ($user->roles()->exists()) {
+            return redirect()->intended('/admin/uaeactivities');
+        }
+
+        // Users without any role should not access admin
+        Auth::logout();
+        return redirect('/admin')->withErrors([
+            $this->username() => 'Your account does not have admin access.',
+        ]);
+    }
+
+    /**
+     * Set session flags based on user type (role-based)
      */
     private function setUserSessionFlags($user)
     {
-        // Check for Activities Manager role first
-        if ($user->isActivitiesManager() && !$user->isAdmin()) {
+        // 1. Admin role gets full access
+        if ($user->isAdmin()) {
+            session(['user_type' => 'admin']);
+            session(['is_partner_restricted' => false]);
+            session(['admin_name' => $user->name]);
+            return;
+        }
+
+        // 2. Activities Manager role gets limited access
+        if ($user->isActivitiesManager()) {
             session(['user_type' => 'activities_manager']);
             session(['is_partner_restricted' => false]);
             return;
         }
 
-        if (is_null($user->email_verified_at)) {
-            // Admin user
-            session(['user_type' => 'admin']);
-            session(['is_partner_restricted' => false]);
-            session(['admin_name' => $user->name]);
-            
-        } elseif ($user->email_verified_at && str_contains($user->email_verified_at, 'rseparator1')) {
-            // Approved partner
+        // 3. Approved partner (legacy: email_verified_at contains rseparator1)
+        if ($user->email_verified_at && str_contains($user->email_verified_at, 'rseparator1')) {
             session(['user_type' => 'approved_partner']);
             session(['is_partner_restricted' => true]);
             session(['partner_name' => $user->name]);
-            
-            // Extract emirates information for session
+
             $parts = explode('rseparator', $user->email_verified_at, 3);
             $emirates = isset($parts[0]) && !empty($parts[0]) ? explode(',', $parts[0]) : [];
             session(['partner_emirates' => $emirates]);
-            
-        } else {
-            session(['user_type' => 'restricted']);
-            session(['is_partner_restricted' => true]);
-            session(['restriction_reason' => 'Account not approved']);
+            return;
         }
+
+        // 4. Any other authenticated user with roles - employee with specific access
+        if ($user->roles()->exists()) {
+            session(['user_type' => 'employee']);
+            session(['is_partner_restricted' => false]);
+            return;
+        }
+
+        // 5. Fallback: restricted
+        session(['user_type' => 'restricted']);
+        session(['is_partner_restricted' => true]);
+        session(['restriction_reason' => 'No role assigned']);
     }
 
     /**
-     * Check if user is allowed to login based on partner status
+     * Check if user is allowed to login based on role and partner status
      */
     protected function isUserAllowedToLogin($user)
     {
-        // Allow Activities Manager role users directly
-        if ($user->isActivitiesManager()) {
+        // Allow any user with a role (Admin, Activities Manager, or custom roles)
+        if ($user->roles()->exists()) {
             return true;
         }
 
-        // Allow login for regular users/admins (null email_verified_at)
+        // Allow login for legacy admin users (null email_verified_at, no roles yet)
         if (is_null($user->email_verified_at)) {
             return true;
         }
@@ -136,12 +167,7 @@ class LoginController extends Controller
             if ($status == '1') {
                 return true;
             }
-            if ($status == '0') {
-                return false;
-            }
-            if ($status == '2') {
-                return false;
-            }
+            return false;
         }
 
         return false;

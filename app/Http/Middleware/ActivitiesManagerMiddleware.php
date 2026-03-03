@@ -10,10 +10,7 @@ class ActivitiesManagerMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * Allows users with Admin role, Activities Manager role, or manage_uae_activities permission.
      */
     public function handle(Request $request, Closure $next)
     {
@@ -23,8 +20,8 @@ class ActivitiesManagerMiddleware
 
         $user = Auth::user();
 
-        // Allow full admins and activities managers
-        if ($user->isAdmin() || $user->isActivitiesManager()) {
+        // Allow full admins, activities managers, and anyone with the permission
+        if ($user->isAdmin() || $user->isActivitiesManager() || $user->hasPermission('manage_uae_activities')) {
             return $next($request);
         }
 

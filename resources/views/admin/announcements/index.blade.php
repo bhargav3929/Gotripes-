@@ -82,15 +82,15 @@
 
                                 <!-- Mobile Action Buttons -->
                                 <div class="d-flex gap-2">
-                                    <a href="{{ route('admin.announcements.edit', $announcement) }}" 
-                                       class="btn btn-warning-custom btn-sm flex-fill">
-                                        <i class="fas fa-edit me-1"></i>Edit
+                                    <a href="{{ route('admin.announcements.edit', $announcement) }}"
+                                       class="btn-icon-tbl btn-icon-tbl-edit flex-fill" style="height:36px;">
+                                        <i class="fas fa-pen"></i>
                                     </a>
-                                    <button type="button" 
-                                            class="btn btn-danger-custom btn-sm flex-fill delete-btn"
+                                    <button type="button"
+                                            class="btn-icon-tbl btn-icon-tbl-delete flex-fill delete-btn" style="height:36px;"
                                             data-announcement-id="{{ $announcement->id }}"
                                             data-announcement-title="{{ Str::limit($announcement->description, 30) }}">
-                                        <i class="fas fa-trash me-1"></i>Delete
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
                             </div>
@@ -170,18 +170,18 @@
                                             {{ $announcement->createdDate ? \Carbon\Carbon::parse($announcement->createdDate)->format('M d, Y H:i') : 'N/A' }}
                                         </td>
                                         <td class="text-center">
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('admin.announcements.edit', $announcement) }}" 
-                                                   class="btn btn-warning-custom btn-sm animate-scale"
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                <a href="{{ route('admin.announcements.edit', $announcement) }}"
+                                                   class="btn-icon-tbl btn-icon-tbl-edit"
                                                    title="Edit Announcement">
-                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                    <i class="fas fa-pen"></i>
                                                 </a>
-                                                <button type="button" 
-                                                        class="btn btn-danger-custom btn-sm animate-scale delete-btn"
+                                                <button type="button"
+                                                        class="btn-icon-tbl btn-icon-tbl-delete delete-btn"
                                                         data-announcement-id="{{ $announcement->id }}"
                                                         data-announcement-title="{{ Str::limit($announcement->description, 40) }}"
                                                         title="Delete Announcement">
-                                                    <i class="fas fa-trash me-1"></i>Delete
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -261,486 +261,52 @@
     </div>
 </div>
 
-<!-- Enhanced Mobile-First Responsive Styles -->
+<!-- Page-Specific Styles -->
 <style>
-    /* Custom Font Size Classes */
-    .fs-8 { font-size: 0.7rem !important; }
-    .fs-7 { font-size: 0.8rem !important; }
-    .fs-6 { font-size: 0.9rem !important; }
-
-    /* Text Visibility */
-    .text-light-muted {
-        color: #e9ecef !important;
+    /* Compact icon-only table action buttons */
+    .btn-icon-tbl {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-size: 0.75rem;
+        text-decoration: none;
+        color: var(--text-muted);
     }
-
-    /* Mobile Button Styling */
-    .btn-mobile {
-        min-height: 44px !important;
-        padding: 0.6rem 1rem !important;
-        font-size: 0.875rem !important;
-    }
-
-    /* Custom Alert Styling */
-    .alert-success-custom {
-        background: rgba(40, 167, 69, 0.2) !important;
-        border: 1px solid rgba(40, 167, 69, 0.5) !important;
-        color: #28a745 !important;
-        border-radius: 8px;
-    }
+    .btn-icon-tbl:hover { color: var(--text-main); }
+    .btn-icon-tbl-edit { color: var(--primary-gold); border-color: rgba(255, 215, 0, 0.12); background: rgba(255, 215, 0, 0.04); }
+    .btn-icon-tbl-edit:hover { background: var(--primary-gold); color: #000; border-color: var(--primary-gold); }
+    .btn-icon-tbl-delete { color: var(--text-muted); border-color: rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.02); }
+    .btn-icon-tbl-delete:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
     /* Mobile Card Styling */
     .mobile-card {
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 215, 0, 0.3) !important;
+        transition: all 0.2s ease;
+        border: 1px solid var(--border-color) !important;
     }
 
     .mobile-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2) !important;
+        border-color: var(--border-gold) !important;
     }
 
-    .bg-light-dark {
-        background-color: rgba(45, 45, 45, 0.95) !important;
-    }
-
-    .border-gold {
-        border-color: rgba(255, 215, 0, 0.6) !important;
-    }
-
-    /* Mobile Flag Image */
-    .mobile-flag-img {
-        width: 30px;
-        height: 22px;
-        object-fit: cover;
-    }
-
-    .desktop-flag-img {
-        width: 35px;
-        height: 25px;
-        object-fit: cover;
-    }
-
-    /* Custom Badge Styling */
-    .bg-success-custom {
-        background: linear-gradient(135deg, #28a745, #20c997) !important;
-        color: #ffffff !important;
-        font-size: 0.75rem;
-        padding: 0.35em 0.65em;
-    }
-
-    .bg-info-custom {
-        background: linear-gradient(135deg, #17a2b8, #6f42c1) !important;
-        color: #ffffff !important;
-        font-size: 0.75rem;
-        padding: 0.35em 0.65em;
-    }
-
-    /* Custom Button Styling */
-    .btn-warning-custom {
-        background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
-        border: 1px solid #ffc107 !important;
-        color: #212529 !important;
-        font-weight: 500;
-        min-height: 40px;
-    }
-
-    .btn-warning-custom:hover {
-        background: linear-gradient(135deg, #e0a800, #dc6502) !important;
-        border-color: #d39e00 !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4) !important;
-    }
-
-    .btn-danger-custom {
-        background: linear-gradient(135deg, #dc3545, #c82333) !important;
-        border: 1px solid #dc3545 !important;
-        color: #ffffff !important;
-        font-weight: 500;
-        min-height: 40px;
-    }
-
-    .btn-danger-custom:hover {
-        background: linear-gradient(135deg, #c82333, #a71e2a) !important;
-        border-color: #bd2130 !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
-    }
-
-    /* Desktop Table Styling */
-    .table-header-gold th {
-        background: var(--gradient-primary) !important;
-        color: var(--darker-bg) !important;
-        font-weight: 600 !important;
-        border: 1px solid var(--primary-gold) !important;
-        vertical-align: middle !important;
-        font-size: 0.9rem;
-    }
-
-    .table-dark {
-        background: var(--light-dark) !important;
-        color: var(--text-light) !important;
-    }
-
-    .table-dark td {
-        border-color: rgba(255, 215, 0, 0.2) !important;
-        vertical-align: middle !important;
-        padding: 1rem 0.75rem !important;
-    }
-
-    .table-row-hover:hover {
-        background: rgba(255, 215, 0, 0.1) !important;
-    }
-
-    /* Responsive Table */
-    .table-responsive {
-        border-radius: 8px;
-        overflow: hidden;
-    }
+    /* Flag Images */
+    .mobile-flag-img { width: 30px; height: 22px; object-fit: cover; }
+    .desktop-flag-img { width: 35px; height: 25px; object-fit: cover; }
 
     /* Empty State */
     .empty-state-mobile,
-    .empty-state-desktop {
-        padding: 2rem 1rem;
-    }
+    .empty-state-desktop { padding: 2rem 1rem; }
 
-    /* Custom Delete Modal */
-    .delete-modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        animation: fadeIn 0.3s ease;
-    }
-
-    .delete-modal.show {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .delete-modal-content {
-        background: var(--dark-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 0;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: slideIn 0.3s ease;
-        overflow: hidden;
-    }
-
-    .delete-modal-header {
-        background: #1a1d27;
-        color: white;
-        padding: 24px;
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .delete-modal-title {
-        font-size: 20px;
-        font-weight: 600;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .delete-modal-close {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-        padding: 0;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-    }
-
-    .delete-modal-close:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: rotate(90deg);
-    }
-
-    .delete-modal-body {
-        padding: 30px 25px;
-        text-align: center;
-    }
-
-    .delete-modal-icon {
-        color: #ffd700;
-        font-size: 4rem;
-        margin-bottom: 20px;
-    }
-
-    .delete-modal-text {
-        color: #ffffff;
-        font-size: 18px;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .delete-modal-subtext {
-        color: #aaa;
-        font-size: 14px;
-        margin-bottom: 30px;
-        line-height: 1.5;
-    }
-
-    .delete-modal-announcement {
-        background: rgba(255, 215, 0, 0.1);
-        border: 1px solid #ffd700;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 20px 0;
-        color: #ffd700;
-        font-weight: 600;
-    }
-
-    .delete-modal-footer {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        padding: 0 25px 25px 25px;
-    }
-
-    .modal-btn {
-        flex: 1;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-width: 120px;
-    }
-
-    .modal-btn-cancel {
-        background: linear-gradient(45deg, #6c757d, #868e96);
-        color: white;
-    }
-
-    .modal-btn-cancel:hover {
-        background: linear-gradient(45deg, #868e96, #6c757d);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
-    }
-
-    .modal-btn-delete {
-        background: linear-gradient(45deg, #dc3545, #ff4757);
-        color: white;
-    }
-
-    .modal-btn-delete:hover {
-        background: linear-gradient(45deg, #ff4757, #dc3545);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-    }
-
-    .modal-btn-delete.processing {
-        background: #666;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-
-    .modal-btn-delete.processing:hover {
-        transform: none;
-        box-shadow: none;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes slideIn {
-        from { 
-            transform: scale(0.8) translateY(-50px);
-            opacity: 0;
-        }
-        to { 
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
-    }
-
-    /* Pagination Styling */
-    .pagination-wrapper .page-link {
-        background: var(--light-dark) !important;
-        border-color: rgba(255, 215, 0, 0.3) !important;
-        color: var(--primary-gold) !important;
-        min-width: 40px;
-        min-height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .pagination-wrapper .page-link:hover {
-        background: var(--gradient-primary) !important;
-        border-color: var(--primary-gold) !important;
-        color: var(--darker-bg) !important;
-    }
-
-    .pagination-wrapper .page-item.active .page-link {
-        background: var(--gradient-primary) !important;
-        border-color: var(--primary-gold) !important;
-        color: var(--darker-bg) !important;
-    }
-
-    /* BREAKPOINT: Extra Small (Phone) */
     @media (max-width: 575.98px) {
-        .container-fluid {
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
-        }
-        
-        .card-body {
-            padding: 1rem !important;
-        }
-        
-        .card-header {
-            padding: 0.75rem 1rem !important;
-        }
-        
-        .mobile-card .card-body {
-            padding: 0.75rem !important;
-        }
-        
-        .btn {
-            font-size: 0.8rem !important;
-            padding: 0.5rem 0.75rem !important;
-        }
-        
-        h3 {
-            font-size: 1.1rem !important;
-        }
-        
-        .mobile-flag-img {
-            width: 25px;
-            height: 18px;
-        }
-        
-        .empty-state-mobile {
-            padding: 1.5rem 0.5rem;
-        }
-        
-        .delete-modal-content {
-            width: 95%;
-            margin: 20px;
-        }
-        
-        .delete-modal-footer {
-            flex-direction: column;
-        }
-        
-        .modal-btn {
-            width: 100%;
-        }
-    }
-
-    /* BREAKPOINT: Small (Large Phone) */
-    @media (min-width: 576px) and (max-width: 767.98px) {
-        .fs-sm-7 { font-size: 0.8rem !important; }
-        .fs-sm-6 { font-size: 0.9rem !important; }
-        .fs-sm-5 { font-size: 1rem !important; }
-        
-        .mobile-flag-img {
-            width: 28px;
-            height: 20px;
-        }
-    }
-
-    /* BREAKPOINT: Medium (Tablet) */
-    @media (min-width: 768px) and (max-width: 991.98px) {
-        .card-body {
-            padding: 2rem !important;
-        }
-    }
-
-    /* BREAKPOINT: Large (Desktop) */
-    @media (min-width: 992px) {
-        .fs-md-5 { font-size: 1rem !important; }
-        .fs-md-4 { font-size: 1.25rem !important; }
-        
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-    }
-
-    /* BREAKPOINT: Extra Large (Large Desktop) */
-    @media (min-width: 1200px) {
-        .container-fluid {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-    }
-
-    /* Touch Device Optimizations */
-    @media (hover: none) and (pointer: coarse) {
-        .btn {
-            min-height: 48px !important;
-        }
-        
-        .animate-scale:hover {
-            transform: none !important;
-        }
-        
-        .mobile-card:hover {
-            transform: none !important;
-        }
-    }
-
-    /* Reduced Motion */
-    @media (prefers-reduced-motion: reduce) {
-        .animate-fade-in,
-        .animate-scale,
-        .mobile-card {
-            animation: none !important;
-            transition: none !important;
-        }
-    }
-
-    /* Landscape Mobile */
-    @media (max-height: 500px) and (orientation: landscape) and (max-width: 991px) {
-        .mobile-card .card-body {
-            padding: 0.75rem !important;
-        }
-        
-        .empty-state-mobile {
-            padding: 1rem 0.5rem;
-        }
-        
-        .delete-modal-header {
-            padding: 15px 20px;
-        }
-        
-        .delete-modal-body {
-            padding: 20px 15px;
-        }
-        
-        .delete-modal-title {
-            font-size: 18px;
-        }
-        
-        .delete-modal-text {
-            font-size: 16px;
-        }
+        .mobile-flag-img { width: 25px; height: 18px; }
+        .delete-modal-footer { flex-direction: column; }
+        .modal-btn { width: 100%; }
     }
 </style>
 

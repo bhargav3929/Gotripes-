@@ -52,13 +52,10 @@ Route::post('/register', [UserController::class, 'register'])->name('register');
 Route::get('/get-emirates', [UserController::class, 'getEmirates'])->name('get.emirates');
 // Route::post('/register', [UserController::class, 'register'])->name('register');
 
-// Admin routes (protected by auth middleware)
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+// Admin routes (protected by auth + isAdmin middleware)
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
 
-    // User management resource routes
-    Route::resource('users', UserController::class);
-
-    // Partner status management route - THIS IS THE IMPORTANT ONE
+    // Partner status management route
     Route::put('/partner-status/{userId}', [UserController::class, 'updatePartnerStatus'])->name('partner.status');
 
     // Additional partner management routes

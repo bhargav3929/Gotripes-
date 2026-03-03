@@ -24,20 +24,14 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'    => [
-                'required',
-            ],
-            'email'   => [
-                'required',
-                'unique:users,email,' . request()->route('user')->id,
-            ],
-            // 'roles.*' => [
-            //     'integer',
-            // ],
-            // 'roles'   => [
-            //     'required',
-            //     'array',
-            // ],
+            'name'         => ['required'],
+            'email'        => ['required', 'unique:users,email,' . request()->route('user')->id],
+            'password'     => ['nullable', 'min:6'],
+            'access_type'  => ['required', 'in:full,specific'],
+            'roles'        => ['nullable', 'array'],
+            'roles.*'      => ['integer', 'exists:roles,id'],
+            'modules'      => ['nullable', 'array'],
+            'modules.*'    => ['string', 'in:uaeactivities,announcements,homepageads'],
         ];
     }
 }

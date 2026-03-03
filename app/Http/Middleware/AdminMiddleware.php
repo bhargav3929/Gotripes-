@@ -10,10 +10,7 @@ class AdminMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * Only allows users with the Admin role to proceed.
      */
     public function handle(Request $request, Closure $next)
     {
@@ -23,10 +20,8 @@ class AdminMiddleware
 
         $user = auth()->user();
 
-        // Allow users with the 'Admin' role OR legacy admins (null email_verified_at with no partner data)
-        $isAdmin = $user->isAdmin() || (is_null($user->email_verified_at) && !str_contains($user->email_verified_at ?? '', 'rseparator'));
-
-        if ($isAdmin) {
+        // Only the Admin role grants access to admin-restricted routes
+        if ($user->isAdmin()) {
             return $next($request);
         }
 

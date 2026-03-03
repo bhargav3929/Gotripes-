@@ -60,19 +60,19 @@
             <!-- Main Card -->
             <div class="card shadow-lg border-0 animate-fade-in gold-theme-card">
                 <!-- Mobile-First Card Header -->
-                <div class="card-header bg-gold border-bottom-0">
+                <div class="card-header">
                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                        <h3 class="card-title mb-0 fw-bold text-dark d-flex align-items-center">
+                        <h3 class="card-title mb-0 fw-bold d-flex align-items-center">
                             <i class="fas fa-edit me-2 d-none d-sm-inline"></i>
                             <span class="fs-6 fs-sm-5 fs-md-4">Edit UAE Activity</span>
                             @if($isApprovedPartner)
-                                <small class="text-dark ms-2">(Partner: {{ $user->name }})</small>
+                                <small class="text-muted ms-2">(Partner: {{ $user->name }})</small>
                             @endif
                         </h3>
                         <div class="card-tools">
-                            <a href="{{ route('admin.uaeactivities.index') }}" 
-                               class="btn btn-outline-dark btn-sm btn-mobile animate-scale">
-                                <i class="fas fa-arrow-left me-1"></i> 
+                            <a href="{{ route('admin.uaeactivities.index') }}"
+                               class="btn btn-outline-primary btn-sm btn-mobile animate-scale">
+                                <i class="fas fa-arrow-left me-1"></i>
                                 <span class="d-none d-sm-inline">Back to List</span>
                                 <span class="d-sm-none">Back</span>
                             </a>
@@ -564,7 +564,7 @@
                                         </div>
                                         <div class="image-preview-grid" id="previewContainer"></div>
                                         <div class="text-center mt-3">
-                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearImageSelection()">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="clearImageSelection()">
                                                 <i class="fas fa-times me-1"></i>Clear Selection
                                             </button>
                                         </div>
@@ -607,47 +607,16 @@
 @push('styles')
 <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 <style>
-    #quill-editor {
-        background-color: #2d2d2d;
-        color: #e0e0e0;
-        border: 1px solid #444;
-        border-radius: 4px;
-    }
-    .ql-toolbar.ql-snow {
-        background-color: #1a1a1a;
-        border: 1px solid #444;
-        border-bottom: none;
-        border-radius: 4px 4px 0 0;
-    }
-    .ql-container.ql-snow {
-        background-color: #2d2d2d;
-        border: 1px solid #444;
-        border-top: none;
-        border-radius: 0 0 4px 4px;
-    }
-    .ql-editor {
-        color: #e0e0e0 !important;
-    }
-    .ql-editor.ql-blank::before {
-        color: #888 !important;
-    }
-    .ql-toolbar.ql-snow .ql-stroke {
-        stroke: #e0e0e0;
-    }
-    .ql-toolbar.ql-snow .ql-fill {
-        fill: #e0e0e0;
-    }
-    .ql-toolbar.ql-snow .ql-picker-label {
-        color: #e0e0e0;
-    }
-    .ql-toolbar.ql-snow button:hover .ql-stroke,
-    .ql-toolbar.ql-snow button.ql-active .ql-stroke {
-        stroke: #ffd700;
-    }
-    .ql-toolbar.ql-snow button:hover .ql-fill,
-    .ql-toolbar.ql-snow button.ql-active .ql-fill {
-        fill: #ffd700;
-    }
+    #quill-editor { background: rgba(255, 255, 255, 0.04); color: var(--text-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+    .ql-toolbar.ql-snow { background: var(--darker-bg); border: 1px solid var(--border-color); border-bottom: none; border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+    .ql-container.ql-snow { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+    .ql-editor { color: var(--text-main) !important; }
+    .ql-editor.ql-blank::before { color: var(--text-muted) !important; }
+    .ql-toolbar.ql-snow .ql-stroke { stroke: var(--text-main); }
+    .ql-toolbar.ql-snow .ql-fill { fill: var(--text-main); }
+    .ql-toolbar.ql-snow .ql-picker-label { color: var(--text-main); }
+    .ql-toolbar.ql-snow button:hover .ql-stroke, .ql-toolbar.ql-snow button.ql-active .ql-stroke { stroke: var(--primary-gold); }
+    .ql-toolbar.ql-snow button:hover .ql-fill, .ql-toolbar.ql-snow button.ql-active .ql-fill { fill: var(--primary-gold); }
 </style>
 @endpush
 
@@ -720,7 +689,7 @@
                                                        value="{{ trim($info) }}" 
                                                        placeholder="Enter important information"
                                                        required>
-                                                <button type="button" class="btn btn-danger-custom btn-sm" onclick="removeInput(this)">
+                                                <button type="button" class="btn btn-remove" onclick="removeInput(this)">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
@@ -734,14 +703,14 @@
                                                        name="detailsIminfo[]" 
                                                        placeholder="Enter important information (e.g., age restrictions, dress code, etc.)" 
                                                        required>
-                                                <button type="button" class="btn btn-danger-custom btn-sm" onclick="removeInput(this)">
+                                                <button type="button" class="btn btn-remove" onclick="removeInput(this)">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     @endif
                                 </div>
-                                <button type="button" class="btn btn-success-custom btn-sm mt-2" onclick="addImportantInfo()">
+                                <button type="button" class="btn btn-add mt-2" onclick="addImportantInfo()">
                                     <i class="fas fa-plus me-1"></i>Add More Information
                                 </button>
                                 @error('detailsIminfo')
@@ -768,7 +737,7 @@
                                                        value="{{ trim($highlight) }}" 
                                                        placeholder="Enter activity highlight"
                                                        required>
-                                                <button type="button" class="btn btn-danger-custom btn-sm" onclick="removeInput(this)">
+                                                <button type="button" class="btn btn-remove" onclick="removeInput(this)">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
@@ -782,14 +751,14 @@
                                                        name="detailsHighlights[]" 
                                                        placeholder="Enter activity highlight (e.g., breathtaking views, expert guides, etc.)" 
                                                        required>
-                                                <button type="button" class="btn btn-danger-custom btn-sm" onclick="removeInput(this)">
+                                                <button type="button" class="btn btn-remove" onclick="removeInput(this)">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     @endif
                                 </div>
-                                <button type="button" class="btn btn-success-custom btn-sm mt-2" onclick="addHighlight()">
+                                <button type="button" class="btn btn-add mt-2" onclick="addHighlight()">
                                     <i class="fas fa-plus me-1"></i>Add More Highlights
                                 </button>
                                 @error('detailsHighlights')
@@ -826,7 +795,7 @@
                                 </span>
                             </button>
                             <a href="{{ route('admin.uaeactivities.index') }}" 
-                               class="btn btn-outline-secondary btn-lg flex-fill flex-sm-grow-0 animate-scale order-2">
+                               class="btn btn-outline-primary btn-lg flex-fill flex-sm-grow-0 animate-scale order-2">
                                 <i class="fas fa-times me-1"></i>
                                 <span class="d-none d-sm-inline">Cancel</span>
                                 <span class="d-sm-none">Cancel</span>
@@ -840,435 +809,71 @@
     </div>
 </div>
 
-<!-- Enhanced Mobile-First Responsive Styles -->
+<!-- Page-Specific Styles (Edit Activity) -->
 <style>
-    /* Root Variables */
-    :root {
-        --primary-gold: #FFD700;
-        --secondary-gold: #FFA500;
-        --dark-bg: #1a1a1a;
-        --darker-bg: #0d0d0d;
-        --light-dark: #2d2d2d;
-        --text-gold: #FFD700;
-        --text-light: #f8f9fa;
-        --text-light-muted: #e9ecef;
-        --shadow-gold: rgba(255, 215, 0, 0.3);
-        --gradient-primary: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-        --gradient-dark: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-    }
+    /* Partner Info */
+    .partner-filter-info { background: rgba(59, 130, 246, 0.06) !important; border: 1px solid rgba(59, 130, 246, 0.15) !important; border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem; color: var(--info) !important; }
+    .partner-filter-icon { color: var(--info) !important; font-size: 1.125rem; margin-right: 0.625rem; }
 
-    /* Partner Filter Info Box */
-    .partner-filter-info {
-        background: rgba(23, 162, 184, 0.1) !important;
-        border: 2px solid #17a2b8 !important;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
-        color: #17a2b8 !important;
-    }
+    /* Card variant */
+    .gold-theme-card { background: var(--card-bg); border: 1px solid var(--border-gold); color: var(--text-main); }
 
-    .partner-filter-icon {
-        color: #17a2b8 !important;
-        font-size: 1.2rem;
-        margin-right: 10px;
-    }
+    /* Form controls */
+    .form-control-dark { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--radius-sm); transition: border-color 0.15s, box-shadow 0.15s; font-size: 16px; }
+    .form-control-dark:focus { background: rgba(255, 255, 255, 0.06); border-color: var(--primary-gold); color: var(--text-main); box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1); }
+    .form-control-dark::placeholder { color: var(--text-muted); opacity: 0.6; }
+    .form-control-dark option { background: var(--card-bg); color: var(--text-main); }
+    .form-label-gold { color: var(--primary-gold) !important; font-weight: 600 !important; margin-bottom: 0.375rem !important; font-size: 0.8125rem; }
 
-    /* Custom Font Size Classes */
-    .fs-8 { font-size: 0.7rem !important; }
-    .fs-7 { font-size: 0.8rem !important; }
-    .fs-6 { font-size: 0.9rem !important; }
+    /* Buttons */
+    .btn-gold { background: var(--primary-gold); color: #000; border: none; font-weight: 700; transition: all 0.15s; }
+    .btn-gold:hover { background: #ffe44d; color: #000; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); }
 
-    /* Main Card Styling */
-    .gold-theme-card {
-        background: var(--gradient-dark);
-        border: 2px solid var(--primary-gold);
-        color: var(--text-light);
-    }
+    /* Section */
+    .form-section { padding: 1.25rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+    .section-title { color: var(--primary-gold); border-bottom: 1px solid var(--border-gold); padding-bottom: 0.5rem; }
+    .border-top-gold { border-top: 1px solid var(--border-gold) !important; }
 
-    .bg-gold {
-        background: var(--gradient-primary) !important;
-        color: var(--darker-bg) !important;
-    }
+    /* Current Images */
+    .current-images-section { background: rgba(255, 215, 0, 0.03); border: 1px solid var(--border-gold); border-radius: var(--radius-sm); padding: 1rem; }
+    .current-image-item { position: relative; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-gold); aspect-ratio: 16 / 9; }
+    .current-image-item img { width: 100%; height: 100%; object-fit: cover; }
+    .main-image-badge { position: absolute; top: 8px; left: 8px; background: var(--primary-gold); color: #000; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
 
-    /* Button Styling */
-    .btn-mobile {
-        min-height: 44px !important;
-        padding: 0.6rem 1rem !important;
-        font-size: 0.875rem !important;
-    }
+    /* Image Options */
+    .image-options-section { background: rgba(255, 215, 0, 0.03); border: 1px solid var(--border-gold); border-radius: var(--radius-sm); padding: 1rem; }
+    .form-check-custom { padding: 0.75rem; border-radius: var(--radius-sm); background: rgba(255, 255, 255, 0.02); transition: background 0.15s; }
+    .form-check-custom:hover { background: rgba(255, 215, 0, 0.04); }
+    .form-check-input:checked { background-color: var(--primary-gold); border-color: var(--primary-gold); }
 
-    .btn-gold {
-        background: var(--gradient-primary);
-        color: var(--darker-bg);
-        border: 1px solid var(--primary-gold);
-        font-weight: 600;
-        transition: all 0.3s ease;
-        min-height: 48px;
-    }
+    /* Image Upload */
+    .image-upload-area { border: 2px dashed var(--border-gold); border-radius: var(--radius-sm); padding: 1.5rem 1rem; background: rgba(255, 215, 0, 0.03); transition: all 0.15s; cursor: pointer; min-height: 150px; display: flex; align-items: center; justify-content: center; }
+    .image-upload-area:hover { background: rgba(255, 215, 0, 0.06); border-color: var(--primary-gold); }
+    .image-upload-area.dragover { background: rgba(255, 215, 0, 0.08); border-color: var(--primary-gold); }
+    .image-preview-container { background: rgba(255, 215, 0, 0.03); border: 1px solid var(--border-gold); border-radius: var(--radius-sm); padding: 1rem; }
+    .image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; }
+    .image-preview-item { position: relative; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-gold); aspect-ratio: 1; }
+    .image-preview-item img { width: 100%; height: 100%; object-fit: cover; }
 
-    .btn-gold:hover {
-        background: var(--secondary-gold);
-        color: var(--darker-bg);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-    }
+    /* Dynamic Input */
+    .dynamic-input-group { background: rgba(255, 215, 0, 0.03); border: 1px solid var(--border-gold); border-radius: var(--radius-sm); padding: 0.5rem; }
 
-    .btn-outline-dark {
-        border-color: #495057;
-        color: #495057;
-        background-color: transparent;
-    }
+    /* Remove button: ghost gray, red on hover */
+    .btn-remove { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-sm); font-size: 0.75rem; padding: 0.25rem 0.625rem; transition: all 0.15s; }
+    .btn-remove:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
-    .btn-outline-dark:hover {
-        background-color: #495057;
-        border-color: #495057;
-        color: var(--primary-gold);
-    }
+    /* Add button: ghost/outline, subtle fill on hover */
+    .btn-add { background: transparent; color: var(--primary-gold); border: 1px dashed rgba(255, 215, 0, 0.25); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; padding: 0.375rem 0.875rem; transition: all 0.15s; }
+    .btn-add:hover { background: rgba(255, 215, 0, 0.06); border-style: solid; border-color: rgba(255, 215, 0, 0.4); }
 
-    .btn-success-custom {
-        background: linear-gradient(135deg, #28a745, #20c997);
-        border: none;
-        color: white;
-        transition: all 0.3s ease;
-    }
-
-    .btn-success-custom:hover {
-        background: linear-gradient(135deg, #218838, #1e7e34);
-        transform: translateY(-1px);
-    }
-
-    .btn-danger-custom {
-        background: linear-gradient(135deg, #dc3545, #c82333);
-        border: none;
-        color: white;
-        transition: all 0.3s ease;
-    }
-
-    .btn-danger-custom:hover {
-        background: linear-gradient(135deg, #c82333, #a71e2a);
-        transform: translateY(-1px);
-    }
-
-    /* Form Controls */
-    .form-control-dark {
-        background-color: rgba(45, 45, 45, 0.9) !important;
-        border: 2px solid rgba(255, 215, 0, 0.3) !important;
-        color: #ffffff !important;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        font-size: 16px; /* Prevents zoom on iOS */
-        min-height: 44px;
-    }
-
-    .form-control-dark:focus {
-        background-color: rgba(45, 45, 45, 1) !important;
-        border-color: var(--primary-gold) !important;
-        color: #ffffff !important;
-        box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25) !important;
-    }
-
-    .form-control-dark::placeholder {
-        color: #adb5bd !important;
-        opacity: 1;
-    }
-
-    /* Select dropdown styling */
-    .form-control-dark option {
-        background-color: #2d2d2d;
-        color: #ffffff;
-    }
-
-    .form-control-dark option:hover,
-    .form-control-dark option:focus,
-    .form-control-dark option:selected {
-        background-color: #ffd700;
-        color: #1a1a1a;
-    }
-
-    /* Form Labels */
-    .form-label-gold {
-        color: var(--primary-gold) !important;
-        font-weight: 600 !important;
-        margin-bottom: 0.5rem !important;
-    }
-
-    /* Text Colors with Better Visibility */
-    .text-light {
-        color: #ffffff !important;
-    }
-
-    .text-light-muted {
-        color: var(--text-light-muted) !important;
-    }
-
-    /* Section Styling */
-    .form-section {
-        padding: 1.5rem;
-        background: rgba(45, 45, 45, 0.3);
-        border-radius: 10px;
-        border: 1px solid rgba(255, 215, 0, 0.2);
-    }
-
-    .section-title {
-        color: var(--primary-gold);
-        border-bottom: 2px solid var(--primary-gold);
-        padding-bottom: 0.5rem;
-    }
-
-    /* Current Images Styling */
-    .current-images-section {
-        background: rgba(255, 215, 0, 0.05);
-        border: 1px solid rgba(255, 215, 0, 0.3);
-        border-radius: 10px;
-        padding: 1rem;
-    }
-
-    .current-image-item {
-        position: relative;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 2px solid var(--primary-gold);
-        aspect-ratio: 16 / 9;
-    }
-
-    .current-image-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .main-image-badge {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        background: var(--gradient-primary);
-        color: var(--darker-bg);
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: bold;
-    }
-
-    /* Image Options Styling */
-    .image-options-section {
-        background: rgba(255, 215, 0, 0.05);
-        border: 1px solid rgba(255, 215, 0, 0.3);
-        border-radius: 8px;
-        padding: 1rem;
-    }
-
-    .form-check-custom {
-        padding: 0.75rem;
-        border-radius: 6px;
-        background: rgba(45, 45, 45, 0.3);
-        transition: all 0.3s ease;
-    }
-
-    .form-check-custom:hover {
-        background: rgba(255, 215, 0, 0.1);
-    }
-
-    .form-check-input:checked {
-        background-color: var(--primary-gold);
-        border-color: var(--primary-gold);
-    }
-
-    .form-check-label {
-        color: var(--text-light) !important;
-        cursor: pointer;
-        font-weight: 500;
-    }
-
-    /* Enhanced Image Upload Styles */
-    .image-upload-area {
-        border: 3px dashed var(--primary-gold);
-        border-radius: 10px;
-        padding: 2rem 1rem;
-        background: rgba(255, 215, 0, 0.05);
-        transition: all 0.3s ease;
-        cursor: pointer;
-        min-height: 150px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .image-upload-area:hover {
-        background: rgba(255, 215, 0, 0.1);
-        border-color: var(--secondary-gold);
-        transform: scale(1.02);
-    }
-
-    .image-upload-area.dragover {
-        background: rgba(255, 215, 0, 0.15);
-        border-color: var(--secondary-gold);
-        transform: scale(1.05);
-    }
-
-    /* Image Preview Container */
-    .image-preview-container {
-        background: rgba(255, 215, 0, 0.05);
-        border: 1px solid var(--primary-gold);
-        border-radius: 10px;
-        padding: 1rem;
-    }
-
-    .image-preview-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 1rem;
-    }
-
-    .image-preview-item {
-        position: relative;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 2px solid var(--primary-gold);
-        aspect-ratio: 1;
-    }
-
-    .image-preview-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* Dynamic Input Styling */
-    .dynamic-input-group {
-        background: rgba(255, 215, 0, 0.05);
-        border: 1px solid rgba(255, 215, 0, 0.2);
-        border-radius: 8px;
-        padding: 0.5rem;
-    }
-
-    /* Badge Styling */
-    .bg-info-custom {
-        background: linear-gradient(135deg, #17a2b8, #6f42c1) !important;
-        color: #ffffff !important;
-    }
-
-    /* Card Footer */
-    .border-top-gold {
-        border-top: 2px solid var(--primary-gold) !important;
-    }
-
-    /* Form Validation */
-    .is-invalid {
-        border-color: #dc3545 !important;
-    }
-
-    .invalid-feedback {
-        color: #f5c6cb !important;
-        background-color: rgba(220, 53, 69, 0.1);
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        border-left: 3px solid #dc3545;
-    }
-
-    /* Responsive Breakpoints */
     @media (max-width: 575.98px) {
-        .container-fluid { 
-            padding-left: 0.5rem !important; 
-            padding-right: 0.5rem !important; 
-        }
-        
-        .form-section { 
-            padding: 1rem; 
-            margin-bottom: 1rem !important;
-        }
-        
-        .card-body { 
-            padding: 1rem !important; 
-        }
-        
-        .image-preview-grid { 
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
-        }
-        
-        .image-upload-area { 
-            padding: 1.5rem 1rem; 
-            min-height: 120px;
-        }
-        
-        .btn { 
-            font-size: 0.875rem !important; 
-            padding: 0.6rem 1rem !important; 
-        }
-        
-        h3 { 
-            font-size: 1.1rem !important; 
-        }
+        .form-section { padding: 1rem; }
+        .image-preview-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+        .image-upload-area { min-height: 120px; }
     }
-
-    @media (min-width: 576px) and (max-width: 767.98px) {
-        .fs-sm-7 { font-size: 0.8rem !important; }
-        .fs-sm-6 { font-size: 0.9rem !important; }
-        .fs-sm-5 { font-size: 1rem !important; }
-        
-        .image-preview-grid { 
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
-        }
-    }
-
     @media (min-width: 768px) {
-        .form-section { 
-            padding: 2rem; 
-        }
-        
-        .image-preview-grid { 
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-        }
-    }
-
-    @media (min-width: 992px) {
-        .fs-md-5 { font-size: 1rem !important; }
-        .fs-md-4 { font-size: 1.25rem !important; }
-    }
-
-    @media (min-width: 1200px) {
-        .container-fluid { 
-            max-width: 1400px; 
-            margin: 0 auto; 
-        }
-    }
-
-    /* Touch Device Optimizations */
-    @media (hover: none) and (pointer: coarse) {
-        .btn { 
-            min-height: 48px !important; 
-        }
-        
-        .form-control-dark { 
-            min-height: 48px !important; 
-        }
-        
-        .animate-scale:hover { 
-            transform: none !important; 
-        }
-        
-        .image-upload-area:hover { 
-            transform: none !important; 
-        }
-    }
-
-    /* Reduced Motion */
-    @media (prefers-reduced-motion: reduce) {
-        .animate-fade-in, .animate-scale, .btn-gold {
-            animation: none !important;
-            transition: none !important;
-        }
-    }
-
-    /* Landscape Mobile */
-    @media (max-height: 500px) and (orientation: landscape) and (max-width: 991px) {
-        .form-section { 
-            padding: 1rem; 
-            margin-bottom: 1rem !important;
-        }
-        
-        .image-upload-area { 
-            min-height: 100px; 
-        }
+        .form-section { padding: 1.5rem; }
+        .image-preview-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     }
 </style>
 
@@ -1481,7 +1086,7 @@ function addImportantInfo() {
                    name="detailsIminfo[]" 
                    placeholder="Enter important information" 
                    required>
-            <button type="button" class="btn btn-danger-custom btn-sm" onclick="removeInput(this)">
+            <button type="button" class="btn btn-remove" onclick="removeInput(this)">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -1506,7 +1111,7 @@ function addHighlight() {
                    name="detailsHighlights[]" 
                    placeholder="Enter activity highlight" 
                    required>
-            <button type="button" class="btn btn-danger-custom btn-sm" onclick="removeInput(this)">
+            <button type="button" class="btn btn-remove" onclick="removeInput(this)">
                 <i class="fas fa-times"></i>
             </button>
         </div>

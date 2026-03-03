@@ -30,242 +30,80 @@
     }
 @endphp
 
+<!-- Page-Specific Styles (Create Activity) -->
 <style>
-    .gold-theme {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        color: #ffd700;
-        border-radius: 15px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    
-    .btn-gold {
-        background: linear-gradient(45deg, #ffd700, #ffed4e);
-        color: #1a1a1a;
-        border: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-gold:hover {
-        background: linear-gradient(45deg, #ffed4e, #ffd700);
-        color: #1a1a1a;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-    }
-    
-    .form-control-dark {
-        background-color: #2d2d2d;
-        border: 2px solid #555;
-        color: #ffffff;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-    }
-    
-    .form-control-dark:focus {
-        background-color: #3d3d3d;
-        border-color: #ffd700;
-        color: #ffffff;
-        box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
-    }
-    
-    .form-control-dark::placeholder {
-        color: #aaa;
-    }
-    
-    /* Select dropdown styling */
-    .form-control-dark option {
-        background-color: #2d2d2d;
-        color: #ffffff;
-    }
-    
-    .form-control-dark option:hover,
-    .form-control-dark option:focus,
-    .form-control-dark option:selected {
-        background-color: #ffd700;
-        color: #1a1a1a;
-    }
-    
-    .form-label-gold {
-        color: #ffd700;
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-    
+    /* Card wrapper using layout tokens */
     .card-dark-gold {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        border: 2px solid #ffd700;
-        border-radius: 15px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-gold);
+        border-radius: var(--radius-lg);
     }
-    
     .card-dark-gold .card-header {
-        background: linear-gradient(45deg, #ffd700, #ffed4e);
-        color: #1a1a1a;
-        font-weight: 600;
-        border-radius: 13px 13px 0 0;
-        border-bottom: 2px solid #ffd700;
+        background: transparent;
+        border-bottom: 1px solid var(--border-color);
     }
-    
-    .section-divider {
-        border-top: 2px solid #ffd700;
-        margin: 30px 0;
-        position: relative;
+    .card-dark-gold .card-header .card-title {
+        color: var(--text-main);
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
     }
-    
-    .section-title {
-        background: linear-gradient(45deg, #ffd700, #ffed4e);
-        color: #1a1a1a;
-        padding: 10px 20px;
-        border-radius: 25px;
-        font-weight: 600;
-        position: absolute;
-        top: -15px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    
-    .dynamic-input-group {
-        border: 1px solid #ffd700;
-        border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 10px;
-        background: rgba(255, 215, 0, 0.1);
-    }
-    
-    .btn-remove {
-        background: #dc3545;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-remove:hover {
-        background: #c82333;
-        transform: translateY(-1px);
-    }
-    
-    .btn-add {
-        background: #28a745;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 5px;
-        margin-top: 10px;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-add:hover {
-        background: #218838;
-        transform: translateY(-1px);
+    .card-dark-gold .card-header .card-title i {
+        color: var(--primary-gold);
+        opacity: 0.8;
     }
 
-    /* Partner Filter Info Box */
-    .partner-filter-info {
-        background: rgba(23, 162, 184, 0.1) !important;
-        border: 2px solid #17a2b8 !important;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
-        color: #17a2b8 !important;
+    /* Form controls */
+    .form-control-dark {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        border-radius: var(--radius-sm);
+        transition: border-color 0.15s, box-shadow 0.15s;
     }
-
-    .partner-filter-icon {
-        color: #17a2b8 !important;
-        font-size: 1.2rem;
-        margin-right: 10px;
+    .form-control-dark:focus {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--primary-gold);
+        color: var(--text-main);
+        box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
     }
+    .form-control-dark::placeholder { color: var(--text-muted); opacity: 0.6; }
+    .form-control-dark option { background: var(--card-bg); color: var(--text-main); }
 
-    /* Image Upload Styles */
-    .image-upload-area {
-        border: 3px dashed #ffd700;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        background: rgba(255, 215, 0, 0.05);
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
+    .form-label-gold { color: var(--primary-gold); font-weight: 600; margin-bottom: 0.375rem; font-size: 0.8125rem; }
 
-    .image-upload-area:hover {
-        background: rgba(255, 215, 0, 0.1);
-        border-color: #ffed4e;
-    }
+    /* Buttons */
+    .btn-gold { background: var(--primary-gold); color: #000; border: none; font-weight: 700; transition: all 0.15s; }
+    .btn-gold:hover { background: #ffe44d; color: #000; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); }
 
-    .image-upload-area.dragover {
-        background: rgba(255, 215, 0, 0.15);
-        border-color: #ffed4e;
-        transform: scale(1.02);
-    }
+    /* Section Dividers */
+    .section-divider { margin: 2rem 0 1.25rem; }
+    .section-title { color: var(--primary-gold); font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
 
-    .image-preview-container {
-        background: rgba(255, 215, 0, 0.05);
-        border: 1px solid #ffd700;
-        border-radius: 10px;
-        padding: 15px;
-        margin-top: 15px;
-        display: none;
-    }
+    /* Dynamic Input Groups */
+    .dynamic-input-group { border: 1px solid var(--border-gold); border-radius: var(--radius-sm); padding: 0.625rem; margin-bottom: 0.625rem; background: rgba(255, 215, 0, 0.04); }
+    .btn-remove { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.08); padding: 5px 10px; border-radius: var(--radius-sm); transition: all 0.15s; font-size: 0.8125rem; }
+    .btn-remove:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .btn-add { background: transparent; color: var(--primary-gold); border: 1px dashed rgba(255, 215, 0, 0.25); padding: 0.375rem 0.875rem; border-radius: var(--radius-sm); margin-top: 0.625rem; transition: all 0.15s; font-size: 0.75rem; font-weight: 600; }
+    .btn-add:hover { background: rgba(255, 215, 0, 0.06); border-style: solid; border-color: rgba(255, 215, 0, 0.4); }
 
-    .image-preview-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 10px;
-    }
+    /* Partner Info */
+    .partner-filter-info { background: rgba(59, 130, 246, 0.06) !important; border: 1px solid rgba(59, 130, 246, 0.15) !important; border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem; color: var(--info) !important; }
+    .partner-filter-icon { color: var(--info) !important; font-size: 1.125rem; margin-right: 0.625rem; }
 
-    .image-preview-item {
-        position: relative;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 2px solid #ffd700;
-    }
+    /* Image Upload */
+    .image-upload-area { border: 2px dashed var(--border-gold); border-radius: var(--radius-sm); padding: 1.25rem; text-align: center; background: rgba(255, 215, 0, 0.03); transition: all 0.15s; cursor: pointer; }
+    .image-upload-area:hover { background: rgba(255, 215, 0, 0.06); border-color: var(--primary-gold); }
+    .image-upload-area.dragover { background: rgba(255, 215, 0, 0.08); border-color: var(--primary-gold); }
+    .image-preview-container { background: rgba(255, 215, 0, 0.03); border: 1px solid var(--border-gold); border-radius: var(--radius-sm); padding: 1rem; margin-top: 1rem; display: none; }
+    .image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .image-preview-item { position: relative; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-gold); }
+    .image-preview-item img { width: 100%; height: 100px; object-fit: cover; display: block; }
+    .main-image-badge { position: absolute; top: 5px; left: 5px; background: var(--primary-gold); color: #000; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+    .image-count-info { color: var(--primary-gold); font-size: 0.875rem; margin-top: 0.625rem; }
 
-    .image-preview-item img {
-        width: 100%;
-        height: 100px;
-        object-fit: cover;
-        display: block;
-    }
-
-    .main-image-badge {
-        position: absolute;
-        top: 5px;
-        left: 5px;
-        background: linear-gradient(45deg, #ffd700, #ffed4e);
-        color: #1a1a1a;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 10px;
-        font-weight: bold;
-    }
-
-    .image-count-info {
-        color: #ffd700;
-        font-size: 14px;
-        margin-top: 10px;
-    }
-
-    /* Form Validation Enhancements */
-    .is-invalid {
-        border-color: #dc3545 !important;
-    }
-
-    .invalid-feedback {
-        color: #dc3545;
-        font-size: 0.875em;
-        margin-top: 5px;
-    }
-
-    /* Responsive adjustments */
     @media (max-width: 768px) {
-        .section-title {
-            font-size: 14px;
-            padding: 8px 15px;
-        }
-        
-        .image-preview-grid {
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        }
+        .image-preview-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     }
 </style>
 
@@ -281,8 +119,8 @@
                         @endif
                     </h3>
                     <div class="card-tools">
-                        <a href="{{ route('admin.uaeactivities.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to List
+                        <a href="{{ route('admin.uaeactivities.index') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to List
                         </a>
                     </div>
                 </div>
@@ -414,9 +252,9 @@
                         </div>
 
                         <div class="section-divider">
-                            <div class="section-title">
-                                <i class="fas fa-dollar-sign"></i> Pricing Information
-                            </div>
+                            <h6 class="section-title">
+                                <i class="fas fa-dollar-sign me-1"></i> Pricing Information
+                            </h6>
                         </div>
 
                         <!-- Pricing Information -->
@@ -561,9 +399,9 @@
                         </div>
 
                         <div class="section-divider">
-                            <div class="section-title">
-                                <i class="fas fa-truck"></i> Supplier Information
-                            </div>
+                            <h6 class="section-title">
+                                <i class="fas fa-truck me-1"></i> Supplier Information
+                            </h6>
                         </div>
 
                         <!-- Supplier Information (Optional) -->
@@ -605,9 +443,9 @@
                         </div>
 
                         <div class="section-divider">
-                            <div class="section-title">
-                                <i class="fas fa-images"></i> Activity Images
-                            </div>
+                            <h6 class="section-title">
+                                <i class="fas fa-images me-1"></i> Activity Images
+                            </h6>
                         </div>
 
                         <!-- Enhanced Image Upload -->
@@ -652,9 +490,9 @@
                         </div>
 
                         <div class="section-divider">
-                            <div class="section-title">
-                                <i class="fas fa-info-circle"></i> Activity Details
-                            </div>
+                            <h6 class="section-title">
+                                <i class="fas fa-info-circle me-1"></i> Activity Details
+                            </h6>
                         </div>
 
                         <!-- Activity Details -->
@@ -847,8 +685,8 @@
                                 Create UAE Activity
                             @endif
                         </button>
-                        <a href="{{ route('admin.uaeactivities.index') }}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-times"></i> Cancel
+                        <a href="{{ route('admin.uaeactivities.index') }}" class="btn btn-outline-primary btn-lg">
+                            Cancel
                         </a>
                     </div>
                 </form>
