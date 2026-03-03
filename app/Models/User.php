@@ -67,16 +67,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is admin (role-based OR legacy null email_verified_at)
+     * Check if user is admin (role-based only)
      */
     public function isAdmin()
     {
-        // Role-based admin check
-        if ($this->roles()->where('title', 'Admin')->exists()) {
-            return true;
-        }
-        // Legacy admin: null email_verified_at and no partner/role data
-        return is_null($this->email_verified_at) && !str_contains($this->email_verified_at ?? '', 'rseparator');
+        // Only check for Admin role - must have the actual Admin role
+        return $this->roles()->where('title', 'Admin')->exists();
     }
 
     /**
