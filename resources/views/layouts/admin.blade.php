@@ -1774,7 +1774,7 @@
                     </li>
                 @endif
 
-                @if($user->hasPermission('manage_announcements'))
+                @if($user->hasPermission('announcement_access'))
                     <li class="nav-item">
                         <a href="{{ route('admin.announcements.index') }}" class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
                             <i class="fas fa-bullhorn"></i>
@@ -1783,7 +1783,7 @@
                     </li>
                 @endif
 
-                @if($user->hasPermission('manage_carousel'))
+                @if($user->hasPermission('homepage_ads_access'))
                     <li class="nav-item">
                         <a href="{{ route('admin.homepageads.index') }}" class="nav-link {{ request()->routeIs('admin.homepageads.*') ? 'active' : '' }}">
                             <i class="fas fa-images"></i>
@@ -1792,7 +1792,7 @@
                     </li>
                 @endif
 
-                @if($user->hasPermission('manage_uae_activities'))
+                @if($user->hasPermission('activity_access'))
                     <li class="nav-item">
                         <a href="{{ route('admin.uaeactivities.index') }}" class="nav-link {{ request()->routeIs('admin.uaeactivities.*') ? 'active' : '' }}">
                             <i class="fas fa-map-marked-alt"></i>
@@ -1802,7 +1802,7 @@
                 @endif
 
                 {{-- Fallback for partners/legacy users who have UAE Activities access via session --}}
-                @if($isPartnerRestricted && $userType === 'approved_partner' && !$user->hasPermission('manage_uae_activities'))
+                @if($isPartnerRestricted && $userType === 'approved_partner' && !$user->hasPermission('activity_access'))
                     <li class="nav-item">
                         <a href="{{ route('admin.uaeactivities.index') }}" class="nav-link {{ request()->routeIs('admin.uaeactivities.*') ? 'active' : '' }}">
                             <i class="fas fa-map-marked-alt"></i>
