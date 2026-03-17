@@ -32,19 +32,52 @@
                     <div class="pilgrimage-feature">
                         <i class="bi bi-headset"></i>
                         <h3>24/7 Assistance</h3>
-                        <p>Dedicatied on-ground staff to assist you throughout your sacred journey.</p>
+                        <p>Dedicated on-ground staff to assist you throughout your sacred journey.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Umrah Packages Section -->
+    <!-- Umrah Packages Section (Dynamic) -->
     <section style="padding: 80px 0; background: #000;">
         <div class="container">
             <h2 class="section-title">UMRAH PACKAGES</h2>
+
+            @if(isset($umrahPackages) && $umrahPackages->count() > 0)
             <div class="row g-4 mt-4">
-                <!-- Package 1 -->
+                @foreach($umrahPackages as $pkg)
+                <div class="col-lg-4">
+                    <div class="package-card {{ $pkg->isFeatured ? 'featured' : '' }}">
+                        <div class="package-img" style="background-image: url('{{ asset($pkg->image) }}');">
+                            @if($pkg->tag)
+                            <span class="badge-gold">{{ $pkg->tag }}</span>
+                            @endif
+                        </div>
+                        <div class="package-body">
+                            <h3>{{ $pkg->title }}</h3>
+                            <p>{{ $pkg->description }}</p>
+
+                            @if($pkg->features && count($pkg->features) > 0)
+                            <ul class="package-features">
+                                @foreach($pkg->features as $feature)
+                                <li><i class="bi bi-check2"></i> {{ $feature }}</li>
+                                @endforeach
+                            </ul>
+                            @endif
+
+                            <div class="package-footer">
+                                <span class="price">From <strong>{{ $pkg->currency === 'USD' ? '$' : ($pkg->currency === 'GBP' ? '£' : ($pkg->currency === 'EUR' ? '€' : $pkg->currency . ' ')) }}{{ number_format($pkg->price, 0) }}</strong></span>
+                                <a href="/contact-us" class="btn-book">Inquire Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @else
+            <!-- Fallback: Static packages when none in database -->
+            <div class="row g-4 mt-4">
                 <div class="col-lg-4">
                     <div class="package-card">
                         <div class="package-img" style="background-image: url('assets/index_files/umrah_2.png');">
@@ -66,7 +99,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Package 2 -->
                 <div class="col-lg-4">
                     <div class="package-card featured">
                         <div class="package-img" style="background-image: url('assets/index_files/umrah_3.png');">
@@ -88,7 +120,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Package 3 -->
                 <div class="col-lg-4">
                     <div class="package-card">
                         <div class="package-img" style="background-image: url('assets/index_files/umrah_4.png');">
@@ -111,6 +142,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </section>
 
@@ -306,6 +338,25 @@
     .custom-input:focus {
         border-color: #D4AF37 !important;
         box-shadow: none !important;
+    }
+
+    @media (max-width: 768px) {
+        .hajj-hero h1 {
+            font-size: 36px !important;
+            letter-spacing: 2px !important;
+        }
+        .hajj-hero p {
+            font-size: 16px !important;
+        }
+        .hajj-hero {
+            height: 50vh !important;
+        }
+        .section-title {
+            font-size: 28px;
+        }
+        .package-img {
+            height: 200px;
+        }
     }
 </style>
 
