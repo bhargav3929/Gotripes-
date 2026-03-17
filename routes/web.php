@@ -21,6 +21,8 @@ use App\Http\Controllers\EmiratesController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UAEDetailsController;
+use App\Http\Controllers\Admin\TravelPackageController;
+use App\Http\Controllers\Admin\UmrahPackageController;
 
 // Search API
 Route::get('/api/search', [SearchController::class, 'search'])->name('search');
@@ -52,13 +54,10 @@ Route::post('/register', [UserController::class, 'register'])->name('register');
 Route::get('/get-emirates', [UserController::class, 'getEmirates'])->name('get.emirates');
 // Route::post('/register', [UserController::class, 'register'])->name('register');
 
-// Admin routes (protected by auth middleware)
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+// Admin routes (protected by auth + isAdmin middleware)
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
 
-    // User management resource routes
-    Route::resource('users', UserController::class);
-
-    // Partner status management route - THIS IS THE IMPORTANT ONE
+    // Partner status management route
     Route::put('/partner-status/{userId}', [UserController::class, 'updatePartnerStatus'])->name('partner.status');
 
     // Additional partner management routes
@@ -69,7 +68,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 
 Route::prefix('/')->group(function () {
-    Route::get('hajj-umrah', fn() => view('hajj-umrah'))->name('hajj-umrah');
+    Route::get('hajj-umrah', function () {
+        $umrahPackages = \App\Models\UmrahPackage::where('isActive', 1)
+            ->orderBy('sortOrder', 'asc')
+            ->orderBy('createdDate', 'desc')
+            ->get();
+        return view('hajj-umrah', compact('umrahPackages'));
+    })->name('hajj-umrah');
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
     Route::get('banner0', fn() => view('banner0'));
     Route::get('countriestour', fn() => view('countriestour'));
@@ -101,30 +106,36 @@ Route::get('/uaeactivities/{any}', fn() => redirect()->route('emirates.index'))-
 Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->name('api.emirates');
 
 //backend
+// Admin routes restricted to full Admin only
 Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
-    Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
-
     Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
     Route::delete('roles_mass_destroy', [\App\Http\Controllers\Admin\RoleController::class, 'massDestroy'])->name('roles.mass_destroy');
 
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::delete('users_mass_destroy', [\App\Http\Controllers\Admin\UserController::class, 'massDestroy'])->name('users.mass_destroy');
 
-    // Announcements - Added directly inside the existing admin group
+    // Announcements
     Route::resource('announcements', AnnouncementAdminController::class);
     Route::post('announcements/{announcement}/toggle-status', [AnnouncementAdminController::class, 'toggleStatus'])
         ->name('announcements.toggle-status');
 
-
-    ////HOMEPAGE CASOUSEL
+    // Homepage Carousel
     Route::resource('homepageads', CarouselAdminController::class);
     Route::post('homepageads/{homepagead}/toggle-status', [CarouselAdminController::class, 'toggleStatus'])
         ->name('homepageads.toggle-status');
 
+    // Travel Packages
+    Route::resource('packages', TravelPackageController::class)->except(['show']);
 
+    // Umrah Packages
+    Route::resource('umrah-packages', UmrahPackageController::class)->except(['show']);
+});
 
+// Admin routes accessible to both full Admin and Activities Manager
+Route::group(['middleware' => ['auth', 'isActivitiesManager'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
+    Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
 
-    /////UAEACTIVITIES
+    ///// UAE ACTIVITIES
     Route::get('uaeactivities', [UAEActivityAdminController::class, 'index'])->name('uaeactivities.index');
     Route::get('uaeactivities/create', [UAEActivityAdminController::class, 'create'])->name('uaeactivities.create');
     Route::post('uaeactivities', [UAEActivityAdminController::class, 'store'])->name('uaeactivities.store');
@@ -132,11 +143,6 @@ Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 
     Route::get('uaeactivities/{id}/edit', [UAEActivityAdminController::class, 'edit'])->name('uaeactivities.edit');
     Route::put('uaeactivities/{id}', [UAEActivityAdminController::class, 'update'])->name('uaeactivities.update');
     Route::delete('uaeactivities/{id}', [UAEActivityAdminController::class, 'destroy'])->name('uaeactivities.destroy');
-
-
-
-
-
 });
 
 
