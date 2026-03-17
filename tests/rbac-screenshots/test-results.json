@@ -1,0 +1,154 @@
+{
+  "results": [
+    {
+      "testName": "Login form has name input",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Login form has password input",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Admin login successful",
+      "passed": true,
+      "details": "URL: http://127.0.0.1:8000/admin/users"
+    },
+    {
+      "testName": "Admin sees Admin Users in sidebar",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Admin sees Announcements in sidebar",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Admin sees Travel Ads in sidebar",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Admin sees UAE Activities in sidebar",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Admin badge is displayed",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Admin can access user management page",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Create User button exists",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Module section visible when specific access selected",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "UAE Activities checkbox is checked",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Announcements checkbox is NOT checked",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Travel Ads checkbox is NOT checked",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "User created and redirected to users list",
+      "passed": true,
+      "details": "URL: http://127.0.0.1:8000/admin/users"
+    },
+    {
+      "testName": "No form validation errors",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Success message displayed after user creation",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "TestEmployee appears in users list",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "TestEmployee login successful",
+      "passed": true,
+      "details": "URL: http://127.0.0.1:8000/admin/uaeactivities"
+    },
+    {
+      "testName": "TestEmployee redirected to UAE Activities",
+      "passed": true,
+      "details": "URL: http://127.0.0.1:8000/admin/uaeactivities"
+    },
+    {
+      "testName": "Employee does NOT see Admin Users",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Employee does NOT see Announcements",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Employee does NOT see Travel Ads",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Employee sees UAE Activities",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Employee sidebar does NOT show Access Restricted",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Route /admin/users blocked for employee",
+      "passed": true,
+      "details": "URL: http://127.0.0.1:8000/admin/uaeactivities, Status: 200"
+    },
+    {
+      "testName": "Route /admin/announcements blocked for employee",
+      "passed": true,
+      "details": "URL: http://127.0.0.1:8000/admin/uaeactivities, Status: 200"
+    },
+    {
+      "testName": "Route /admin/homepageads blocked for employee",
+      "passed": true,
+      "details": "URL: http://127.0.0.1:8000/admin/uaeactivities, Status: 200"
+    },
+    {
+      "testName": "Route /admin/uaeactivities ALLOWED for employee",
+      "passed": true,
+      "details": "URL: http://127.0.0.1:8000/admin/uaeactivities, Status: 200"
+    }
+  ],
+  "summary": {
+    "total": 29,
+    "passed": 29,
+    "failed": 0
+  }
+}
