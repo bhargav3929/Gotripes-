@@ -4,7 +4,7 @@
 
 <!------ services ------->
 <section class="services-section"
-  style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 40px 0 80px;">
+  style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 0 0 80px;">
   <div class="container">
 
     <!-- Section Title -->

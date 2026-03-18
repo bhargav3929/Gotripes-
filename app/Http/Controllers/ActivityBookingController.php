@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-// use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ActivityBooking;
 use App\Models\NomodTransaction;
@@ -269,13 +269,12 @@ class ActivityBookingController extends Controller
                 // ]);
                 
             } catch (\Exception $emailEx) {
-                // Log::error('Failed to send Activity Booking email', [
-                //     'error' => $emailEx->getMessage(),
-                //     'trace' => $emailEx->getTraceAsString(),
-                //     'data'  => $mailData,
-                //     'recipients' => $recipients,
-                //     'payment_option' => $validated['payment_option'],
-                // ]);
+                Log::error('Failed to send Activity Booking email', [
+                    'error' => $emailEx->getMessage(),
+                    'trace' => $emailEx->getTraceAsString(),
+                    'recipients' => $recipients,
+                    'payment_option' => $validated['payment_option'],
+                ]);
                 
                 // For AJAX requests, return JSON error
                 if ($request->ajax()) {
@@ -303,7 +302,7 @@ class ActivityBookingController extends Controller
                 }
             } catch (\Exception $supplierEmailEx) {
                 // Supplier email failure should not block the booking
-                // Log::error('Supplier email failed', ['error' => $supplierEmailEx->getMessage()]);
+                Log::error('Supplier email failed', ['error' => $supplierEmailEx->getMessage()]);
             }
 
             // "Book With Us" (classic): Email sent, return success

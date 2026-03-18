@@ -7,7 +7,7 @@
     .emirates-page-wrapper {
         background: #000 !important;
         min-height: 100vh;
-        padding-top: 60px;
+        padding-top: 0;
         color: #fff;
     }
 
