@@ -173,7 +173,7 @@
     /* Phone Input Group */
     .phone-row {
         display: grid;
-        grid-template-columns: 130px 1fr;
+        grid-template-columns: minmax(100px, 130px) 1fr;
         gap: 16px;
     }
 
@@ -341,6 +341,27 @@
         }
     }
 
+    @media (max-width: 768px) {
+        .checkout-page {
+            align-items: flex-start;
+            padding-top: 0;
+            min-height: auto;
+        }
+        .checkout-wrapper {
+            padding: 0 20px 30px;
+        }
+        .checkout-title {
+            font-size: 26px;
+            letter-spacing: 4px;
+        }
+        .total-value {
+            font-size: 24px;
+        }
+        .card {
+            padding: 25px 20px;
+        }
+    }
+
     @media (max-width: 600px) {
         .form-grid {
             grid-template-columns: 1fr;
@@ -351,12 +372,23 @@
         }
 
         .checkout-title {
-            font-size: 24px;
-            letter-spacing: 5px;
+            font-size: 22px;
+            letter-spacing: 3px;
         }
 
         .card {
-            padding: 25px;
+            padding: 20px 16px;
+            border-radius: 14px;
+        }
+
+        .checkout-wrapper {
+            padding: 0 12px 20px;
+        }
+
+        .pay-btn {
+            height: 50px;
+            font-size: 13px;
+            letter-spacing: 2px;
         }
     }
 </style>

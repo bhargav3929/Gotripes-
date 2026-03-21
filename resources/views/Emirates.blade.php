@@ -304,10 +304,10 @@
     /* ─── MOBILE RESPONSIVE ─────────────────────────── */
     @media (max-width: 991px) {
         .emirates-page-wrapper {
-            padding-top: 50px;
+            padding-top: 15px;
         }
         .hero-header {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .hero-header h1 {
             font-size: clamp(28px, 8vw, 48px);
@@ -339,12 +339,26 @@
         }
     }
 
+    @media (max-width: 768px) {
+        .activities-grid-luxury {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .activity-v2-card {
+            height: auto;
+            min-height: 340px;
+        }
+        .activity-v2-img-container {
+            height: 190px;
+        }
+    }
+
     @media (max-width: 575px) {
         .emirates-page-wrapper {
-            padding-top: 45px;
+            padding-top: 10px;
         }
         .hero-header {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .hero-header h1 {
             font-size: clamp(26px, 10vw, 38px);

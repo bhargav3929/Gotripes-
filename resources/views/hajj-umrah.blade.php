@@ -5,13 +5,13 @@
     <section class="hajj-hero" style="position: relative; height: 70vh; background: url('assets/index_files/umrah_1.png') center center / cover no-repeat; display: flex; align-items: center; justify-content: center; text-align: center;">
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);"></div>
         <div class="container" style="position: relative; z-index: 2;">
-            <h1 style="font-size: 64px; font-weight: 800; letter-spacing: 4px; background: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8960C 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; margin-bottom: 20px;">HAJJ & UMRAH</h1>
-            <p style="font-size: 20px; color: #ddd; max-width: 800px; margin: 0 auto; line-height: 1.6;">Experience a sacred journey of a lifetime with our premium, all-inclusive pilgrimage packages designed for your comfort and spiritual peace.</p>
+            <h1 style="font-size: clamp(28px, 8vw, 64px); font-weight: 800; letter-spacing: 4px; background: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8960C 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; margin-bottom: 20px;">HAJJ & UMRAH</h1>
+            <p style="font-size: clamp(14px, 2.5vw, 20px); color: #ddd; max-width: 800px; margin: 0 auto; line-height: 1.6;">Experience a sacred journey of a lifetime with our premium, all-inclusive pilgrimage packages designed for your comfort and spiritual peace.</p>
         </div>
     </section>
 
     <!-- Services Overview -->
-    <section style="padding: 80px 0; background: #050505;">
+    <section style="padding: clamp(40px, 8vw, 80px) 0; background: #050505;">
         <div class="container">
             <div class="row g-4">
                 <div class="col-md-4">
@@ -40,7 +40,7 @@
     </section>
 
     <!-- Umrah Packages Section (Dynamic) -->
-    <section style="padding: 80px 0; background: #000;">
+    <section style="padding: clamp(40px, 8vw, 80px) 0; background: #000;">
         <div class="container">
             <h2 class="section-title">UMRAH PACKAGES</h2>
 
@@ -147,7 +147,7 @@
     </section>
 
     <!-- Hajj Section -->
-    <section style="padding: 100px 0; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('assets/index_files/umrah_1.png') center center / fixed no-repeat;">
+    <section style="padding: clamp(50px, 10vw, 100px) 0; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('assets/index_files/umrah_1.png') center center / fixed no-repeat;">
         <div class="container text-center">
             <h2 class="section-title">ANNUAL HAJJ 2026</h2>
             <p style="font-size: 18px; color: #ccc; max-width: 700px; margin: 20px auto 40px auto;">Registrations for Hajj 2026 are now open. Secure your spot for the most sacred journey of your life with our expert logistics team.</p>
@@ -340,6 +340,20 @@
         box-shadow: none !important;
     }
 
+    @media (max-width: 991px) {
+        .hajj-hero {
+            height: 50vh !important;
+        }
+        .hajj-hero h1 {
+            font-size: 48px !important;
+            letter-spacing: 3px !important;
+        }
+        .section-title {
+            font-size: 30px;
+            margin-bottom: 35px;
+        }
+    }
+
     @media (max-width: 768px) {
         .hajj-hero h1 {
             font-size: 36px !important;
@@ -356,6 +370,49 @@
         }
         .package-img {
             height: 200px;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hajj-hero {
+            height: 40vh !important;
+        }
+        .hajj-hero h1 {
+            font-size: 28px !important;
+            letter-spacing: 1px !important;
+        }
+        .hajj-hero p {
+            font-size: 14px !important;
+        }
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 25px;
+        }
+        .pilgrimage-feature {
+            padding: 25px 15px;
+        }
+        .pilgrimage-feature i {
+            font-size: 30px;
+        }
+        .pilgrimage-feature h3 {
+            font-size: 17px;
+        }
+        .package-body {
+            padding: 20px;
+        }
+        .package-body h3 {
+            font-size: 20px;
+        }
+        .package-footer {
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
+        }
+        .package-footer .btn {
+            width: 100%;
+        }
+        .package-img {
+            height: 180px !important;
         }
     }
 </style>

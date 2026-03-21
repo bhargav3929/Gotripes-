@@ -47,7 +47,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      padding: 1rem 1rem 2rem;
+      padding: 0.5rem 1rem 0.5rem;
       height: auto;
     }
 
@@ -59,14 +59,22 @@
       }
 
       .partner-registration-page .custom-banner .image-overlay {
-        height: auto;
+        height: auto !important;
+        overflow: visible !important;
+        clip: auto !important;
+        clip-path: none !important;
+        -webkit-clip-path: none !important;
         background-position: top center;
         background-attachment: scroll;
       }
 
       .partner-registration-page .custom-banner .overlay {
         position: relative;
-        height: auto;
+        height: auto !important;
+        overflow: visible !important;
+        clip: auto !important;
+        clip-path: none !important;
+        padding-bottom: 0.8rem;
       }
     }
 

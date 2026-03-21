@@ -212,13 +212,28 @@
         .activity-item {
             max-width: none;
         }
-        
+
         .activity-box-container {
             height: 380px;
         }
-        
+
         .box_images {
             height: 200px;
+        }
+
+        .static-content {
+            padding: 15px;
+            font-size: 14px;
+        }
+        .blog_box {
+            padding: 15px 12px;
+        }
+        .blog_box h3 {
+            font-size: 15px;
+        }
+        .book-now-overlay {
+            padding: 7px 14px;
+            font-size: 12px;
         }
     }
     
