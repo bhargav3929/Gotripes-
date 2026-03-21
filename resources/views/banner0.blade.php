@@ -561,16 +561,6 @@ document.addEventListener('DOMContentLoaded', function() {
     showSlide(0);
   });
 
-  // Fix: force overflow visible on ALL ancestor elements to prevent clipping
-  var adWrapper = document.querySelector('.ad-cards-wrapper');
-  if (adWrapper) {
-    var el = adWrapper.parentElement;
-    while (el && el.tagName !== 'BODY' && el.tagName !== 'HTML') {
-      el.style.setProperty('overflow', 'visible', 'important');
-      el.style.setProperty('clip', 'auto', 'important');
-      el.style.setProperty('clip-path', 'none', 'important');
-      el = el.parentElement;
-    }
-  }
 });
 </script>
+
