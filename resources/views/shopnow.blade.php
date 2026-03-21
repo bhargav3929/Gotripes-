@@ -138,12 +138,45 @@
     }
 
     @media (max-width: 768px) {
+        .coming-soon-section {
+            min-height: auto;
+            align-items: flex-start;
+            padding: 30px 15px;
+        }
         .coming-soon-title { font-size: 32px; }
         .coming-soon-subtitle { font-size: 14px; }
-        .coming-soon-icon { font-size: 3rem; }
-        .features-row { gap: 25px; }
+        .coming-soon-icon { font-size: 3rem; margin-bottom: 15px; }
+        .features-row { gap: 25px; margin-bottom: 25px; }
         .feature-icon { width: 44px; height: 44px; font-size: 1rem; }
         .feature-label { font-size: 10px; }
+    }
+
+    @media (max-width: 575px) {
+        .coming-soon-title {
+            font-size: 26px;
+        }
+        .coming-soon-section {
+            padding: 20px 15px;
+        }
+        .btn-explore {
+            max-width: 100%;
+            padding: 12px 24px;
+            font-size: 13px;
+        }
+        .coming-soon-badge {
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 8px 20px;
+        }
+        .features-row {
+            gap: 20px;
+        }
+        .feature-item i {
+            font-size: 24px;
+        }
+        .feature-item span {
+            font-size: 12px;
+        }
     }
 </style>
 

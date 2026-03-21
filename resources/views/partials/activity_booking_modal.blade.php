@@ -812,6 +812,11 @@
             padding-left: 14px !important;
             padding-right: 14px !important;
         }
+        .payment-card {
+            min-width: unset;
+            width: calc(100vw - 30px);
+            max-width: 440px;
+        }
         .modal-step-indicator {
             margin-bottom: 16px;
         }

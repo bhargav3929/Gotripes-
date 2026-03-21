@@ -147,9 +147,14 @@
 
   @media (max-width: 768px) {
     .nav-link2 {
-      padding: 8px 14px;
-      font-size: 14px;
-      margin: 5px;
+      padding: 7px 12px;
+      font-size: 11px;
+      margin: 2px;
+    }
+
+    .nav-container {
+      gap: 4px;
+      padding: 6px;
     }
 
     .hero-section {
@@ -158,18 +163,24 @@
 
     .search-box {
       width: 100%;
-      padding: 1rem;
+      padding: 0.5rem;
     }
 
     .container {
-      padding: 1rem;
+      padding: 0.5rem;
     }
   }
 
   @media (max-width: 480px) {
     .nav-link2 {
-      font-size: 12px;
-      padding: 6px 10px;
+      font-size: 10px;
+      padding: 6px 8px;
+      margin: 2px;
+    }
+
+    .nav-container {
+      gap: 3px;
+      padding: 4px;
     }
   }
 </style>
@@ -262,20 +273,26 @@
 <style>
   .ad-cards-wrapper {
     margin-top: 0;
-    margin-bottom: 28px;
-    padding-top: 0;
+    margin-bottom: 10px;
+    padding: 0 20px;
     position: relative;
     z-index: 3;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
   }
 
   .ad-grid {
     display: flex;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
     width: 100%;
   }
 
   .ad-grid-item {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid #C9A227;
@@ -336,25 +353,57 @@
 
   @media (max-width: 768px) {
     .ad-cards-wrapper {
-      margin-top: 0;
+      margin-top: 0 !important;
+      margin-bottom: 6px !important;
+      padding: 6px 6px 0 !important;
+      background: #000;
+      box-sizing: border-box;
     }
 
     .ad-grid {
-      gap: 6px;
+      gap: 5px !important;
+      flex-wrap: nowrap !important;
+      justify-content: center !important;
     }
 
     .ad-grid-item {
-      height: 100px;
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      height: 75px !important;
+      min-height: 75px !important;
+      border-radius: 8px !important;
+      border-width: 1px !important;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+    }
+
+    .ad-grid-item:hover {
+      border: 1px solid #C9A227 !important;
+      box-shadow: none !important;
+      transform: none !important;
     }
   }
 
   @media (max-width: 480px) {
+    .ad-cards-wrapper {
+      padding: 5px 4px 0 !important;
+    }
+
     .ad-grid {
-      gap: 4px;
+      gap: 4px !important;
     }
 
     .ad-grid-item {
-      height: 80px;
+      height: 65px !important;
+      min-height: 65px !important;
+      border-radius: 6px !important;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .ad-grid-item {
+      height: 55px !important;
+      min-height: 55px !important;
+      border-radius: 5px !important;
     }
   }
 </style>
@@ -363,7 +412,7 @@
 <div class="rotating-ad-strip" style="
   width: 100%;
   max-width: 600px;
-  margin: 20px auto 0;
+  margin: 8px auto 0;
   text-align: center;
   min-height: 40px;
   position: relative;
@@ -392,6 +441,12 @@
 
   .rotating-ad-strip a:hover {
     color: #fff !important;
+  }
+
+  @media (max-width: 768px) {
+    .rotating-ad-strip {
+      display: none;
+    }
   }
 </style>
 
@@ -505,5 +560,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start the first slide
     showSlide(0);
   });
+
+  // Fix: force overflow visible on ALL ancestor elements to prevent clipping
+  var adWrapper = document.querySelector('.ad-cards-wrapper');
+  if (adWrapper) {
+    var el = adWrapper.parentElement;
+    while (el && el.tagName !== 'BODY' && el.tagName !== 'HTML') {
+      el.style.setProperty('overflow', 'visible', 'important');
+      el.style.setProperty('clip', 'auto', 'important');
+      el.style.setProperty('clip-path', 'none', 'important');
+      el = el.parentElement;
+    }
+  }
 });
 </script>

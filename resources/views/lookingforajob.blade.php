@@ -228,6 +228,34 @@
       padding: 25px;
     }
   }
+
+  @media (max-width: 575px) {
+    .premium-title {
+        font-size: 24px;
+        letter-spacing: 1px;
+    }
+    .glass-card {
+        padding: 20px 15px;
+        border-radius: 14px;
+    }
+    .content-section {
+        padding: 30px 0;
+    }
+    .btn-gold {
+        min-width: 200px;
+        padding: 14px 30px;
+        font-size: 13px;
+    }
+    .info-card {
+        padding: 20px;
+    }
+    .section-title-sm {
+        font-size: 17px;
+    }
+    .status-card {
+        padding: 15px;
+    }
+  }
 </style>
 
 <!-- Intro Section -->

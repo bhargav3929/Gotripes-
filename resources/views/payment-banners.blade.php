@@ -123,21 +123,26 @@
 
     @media (max-width: 768px) {
         .payment-gateway-banner {
+            flex-direction: column;
+            align-items: center;
             gap: 10px;
-            padding: 12px 20px;
+            padding: 14px 16px;
             border-radius: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            width: 100%;
         }
 
         .payment-gateway-banner-text {
             width: 100%;
             margin-right: 0;
-            margin-bottom: 8px;
+            margin-bottom: 0;
             font-size: 13px;
+            justify-content: center;
         }
 
         .payment-logos-wrapper {
-            gap: 10px;
+            gap: 8px;
+            justify-content: center;
         }
 
         .payment-logo-box {

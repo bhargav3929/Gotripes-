@@ -994,10 +994,10 @@
 
         @media (max-width: 991px) {
             body {
-                margin-top: 140px;
+                margin-top: 150px;
             }
             body.has-ticker {
-                margin-top: 178px;
+                margin-top: 230px; 
             }
             .gt-partner-label, .gt-partner-title {
                 display: none !important;
@@ -1006,10 +1006,10 @@
 
         @media (max-width: 575px) {
             body {
-                margin-top: 125px;
+                margin-top: 140px;
             }
             body.has-ticker {
-                margin-top: 163px;
+                margin-top: 240px; 
             }
         }
 

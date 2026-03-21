@@ -452,9 +452,11 @@
 
 
   /* Custom grid for 5 cards per row on large screens */
-  .services-section .col-lg-3 {
-    width: 20%;
-    /* 5 cards per row on large screens */
+  @media (min-width: 1200px) {
+    .services-section .col-lg-3 {
+      width: 20%;
+      /* 5 cards per row on large screens */
+    }
   }
 
   .service-card {
@@ -1602,9 +1604,14 @@
     .blodgdf h2 {
       font-size: 20px !important;
     }
-
+    .blodgdf a.card-title {
+      font-size: 16px !important;
+    }
     .blodgdf {
       padding: 40px 0 30px;
+    }
+    .stat-number, .stat-prefix, .stat-suffix {
+      font-size: clamp(28px, 5vw, 42px) !important;
     }
   }
 </style>
