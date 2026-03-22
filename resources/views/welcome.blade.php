@@ -2,6 +2,19 @@
 <!-- START HOME -->
 @include('banner')
 
+{{-- Mobile fix: move ad cards outside the banner's clipping containers --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.innerWidth > 768) return;
+  var adWrapper = document.querySelector('.ad-cards-wrapper');
+  var servicesSection = document.querySelector('.services-section');
+  if (adWrapper && servicesSection) {
+    servicesSection.parentElement.insertBefore(adWrapper, servicesSection);
+    adWrapper.style.cssText = 'width:100%;padding:5px 4px;margin:0;background:#000;position:relative;z-index:100;box-sizing:border-box;';
+  }
+});
+</script>
+
 <!------ services ------->
 <section class="services-section"
   style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 0 0 80px;">
