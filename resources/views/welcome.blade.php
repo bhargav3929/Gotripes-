@@ -2,18 +2,30 @@
 <!-- START HOME -->
 @include('banner')
 
-{{-- Mobile fix: move ad cards outside the banner's clipping containers --}}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  if (window.innerWidth > 768) return;
-  var adWrapper = document.querySelector('.ad-cards-wrapper');
-  var servicesSection = document.querySelector('.services-section');
-  if (adWrapper && servicesSection) {
-    servicesSection.parentElement.insertBefore(adWrapper, servicesSection);
-    adWrapper.style.cssText = 'width:100%;padding:5px 4px;margin:0;background:#000;position:relative;z-index:100;box-sizing:border-box;';
+{{-- Mobile fix: override overflow:hidden on banner containers so ad cards stay visible in original position --}}
+<style>
+@media (max-width: 768px) {
+  .image-overlay,
+  .partner-registration-page .custom-banner .image-overlay,
+  .custom-banner .image-overlay {
+    overflow: visible !important;
+    clip: auto !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
   }
-});
-</script>
+  .partner-registration-page .custom-banner .overlay,
+  .custom-banner .overlay {
+    overflow: visible !important;
+    clip: auto !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+  }
+  .partner-registration-page,
+  .custom-banner {
+    overflow: visible !important;
+  }
+}
+</style>
 
 <!------ services ------->
 <section class="services-section"
