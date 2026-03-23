@@ -83,7 +83,7 @@ class EsimController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:200',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'required|string|max:20',
             'bundle_code' => 'required|string|max:200',
             'country_code' => 'required|string|max:5',
             'country_name' => 'required|string|max:100',

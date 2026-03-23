@@ -1218,8 +1218,9 @@
                         <span class="esim-field-error" id="esimNameError">Full name is required</span>
                     </div>
                     <div class="esim-form-field">
-                        <label class="esim-field-label">Phone Number</label>
+                        <label class="esim-field-label">Phone Number *</label>
                         <input type="tel" class="esim-field-input" id="esimPhone" placeholder="+971 50 000 0000" autocomplete="tel">
+                        <span class="esim-field-error" id="esimPhoneError">Phone number is required</span>
                     </div>
                     <div class="esim-form-field">
                         <label class="esim-field-label">Email Address *</label>
@@ -1695,6 +1696,15 @@
             valid = false;
         } else {
             clearFieldError('esimName', 'esimNameError');
+        }
+
+        // Phone
+        const phone = document.getElementById('esimPhone').value.trim();
+        if (!phone) {
+            showFieldError('esimPhone', 'esimPhoneError');
+            valid = false;
+        } else {
+            clearFieldError('esimPhone', 'esimPhoneError');
         }
 
         // Email
