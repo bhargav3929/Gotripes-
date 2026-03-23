@@ -23,17 +23,16 @@
     body { margin: 0; background-color: var(--c-dark-bg); }
 
     /* ============================================================
-       SECTION 1 — HERO BANNER
+       HERO BANNER
        ============================================================ */
     .esim-hero {
         position: relative;
         width: 100%;
-        min-height: 280px;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 200px 28px 40px;
+        padding: 180px 28px 40px;
         background: linear-gradient(180deg, #000 0%, #080808 50%, var(--c-dark-bg) 100%);
         overflow: hidden;
     }
@@ -91,7 +90,7 @@
 
     .esim-hero-title {
         font-family: 'Outfit', sans-serif;
-        font-size: 38px;
+        font-size: 42px;
         font-weight: 700;
         color: var(--c-gold);
         letter-spacing: -0.5px;
@@ -110,21 +109,173 @@
         max-width: 500px;
     }
 
-    .esim-hero-divider {
-        width: 120px;
-        height: 1px;
-        margin: 0 auto;
-        background: linear-gradient(90deg, transparent, var(--c-gold), transparent);
-        opacity: 0.4;
+    .esim-trust-badges {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        flex-wrap: wrap;
+    }
+
+    .esim-trust-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .esim-trust-badge i {
+        color: var(--c-gold);
+        font-size: 14px;
     }
 
     /* ============================================================
-       SECTION 2 — COUNTRY SELECTION
+       PROGRESS BAR
        ============================================================ */
-    .esim-countries-section {
-        max-width: 1440px;
+    .esim-progress-wrap {
+        max-width: 600px;
         margin: 0 auto;
-        padding: 24px 28px 0;
+        padding: 32px 28px 0;
+        font-family: 'Outfit', sans-serif;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+        pointer-events: none;
+        height: 0;
+        overflow: hidden;
+    }
+
+    .esim-progress-wrap.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+        height: auto;
+        padding-bottom: 8px;
+    }
+
+    .esim-progress-bar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .esim-progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+        flex: 0 0 auto;
+    }
+
+    .esim-progress-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        background: #222;
+        color: #555;
+        border: 2px solid #333;
+        transition: all 0.4s ease;
+    }
+
+    .esim-progress-step.active .esim-progress-circle {
+        background: var(--c-gold-gradient);
+        color: #000;
+        border-color: var(--c-gold);
+        box-shadow: 0 0 16px rgba(255, 215, 0, 0.2);
+    }
+
+    .esim-progress-step.completed .esim-progress-circle {
+        background: var(--c-gold-gradient);
+        color: #000;
+        border-color: var(--c-gold);
+    }
+
+    .esim-progress-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: color 0.4s ease;
+    }
+
+    .esim-progress-step.active .esim-progress-label,
+    .esim-progress-step.completed .esim-progress-label {
+        color: var(--c-gold);
+    }
+
+    .esim-progress-line {
+        position: absolute;
+        top: 18px;
+        height: 2px;
+        background: #222;
+        z-index: 0;
+    }
+
+    .esim-progress-line-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--c-gold-gradient);
+        transition: width 0.5s ease;
+    }
+
+    .esim-progress-line-1 {
+        left: 60px;
+        right: calc(50% + 30px);
+    }
+
+    .esim-progress-line-2 {
+        left: calc(50% + 30px);
+        right: 60px;
+    }
+
+    /* ============================================================
+       WIZARD STEPS (shared)
+       ============================================================ */
+    .esim-wizard-step {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.45s ease, transform 0.45s ease;
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        visibility: hidden;
+    }
+
+    .esim-wizard-step.step-active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+        position: relative;
+        visibility: visible;
+    }
+
+    .esim-wizard-container {
+        position: relative;
+        min-height: 400px;
+    }
+
+    /* ============================================================
+       STEP 1 — CHOOSE DESTINATION
+       ============================================================ */
+    .esim-step1 {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 28px 48px;
         font-family: 'Outfit', sans-serif;
     }
 
@@ -136,6 +287,101 @@
         letter-spacing: 3px;
         margin-bottom: 24px;
         opacity: 0.9;
+    }
+
+    /* Popular destinations grid */
+    .esim-popular-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+
+    .esim-popular-card {
+        border: 1px solid var(--c-border-subtle);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .esim-popular-card:hover {
+        border-color: rgba(255, 215, 0, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(255, 215, 0, 0.06);
+    }
+
+    .esim-popular-flag {
+        font-size: 32px;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .esim-popular-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .esim-popular-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .esim-popular-cta {
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--c-gold);
+        margin-top: 4px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .esim-popular-card:hover .esim-popular-cta {
+        opacity: 1;
+    }
+
+    /* Individual card gradients */
+    .esim-popular-card[data-iso2="AE"] { background: linear-gradient(135deg, #0a0f0a 0%, #0d1a0d 100%); }
+    .esim-popular-card[data-iso2="TR"] { background: linear-gradient(135deg, #140a0a 0%, #1a0d0d 100%); }
+    .esim-popular-card[data-iso2="TH"] { background: linear-gradient(135deg, #0a0a14 0%, #0d0d1a 100%); }
+    .esim-popular-card[data-iso2="GB"] { background: linear-gradient(135deg, #0a0a12 0%, #0d0d18 100%); }
+    .esim-popular-card[data-iso2="US"] { background: linear-gradient(135deg, #0f0a0a 0%, #150d0d 100%); }
+    .esim-popular-card[data-iso2="SA"] { background: linear-gradient(135deg, #0f0d0a 0%, #15110d 100%); }
+    .esim-popular-card[data-iso2="IN"] { background: linear-gradient(135deg, #100a0a 0%, #180e0a 100%); }
+    .esim-popular-card[data-iso2="EG"] { background: linear-gradient(135deg, #0f0d0a 0%, #14120d 100%); }
+    .esim-popular-card[data-iso2="FR"] { background: linear-gradient(135deg, #0a0a10 0%, #0d0d16 100%); }
+    .esim-popular-card[data-iso2="SG"] { background: linear-gradient(135deg, #0a0f0f 0%, #0d1515 100%); }
+
+    /* Divider with "or" */
+    .esim-or-divider {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 0 0 32px;
+    }
+
+    .esim-or-divider-line {
+        flex: 1;
+        height: 1px;
+        background: #333;
+    }
+
+    .esim-or-divider-text {
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        color: #555;
+        text-transform: lowercase;
     }
 
     /* Search Bar */
@@ -232,7 +478,7 @@
         background: var(--c-card-bg);
         border: 1px solid var(--c-border-subtle);
         border-radius: 12px;
-        padding: 16px;
+        padding: 14px;
         display: flex;
         align-items: center;
         gap: 12px;
@@ -252,14 +498,14 @@
     }
 
     .esim-country-flag {
-        font-size: 28px;
+        font-size: 24px;
         line-height: 1;
         flex-shrink: 0;
     }
 
     .esim-country-name {
         font-family: 'Outfit', sans-serif;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 500;
         color: #fff;
         white-space: nowrap;
@@ -272,15 +518,15 @@
         background: var(--c-card-bg);
         border: 1px solid var(--c-border-subtle);
         border-radius: 12px;
-        padding: 16px;
+        padding: 14px;
         display: flex;
         align-items: center;
         gap: 12px;
     }
 
     .esim-skeleton-flag {
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         border-radius: 6px;
         background: linear-gradient(90deg, #151515 25%, #1a1a1a 50%, #151515 75%);
         background-size: 200% 100%;
@@ -322,42 +568,31 @@
     }
 
     /* ============================================================
-       SECTION 3 — BUNDLE SELECTION + CHECKOUT
+       STEP 2 — SELECT PLAN
        ============================================================ */
-    .esim-checkout-section {
-        max-width: 1440px;
+    .esim-step2 {
+        max-width: 900px;
         margin: 0 auto;
-        padding: 56px 28px 0;
+        padding: 32px 28px 48px;
         font-family: 'Outfit', sans-serif;
-        display: none;
     }
 
-    .esim-checkout-section.visible {
-        display: block;
-    }
-
-    .esim-checkout-grid {
-        display: grid;
-        grid-template-columns: 1fr 340px;
-        gap: 32px;
-        align-items: start;
-    }
-
-    /* Selected Country Header */
+    /* Header bar */
     .esim-selected-header {
         display: flex;
         align-items: center;
         gap: 14px;
+        margin-bottom: 32px;
     }
 
     .esim-selected-flag {
-        font-size: 32px;
+        font-size: 28px;
         line-height: 1;
     }
 
     .esim-selected-name {
         font-family: 'Outfit', sans-serif;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 700;
         color: #fff;
     }
@@ -365,26 +600,57 @@
     .esim-change-btn {
         margin-left: auto;
         background: none;
-        border: none;
+        border: 1px solid rgba(255, 215, 0, 0.2);
         color: var(--c-gold);
         font-family: 'Outfit', sans-serif;
         font-size: 13px;
         font-weight: 500;
         cursor: pointer;
-        padding: 6px 12px;
-        border-radius: 6px;
+        padding: 8px 18px;
+        border-radius: 50px;
         transition: all 0.3s ease;
     }
 
     .esim-change-btn:hover {
         background: rgba(255, 215, 0, 0.06);
+        border-color: rgba(255, 215, 0, 0.4);
     }
 
-    /* Bundle Cards */
-    .esim-bundles-area {
-        margin-top: 24px;
+    /* Bundle Type Tabs */
+    .esim-bundle-tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 24px;
+        border-bottom: 1px solid #222;
     }
 
+    .esim-bundle-tab {
+        flex: 1;
+        padding: 14px 0;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: #555;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        background: none;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .esim-bundle-tab:hover {
+        color: #aaa;
+    }
+
+    .esim-bundle-tab.active {
+        color: #fff;
+        border-bottom-color: var(--c-gold);
+    }
+
+    /* Bundle Loading */
     .esim-bundle-loading {
         display: flex;
         align-items: center;
@@ -408,28 +674,32 @@
         to { transform: rotate(360deg); }
     }
 
+    /* Bundle Cards Grid */
     .esim-bundles-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
     }
 
     .esim-bundle-card {
         background: var(--c-card-bg);
         border: 1px solid var(--c-border-subtle);
         border-radius: 14px;
-        padding: 20px 24px;
+        padding: 28px 20px;
         cursor: pointer;
         transition: all 0.3s ease;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-between;
+        text-align: center;
         position: relative;
+        overflow: visible;
     }
 
     .esim-bundle-card:hover {
         border-color: rgba(255, 215, 0, 0.25);
         box-shadow: 0 4px 16px rgba(255, 215, 0, 0.04);
+        transform: translateY(-2px);
     }
 
     .esim-bundle-card.selected {
@@ -444,7 +714,7 @@
         font-weight: 900;
         position: absolute;
         top: 10px;
-        right: 14px;
+        right: 12px;
         width: 22px;
         height: 22px;
         display: flex;
@@ -456,32 +726,44 @@
         border-radius: 50%;
     }
 
-    .esim-bundle-left {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
     .esim-bundle-data {
         font-family: 'Outfit', sans-serif;
-        font-size: 22px;
-        font-weight: 700;
+        font-size: 28px;
+        font-weight: 800;
         color: var(--c-gold);
         line-height: 1.2;
+        margin-bottom: 4px;
     }
 
     .esim-bundle-validity {
         font-family: 'Outfit', sans-serif;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 400;
         color: var(--c-text-muted);
+        margin-bottom: 16px;
+    }
+
+    .esim-bundle-divider {
+        width: 60%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+        margin-bottom: 16px;
+    }
+
+    .esim-bundle-price {
+        font-family: 'Outfit', sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.2;
+        margin-bottom: 12px;
     }
 
     .esim-bundle-badges {
         display: flex;
-        gap: 8px;
-        margin-top: 6px;
+        gap: 6px;
         flex-wrap: wrap;
+        justify-content: center;
     }
 
     .esim-bundle-badge {
@@ -497,30 +779,302 @@
         border: 1px solid rgba(255, 215, 0, 0.1);
     }
 
-    .esim-bundle-right {
-        text-align: right;
-        flex-shrink: 0;
-        padding-left: 16px;
-    }
-
-    .esim-bundle-price {
+    /* Most Popular badge */
+    .esim-bundle-popular-tag {
+        position: absolute;
+        top: -11px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--c-gold-gradient);
+        color: #000;
         font-family: 'Outfit', sans-serif;
-        font-size: 20px;
+        font-size: 9px;
         font-weight: 700;
-        color: #fff;
-        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 4px 14px;
+        border-radius: 50px;
+        white-space: nowrap;
     }
 
-    .esim-bundle-currency {
+    /* Show All button */
+    .esim-show-all-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--c-gold);
         font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 16px 0;
+        text-align: center;
+        width: 100%;
+        transition: opacity 0.3s ease;
+    }
+
+    .esim-show-all-btn:hover {
+        opacity: 0.8;
+    }
+
+    .esim-show-all-btn.visible {
+        display: block;
+    }
+
+    /* Continue Button */
+    .esim-continue-btn {
+        display: block;
+        width: 100%;
+        max-width: 400px;
+        margin: 32px auto 0;
+        height: 50px;
+        background: var(--c-gold-gradient);
+        color: #000;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(255, 215, 0, 0.1);
+    }
+
+    .esim-continue-btn:hover:not(:disabled) {
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        transform: translateY(-1px);
+        filter: brightness(1.08);
+    }
+
+    .esim-continue-btn:disabled {
+        background: #1a1a1a;
+        color: #444;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    /* ============================================================
+       STEP 3 — CHECKOUT
+       ============================================================ */
+    .esim-step3 {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 32px 28px 48px;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    /* Back button */
+    .esim-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: none;
+        border: none;
+        color: var(--c-gold);
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0;
+        margin-bottom: 24px;
+        transition: opacity 0.3s ease;
+    }
+
+    .esim-back-btn:hover {
+        opacity: 0.7;
+    }
+
+    .esim-back-btn i {
         font-size: 11px;
+    }
+
+    /* Order Summary Card */
+    .esim-summary-card {
+        background: var(--c-card-bg);
+        border: 1px solid rgba(255, 215, 0, 0.1);
+        border-radius: 14px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 32px;
+    }
+
+    .esim-summary-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--c-gold-gradient);
+    }
+
+    .esim-summary-inner {
+        padding: 28px 24px;
+    }
+
+    .esim-summary-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+    }
+
+    .esim-summary-empty {
+        text-align: center;
+        padding: 40px 0;
+        color: #555;
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
         font-weight: 400;
-        color: #666;
+    }
+
+    .esim-summary-content {
+        display: none;
+    }
+
+    .esim-summary-content.visible {
+        display: block;
+    }
+
+    .esim-summary-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .esim-summary-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .esim-summary-country-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .esim-summary-country-flag {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .esim-summary-country-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+    }
+
+    .esim-summary-bundle-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .esim-summary-bundle-details {
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        color: var(--c-text-muted);
+        margin-top: 2px;
+    }
+
+    .esim-summary-badges {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .esim-summary-right-price {
+        font-family: 'Outfit', sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--c-gold);
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        flex-shrink: 0;
+        text-align: right;
+    }
+
+    .esim-summary-change-plan {
+        display: block;
+        margin-top: 16px;
+        background: none;
+        border: none;
+        color: var(--c-gold);
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .esim-summary-change-plan:hover {
+        opacity: 0.7;
+    }
+
+    .esim-summary-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.06);
+        margin: 16px 0;
+    }
+
+    .esim-summary-price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+
+    .esim-summary-price-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--c-text-muted);
+    }
+
+    .esim-summary-price-value {
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+    }
+
+    .esim-summary-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 4px;
+    }
+
+    .esim-summary-total-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .esim-summary-total-value {
+        font-family: 'Outfit', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--c-gold);
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     }
 
     /* Customer Form */
     .esim-form-area {
-        margin-top: 32px;
+        margin-bottom: 32px;
     }
 
     .esim-form-grid {
@@ -603,154 +1157,10 @@
         display: block;
     }
 
-    /* ============================================================
-       ORDER SUMMARY (Right Column)
-       ============================================================ */
-    .esim-summary-sticky {
-        position: sticky;
-        top: 100px;
-    }
-
-    .esim-summary-card {
-        background: var(--c-card-bg);
-        border: 1px solid rgba(255, 215, 0, 0.1);
-        border-radius: 14px;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .esim-summary-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: var(--c-gold-gradient);
-    }
-
-    .esim-summary-inner {
-        padding: 28px 24px;
-    }
-
-    .esim-summary-title {
-        font-family: 'Outfit', sans-serif;
-        font-size: 10px;
-        font-weight: 700;
-        color: var(--c-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 20px;
-    }
-
-    .esim-summary-empty {
-        text-align: center;
-        padding: 40px 0;
-        color: #555;
-        font-family: 'Outfit', sans-serif;
-        font-size: 13px;
-        font-weight: 400;
-    }
-
-    .esim-summary-content {
-        display: none;
-    }
-
-    .esim-summary-content.visible {
-        display: block;
-    }
-
-    .esim-summary-country {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .esim-summary-country-flag {
-        font-size: 20px;
-        line-height: 1;
-    }
-
-    .esim-summary-country-name {
-        font-family: 'Outfit', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        color: #fff;
-    }
-
-    .esim-summary-divider {
-        height: 1px;
-        background: rgba(255, 255, 255, 0.06);
-        margin: 16px 0;
-    }
-
-    .esim-summary-bundle-name {
-        font-family: 'Outfit', sans-serif;
-        font-size: 15px;
-        font-weight: 600;
-        color: #fff;
-        margin-bottom: 4px;
-    }
-
-    .esim-summary-bundle-details {
-        font-family: 'Outfit', sans-serif;
-        font-size: 13px;
-        color: var(--c-text-muted);
-    }
-
-    .esim-summary-badges {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-    }
-
-    .esim-summary-price-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-    }
-
-    .esim-summary-price-label {
-        font-family: 'Outfit', sans-serif;
-        font-size: 13px;
-        font-weight: 400;
-        color: var(--c-text-muted);
-    }
-
-    .esim-summary-price-value {
-        font-family: 'Outfit', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        color: #fff;
-    }
-
-    .esim-summary-total-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        margin-top: 4px;
-    }
-
-    .esim-summary-total-label {
-        font-family: 'Outfit', sans-serif;
-        font-size: 15px;
-        font-weight: 600;
-        color: #fff;
-    }
-
-    .esim-summary-total-value {
-        font-family: 'Outfit', sans-serif;
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--c-gold);
-        text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-    }
-
     /* Pay Button */
     .esim-pay-btn {
         width: 100%;
-        height: 50px;
+        height: 54px;
         background: var(--c-gold-gradient);
         color: #000;
         font-family: 'Outfit', sans-serif;
@@ -761,7 +1171,6 @@
         border-radius: 50px;
         border: none;
         cursor: pointer;
-        margin-top: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -843,10 +1252,10 @@
     }
 
     /* ============================================================
-       SECTION 4 — HOW IT WORKS
+       HOW IT WORKS
        ============================================================ */
     .esim-how-section {
-        max-width: 1440px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 96px 28px 0;
         text-align: center;
@@ -930,7 +1339,7 @@
     }
 
     /* ============================================================
-       SECTION 5 — FAQ
+       FAQ
        ============================================================ */
     .esim-faq-section {
         max-width: 900px;
@@ -1036,18 +1445,19 @@
     /* ============================================================
        RESPONSIVE
        ============================================================ */
+    @media (max-width: 1200px) {
+        .esim-popular-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
     @media (max-width: 1024px) {
         .esim-country-grid {
             grid-template-columns: repeat(3, 1fr);
         }
 
-        .esim-checkout-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .esim-summary-sticky {
-            position: relative;
-            top: 0;
+        .esim-bundles-list {
+            grid-template-columns: repeat(2, 1fr);
         }
 
         .esim-how-grid {
@@ -1058,26 +1468,47 @@
     @media (max-width: 768px) {
         .esim-hero {
             padding: 170px 20px 36px;
-            min-height: auto;
         }
 
         .esim-hero-title {
-            font-size: 30px;
+            font-size: 32px;
         }
 
         .esim-hero-subtitle {
             font-size: 14px;
         }
 
-        .esim-countries-section,
-        .esim-checkout-section {
-            padding-left: 16px;
-            padding-right: 16px;
+        .esim-trust-badges {
+            gap: 20px;
+        }
+
+        .esim-trust-badge {
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .esim-popular-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
 
         .esim-country-grid {
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
+        }
+
+        .esim-step1,
+        .esim-step2,
+        .esim-step3 {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .esim-bundles-list {
+            grid-template-columns: 1fr;
+        }
+
+        .esim-form-grid {
+            grid-template-columns: 1fr;
         }
 
         .esim-how-grid {
@@ -1093,20 +1524,23 @@
             padding: 56px 16px 64px;
         }
 
-        .esim-form-grid {
-            grid-template-columns: 1fr;
+        .esim-selected-header {
+            flex-wrap: wrap;
         }
 
-        .esim-bundle-card {
-            padding: 16px 18px;
+        .esim-change-btn {
+            margin-left: 0;
+            margin-top: 8px;
         }
 
-        .esim-bundle-data {
-            font-size: 18px;
+        .esim-progress-label {
+            font-size: 9px;
         }
 
-        .esim-bundle-price {
-            font-size: 17px;
+        .esim-progress-circle {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
         }
 
         .esim-region-pills {
@@ -1119,15 +1553,31 @@
         }
     }
 
-    @media (max-width: 600px) {
-        .esim-country-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
     @media (max-width: 375px) {
         .esim-hero-title {
+            font-size: 28px;
+        }
+
+        .esim-trust-badges {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .esim-popular-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .esim-popular-card {
+            padding: 14px;
+        }
+
+        .esim-popular-flag {
             font-size: 26px;
+        }
+
+        .esim-popular-name {
+            font-size: 13px;
         }
 
         .esim-country-grid {
@@ -1141,7 +1591,7 @@
         }
 
         .esim-country-flag {
-            font-size: 24px;
+            font-size: 20px;
         }
 
         .esim-country-name {
@@ -1151,62 +1601,152 @@
 </style>
 
 <!-- ============================================================
-     SECTION 1 — HERO BANNER
+     HERO BANNER
      ============================================================ -->
 <section class="esim-hero">
     <div class="esim-hero-inner">
-        <div class="esim-hero-badge">TRAVEL DATA PLANS</div>
+        <div class="esim-hero-badge">TRAVEL eSIM</div>
         <h1 class="esim-hero-title">Stay Connected Worldwide</h1>
-        <p class="esim-hero-subtitle">Instant eSIM activation for 186+ countries. No physical SIM needed.</p>
-        <div class="esim-hero-divider"></div>
+        <p class="esim-hero-subtitle">Instant data plans for 186+ countries</p>
+        <div class="esim-trust-badges">
+            <span class="esim-trust-badge"><i class="fa-solid fa-earth-americas"></i> 186+ Countries</span>
+            <span class="esim-trust-badge"><i class="fa-solid fa-bolt"></i> Instant Activation</span>
+            <span class="esim-trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure Payment</span>
+        </div>
     </div>
 </section>
 
 <!-- ============================================================
-     SECTION 2 — COUNTRY SELECTION
+     PROGRESS BAR
      ============================================================ -->
-<section class="esim-countries-section" id="esimCountriesSection">
-    <div class="esim-section-label">SELECT YOUR DESTINATION</div>
-
-    <div class="esim-search-wrap">
-        <input type="text" class="esim-search-input" id="esimSearchInput" placeholder="Search 186+ countries..." autocomplete="off">
-        <i class="fa-solid fa-magnifying-glass esim-search-icon"></i>
+<div class="esim-progress-wrap" id="esimProgressWrap">
+    <div class="esim-progress-bar">
+        <div class="esim-progress-step active" id="esimProgressStep1">
+            <div class="esim-progress-circle" id="esimProgressCircle1">1</div>
+            <span class="esim-progress-label">Destination</span>
+        </div>
+        <div class="esim-progress-line esim-progress-line-1">
+            <div class="esim-progress-line-fill" id="esimProgressFill1"></div>
+        </div>
+        <div class="esim-progress-step" id="esimProgressStep2">
+            <div class="esim-progress-circle" id="esimProgressCircle2">2</div>
+            <span class="esim-progress-label">Plan</span>
+        </div>
+        <div class="esim-progress-line esim-progress-line-2">
+            <div class="esim-progress-line-fill" id="esimProgressFill2"></div>
+        </div>
+        <div class="esim-progress-step" id="esimProgressStep3">
+            <div class="esim-progress-circle" id="esimProgressCircle3">3</div>
+            <span class="esim-progress-label">Checkout</span>
+        </div>
     </div>
-
-    <div class="esim-region-pills" id="esimRegionPills">
-        <span class="esim-region-pill active" data-region="all">All</span>
-        <span class="esim-region-pill" data-region="middle_east">Middle East</span>
-        <span class="esim-region-pill" data-region="asia">Asia</span>
-        <span class="esim-region-pill" data-region="europe">Europe</span>
-        <span class="esim-region-pill" data-region="africa">Africa</span>
-        <span class="esim-region-pill" data-region="north_america">North America</span>
-        <span class="esim-region-pill" data-region="south_america">South America</span>
-    </div>
-
-    <div class="esim-country-grid" id="esimCountryGrid">
-        <!-- Skeleton loaders — rendered by JS on load -->
-    </div>
-</section>
+</div>
 
 <!-- ============================================================
-     SECTION 3 — BUNDLE SELECTION + CHECKOUT
+     WIZARD CONTAINER
      ============================================================ -->
-<section class="esim-checkout-section" id="esimCheckoutSection">
-    <div class="esim-checkout-grid">
-        <!-- Left Column -->
-        <div class="esim-checkout-left">
+<div class="esim-wizard-container" id="esimWizardContainer">
+
+    <!-- STEP 1: Choose Destination -->
+    <section class="esim-wizard-step step-active" id="esimStep1">
+        <div class="esim-step1">
+            <div class="esim-section-label">POPULAR DESTINATIONS</div>
+            <div class="esim-popular-grid" id="esimPopularGrid">
+                <!-- Rendered by JS -->
+            </div>
+
+            <div class="esim-or-divider">
+                <div class="esim-or-divider-line"></div>
+                <span class="esim-or-divider-text">or</span>
+                <div class="esim-or-divider-line"></div>
+            </div>
+
+            <div class="esim-section-label">ALL COUNTRIES</div>
+            <div class="esim-search-wrap">
+                <input type="text" class="esim-search-input" id="esimSearchInput" placeholder="Search 186+ countries..." autocomplete="off">
+                <i class="fa-solid fa-magnifying-glass esim-search-icon"></i>
+            </div>
+
+            <div class="esim-region-pills" id="esimRegionPills">
+                <span class="esim-region-pill active" data-region="all">All</span>
+                <span class="esim-region-pill" data-region="middle_east">Middle East</span>
+                <span class="esim-region-pill" data-region="asia">Asia</span>
+                <span class="esim-region-pill" data-region="europe">Europe</span>
+                <span class="esim-region-pill" data-region="africa">Africa</span>
+                <span class="esim-region-pill" data-region="north_america">North America</span>
+                <span class="esim-region-pill" data-region="south_america">South America</span>
+            </div>
+
+            <div class="esim-country-grid" id="esimCountryGrid">
+                <!-- Skeleton loaders rendered by JS on load -->
+            </div>
+        </div>
+    </section>
+
+    <!-- STEP 2: Select Plan -->
+    <section class="esim-wizard-step" id="esimStep2">
+        <div class="esim-step2">
             <div class="esim-selected-header">
                 <span class="esim-selected-flag" id="esimSelectedFlag"></span>
                 <span class="esim-selected-name" id="esimSelectedName"></span>
                 <button class="esim-change-btn" id="esimChangeBtn"><i class="fa-solid fa-arrow-left" style="margin-right:6px;font-size:11px;"></i>Change</button>
             </div>
 
-            <div class="esim-bundles-area" id="esimBundlesArea">
-                <div class="esim-bundle-loading" id="esimBundleLoading">
-                    <div class="spinner-ring"></div>
-                    <span>Loading available plans...</span>
+            <div class="esim-bundle-tabs">
+                <button class="esim-bundle-tab active" id="esimTabData">Data Plans</button>
+                <button class="esim-bundle-tab" id="esimTabUnlimited">Unlimited Plans</button>
+            </div>
+
+            <div class="esim-bundle-loading" id="esimBundleLoading" style="display:none;">
+                <div class="spinner-ring"></div>
+                <span>Loading available plans...</span>
+            </div>
+
+            <div class="esim-bundles-list" id="esimBundlesList"></div>
+
+            <button class="esim-show-all-btn" id="esimShowAllBtn">Show all plans</button>
+
+            <button class="esim-continue-btn" id="esimContinueBtn" disabled>Continue to Checkout</button>
+        </div>
+    </section>
+
+    <!-- STEP 3: Checkout -->
+    <section class="esim-wizard-step" id="esimStep3">
+        <div class="esim-step3">
+            <button class="esim-back-btn" id="esimBackToPlans"><i class="fa-solid fa-arrow-left"></i> Back to Plans</button>
+
+            <div class="esim-summary-card">
+                <div class="esim-summary-inner">
+                    <div class="esim-summary-title">ORDER SUMMARY</div>
+
+                    <div class="esim-summary-empty" id="esimSummaryEmpty">Select a plan to continue</div>
+
+                    <div class="esim-summary-content" id="esimSummaryContent">
+                        <div class="esim-summary-row">
+                            <div class="esim-summary-left">
+                                <div class="esim-summary-country-row">
+                                    <span class="esim-summary-country-flag" id="esimSummaryFlag"></span>
+                                    <span class="esim-summary-country-name" id="esimSummaryCountry"></span>
+                                </div>
+                                <div class="esim-summary-bundle-name" id="esimSummaryBundleName"></div>
+                                <div class="esim-summary-bundle-details" id="esimSummaryBundleDetails"></div>
+                                <div class="esim-summary-badges" id="esimSummaryBadges"></div>
+                            </div>
+                            <div class="esim-summary-right-price" id="esimSummaryTotal"></div>
+                        </div>
+                        <button class="esim-summary-change-plan" id="esimSummaryChangePlan">Change Plan</button>
+                        <div class="esim-summary-divider"></div>
+                        <div class="esim-summary-price-row">
+                            <span class="esim-summary-price-label">Subtotal</span>
+                            <span class="esim-summary-price-value" id="esimSummarySubtotal"></span>
+                        </div>
+                        <div class="esim-summary-divider"></div>
+                        <div class="esim-summary-total-row">
+                            <span class="esim-summary-total-label">Total</span>
+                            <span class="esim-summary-total-value" id="esimSummaryTotalBottom"></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="esim-bundles-list" id="esimBundlesList"></div>
             </div>
 
             <div class="esim-form-area">
@@ -1235,57 +1775,24 @@
                 </div>
             </div>
 
+            <button class="esim-pay-btn" id="esimPayBtn" disabled>
+                <div class="btn-spinner"></div>
+                <span class="btn-label">PAY SECURELY</span>
+                <span class="btn-loading-text">Processing...</span>
+            </button>
+            <div class="esim-secure-badge">
+                <i class="fa-solid fa-lock"></i>
+                256-bit SSL Encrypted
+            </div>
+
             <div class="esim-error-msg" id="esimErrorMsg"></div>
         </div>
+    </section>
 
-        <!-- Right Column — Order Summary -->
-        <div class="esim-checkout-right">
-            <div class="esim-summary-sticky">
-                <div class="esim-summary-card">
-                    <div class="esim-summary-inner">
-                        <div class="esim-summary-title">ORDER SUMMARY</div>
-
-                        <div class="esim-summary-empty" id="esimSummaryEmpty">Select a plan to continue</div>
-
-                        <div class="esim-summary-content" id="esimSummaryContent">
-                            <div class="esim-summary-country">
-                                <span class="esim-summary-country-flag" id="esimSummaryFlag"></span>
-                                <span class="esim-summary-country-name" id="esimSummaryCountry"></span>
-                            </div>
-                            <div class="esim-summary-divider"></div>
-                            <div class="esim-summary-bundle-name" id="esimSummaryBundleName"></div>
-                            <div class="esim-summary-bundle-details" id="esimSummaryBundleDetails"></div>
-                            <div class="esim-summary-badges" id="esimSummaryBadges"></div>
-                            <div class="esim-summary-divider"></div>
-                            <div class="esim-summary-price-row">
-                                <span class="esim-summary-price-label">Subtotal</span>
-                                <span class="esim-summary-price-value" id="esimSummarySubtotal"></span>
-                            </div>
-                            <div class="esim-summary-divider"></div>
-                            <div class="esim-summary-total-row">
-                                <span class="esim-summary-total-label">Total</span>
-                                <span class="esim-summary-total-value" id="esimSummaryTotal"></span>
-                            </div>
-                        </div>
-
-                        <button class="esim-pay-btn" id="esimPayBtn" disabled>
-                            <div class="btn-spinner"></div>
-                            <span class="btn-label">PAY SECURELY</span>
-                            <span class="btn-loading-text">Processing...</span>
-                        </button>
-                        <div class="esim-secure-badge">
-                            <i class="fa-solid fa-lock"></i>
-                            256-bit SSL Encrypted
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+</div>
 
 <!-- ============================================================
-     SECTION 4 — HOW IT WORKS
+     HOW IT WORKS
      ============================================================ -->
 <section class="esim-how-section">
     <div class="esim-how-badge">HOW IT WORKS</div>
@@ -1313,7 +1820,7 @@
 </section>
 
 <!-- ============================================================
-     SECTION 5 — FAQ
+     FAQ
      ============================================================ -->
 <section class="esim-faq-section">
     <div class="esim-faq-badge">FAQ</div>
@@ -1391,6 +1898,25 @@
     let selectedCountry = null; // { name, iso2, iso3 }
     let selectedBundle = null;
     let bundlesData = [];
+    let currentStep = 1;
+    let currentBundleTab = 'data';
+    let showAllBundles = false;
+    let progressShown = false;
+    const BUNDLE_LIMIT = 6;
+
+    // ── Popular Destinations ─────────────────────────────
+    const POPULAR_DESTINATIONS = [
+        { iso3: 'ARE', iso2: 'AE', name: 'United Arab Emirates', short: 'UAE' },
+        { iso3: 'TUR', iso2: 'TR', name: 'Turkey', short: 'Turkey' },
+        { iso3: 'THA', iso2: 'TH', name: 'Thailand', short: 'Thailand' },
+        { iso3: 'GBR', iso2: 'GB', name: 'United Kingdom', short: 'UK' },
+        { iso3: 'USA', iso2: 'US', name: 'United States', short: 'USA' },
+        { iso3: 'SAU', iso2: 'SA', name: 'Saudi Arabia', short: 'Saudi Arabia' },
+        { iso3: 'IND', iso2: 'IN', name: 'India', short: 'India' },
+        { iso3: 'EGY', iso2: 'EG', name: 'Egypt', short: 'Egypt' },
+        { iso3: 'FRA', iso2: 'FR', name: 'France', short: 'France' },
+        { iso3: 'SGP', iso2: 'SG', name: 'Singapore', short: 'Singapore' },
+    ];
 
     // ── Region mapping (ISO3 codes) ──────────────────────
     const REGION_MAP = {
@@ -1412,7 +1938,7 @@
 
     // ── Utility: Format price to AED ─────────────────────
     function fmtPrice(val) {
-        const n = parseFloat(val);
+        var n = parseFloat(val);
         if (isNaN(n)) return 'AED 0.00';
         return 'AED ' + n.toFixed(2);
     }
@@ -1420,16 +1946,131 @@
     // ── Utility: Get data label for bundle ───────────────
     function bundleDataLabel(b) {
         if (b.unlimited) return 'Unlimited';
-        const amount = b.gprs_limit || b.data_amount || 0;
-        const unit = b.data_unit || 'GB';
+        var amount = b.gprs_limit || b.data_amount || 0;
+        var unit = b.data_unit || 'GB';
         return amount + ' ' + unit;
+    }
+
+    // ── Wizard Navigation ────────────────────────────────
+    function goToStep(n) {
+        if (n < 1 || n > 3) return;
+        currentStep = n;
+
+        // Hide all steps
+        var steps = document.querySelectorAll('.esim-wizard-step');
+        steps.forEach(function(s) {
+            s.classList.remove('step-active');
+        });
+
+        // Show target step
+        var target = document.getElementById('esimStep' + n);
+        if (target) {
+            // Tiny delay for transition effect
+            setTimeout(function() {
+                target.classList.add('step-active');
+            }, 50);
+        }
+
+        // Update progress bar
+        updateProgressBar(n);
+
+        // Show progress bar after first interaction
+        if (!progressShown && n >= 1) {
+            progressShown = true;
+            document.getElementById('esimProgressWrap').classList.add('visible');
+        }
+
+        // Scroll to top of wizard
+        setTimeout(function() {
+            var heroEl = document.querySelector('.esim-hero');
+            if (heroEl) {
+                var progressEl = document.getElementById('esimProgressWrap');
+                var scrollTarget = progressEl && progressEl.classList.contains('visible') ? progressEl : heroEl;
+                scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }
+
+    function updateProgressBar(step) {
+        var step1El = document.getElementById('esimProgressStep1');
+        var step2El = document.getElementById('esimProgressStep2');
+        var step3El = document.getElementById('esimProgressStep3');
+        var circle1 = document.getElementById('esimProgressCircle1');
+        var circle2 = document.getElementById('esimProgressCircle2');
+        var circle3 = document.getElementById('esimProgressCircle3');
+        var fill1 = document.getElementById('esimProgressFill1');
+        var fill2 = document.getElementById('esimProgressFill2');
+
+        // Reset all
+        [step1El, step2El, step3El].forEach(function(el) {
+            el.classList.remove('active', 'completed');
+        });
+
+        // Step 1
+        if (step === 1) {
+            step1El.classList.add('active');
+            circle1.innerHTML = '1';
+            circle2.innerHTML = '2';
+            circle3.innerHTML = '3';
+            fill1.style.width = '0%';
+            fill2.style.width = '0%';
+        }
+
+        // Step 2
+        if (step === 2) {
+            step1El.classList.add('completed');
+            step2El.classList.add('active');
+            circle1.innerHTML = '<i class="fa-solid fa-check" style="font-size:12px;"></i>';
+            circle2.innerHTML = '2';
+            circle3.innerHTML = '3';
+            fill1.style.width = '100%';
+            fill2.style.width = '0%';
+        }
+
+        // Step 3
+        if (step === 3) {
+            step1El.classList.add('completed');
+            step2El.classList.add('completed');
+            step3El.classList.add('active');
+            circle1.innerHTML = '<i class="fa-solid fa-check" style="font-size:12px;"></i>';
+            circle2.innerHTML = '<i class="fa-solid fa-check" style="font-size:12px;"></i>';
+            circle3.innerHTML = '3';
+            fill1.style.width = '100%';
+            fill2.style.width = '100%';
+        }
+    }
+
+    // ── Render: Popular Destinations ─────────────────────
+    function renderPopularDestinations() {
+        var grid = document.getElementById('esimPopularGrid');
+        var html = '';
+
+        POPULAR_DESTINATIONS.forEach(function(d) {
+            var flag = getFlag(d.iso2);
+            html += '<div class="esim-popular-card" data-iso3="' + d.iso3 + '" data-iso2="' + d.iso2 + '" data-name="' + d.name.replace(/"/g, '&quot;') + '">';
+            html += '<span class="esim-popular-flag">' + flag + '</span>';
+            html += '<div class="esim-popular-info">';
+            html += '<div class="esim-popular-name">' + d.short + '</div>';
+            html += '<div class="esim-popular-cta">View Plans &rarr;</div>';
+            html += '</div>';
+            html += '</div>';
+        });
+
+        grid.innerHTML = html;
+
+        // Bind clicks
+        grid.querySelectorAll('.esim-popular-card').forEach(function(card) {
+            card.addEventListener('click', function() {
+                onCountryClick(this.dataset.iso3, this.dataset.iso2, this.dataset.name);
+            });
+        });
     }
 
     // ── Render: Skeleton Loaders ─────────────────────────
     function renderSkeletons() {
-        const grid = document.getElementById('esimCountryGrid');
-        let html = '';
-        for (let i = 0; i < 20; i++) {
+        var grid = document.getElementById('esimCountryGrid');
+        var html = '';
+        for (var i = 0; i < 20; i++) {
             html += '<div class="esim-skeleton-card"><div class="esim-skeleton-flag"></div><div class="esim-skeleton-text"></div></div>';
         }
         grid.innerHTML = html;
@@ -1437,21 +2078,21 @@
 
     // ── Render: Country Grid ─────────────────────────────
     function renderCountries() {
-        const grid = document.getElementById('esimCountryGrid');
-        const filtered = filterCountries();
+        var grid = document.getElementById('esimCountryGrid');
+        var filtered = filterCountries();
 
         if (filtered.length === 0) {
             grid.innerHTML = '<div class="esim-no-results"><i class="fa-solid fa-earth-americas"></i>No countries found matching your search</div>';
             return;
         }
 
-        let html = '';
+        var html = '';
         filtered.forEach(function(c) {
-            const flag = getFlag(c.iso2_code || c.iso2 || '');
-            const name = c.country_name || c.name || '';
-            const iso3 = c.iso3_code || c.iso3 || '';
-            const iso2 = c.iso2_code || c.iso2 || '';
-            const isActive = selectedCountry && selectedCountry.iso3 === iso3 ? ' active-country' : '';
+            var flag = getFlag(c.iso2_code || c.iso2 || '');
+            var name = c.country_name || c.name || '';
+            var iso3 = c.iso3_code || c.iso3 || '';
+            var iso2 = c.iso2_code || c.iso2 || '';
+            var isActive = selectedCountry && selectedCountry.iso3 === iso3 ? ' active-country' : '';
             html += '<div class="esim-country-card' + isActive + '" data-iso3="' + iso3 + '" data-iso2="' + iso2 + '" data-name="' + name.replace(/"/g, '&quot;') + '">';
             html += '<span class="esim-country-flag">' + flag + '</span>';
             html += '<span class="esim-country-name">' + name + '</span>';
@@ -1473,22 +2114,22 @@
 
     // ── Filter: Countries ────────────────────────────────
     function filterCountries() {
-        let list = allCountries;
+        var list = allCountries;
 
         // Region filter
         if (currentRegion !== 'all' && REGION_MAP[currentRegion]) {
-            const codes = REGION_MAP[currentRegion];
+            var codes = REGION_MAP[currentRegion];
             list = list.filter(function(c) {
-                const iso3 = c.iso3_code || c.iso3 || '';
+                var iso3 = c.iso3_code || c.iso3 || '';
                 return codes.indexOf(iso3) !== -1;
             });
         }
 
         // Search filter
         if (currentSearch.trim() !== '') {
-            const q = currentSearch.trim().toLowerCase();
+            var q = currentSearch.trim().toLowerCase();
             list = list.filter(function(c) {
-                const name = (c.country_name || c.name || '').toLowerCase();
+                var name = (c.country_name || c.name || '').toLowerCase();
                 return name.indexOf(q) !== -1;
             });
         }
@@ -1504,7 +2145,7 @@
 
     // ── Event: Region Pills ──────────────────────────────
     document.getElementById('esimRegionPills').addEventListener('click', function(e) {
-        const pill = e.target.closest('.esim-region-pill');
+        var pill = e.target.closest('.esim-region-pill');
         if (!pill) return;
         this.querySelectorAll('.esim-region-pill').forEach(function(p) { p.classList.remove('active'); });
         pill.classList.add('active');
@@ -1517,40 +2158,86 @@
         selectedCountry = { iso3: iso3, iso2: iso2, name: name };
         selectedBundle = null;
         bundlesData = [];
+        showAllBundles = false;
+        currentBundleTab = 'data';
 
-        // Update UI
-        renderCountries(); // re-render to show active state
+        // Update Step 2 header
         document.getElementById('esimSelectedFlag').textContent = getFlag(iso2);
         document.getElementById('esimSelectedName').textContent = name;
 
-        // Show checkout section
-        const section = document.getElementById('esimCheckoutSection');
-        section.classList.add('visible');
+        // Reset tabs to Data Plans active
+        document.getElementById('esimTabData').classList.add('active');
+        document.getElementById('esimTabUnlimited').classList.remove('active');
 
-        // Scroll into view
-        setTimeout(function() {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        // Reset continue button
+        document.getElementById('esimContinueBtn').disabled = true;
 
         // Reset summary
         resetSummary();
+
+        // Navigate to step 2
+        goToStep(2);
 
         // Load bundles
         loadBundles(iso3);
     }
 
-    // ── Event: Change Button ─────────────────────────────
+    // ── Event: Change Button (Step 2 → Step 1) ──────────
     document.getElementById('esimChangeBtn').addEventListener('click', function() {
-        document.getElementById('esimCountriesSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        goToStep(1);
+    });
+
+    // ── Event: Back to Plans (Step 3 → Step 2) ──────────
+    document.getElementById('esimBackToPlans').addEventListener('click', function() {
+        goToStep(2);
+    });
+
+    // ── Event: Summary Change Plan (Step 3 → Step 2) ────
+    document.getElementById('esimSummaryChangePlan').addEventListener('click', function() {
+        goToStep(2);
+    });
+
+    // ── Event: Continue Button (Step 2 → Step 3) ────────
+    document.getElementById('esimContinueBtn').addEventListener('click', function() {
+        if (!selectedBundle) return;
+        updateSummary();
+        goToStep(3);
+    });
+
+    // ── Event: Bundle Tabs ───────────────────────────────
+    document.getElementById('esimTabData').addEventListener('click', function() {
+        if (currentBundleTab === 'data') return;
+        currentBundleTab = 'data';
+        showAllBundles = false;
+        this.classList.add('active');
+        document.getElementById('esimTabUnlimited').classList.remove('active');
+        renderBundles();
+    });
+
+    document.getElementById('esimTabUnlimited').addEventListener('click', function() {
+        if (currentBundleTab === 'unlimited') return;
+        currentBundleTab = 'unlimited';
+        showAllBundles = false;
+        document.getElementById('esimTabData').classList.remove('active');
+        this.classList.add('active');
+        renderBundles();
+    });
+
+    // ── Event: Show All Button ───────────────────────────
+    document.getElementById('esimShowAllBtn').addEventListener('click', function() {
+        showAllBundles = true;
+        renderBundles();
     });
 
     // ── Load: Bundles ────────────────────────────────────
     function loadBundles(countryCode) {
-        const loading = document.getElementById('esimBundleLoading');
-        const list = document.getElementById('esimBundlesList');
+        var loading = document.getElementById('esimBundleLoading');
+        var list = document.getElementById('esimBundlesList');
+        var showAllBtn = document.getElementById('esimShowAllBtn');
 
         loading.style.display = 'flex';
         list.innerHTML = '';
+        showAllBtn.classList.remove('visible');
 
         fetch('/esim/bundles', {
             method: 'POST',
@@ -1569,33 +2256,85 @@
                 bundlesData = data.bundles;
                 renderBundles();
             } else {
-                list.innerHTML = '<div class="esim-no-results"><i class="fa-solid fa-sim-card"></i>No plans available for this country right now</div>';
+                list.innerHTML = '<div class="esim-no-results" style="grid-column:1/-1;"><i class="fa-solid fa-sim-card"></i>No plans available for this country right now</div>';
             }
         })
         .catch(function() {
             loading.style.display = 'none';
-            list.innerHTML = '<div class="esim-no-results"><i class="fa-solid fa-triangle-exclamation"></i>Failed to load plans. Please try again.</div>';
+            list.innerHTML = '<div class="esim-no-results" style="grid-column:1/-1;"><i class="fa-solid fa-triangle-exclamation"></i>Failed to load plans. Please try again.</div>';
         });
+    }
+
+    // ── Categorize bundles ───────────────────────────────
+    function getDataBundles() {
+        return bundlesData.filter(function(b) {
+            return !b.unlimited;
+        });
+    }
+
+    function getUnlimitedBundles() {
+        return bundlesData.filter(function(b) {
+            return !!b.unlimited;
+        });
+    }
+
+    // ── Find "Most Popular" bundle ───────────────────────
+    function findMostPopularIndex(bundles) {
+        for (var i = 0; i < bundles.length; i++) {
+            var b = bundles[i];
+            var validity = b.validity || 0;
+            var gprs = b.gprs_limit || b.data_amount || 0;
+            if (!b.unlimited && validity >= 7 && validity <= 15 && gprs >= 5 && gprs <= 10) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     // ── Render: Bundle Cards ─────────────────────────────
     function renderBundles() {
-        const list = document.getElementById('esimBundlesList');
-        let html = '';
+        var list = document.getElementById('esimBundlesList');
+        var showAllBtn = document.getElementById('esimShowAllBtn');
+        var activeBundles = currentBundleTab === 'data' ? getDataBundles() : getUnlimitedBundles();
 
-        bundlesData.forEach(function(b, idx) {
-            const dataLabel = bundleDataLabel(b);
-            const validity = b.validity || 0;
-            const price = b.selling_price || 0;
-            const name = b.bundle_marketing_name || b.bundle_name || 'eSIM Plan';
-            const code = b.bundle_code || '';
-            const hasCalls = b.supports_calls_sms || b.voice_included || false;
-            const hasTopup = b.support_topup || b.topup_supported || false;
+        if (activeBundles.length === 0) {
+            list.innerHTML = '<div class="esim-no-results" style="grid-column:1/-1;"><i class="fa-solid fa-sim-card"></i>No ' + (currentBundleTab === 'data' ? 'data' : 'unlimited') + ' plans available for this country</div>';
+            showAllBtn.classList.remove('visible');
+            return;
+        }
 
-            html += '<div class="esim-bundle-card" data-index="' + idx + '" data-code="' + code + '">';
-            html += '<div class="esim-bundle-left">';
+        var mostPopularIdx = currentBundleTab === 'data' ? findMostPopularIndex(activeBundles) : -1;
+        var displayBundles = activeBundles;
+        var truncated = false;
+
+        if (!showAllBundles && activeBundles.length > BUNDLE_LIMIT) {
+            displayBundles = activeBundles.slice(0, BUNDLE_LIMIT);
+            truncated = true;
+        }
+
+        var html = '';
+
+        displayBundles.forEach(function(b, idx) {
+            var dataLabel = bundleDataLabel(b);
+            var validity = b.validity || 0;
+            var price = b.selling_price || 0;
+            var name = b.bundle_marketing_name || b.bundle_name || 'eSIM Plan';
+            var code = b.bundle_code || '';
+            var hasCalls = b.supports_calls_sms || b.voice_included || false;
+            var hasTopup = b.support_topup || b.topup_supported || false;
+            // Find the global index in bundlesData for this bundle
+            var globalIndex = bundlesData.indexOf(b);
+            var isSelected = selectedBundle && selectedBundle.bundle_code === code;
+            var isPopular = (idx === mostPopularIdx);
+
+            html += '<div class="esim-bundle-card' + (isSelected ? ' selected' : '') + '" data-index="' + globalIndex + '" data-code="' + code + '">';
+            if (isPopular) {
+                html += '<div class="esim-bundle-popular-tag">MOST POPULAR</div>';
+            }
             html += '<div class="esim-bundle-data">' + dataLabel + '</div>';
             html += '<div class="esim-bundle-validity">' + validity + ' Days</div>';
+            html += '<div class="esim-bundle-divider"></div>';
+            html += '<div class="esim-bundle-price">' + fmtPrice(price) + '</div>';
             html += '<div class="esim-bundle-badges">';
             if (hasCalls) {
                 html += '<span class="esim-bundle-badge">Calls & SMS</span>';
@@ -1607,14 +2346,17 @@
             }
             html += '</div>';
             html += '</div>';
-            html += '<div class="esim-bundle-right">';
-            html += '<div class="esim-bundle-price">' + fmtPrice(price) + '</div>';
-            html += '<div class="esim-bundle-currency">AED</div>';
-            html += '</div>';
-            html += '</div>';
         });
 
         list.innerHTML = html;
+
+        // Show/hide "Show all" button
+        if (truncated) {
+            showAllBtn.textContent = 'Show all ' + activeBundles.length + ' plans';
+            showAllBtn.classList.add('visible');
+        } else {
+            showAllBtn.classList.remove('visible');
+        }
 
         // Bind click events
         list.querySelectorAll('.esim-bundle-card').forEach(function(card) {
@@ -1630,10 +2372,11 @@
 
         // Update selected class
         document.querySelectorAll('.esim-bundle-card').forEach(function(c) { c.classList.remove('selected'); });
-        document.querySelector('.esim-bundle-card[data-index="' + index + '"]').classList.add('selected');
+        var selectedCard = document.querySelector('.esim-bundle-card[data-index="' + index + '"]');
+        if (selectedCard) selectedCard.classList.add('selected');
 
-        // Update summary
-        updateSummary();
+        // Enable continue button
+        document.getElementById('esimContinueBtn').disabled = false;
     }
 
     // ── Summary: Reset ───────────────────────────────────
@@ -1642,6 +2385,7 @@
         document.getElementById('esimSummaryEmpty').style.display = 'block';
         document.getElementById('esimSummaryContent').classList.remove('visible');
         document.getElementById('esimPayBtn').disabled = true;
+        updatePayBtnLabel(null);
         document.getElementById('esimErrorMsg').classList.remove('visible');
     }
 
@@ -1652,22 +2396,22 @@
         document.getElementById('esimSummaryEmpty').style.display = 'none';
         document.getElementById('esimSummaryContent').classList.add('visible');
 
-        const flag = getFlag(selectedCountry.iso2);
+        var flag = getFlag(selectedCountry.iso2);
         document.getElementById('esimSummaryFlag').textContent = flag;
         document.getElementById('esimSummaryCountry').textContent = selectedCountry.name;
 
-        const name = selectedBundle.bundle_marketing_name || selectedBundle.bundle_name || 'eSIM Plan';
-        const dataLabel = bundleDataLabel(selectedBundle);
-        const validity = selectedBundle.validity || 0;
-        const price = selectedBundle.selling_price || 0;
-        const hasCalls = selectedBundle.supports_calls_sms || selectedBundle.voice_included || false;
-        const hasTopup = selectedBundle.support_topup || selectedBundle.topup_supported || false;
+        var name = selectedBundle.bundle_marketing_name || selectedBundle.bundle_name || 'eSIM Plan';
+        var dataLabel = bundleDataLabel(selectedBundle);
+        var validity = selectedBundle.validity || 0;
+        var price = selectedBundle.selling_price || 0;
+        var hasCalls = selectedBundle.supports_calls_sms || selectedBundle.voice_included || false;
+        var hasTopup = selectedBundle.support_topup || selectedBundle.topup_supported || false;
 
         document.getElementById('esimSummaryBundleName').textContent = name;
         document.getElementById('esimSummaryBundleDetails').textContent = dataLabel + ' \u2022 ' + validity + ' Days';
 
         // Badges
-        let badgeHtml = '';
+        var badgeHtml = '';
         if (hasCalls) {
             badgeHtml += '<span class="esim-bundle-badge">Calls & SMS</span>';
         } else {
@@ -1680,17 +2424,31 @@
 
         document.getElementById('esimSummarySubtotal').textContent = fmtPrice(price);
         document.getElementById('esimSummaryTotal').textContent = fmtPrice(price);
+        document.getElementById('esimSummaryTotalBottom').textContent = fmtPrice(price);
 
-        // Enable pay button (will be further validated on click)
+        // Update pay button label with price
+        updatePayBtnLabel(price);
+
+        // Enable pay button
         document.getElementById('esimPayBtn').disabled = false;
+    }
+
+    // ── Pay Button Label ─────────────────────────────────
+    function updatePayBtnLabel(price) {
+        var label = document.querySelector('#esimPayBtn .btn-label');
+        if (price !== null && price !== undefined) {
+            label.textContent = 'PAY SECURELY \u2014 ' + fmtPrice(price);
+        } else {
+            label.textContent = 'PAY SECURELY';
+        }
     }
 
     // ── Validation ───────────────────────────────────────
     function validateForm() {
-        let valid = true;
+        var valid = true;
 
         // Name
-        const name = document.getElementById('esimName').value.trim();
+        var name = document.getElementById('esimName').value.trim();
         if (!name) {
             showFieldError('esimName', 'esimNameError');
             valid = false;
@@ -1699,7 +2457,7 @@
         }
 
         // Phone
-        const phone = document.getElementById('esimPhone').value.trim();
+        var phone = document.getElementById('esimPhone').value.trim();
         if (!phone) {
             showFieldError('esimPhone', 'esimPhoneError');
             valid = false;
@@ -1708,8 +2466,8 @@
         }
 
         // Email
-        const email = document.getElementById('esimEmail').value.trim();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        var email = document.getElementById('esimEmail').value.trim();
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email || !emailRegex.test(email)) {
             showFieldError('esimEmail', 'esimEmailError');
             valid = false;
@@ -1718,7 +2476,7 @@
         }
 
         // Confirm Email
-        const emailConfirm = document.getElementById('esimEmailConfirm').value.trim();
+        var emailConfirm = document.getElementById('esimEmailConfirm').value.trim();
         if (!emailConfirm || emailConfirm !== email) {
             showFieldError('esimEmailConfirm', 'esimEmailConfirmError');
             valid = false;
@@ -1759,15 +2517,15 @@
         // Validate
         if (!validateForm()) return;
 
-        const btn = this;
-        const errorMsg = document.getElementById('esimErrorMsg');
+        var btn = this;
+        var errorMsg = document.getElementById('esimErrorMsg');
         errorMsg.classList.remove('visible');
 
         // Loading state
         btn.disabled = true;
         btn.classList.add('loading');
 
-        const payload = {
+        var payload = {
             name: document.getElementById('esimName').value.trim(),
             email: document.getElementById('esimEmail').value.trim(),
             phone: document.getElementById('esimPhone').value.trim() || null,
@@ -1807,10 +2565,10 @@
     // ── FAQ Accordion ────────────────────────────────────
     document.querySelectorAll('.esim-faq-question').forEach(function(q) {
         q.addEventListener('click', function() {
-            const item = this.closest('.esim-faq-item');
-            const answer = item.querySelector('.esim-faq-answer');
-            const inner = item.querySelector('.esim-faq-answer-inner');
-            const isOpen = item.classList.contains('active');
+            var item = this.closest('.esim-faq-item');
+            var answer = item.querySelector('.esim-faq-answer');
+            var inner = item.querySelector('.esim-faq-answer-inner');
+            var isOpen = item.classList.contains('active');
 
             // Close all others
             document.querySelectorAll('.esim-faq-item.active').forEach(function(other) {
@@ -1830,10 +2588,15 @@
         });
     });
 
-    // ── Init: Load Countries ─────────────────────────────
+    // ── Init ─────────────────────────────────────────────
     function init() {
+        // Render popular destinations
+        renderPopularDestinations();
+
+        // Render skeleton loaders for all countries
         renderSkeletons();
 
+        // Fetch countries
         fetch('/api/esim/countries', {
             headers: {
                 'Accept': 'application/json'
