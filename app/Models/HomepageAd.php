@@ -19,6 +19,7 @@ class HomepageAd extends Model
         'duration',
         'title',
         'description',
+        'linkUrl',
         'isActive',
         'createdby',
         'createddate',

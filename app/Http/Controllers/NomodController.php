@@ -6,12 +6,14 @@ use App\Models\NomodTransaction;
 use App\Models\UAEVApplication;
 use App\Models\ActivityBooking;
 use App\Models\AgentBooking;
+use App\Models\EsimOrder;
 use App\Models\UAEActivity;
 use App\Mail\PaymentStatusMail;
 use App\Mail\SupplierBookingMail;
 use App\Mail\CustomerPaymentConfirmationMail;
 use App\Mail\AdminPaymentNotificationMail;
 use App\Services\NomodService;
+use App\Services\MontyEsimService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -219,6 +221,10 @@ class NomodController extends Controller
                 $email = $bookingData['email'] ?? null;
                 break;
 
+            case 'esim':
+                $email = $bookingData['customer_email'] ?? null;
+                break;
+
             default:
                 $possibleFields = ['email', 'UAEV_email', 'customer_email', 'billing_email'];
                 foreach ($possibleFields as $field) {
@@ -234,7 +240,17 @@ class NomodController extends Controller
 
     private function getBookingData($orderId)
     {
-        if (stripos($orderId, 'UAEV') !== false) {
+        if (stripos($orderId, 'ORDESIM') !== false) {
+            $esimOrderId = str_replace('ORDESIM', '', $orderId);
+            $esimOrder = EsimOrder::find($esimOrderId);
+
+            if ($esimOrder) {
+                return [
+                    'type' => 'esim',
+                    'data' => $esimOrder->toArray(),
+                ];
+            }
+        } elseif (stripos($orderId, 'UAEV') !== false) {
             $applicationId = str_replace('ORDUAEV', '', $orderId);
             $application = UAEVApplication::find($applicationId);
 
@@ -347,6 +363,75 @@ class NomodController extends Controller
                 $status = ($paymentStatus === 'Success') ? 'Paid' : 'Failed';
                 $booking->update(['payment_status' => $status]);
             }
+        } elseif ($bookingType === 4 && stripos($orderId, 'ORDESIM') !== false) {
+            $esimOrderId = str_replace('ORDESIM', '', $orderId);
+            $esimOrder = EsimOrder::find($esimOrderId);
+
+            if ($esimOrder) {
+                if ($paymentStatus === 'Success') {
+                    $esimOrder->update(['payment_status' => 'paid']);
+
+                    // Reserve + Complete with MontyeSIM
+                    try {
+                        $montyService = new MontyEsimService();
+                        $reservation = $montyService->reserveBundle(
+                            $esimOrder->bundle_code,
+                            $esimOrder->customer_email,
+                            $esimOrder->customer_name,
+                            $esimOrder->order_reference
+                        );
+
+                        if ($reservation['success'] ?? false) {
+                            $esimOrder->update([
+                                'monty_order_id' => $reservation['order_id'] ?? null,
+                                'monty_iccid' => $reservation['iccid'] ?? null,
+                                'reservation_status' => 'reserved',
+                                'monty_response' => $reservation['data'] ?? $reservation,
+                            ]);
+
+                            // Complete — triggers QR code email from MontyeSIM
+                            $completion = $montyService->completeBundle($esimOrder->order_reference);
+
+                            if ($completion['success'] ?? false) {
+                                $esimOrder->update([
+                                    'reservation_status' => 'completed',
+                                    'monty_response' => $completion['data'] ?? $completion,
+                                ]);
+                                Log::info('eSIM order completed successfully', [
+                                    'esim_order_id' => $esimOrder->id,
+                                    'order_reference' => $esimOrder->order_reference,
+                                ]);
+                            } else {
+                                $esimOrder->update([
+                                    'reservation_status' => 'complete_failed',
+                                    'monty_response' => $completion['data'] ?? $completion,
+                                ]);
+                                Log::error('MontyeSIM complete failed after reserve', [
+                                    'esim_order_id' => $esimOrder->id,
+                                    'error' => $completion['error'] ?? 'Unknown',
+                                ]);
+                            }
+                        } else {
+                            $esimOrder->update([
+                                'reservation_status' => 'reserve_failed',
+                                'monty_response' => $reservation['data'] ?? $reservation,
+                            ]);
+                            Log::error('MontyeSIM reservation failed after payment', [
+                                'esim_order_id' => $esimOrder->id,
+                                'error' => $reservation['error'] ?? 'Unknown',
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        $esimOrder->update(['reservation_status' => 'error']);
+                        Log::error('MontyeSIM API error after payment', [
+                            'error' => $e->getMessage(),
+                            'esim_order_id' => $esimOrder->id,
+                        ]);
+                    }
+                } else {
+                    $esimOrder->update(['payment_status' => 'failed']);
+                }
+            }
         }
     }
 
@@ -385,6 +470,17 @@ class NomodController extends Controller
                     'phone' => $booking->client_phone
                 ];
             }
+        } elseif ($bookingType == 4 || stripos($orderId, 'ORDESIM') !== false) {
+            $esimOrderId = str_replace('ORDESIM', '', $orderId);
+            $esimOrder = EsimOrder::find($esimOrderId);
+
+            if ($esimOrder) {
+                return [
+                    'name' => $esimOrder->customer_name,
+                    'email' => $esimOrder->customer_email,
+                    'phone' => $esimOrder->customer_phone,
+                ];
+            }
         }
 
         return null;
@@ -392,12 +488,14 @@ class NomodController extends Controller
 
     private function determineBookingType($orderId)
     {
-        if (stripos($orderId, 'UAEV') !== false) {
+        if (stripos($orderId, 'ORDESIM') !== false) {
+            return 4;
+        } elseif (stripos($orderId, 'UAEV') !== false) {
             return 1;
-        } elseif (stripos($orderId, 'AB') !== false) {
-            return 2;
         } elseif (stripos($orderId, 'ORDAG') !== false) {
             return 3;
+        } elseif (stripos($orderId, 'AB') !== false) {
+            return 2;
         }
         return 1;
     }

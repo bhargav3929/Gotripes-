@@ -185,12 +185,139 @@
   }
 </style>
 
+<!-- eSIM Promo TV Box Styles -->
+<style>
+  .esim-promo-tv {
+    position: relative;
+    cursor: pointer;
+  }
+  .esim-promo-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px 10px;
+    background: linear-gradient(145deg, #0a0a0a 0%, #111 40%, #0d0d0d 100%);
+    z-index: 2;
+  }
+  .esim-promo-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,215,0,0.06) 0%, transparent 60%),
+      radial-gradient(circle at 70% 80%, rgba(255,215,0,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .esim-promo-icon {
+    font-size: 22px;
+    color: #FFD700;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .esim-promo-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #FFD700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .esim-promo-subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 8px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    max-width: 90%;
+    position: relative;
+    z-index: 1;
+  }
+  .esim-promo-cta {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 14px;
+    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+    color: #000;
+    font-family: 'Outfit', sans-serif;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-radius: 50px;
+    text-decoration: none;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+  }
+  .esim-promo-tv:hover .esim-promo-cta {
+    box-shadow: 0 4px 12px rgba(255,215,0,0.3);
+    transform: translateY(-1px);
+  }
+  .esim-promo-pulse {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 6px;
+    height: 6px;
+    background: #FFD700;
+    border-radius: 50%;
+    z-index: 3;
+    animation: esimPulse 2s ease-in-out infinite;
+  }
+  @keyframes esimPulse {
+    0%, 100% { opacity: 0.4; box-shadow: 0 0 0 0 rgba(255,215,0,0.4); }
+    50% { opacity: 1; box-shadow: 0 0 0 4px rgba(255,215,0,0); }
+  }
+  @media (max-width: 768px) {
+    .esim-promo-icon { font-size: 16px; margin-bottom: 3px; }
+    .esim-promo-title { font-size: 8px; letter-spacing: 1px; }
+    .esim-promo-subtitle { font-size: 6px; display: none; }
+    .esim-promo-cta { font-size: 6px; padding: 3px 10px; margin-top: 4px; }
+  }
+  @media (max-width: 480px) {
+    .esim-promo-icon { font-size: 14px; }
+    .esim-promo-title { font-size: 7px; }
+    .esim-promo-cta { font-size: 5px; padding: 2px 8px; margin-top: 3px; }
+  }
+</style>
+
 <!-- Ad TV Boxes - Each box is a dedicated TV with rotating media -->
 <div class="container ad-cards-wrapper">
   <div class="ad-grid">
     @if(isset($adSlots) && $adSlots->count() > 0)
+      @php $slotIndex = 0; @endphp
       @foreach($adSlots as $slotNumber => $mediaItems)
-        <div class="ad-grid-item ad-tv-box" data-tv="{{ $slotNumber }}">
+        @php $slotIndex++; @endphp
+
+        {{-- Insert eSIM promo as the 3rd window --}}
+        @if($slotIndex === 3)
+          <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;color:inherit;display:block;">
+            <div class="esim-promo-pulse"></div>
+            <div class="esim-promo-inner">
+              <div class="esim-promo-icon"><i class="fas fa-sim-card"></i></div>
+              <div class="esim-promo-title">Travel eSIM</div>
+              <div class="esim-promo-subtitle">Instant data plans for 186+ countries</div>
+              <span class="esim-promo-cta">Get Yours</span>
+            </div>
+          </a>
+        @endif
+
+        @php $slotLink = $mediaItems->first()->linkUrl ?? null; @endphp
+        @if($slotLink)
+          <a href="{{ $slotLink }}" class="ad-grid-item ad-tv-box" data-tv="{{ $slotNumber }}" style="text-decoration:none;color:inherit;display:block;">
+        @else
+          <div class="ad-grid-item ad-tv-box" data-tv="{{ $slotNumber }}">
+        @endif
           @foreach($mediaItems as $idx => $media)
             <div class="ad-tv-slide {{ $idx === 0 ? 'active' : '' }}"
                  data-type="{{ $media->mediaType }}"
@@ -210,8 +337,25 @@
               <div class="ad-tv-progress-bar"></div>
             </div>
           @endif
-        </div>
+        @if($slotLink)
+          </a>
+        @else
+          </div>
+        @endif
       @endforeach
+
+      {{-- If fewer than 3 slots exist, append eSIM promo at the end --}}
+      @if($slotIndex < 3)
+        <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;color:inherit;display:block;">
+          <div class="esim-promo-pulse"></div>
+          <div class="esim-promo-inner">
+            <div class="esim-promo-icon"><i class="fas fa-sim-card"></i></div>
+            <div class="esim-promo-title">Travel eSIM</div>
+            <div class="esim-promo-subtitle">Instant data plans for 186+ countries</div>
+            <span class="esim-promo-cta">Get Yours</span>
+          </div>
+        </a>
+      @endif
     @else
       {{-- Fallback static images --}}
       <div class="ad-grid-item">
@@ -224,11 +368,16 @@
           <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
         </div>
       </div>
-      <div class="ad-grid-item">
-        <div class="ad-tv-slide active" data-type="image" data-duration="5">
-          <img src="{{ asset('assets/homepageads/ad_car.png') }}" alt="Car Hire" class="ad-carousel-media">
+      {{-- eSIM promo in fallback position 3 --}}
+      <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;color:inherit;display:block;">
+        <div class="esim-promo-pulse"></div>
+        <div class="esim-promo-inner">
+          <div class="esim-promo-icon"><i class="fas fa-sim-card"></i></div>
+          <div class="esim-promo-title">Travel eSIM</div>
+          <div class="esim-promo-subtitle">Instant data plans for 186+ countries</div>
+          <span class="esim-promo-cta">Get Yours</span>
         </div>
-      </div>
+      </a>
       <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
           <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">
