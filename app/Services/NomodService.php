@@ -44,8 +44,11 @@ class NomodService
                 'first_name' => $nameParts[0] ?: 'Customer',
                 'last_name' => $nameParts[1] ?? $nameParts[0] ?: 'Customer',
                 'email' => $c['email'] ?? '',
-                'phone_number' => $c['phone'] ?? $c['phone_number'] ?? '',
             ];
+            $phone = $c['phone'] ?? $c['phone_number'] ?? '';
+            if (!empty($phone)) {
+                $payload['customer']['phone_number'] = $phone;
+            }
         }
 
         if (!empty($params['metadata'])) {
