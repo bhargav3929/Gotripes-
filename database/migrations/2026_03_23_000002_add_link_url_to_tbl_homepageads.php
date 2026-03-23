@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tbl_homepageads', function (Blueprint $table) {
-            $table->string('linkUrl', 500)->nullable()->after('description');
+            $table->string('linkUrl', 500)->nullable();
         });
     }
 
