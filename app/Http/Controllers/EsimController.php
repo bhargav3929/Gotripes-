@@ -147,11 +147,11 @@ class EsimController extends Controller
                 'currency' => 'AED',
                 'order_id' => $orderReference,
                 'description' => "eSIM: {$bundleName} - {$request->country_name}",
-                'customer' => [
+                'customer' => array_filter([
                     'name' => $request->name,
                     'email' => $request->email,
-                    'phone' => $request->phone ?? '',
-                ],
+                    'phone' => $request->phone ?: null,
+                ]),
                 'items' => [
                     [
                         'item_id' => $request->bundle_code,
@@ -162,7 +162,7 @@ class EsimController extends Controller
                 ],
                 'metadata' => [
                     'type' => 'esim',
-                    'esim_order_id' => $esimOrder->id,
+                    'esim_order_id' => (string) $esimOrder->id,
                     'country' => $request->country_name,
                 ],
             ]);
