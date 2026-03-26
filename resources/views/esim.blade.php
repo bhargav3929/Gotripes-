@@ -20,7 +20,16 @@
 
     * { box-sizing: border-box; }
 
-    body { background-color: var(--c-dark-bg); }
+    html {
+        background-color: #000 !important;
+        overflow-x: hidden;
+    }
+
+    body {
+        background-color: #000 !important;
+        overflow-x: hidden;
+        width: 100%;
+    }
 
     /* ============================================================
        HERO BANNER
