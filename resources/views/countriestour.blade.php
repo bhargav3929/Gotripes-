@@ -218,7 +218,8 @@
   @media (max-width: 768px) {
     .overlay-content { margin-top: 100px; }
     .country-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
       max-height: 55vh;
     }
     .heading { font-size: 24px !important; text-align: center; }
@@ -226,22 +227,38 @@
 
   @media (max-width: 575px) {
     .country-grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
-      max-height: 50vh;
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 8px;
+      max-height: 55vh;
+      overflow-y: auto;
+      padding: 10px 0;
     }
     .country-card {
-        padding: 12px;
+      flex: 0 0 calc(33.333% - 6px);
+      max-width: calc(33.333% - 6px);
+      padding: 8px;
     }
     .country-card img {
-        height: 160px;
+      height: 60px;
+      border-radius: 6px;
+      margin-bottom: 6px;
     }
     .country-card .country-name {
-        font-size: 14px;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .country-details summary {
+      font-size: 9px;
+      padding: 3px 0;
+    }
+    .details-content {
+      font-size: 10px;
     }
     .heading { font-size: 22px !important; }
     .overlay {
-        padding: 70px 10px 15px 10px;
+      padding: 70px 10px 15px 10px;
     }
   }
 

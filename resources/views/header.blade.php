@@ -10,6 +10,7 @@
     <meta name="author" content="ThemeZaa">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="description" content="Go Trips - Your Gateway to Amazing Adventures">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
@@ -1000,7 +1001,7 @@
                 margin-top: 230px; 
             }
             .gt-partner-label, .gt-partner-title {
-                display: none !important;
+                display: inline;
             }
         }
 

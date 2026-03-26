@@ -23,6 +23,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UAEDetailsController;
 use App\Http\Controllers\Admin\TravelPackageController;
 use App\Http\Controllers\Admin\UmrahPackageController;
+use App\Http\Controllers\UmrahPaymentController;
 use App\Http\Controllers\EsimController;
 
 // Search API
@@ -183,6 +184,9 @@ Route::get('/proxy-prices', [ApiProxyController::class, 'getPrices']);
 Route::get('/payment/nomod/success', [NomodController::class, 'success'])->name('nomod.success');
 Route::get('/payment/nomod/failure', [NomodController::class, 'failure'])->name('nomod.failure');
 Route::get('/payment/nomod/cancelled', [NomodController::class, 'cancelled'])->name('nomod.cancelled');
+
+// Umrah package payment
+Route::post('/umrah/payment/initiate', [UmrahPaymentController::class, 'initiate'])->name('umrah.payment.initiate');
 
 Route::post('/uaev/submit', [UAEVisaController::class, 'submit'])->name('uaev.submit');
 
