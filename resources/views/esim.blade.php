@@ -1746,6 +1746,7 @@
             padding: 10px;
             gap: 8px;
             border-radius: 8px;
+            justify-content: center;
         }
 
         .esim-popular-flag {
@@ -1766,6 +1767,7 @@
             padding: 10px;
             gap: 8px;
             border-radius: 8px;
+            justify-content: center;
         }
 
         .esim-country-flag {
@@ -1792,6 +1794,7 @@
             font-size: 9px;
             letter-spacing: 2px;
             margin-bottom: 10px;
+            text-align: center;
         }
 
         .esim-checkout-grid {
