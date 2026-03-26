@@ -32,7 +32,7 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 180px 28px 40px;
+        padding: 120px 28px 0;
         background: linear-gradient(180deg, #000 0%, #080808 50%, var(--c-dark-bg) 100%);
         overflow: hidden;
     }
@@ -85,28 +85,63 @@
         text-transform: uppercase;
         padding: 6px 20px;
         border-radius: 50px;
-        margin-bottom: 24px;
+        margin-bottom: 14px;
     }
 
     .esim-hero-title {
         font-family: 'Outfit', sans-serif;
-        font-size: 42px;
+        font-size: 36px;
         font-weight: 700;
         color: var(--c-gold);
         letter-spacing: -0.5px;
         line-height: 1.1;
-        margin: 0 0 16px;
+        margin: 0 0 10px;
         text-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
     }
 
     .esim-hero-subtitle {
         font-family: 'Outfit', sans-serif;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 300;
         color: var(--c-text-muted);
         line-height: 1.6;
-        margin: 0 auto 28px;
+        margin: 0 auto 16px;
         max-width: 500px;
+    }
+
+    .esim-hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--c-gold-gradient);
+        color: #000;
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 10px 26px;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
+        margin-bottom: 16px;
+    }
+
+    .esim-hero-cta:hover {
+        box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+    }
+
+    .esim-hero-cta i {
+        font-size: 12px;
+        transition: transform 0.3s ease;
+    }
+
+    .esim-hero-cta:hover i {
+        transform: translateX(3px);
     }
 
     .esim-trust-badges {
@@ -140,7 +175,7 @@
     .esim-progress-wrap {
         max-width: 600px;
         margin: 0 auto;
-        padding: 32px 28px 0;
+        padding: 16px 28px 0;
         font-family: 'Outfit', sans-serif;
         opacity: 0;
         transform: translateY(-10px);
@@ -275,7 +310,7 @@
     .esim-step1 {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 32px 28px 48px;
+        padding: 0 28px 40px;
         font-family: 'Outfit', sans-serif;
     }
 
@@ -294,7 +329,7 @@
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 12px;
-        margin-bottom: 40px;
+        margin-bottom: 32px;
     }
 
     .esim-popular-card {
@@ -316,9 +351,17 @@
     }
 
     .esim-popular-flag {
-        font-size: 32px;
-        line-height: 1;
+        width: 36px;
+        height: 26px;
         flex-shrink: 0;
+    }
+
+    .esim-popular-flag img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     }
 
     .esim-popular-info {
@@ -330,7 +373,7 @@
         font-family: 'Outfit', sans-serif;
         font-size: 15px;
         font-weight: 600;
-        color: #fff;
+        color: var(--c-gold);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -498,16 +541,24 @@
     }
 
     .esim-country-flag {
-        font-size: 24px;
-        line-height: 1;
+        width: 28px;
+        height: 20px;
         flex-shrink: 0;
+    }
+
+    .esim-country-flag img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 3px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .esim-country-name {
         font-family: 'Outfit', sans-serif;
         font-size: 13px;
         font-weight: 500;
-        color: #fff;
+        color: var(--c-gold);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -586,8 +637,16 @@
     }
 
     .esim-selected-flag {
-        font-size: 28px;
-        line-height: 1;
+        width: 32px;
+        height: 23px;
+    }
+
+    .esim-selected-flag img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     }
 
     .esim-selected-name {
@@ -619,35 +678,45 @@
     /* Bundle Type Tabs */
     .esim-bundle-tabs {
         display: flex;
-        gap: 0;
-        margin-bottom: 24px;
-        border-bottom: 1px solid #222;
+        gap: 12px;
+        margin-bottom: 28px;
+        border-bottom: none;
+        padding: 4px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 215, 0, 0.06);
     }
 
     .esim-bundle-tab {
         flex: 1;
-        padding: 14px 0;
+        padding: 12px 20px;
         font-family: 'Outfit', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        color: #555;
+        font-size: 13px;
+        font-weight: 600;
+        color: #666;
         text-align: center;
         cursor: pointer;
-        border: none;
-        background: none;
-        border-bottom: 2px solid transparent;
+        border: 1.5px solid transparent;
+        background: transparent;
+        border-radius: 10px;
         transition: all 0.3s ease;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
     .esim-bundle-tab:hover {
-        color: #aaa;
+        color: var(--c-gold);
+        border-color: rgba(255, 215, 0, 0.15);
+        background: rgba(255, 215, 0, 0.03);
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.04);
     }
 
     .esim-bundle-tab.active {
-        color: #fff;
-        border-bottom-color: var(--c-gold);
+        color: #000;
+        background: var(--c-gold-gradient);
+        border-color: var(--c-gold);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.15), 0 4px 12px rgba(255, 215, 0, 0.1);
+        font-weight: 700;
     }
 
     /* Bundle Loading */
@@ -964,8 +1033,16 @@
     }
 
     .esim-summary-country-flag {
-        font-size: 20px;
-        line-height: 1;
+        width: 24px;
+        height: 17px;
+    }
+
+    .esim-summary-country-flag img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 3px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .esim-summary-country-name {
@@ -1252,12 +1329,128 @@
     }
 
     /* ============================================================
-       HOW IT WORKS
+       WHY CHOOSE eSIM — Feature Cards
+       ============================================================ */
+    .esim-features-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 72px 28px 0;
+        text-align: center;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .esim-features-badge {
+        display: inline-block;
+        background: rgba(255, 215, 0, 0.08);
+        border: 1px solid rgba(255, 215, 0, 0.15);
+        color: var(--c-gold);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        padding: 6px 20px;
+        border-radius: 50px;
+        margin-bottom: 20px;
+    }
+
+    .esim-features-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 12px;
+    }
+
+    .esim-features-subtitle {
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--c-text-muted);
+        margin: 0 0 40px;
+    }
+
+    .esim-features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .esim-feature-card {
+        background: var(--c-card-bg);
+        border: 1px solid rgba(255, 215, 0, 0.06);
+        border-radius: 16px;
+        padding: 32px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .esim-feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--c-gold-gradient);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .esim-feature-card:hover {
+        border-color: rgba(255, 215, 0, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(255, 215, 0, 0.06);
+    }
+
+    .esim-feature-card:hover::before {
+        opacity: 1;
+    }
+
+    .esim-feature-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        background: rgba(255, 215, 0, 0.06);
+        border: 1px solid rgba(255, 215, 0, 0.1);
+        font-size: 22px;
+        color: var(--c-gold);
+        transition: all 0.3s ease;
+    }
+
+    .esim-feature-card:hover .esim-feature-icon {
+        background: rgba(255, 215, 0, 0.1);
+        box-shadow: 0 0 16px rgba(255, 215, 0, 0.08);
+    }
+
+    .esim-feature-card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .esim-feature-card-desc {
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 300;
+        color: var(--c-text-muted);
+        line-height: 1.6;
+    }
+
+    /* ============================================================
+       HOW TO ACTIVATE — 4-Step Tutorial
        ============================================================ */
     .esim-how-section {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 96px 28px 0;
+        padding: 80px 28px 0;
         text-align: center;
         font-family: 'Outfit', sans-serif;
     }
@@ -1281,44 +1474,81 @@
         font-size: 28px;
         font-weight: 700;
         color: #fff;
-        margin: 0 0 40px;
+        margin: 0 0 12px;
+    }
+
+    .esim-how-subtitle {
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--c-text-muted);
+        margin: 0 0 48px;
     }
 
     .esim-how-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        position: relative;
+    }
+
+    /* Connector line between steps */
+    .esim-how-grid::before {
+        content: '';
+        position: absolute;
+        top: 56px;
+        left: calc(12.5% + 10px);
+        right: calc(12.5% + 10px);
+        height: 2px;
+        background: linear-gradient(90deg, rgba(255, 215, 0, 0.06), rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.06));
+        z-index: 0;
     }
 
     .esim-how-card {
         background: var(--c-card-bg);
         border: 1px solid rgba(255, 215, 0, 0.06);
-        border-radius: 14px;
-        padding: 32px 24px;
+        border-radius: 16px;
+        padding: 32px 20px;
         text-align: center;
-        transition: all 0.3s ease;
+        transition: all 0.35s ease;
+        position: relative;
+        z-index: 1;
     }
 
     .esim-how-card:hover {
-        border-color: rgba(255, 215, 0, 0.15);
-        transform: translateY(-4px);
+        border-color: rgba(255, 215, 0, 0.2);
+        transform: translateY(-6px);
+        box-shadow: 0 12px 32px rgba(255, 215, 0, 0.06);
     }
 
     .esim-how-step-num {
-        font-family: 'Outfit', sans-serif;
-        font-size: 40px;
-        font-weight: 800;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
         background: var(--c-gold-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        line-height: 1.2;
+        color: #000;
+        font-family: 'Outfit', sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+        box-shadow: 0 4px 16px rgba(255, 215, 0, 0.15);
     }
 
     .esim-how-icon {
-        font-size: 24px;
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        background: rgba(255, 215, 0, 0.05);
+        border: 1px solid rgba(255, 215, 0, 0.08);
+        font-size: 22px;
         color: var(--c-gold);
-        margin-top: 8px;
     }
 
     .esim-how-card-title {
@@ -1326,7 +1556,7 @@
         font-size: 16px;
         font-weight: 600;
         color: #fff;
-        margin-top: 16px;
+        margin-top: 0;
         margin-bottom: 8px;
     }
 
@@ -1449,6 +1679,10 @@
         .esim-popular-grid {
             grid-template-columns: repeat(3, 1fr);
         }
+
+        .esim-features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
     @media (max-width: 1024px) {
@@ -1461,13 +1695,18 @@
         }
 
         .esim-how-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
         }
+
+        .esim-how-grid::before {
+            display: none;
+        }
+
     }
 
     @media (max-width: 768px) {
         .esim-hero {
-            padding: 170px 20px 36px;
+            padding: 110px 20px 14px;
         }
 
         .esim-hero-title {
@@ -1479,7 +1718,7 @@
         }
 
         .esim-trust-badges {
-            gap: 20px;
+            gap: 16px;
         }
 
         .esim-trust-badge {
@@ -1503,21 +1742,55 @@
             padding-right: 16px;
         }
 
+        .esim-step1 {
+            padding-top: 20px;
+        }
+
         .esim-bundles-list {
             grid-template-columns: 1fr;
+        }
+
+        .esim-bundle-tabs {
+            gap: 8px;
+        }
+
+        .esim-bundle-tab {
+            padding: 10px 14px;
+            font-size: 12px;
         }
 
         .esim-form-grid {
             grid-template-columns: 1fr;
         }
 
+        .esim-features-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .esim-features-section {
+            padding: 56px 16px 0;
+        }
+
+        .esim-feature-card {
+            padding: 24px 16px;
+        }
+
         .esim-how-grid {
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 14px;
+        }
+
+        .esim-how-grid::before {
+            display: none;
         }
 
         .esim-how-section {
-            padding: 64px 16px 0;
+            padding: 56px 16px 0;
+        }
+
+        .esim-how-card {
+            padding: 24px 16px;
         }
 
         .esim-faq-section {
@@ -1545,11 +1818,21 @@
 
         .esim-region-pills {
             gap: 6px;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .esim-region-pills::-webkit-scrollbar {
+            display: none;
         }
 
         .esim-region-pill {
             padding: 6px 14px;
             font-size: 11px;
+            flex-shrink: 0;
         }
     }
 
@@ -1560,7 +1843,7 @@
 
         .esim-trust-badges {
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .esim-popular-grid {
@@ -1591,11 +1874,17 @@
         }
 
         .esim-country-flag {
-            font-size: 20px;
+            width: 24px;
+            height: 17px;
         }
 
         .esim-country-name {
             font-size: 12px;
+        }
+
+        .esim-features-grid,
+        .esim-how-grid {
+            gap: 10px;
         }
     }
 </style>
@@ -1608,6 +1897,9 @@
         <div class="esim-hero-badge">TRAVEL eSIM</div>
         <h1 class="esim-hero-title">Stay Connected Worldwide</h1>
         <p class="esim-hero-subtitle">Instant data plans for 186+ countries</p>
+        <button class="esim-hero-cta" onclick="var el=document.getElementById('esimPopularGrid');var y=el.getBoundingClientRect().top+window.pageYOffset-160;window.scrollTo({top:y,behavior:'smooth'})">
+            Browse Plans <i class="fa-solid fa-arrow-right"></i>
+        </button>
         <div class="esim-trust-badges">
             <span class="esim-trust-badge"><i class="fa-solid fa-earth-americas"></i> 186+ Countries</span>
             <span class="esim-trust-badge"><i class="fa-solid fa-bolt"></i> Instant Activation</span>
@@ -1794,27 +2086,68 @@
 <!-- ============================================================
      HOW IT WORKS
      ============================================================ -->
+<!-- ============================================================
+     WHY CHOOSE eSIM
+     ============================================================ -->
+<section class="esim-features-section">
+    <div class="esim-features-badge">WHY CHOOSE eSIM</div>
+    <h2 class="esim-features-title">Travel Smarter, Stay Connected</h2>
+    <p class="esim-features-subtitle">Skip the hassle of physical SIM cards. Our eSIM works with 186+ countries worldwide.</p>
+    <div class="esim-features-grid">
+        <div class="esim-feature-card">
+            <div class="esim-feature-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="esim-feature-card-title">Instant Setup</div>
+            <p class="esim-feature-card-desc">Activate your eSIM in seconds. No waiting for delivery or store visits.</p>
+        </div>
+        <div class="esim-feature-card">
+            <div class="esim-feature-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+            <div class="esim-feature-card-title">Save Up to 90%</div>
+            <p class="esim-feature-card-desc">Avoid expensive roaming charges. Pay local rates wherever you travel.</p>
+        </div>
+        <div class="esim-feature-card">
+            <div class="esim-feature-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div class="esim-feature-card-title">Dual SIM Ready</div>
+            <p class="esim-feature-card-desc">Keep your original number active for calls while using eSIM for data.</p>
+        </div>
+        <div class="esim-feature-card">
+            <div class="esim-feature-icon"><i class="fa-solid fa-headset"></i></div>
+            <div class="esim-feature-card-title">24/7 Support</div>
+            <p class="esim-feature-card-desc">Our travel connectivity experts are always ready to assist you.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     HOW TO ACTIVATE eSIM
+     ============================================================ -->
 <section class="esim-how-section">
-    <div class="esim-how-badge">HOW IT WORKS</div>
-    <h2 class="esim-how-title">Three Simple Steps</h2>
+    <div class="esim-how-badge">HOW TO ACTIVATE</div>
+    <h2 class="esim-how-title">Get Online in 4 Easy Steps</h2>
+    <p class="esim-how-subtitle">From purchase to browsing — it only takes a few minutes.</p>
     <div class="esim-how-grid">
         <div class="esim-how-card">
-            <div class="esim-how-step-num">01</div>
-            <div class="esim-how-icon"><i class="fa-solid fa-globe-americas"></i></div>
-            <div class="esim-how-card-title">Choose Your Plan</div>
-            <p class="esim-how-card-desc">Select your destination country and pick the perfect data plan for your trip.</p>
+            <div class="esim-how-step-num">1</div>
+            <div class="esim-how-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+            <div class="esim-how-card-title">Purchase eSIM</div>
+            <p class="esim-how-card-desc">Choose your destination, pick a data plan, and complete the secure checkout.</p>
         </div>
         <div class="esim-how-card">
-            <div class="esim-how-step-num">02</div>
+            <div class="esim-how-step-num">2</div>
             <div class="esim-how-icon"><i class="fa-solid fa-qrcode"></i></div>
-            <div class="esim-how-card-title">Pay & Receive QR Code</div>
-            <p class="esim-how-card-desc">Complete secure payment. Your eSIM QR code arrives instantly via email.</p>
+            <div class="esim-how-card-title">Scan QR Code</div>
+            <p class="esim-how-card-desc">Receive your unique QR code via email instantly. Scan it with your phone camera.</p>
         </div>
         <div class="esim-how-card">
-            <div class="esim-how-step-num">03</div>
+            <div class="esim-how-step-num">3</div>
+            <div class="esim-how-icon"><i class="fa-solid fa-gear"></i></div>
+            <div class="esim-how-card-title">Activate in Settings</div>
+            <p class="esim-how-card-desc">Go to Settings → Cellular → Add eSIM. Follow the on-screen prompts to activate.</p>
+        </div>
+        <div class="esim-how-card">
+            <div class="esim-how-step-num">4</div>
             <div class="esim-how-icon"><i class="fa-solid fa-wifi"></i></div>
-            <div class="esim-how-card-title">Scan & Connect</div>
-            <p class="esim-how-card-desc">Scan the QR code with your phone. Activate on arrival — instant connectivity.</p>
+            <div class="esim-how-card-title">Start Using Internet</div>
+            <p class="esim-how-card-desc">You're all set! Enjoy fast, reliable internet as soon as you arrive at your destination.</p>
         </div>
     </div>
 </section>
@@ -1928,12 +2261,11 @@
         south_america: ['BRA','ARG','CHL','COL','PER','VEN','ECU','BOL','PRY','URY','GUY','SUR','GUF']
     };
 
-    // ── Utility: ISO2 → Flag emoji ───────────────────────
-    function getFlag(iso2) {
+    // ── Utility: ISO2 → Flag image HTML ──────────────────
+    function getFlagImg(iso2, size) {
         if (!iso2 || iso2.length !== 2) return '';
-        return String.fromCodePoint(
-            ...[...iso2.toUpperCase()].map(c => 0x1F1E6 - 65 + c.charCodeAt(0))
-        );
+        var w = size || 40;
+        return '<img src="https://flagcdn.com/w' + w + '/' + iso2.toLowerCase() + '.png" alt="' + iso2 + '" loading="lazy" onerror="this.style.display=\'none\'">';
     }
 
     // ── Utility: Format price to AED ─────────────────────
@@ -2046,9 +2378,8 @@
         var html = '';
 
         POPULAR_DESTINATIONS.forEach(function(d) {
-            var flag = getFlag(d.iso2);
             html += '<div class="esim-popular-card" data-iso3="' + d.iso3 + '" data-iso2="' + d.iso2 + '" data-name="' + d.name.replace(/"/g, '&quot;') + '">';
-            html += '<span class="esim-popular-flag">' + flag + '</span>';
+            html += '<span class="esim-popular-flag">' + getFlagImg(d.iso2, 80) + '</span>';
             html += '<div class="esim-popular-info">';
             html += '<div class="esim-popular-name">' + d.short + '</div>';
             html += '<div class="esim-popular-cta">View Plans &rarr;</div>';
@@ -2088,13 +2419,12 @@
 
         var html = '';
         filtered.forEach(function(c) {
-            var flag = getFlag(c.iso2_code || c.iso2 || '');
             var name = c.country_name || c.name || '';
             var iso3 = c.iso3_code || c.iso3 || '';
             var iso2 = c.iso2_code || c.iso2 || '';
             var isActive = selectedCountry && selectedCountry.iso3 === iso3 ? ' active-country' : '';
             html += '<div class="esim-country-card' + isActive + '" data-iso3="' + iso3 + '" data-iso2="' + iso2 + '" data-name="' + name.replace(/"/g, '&quot;') + '">';
-            html += '<span class="esim-country-flag">' + flag + '</span>';
+            html += '<span class="esim-country-flag">' + getFlagImg(iso2, 40) + '</span>';
             html += '<span class="esim-country-name">' + name + '</span>';
             html += '</div>';
         });
@@ -2162,7 +2492,7 @@
         currentBundleTab = 'data';
 
         // Update Step 2 header
-        document.getElementById('esimSelectedFlag').textContent = getFlag(iso2);
+        document.getElementById('esimSelectedFlag').innerHTML = getFlagImg(iso2, 80);
         document.getElementById('esimSelectedName').textContent = name;
 
         // Reset tabs to Data Plans active
@@ -2396,8 +2726,7 @@
         document.getElementById('esimSummaryEmpty').style.display = 'none';
         document.getElementById('esimSummaryContent').classList.add('visible');
 
-        var flag = getFlag(selectedCountry.iso2);
-        document.getElementById('esimSummaryFlag').textContent = flag;
+        document.getElementById('esimSummaryFlag').innerHTML = getFlagImg(selectedCountry.iso2, 40);
         document.getElementById('esimSummaryCountry').textContent = selectedCountry.name;
 
         var name = selectedBundle.bundle_marketing_name || selectedBundle.bundle_name || 'eSIM Plan';

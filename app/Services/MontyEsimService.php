@@ -16,8 +16,8 @@ class MontyEsimService
     public function __construct()
     {
         $this->baseUrl = rtrim(config('montyesim.base_url'), '/');
-        $this->username = config('montyesim.username');
-        $this->password = config('montyesim.password');
+        $this->username = config('montyesim.username') ?? '';
+        $this->password = config('montyesim.password') ?? '';
         $this->markupPercent = (float) config('montyesim.markup_percent', 20);
     }
 
