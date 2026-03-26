@@ -1780,8 +1780,8 @@
         .esim-step1,
         .esim-step2,
         .esim-step3 {
-            padding-left: 12px;
-            padding-right: 12px;
+            padding-left: 16px;
+            padding-right: 16px;
         }
 
         .esim-step1 {
@@ -1856,7 +1856,7 @@
         }
 
         .esim-features-section {
-            padding: 40px 12px 0;
+            padding: 40px 16px 0;
         }
 
         .esim-feature-card {
@@ -1873,7 +1873,7 @@
         }
 
         .esim-how-section {
-            padding: 40px 12px 0;
+            padding: 40px 16px 0;
         }
 
         .esim-how-card {
@@ -1881,7 +1881,7 @@
         }
 
         .esim-faq-section {
-            padding: 40px 12px 48px;
+            padding: 40px 16px 48px;
         }
 
         .esim-selected-header {
