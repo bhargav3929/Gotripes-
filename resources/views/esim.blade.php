@@ -1747,7 +1747,7 @@
         }
 
         .esim-popular-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
         }
 
@@ -1755,7 +1755,7 @@
             padding: 10px;
             gap: 8px;
             border-radius: 8px;
-            justify-content: center;
+            min-width: 0;
         }
 
         .esim-popular-flag {
@@ -1768,7 +1768,7 @@
         }
 
         .esim-country-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
         }
 
@@ -1776,7 +1776,8 @@
             padding: 10px;
             gap: 8px;
             border-radius: 8px;
-            justify-content: center;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .esim-country-flag {
@@ -1959,17 +1960,17 @@
         }
 
         .esim-popular-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 6px;
         }
 
         .esim-country-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 6px;
         }
 
         .esim-bundles-list {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 5px;
         }
 
