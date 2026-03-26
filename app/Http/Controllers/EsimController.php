@@ -349,7 +349,7 @@ class EsimController extends Controller
                 ]),
                 'items' => [
                     [
-                        'item_id' => $request->bundle_code,
+                        'item_id' => substr($request->bundle_code, 0, 50),
                         'name' => "{$bundleName} ({$dataAmount}, {$validityDays} days)",
                         'quantity' => 1,
                         'unit_amount' => number_format($sellingPrice, 2, '.', ''),
