@@ -1698,44 +1698,105 @@
 
     @media (max-width: 768px) {
         .esim-hero {
-            padding: 60px 20px 0;
+            padding: 20px 16px 0;
+        }
+
+        .esim-hero-badge {
+            font-size: 9px;
+            padding: 5px 16px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
         }
 
         .esim-hero-title {
-            font-size: 32px;
+            font-size: 26px;
+            margin-bottom: 6px;
         }
 
         .esim-hero-subtitle {
-            font-size: 14px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .esim-hero-cta {
+            font-size: 11px;
+            padding: 9px 22px;
+            margin-bottom: 12px;
         }
 
         .esim-trust-badges {
-            gap: 16px;
+            gap: 12px;
         }
 
         .esim-trust-badge {
-            font-size: 10px;
+            font-size: 9px;
             letter-spacing: 1px;
+        }
+
+        .esim-wizard-container {
+            margin-top: -10px;
         }
 
         .esim-popular-grid {
             grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .esim-popular-card {
+            padding: 10px;
+            gap: 8px;
+            border-radius: 8px;
+        }
+
+        .esim-popular-flag {
+            width: 22px;
+            height: 16px;
+        }
+
+        .esim-popular-name {
+            font-size: 12px;
         }
 
         .esim-country-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 8px;
+        }
+
+        .esim-country-card {
+            padding: 10px;
+            gap: 8px;
+            border-radius: 8px;
+        }
+
+        .esim-country-flag {
+            width: 22px;
+            height: 16px;
+        }
+
+        .esim-country-name {
+            font-size: 11px;
         }
 
         .esim-step1,
         .esim-step2,
         .esim-step3 {
-            padding-left: 16px;
-            padding-right: 16px;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .esim-step1 {
+            padding-top: 8px;
+        }
+
+        .esim-section-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
         }
 
         .esim-checkout-grid {
             grid-template-columns: 1fr;
+            gap: 16px;
         }
 
         .esim-checkout-right {
@@ -1743,21 +1804,46 @@
             order: -1;
         }
 
-        .esim-step1 {
-            padding-top: 20px;
-        }
-
         .esim-bundles-list {
             grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .esim-bundle-card {
+            padding: 8px 6px;
+            border-radius: 6px;
+        }
+
+        .esim-bundle-data {
+            font-size: 14px;
+        }
+
+        .esim-bundle-validity {
+            font-size: 9px;
+            margin-bottom: 5px;
+        }
+
+        .esim-bundle-divider {
+            margin-bottom: 5px;
+        }
+
+        .esim-bundle-price {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .esim-bundle-badge {
+            font-size: 8px;
+            padding: 2px 6px;
         }
 
         .esim-bundle-tabs {
-            gap: 8px;
+            gap: 6px;
         }
 
         .esim-bundle-tab {
-            padding: 10px 14px;
-            font-size: 12px;
+            padding: 8px 12px;
+            font-size: 11px;
         }
 
         .esim-form-grid {
@@ -1766,20 +1852,20 @@
 
         .esim-features-grid {
             grid-template-columns: 1fr;
-            gap: 14px;
+            gap: 10px;
         }
 
         .esim-features-section {
-            padding: 56px 16px 0;
+            padding: 40px 12px 0;
         }
 
         .esim-feature-card {
-            padding: 24px 16px;
+            padding: 20px 14px;
         }
 
         .esim-how-grid {
             grid-template-columns: 1fr;
-            gap: 14px;
+            gap: 10px;
         }
 
         .esim-how-grid::before {
@@ -1787,15 +1873,15 @@
         }
 
         .esim-how-section {
-            padding: 56px 16px 0;
+            padding: 40px 12px 0;
         }
 
         .esim-how-card {
-            padding: 24px 16px;
+            padding: 20px 14px;
         }
 
         .esim-faq-section {
-            padding: 56px 16px 64px;
+            padding: 40px 12px 48px;
         }
 
         .esim-selected-header {
@@ -1812,9 +1898,9 @@
         }
 
         .esim-progress-circle {
-            width: 32px;
-            height: 32px;
-            font-size: 12px;
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
         }
 
         .esim-region-pills {
@@ -1831,63 +1917,61 @@
         }
 
         .esim-region-pill {
-            padding: 6px 14px;
-            font-size: 11px;
+            padding: 5px 12px;
+            font-size: 10px;
             flex-shrink: 0;
+        }
+
+        .esim-summary-inner {
+            padding: 16px;
+        }
+
+        .esim-pay-btn {
+            font-size: 13px;
+            padding: 14px;
         }
     }
 
     @media (max-width: 375px) {
         .esim-hero-title {
-            font-size: 28px;
+            font-size: 22px;
+        }
+
+        .esim-hero-subtitle {
+            font-size: 12px;
         }
 
         .esim-trust-badges {
             flex-direction: column;
-            gap: 10px;
+            gap: 6px;
         }
 
         .esim-popular-grid {
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .esim-popular-card {
-            padding: 12px;
-            gap: 10px;
-        }
-
-        .esim-popular-flag {
-            width: 24px;
-            height: 17px;
-        }
-
-        .esim-popular-name {
-            font-size: 12px;
+            gap: 6px;
         }
 
         .esim-country-grid {
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .esim-country-card {
-            padding: 12px;
-            gap: 10px;
+        .esim-bundles-list {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
         }
 
-        .esim-country-flag {
-            width: 24px;
-            height: 17px;
+        .esim-bundle-data {
+            font-size: 13px;
         }
 
-        .esim-country-name {
-            font-size: 12px;
+        .esim-bundle-price {
+            font-size: 11px;
         }
 
         .esim-features-grid,
         .esim-how-grid {
-            gap: 10px;
+            gap: 8px;
         }
     }
 </style>
