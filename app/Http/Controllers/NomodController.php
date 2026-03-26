@@ -234,7 +234,21 @@ class NomodController extends Controller
 
     private function getBookingData($orderId)
     {
-        if (stripos($orderId, 'UAEV') !== false) {
+        if (stripos($orderId, 'ORDUM') !== false) {
+            $transaction = NomodTransaction::where('order_id', $orderId)->first();
+            if ($transaction) {
+                return [
+                    'type' => 'umrah',
+                    'data' => [
+                        'order_id' => $orderId,
+                        'amount' => $transaction->amount,
+                        'currency' => $transaction->currency ?? 'AED',
+                        'package_name' => $transaction->metadata['package_name'] ?? 'Umrah Package',
+                        'status' => $transaction->status,
+                    ],
+                ];
+            }
+        } elseif (stripos($orderId, 'UAEV') !== false) {
             $applicationId = str_replace('ORDUAEV', '', $orderId);
             $application = UAEVApplication::find($applicationId);
 
@@ -323,7 +337,10 @@ class NomodController extends Controller
 
     private function updateBookingStatus($orderId, $paymentStatus, $bookingType)
     {
-        if ($bookingType === 1 && stripos($orderId, 'UAEV') !== false) {
+        if ($bookingType === 'umrah' && stripos($orderId, 'ORDUM') !== false) {
+            // Umrah payments are tracked in nomod_transactions only; status already updated in handleCallback
+            return;
+        } elseif ($bookingType === 1 && stripos($orderId, 'UAEV') !== false) {
             $applicationId = str_replace('ORDUAEV', '', $orderId);
             $application = UAEVApplication::find($applicationId);
 
@@ -392,7 +409,9 @@ class NomodController extends Controller
 
     private function determineBookingType($orderId)
     {
-        if (stripos($orderId, 'UAEV') !== false) {
+        if (stripos($orderId, 'ORDUM') !== false) {
+            return 'umrah';
+        } elseif (stripos($orderId, 'UAEV') !== false) {
             return 1;
         } elseif (stripos($orderId, 'AB') !== false) {
             return 2;

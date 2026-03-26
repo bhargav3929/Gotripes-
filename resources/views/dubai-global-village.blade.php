@@ -197,6 +197,15 @@
 <div style="height: 120px; background: #000;"></div>
 @endif
 
+@if(!$activity)
+<section class="pt-80px pb-80px" style="background: #000; color: #fff;">
+  <div class="container text-center py-5">
+    <h2 style="color: #FFD23F;">Activity Not Found</h2>
+    <p class="text-white mt-3">The activity you are looking for is not available.</p>
+    <a href="/" class="btn btn-warning mt-3">Back to Home</a>
+  </div>
+</section>
+@else
 <section class="pt-80px pb-80px" style="background: #000; color: #fff;">
   <div class="container">
     <div class="row">
@@ -319,6 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
 @endif
 @if(session('error'))
   <div class="classic-snackbar failed show" id="sessionSnackbar">{{ session('error') }}</div>
+@endif
 @endif
 
 @include('footer')

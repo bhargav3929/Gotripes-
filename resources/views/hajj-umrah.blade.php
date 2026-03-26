@@ -67,8 +67,8 @@
                             @endif
 
                             <div class="package-footer">
-                                <span class="price">From <strong>{{ $pkg->currency === 'USD' ? '$' : ($pkg->currency === 'GBP' ? '£' : ($pkg->currency === 'EUR' ? '€' : $pkg->currency . ' ')) }}{{ number_format($pkg->price, 0) }}</strong></span>
-                                <a href="/contact-us" class="btn-book">Inquire Now</a>
+                                <span class="price">From <strong>AED {{ number_format($pkg->price, 0) }}</strong></span>
+                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('{{ $pkg->title }}', {{ $pkg->price }})">Buy Now</button>
                             </div>
                         </div>
                     </div>
@@ -93,8 +93,8 @@
                                 <li><i class="bi bi-check2"></i> Visa Assistance</li>
                             </ul>
                             <div class="package-footer">
-                                <span class="price">From <strong>$799</strong></span>
-                                <a href="/contact-us" class="btn-book">Inquire Now</a>
+                                <span class="price">From <strong>AED 799</strong></span>
+                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('Economy Umrah', 799)">Buy Now</button>
                             </div>
                         </div>
                     </div>
@@ -114,8 +114,8 @@
                                 <li><i class="bi bi-check2"></i> 5-Star Guided Tours</li>
                             </ul>
                             <div class="package-footer">
-                                <span class="price">From <strong>$1,299</strong></span>
-                                <a href="/contact-us" class="btn-book">Inquire Now</a>
+                                <span class="price">From <strong>AED 1,299</strong></span>
+                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('Premium Umrah', 1299)">Buy Now</button>
                             </div>
                         </div>
                     </div>
@@ -135,8 +135,8 @@
                                 <li><i class="bi bi-check2"></i> 24/7 Personal Concierge</li>
                             </ul>
                             <div class="package-footer">
-                                <span class="price">From <strong>$2,499</strong></span>
-                                <a href="/contact-us" class="btn-book">Inquire Now</a>
+                                <span class="price">From <strong>AED 2,499</strong></span>
+                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('VIP Umrah', 2499)">Buy Now</button>
                             </div>
                         </div>
                     </div>
@@ -320,6 +320,9 @@
         font-weight: 700;
         font-size: 13px;
         transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
     }
 
     .btn-book:hover {
@@ -416,5 +419,42 @@
         }
     }
 </style>
+
+<script>
+function initiateUmrahPayment(packageName, amount) {
+    const btn = event.currentTarget;
+    const originalText = btn.textContent;
+    btn.textContent = 'Processing...';
+    btn.disabled = true;
+
+    fetch('/umrah/payment/initiate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+        body: JSON.stringify({
+            package_name: packageName,
+            amount: amount,
+        }),
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success && data.checkout_url) {
+            window.location.href = data.checkout_url;
+        } else {
+            alert(data.error || 'Payment initiation failed. Please try again.');
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    })
+    .catch(err => {
+        console.error('Payment error:', err);
+        alert('Something went wrong. Please try again.');
+        btn.textContent = originalText;
+        btn.disabled = false;
+    });
+}
+</script>
 
 @include('footer')
