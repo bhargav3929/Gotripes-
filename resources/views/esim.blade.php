@@ -20,7 +20,7 @@
 
     * { box-sizing: border-box; }
 
-    body { margin: 0; background-color: var(--c-dark-bg); }
+    body { background-color: var(--c-dark-bg); }
 
     /* ============================================================
        HERO BANNER
@@ -32,7 +32,8 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 120px 28px 0;
+        padding: 30px 28px 0;
+        margin-bottom: 0;
         background: linear-gradient(180deg, #000 0%, #080808 50%, var(--c-dark-bg) 100%);
         overflow: hidden;
     }
@@ -150,6 +151,7 @@
         justify-content: center;
         gap: 32px;
         flex-wrap: wrap;
+        padding-bottom: 6px;
     }
 
     .esim-trust-badge {
@@ -175,7 +177,7 @@
     .esim-progress-wrap {
         max-width: 600px;
         margin: 0 auto;
-        padding: 16px 28px 0;
+        padding: 8px 28px 0;
         font-family: 'Outfit', sans-serif;
         opacity: 0;
         transform: translateY(-10px);
@@ -302,6 +304,7 @@
     .esim-wizard-container {
         position: relative;
         min-height: 400px;
+        margin-top: -20px;
     }
 
     /* ============================================================
@@ -320,7 +323,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 3px;
-        margin-bottom: 24px;
+        margin-bottom: 12px;
         opacity: 0.9;
     }
 
@@ -333,15 +336,15 @@
     }
 
     .esim-popular-card {
+        background: var(--c-card-bg);
         border: 1px solid var(--c-border-subtle);
         border-radius: 12px;
-        padding: 20px;
+        padding: 14px;
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
         cursor: pointer;
         transition: all 0.3s ease;
-        position: relative;
     }
 
     .esim-popular-card:hover {
@@ -351,8 +354,8 @@
     }
 
     .esim-popular-flag {
-        width: 36px;
-        height: 26px;
+        width: 28px;
+        height: 20px;
         flex-shrink: 0;
     }
 
@@ -360,50 +363,19 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 4px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .esim-popular-info {
-        flex: 1;
-        min-width: 0;
+        border-radius: 3px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .esim-popular-name {
         font-family: 'Outfit', sans-serif;
-        font-size: 15px;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 500;
         color: var(--c-gold);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
-    .esim-popular-cta {
-        font-family: 'Outfit', sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--c-gold);
-        margin-top: 4px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .esim-popular-card:hover .esim-popular-cta {
-        opacity: 1;
-    }
-
-    /* Individual card gradients */
-    .esim-popular-card[data-iso2="AE"] { background: linear-gradient(135deg, #0a0f0a 0%, #0d1a0d 100%); }
-    .esim-popular-card[data-iso2="TR"] { background: linear-gradient(135deg, #140a0a 0%, #1a0d0d 100%); }
-    .esim-popular-card[data-iso2="TH"] { background: linear-gradient(135deg, #0a0a14 0%, #0d0d1a 100%); }
-    .esim-popular-card[data-iso2="GB"] { background: linear-gradient(135deg, #0a0a12 0%, #0d0d18 100%); }
-    .esim-popular-card[data-iso2="US"] { background: linear-gradient(135deg, #0f0a0a 0%, #150d0d 100%); }
-    .esim-popular-card[data-iso2="SA"] { background: linear-gradient(135deg, #0f0d0a 0%, #15110d 100%); }
-    .esim-popular-card[data-iso2="IN"] { background: linear-gradient(135deg, #100a0a 0%, #180e0a 100%); }
-    .esim-popular-card[data-iso2="EG"] { background: linear-gradient(135deg, #0f0d0a 0%, #14120d 100%); }
-    .esim-popular-card[data-iso2="FR"] { background: linear-gradient(135deg, #0a0a10 0%, #0d0d16 100%); }
-    .esim-popular-card[data-iso2="SG"] { background: linear-gradient(135deg, #0a0f0f 0%, #0d1515 100%); }
 
     /* Divider with "or" */
     .esim-or-divider {
@@ -746,15 +718,15 @@
     /* Bundle Cards Grid */
     .esim-bundles-list {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
     }
 
     .esim-bundle-card {
         background: var(--c-card-bg);
         border: 1px solid var(--c-border-subtle);
-        border-radius: 14px;
-        padding: 28px 20px;
+        border-radius: 8px;
+        padding: 10px 8px;
         cursor: pointer;
         transition: all 0.3s ease;
         display: flex;
@@ -782,64 +754,64 @@
         font-family: 'Font Awesome 6 Free';
         font-weight: 900;
         position: absolute;
-        top: 10px;
-        right: 12px;
-        width: 22px;
-        height: 22px;
+        top: 8px;
+        right: 8px;
+        width: 18px;
+        height: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: var(--c-gold);
         color: #000;
-        font-size: 10px;
+        font-size: 8px;
         border-radius: 50%;
     }
 
     .esim-bundle-data {
         font-family: 'Outfit', sans-serif;
-        font-size: 28px;
-        font-weight: 800;
+        font-size: 15px;
+        font-weight: 700;
         color: var(--c-gold);
         line-height: 1.2;
-        margin-bottom: 4px;
+        margin-bottom: 1px;
     }
 
     .esim-bundle-validity {
         font-family: 'Outfit', sans-serif;
-        font-size: 14px;
+        font-size: 10px;
         font-weight: 400;
         color: var(--c-text-muted);
-        margin-bottom: 16px;
+        margin-bottom: 6px;
     }
 
     .esim-bundle-divider {
         width: 60%;
         height: 1px;
         background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-        margin-bottom: 16px;
+        margin-bottom: 6px;
     }
 
     .esim-bundle-price {
         font-family: 'Outfit', sans-serif;
-        font-size: 20px;
+        font-size: 13px;
         font-weight: 700;
         color: #fff;
         line-height: 1.2;
-        margin-bottom: 12px;
+        margin-bottom: 5px;
     }
 
     .esim-bundle-badges {
         display: flex;
-        gap: 6px;
+        gap: 4px;
         flex-wrap: wrap;
         justify-content: center;
     }
 
     .esim-bundle-badge {
         display: inline-block;
-        padding: 3px 10px;
+        padding: 2px 7px;
         font-family: 'Outfit', sans-serif;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 600;
         letter-spacing: 0.5px;
         border-radius: 50px;
@@ -928,10 +900,17 @@
        STEP 3 — CHECKOUT
        ============================================================ */
     .esim-step3 {
-        max-width: 700px;
+        max-width: 1100px;
         margin: 0 auto;
         padding: 32px 28px 48px;
         font-family: 'Outfit', sans-serif;
+    }
+
+    .esim-checkout-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 32px;
+        align-items: start;
     }
 
     /* Back button */
@@ -960,13 +939,17 @@
     }
 
     /* Order Summary Card */
+    .esim-checkout-right {
+        position: sticky;
+        top: 100px;
+    }
+
     .esim-summary-card {
         background: var(--c-card-bg);
         border: 1px solid rgba(255, 215, 0, 0.1);
         border-radius: 14px;
         overflow: hidden;
         position: relative;
-        margin-bottom: 32px;
     }
 
     .esim-summary-card::before {
@@ -1208,6 +1191,15 @@
         border-color: var(--c-gold);
         box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
         background: #161616;
+    }
+
+    .esim-field-input:-webkit-autofill,
+    .esim-field-input:-webkit-autofill:hover,
+    .esim-field-input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px #111 inset !important;
+        -webkit-text-fill-color: var(--c-text-light) !important;
+        border-color: var(--c-input-border);
+        transition: background-color 5000s ease-in-out 0s;
     }
 
     .esim-field-input.input-error {
@@ -1691,7 +1683,7 @@
         }
 
         .esim-bundles-list {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
         }
 
         .esim-how-grid {
@@ -1706,7 +1698,7 @@
 
     @media (max-width: 768px) {
         .esim-hero {
-            padding: 110px 20px 14px;
+            padding: 60px 20px 0;
         }
 
         .esim-hero-title {
@@ -1742,12 +1734,21 @@
             padding-right: 16px;
         }
 
+        .esim-checkout-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .esim-checkout-right {
+            position: static;
+            order: -1;
+        }
+
         .esim-step1 {
             padding-top: 20px;
         }
 
         .esim-bundles-list {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
         }
 
         .esim-bundle-tabs {
@@ -1852,15 +1853,17 @@
         }
 
         .esim-popular-card {
-            padding: 14px;
+            padding: 12px;
+            gap: 10px;
         }
 
         .esim-popular-flag {
-            font-size: 26px;
+            width: 24px;
+            height: 17px;
         }
 
         .esim-popular-name {
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .esim-country-grid {
@@ -2007,77 +2010,85 @@
         <div class="esim-step3">
             <button class="esim-back-btn" id="esimBackToPlans"><i class="fa-solid fa-arrow-left"></i> Back to Plans</button>
 
-            <div class="esim-summary-card">
-                <div class="esim-summary-inner">
-                    <div class="esim-summary-title">ORDER SUMMARY</div>
-
-                    <div class="esim-summary-empty" id="esimSummaryEmpty">Select a plan to continue</div>
-
-                    <div class="esim-summary-content" id="esimSummaryContent">
-                        <div class="esim-summary-row">
-                            <div class="esim-summary-left">
-                                <div class="esim-summary-country-row">
-                                    <span class="esim-summary-country-flag" id="esimSummaryFlag"></span>
-                                    <span class="esim-summary-country-name" id="esimSummaryCountry"></span>
-                                </div>
-                                <div class="esim-summary-bundle-name" id="esimSummaryBundleName"></div>
-                                <div class="esim-summary-bundle-details" id="esimSummaryBundleDetails"></div>
-                                <div class="esim-summary-badges" id="esimSummaryBadges"></div>
+            <div class="esim-checkout-grid">
+                <!-- LEFT: Form -->
+                <div class="esim-checkout-left">
+                    <div class="esim-form-area">
+                        <div class="esim-section-label">YOUR DETAILS</div>
+                        <div class="esim-form-grid">
+                            <div class="esim-form-field">
+                                <label class="esim-field-label">Full Name *</label>
+                                <input type="text" class="esim-field-input" id="esimName" placeholder="John Doe" autocomplete="name">
+                                <span class="esim-field-error" id="esimNameError">Full name is required</span>
                             </div>
-                            <div class="esim-summary-right-price" id="esimSummaryTotal"></div>
+                            <div class="esim-form-field">
+                                <label class="esim-field-label">Phone Number *</label>
+                                <input type="tel" class="esim-field-input" id="esimPhone" placeholder="+971 50 000 0000" autocomplete="tel">
+                                <span class="esim-field-error" id="esimPhoneError">Phone number is required</span>
+                            </div>
+                            <div class="esim-form-field">
+                                <label class="esim-field-label">Email Address *</label>
+                                <input type="email" class="esim-field-input" id="esimEmail" placeholder="you@email.com" autocomplete="email">
+                                <span class="esim-field-error" id="esimEmailError">Valid email is required</span>
+                            </div>
+                            <div class="esim-form-field">
+                                <label class="esim-field-label">Confirm Email *</label>
+                                <input type="email" class="esim-field-input" id="esimEmailConfirm" placeholder="Confirm your email" autocomplete="off">
+                                <span class="esim-field-error" id="esimEmailConfirmError">Emails do not match</span>
+                            </div>
                         </div>
-                        <button class="esim-summary-change-plan" id="esimSummaryChangePlan">Change Plan</button>
-                        <div class="esim-summary-divider"></div>
-                        <div class="esim-summary-price-row">
-                            <span class="esim-summary-price-label">Subtotal</span>
-                            <span class="esim-summary-price-value" id="esimSummarySubtotal"></span>
-                        </div>
-                        <div class="esim-summary-divider"></div>
-                        <div class="esim-summary-total-row">
-                            <span class="esim-summary-total-label">Total</span>
-                            <span class="esim-summary-total-value" id="esimSummaryTotalBottom"></span>
+                    </div>
+
+                    <button class="esim-pay-btn" id="esimPayBtn" disabled>
+                        <div class="btn-spinner"></div>
+                        <span class="btn-label">PAY SECURELY</span>
+                        <span class="btn-loading-text">Processing...</span>
+                    </button>
+                    <div class="esim-secure-badge">
+                        <i class="fa-solid fa-lock"></i>
+                        256-bit SSL Encrypted
+                    </div>
+
+                    <div class="esim-error-msg" id="esimErrorMsg"></div>
+                </div>
+
+                <!-- RIGHT: Order Summary -->
+                <div class="esim-checkout-right">
+                    <div class="esim-summary-card">
+                        <div class="esim-summary-inner">
+                            <div class="esim-summary-title">ORDER SUMMARY</div>
+
+                            <div class="esim-summary-empty" id="esimSummaryEmpty">Select a plan to continue</div>
+
+                            <div class="esim-summary-content" id="esimSummaryContent">
+                                <div class="esim-summary-row">
+                                    <div class="esim-summary-left">
+                                        <div class="esim-summary-country-row">
+                                            <span class="esim-summary-country-flag" id="esimSummaryFlag"></span>
+                                            <span class="esim-summary-country-name" id="esimSummaryCountry"></span>
+                                        </div>
+                                        <div class="esim-summary-bundle-name" id="esimSummaryBundleName"></div>
+                                        <div class="esim-summary-bundle-details" id="esimSummaryBundleDetails"></div>
+                                        <div class="esim-summary-badges" id="esimSummaryBadges"></div>
+                                    </div>
+                                    <div class="esim-summary-right-price" id="esimSummaryTotal"></div>
+                                </div>
+                                <button class="esim-summary-change-plan" id="esimSummaryChangePlan">Change Plan</button>
+                                <div class="esim-summary-divider"></div>
+                                <div class="esim-summary-price-row">
+                                    <span class="esim-summary-price-label">Subtotal</span>
+                                    <span class="esim-summary-price-value" id="esimSummarySubtotal"></span>
+                                </div>
+                                <div class="esim-summary-divider"></div>
+                                <div class="esim-summary-total-row">
+                                    <span class="esim-summary-total-label">Total</span>
+                                    <span class="esim-summary-total-value" id="esimSummaryTotalBottom"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="esim-form-area">
-                <div class="esim-section-label">YOUR DETAILS</div>
-                <div class="esim-form-grid">
-                    <div class="esim-form-field">
-                        <label class="esim-field-label">Full Name *</label>
-                        <input type="text" class="esim-field-input" id="esimName" placeholder="John Doe" autocomplete="name">
-                        <span class="esim-field-error" id="esimNameError">Full name is required</span>
-                    </div>
-                    <div class="esim-form-field">
-                        <label class="esim-field-label">Phone Number *</label>
-                        <input type="tel" class="esim-field-input" id="esimPhone" placeholder="+971 50 000 0000" autocomplete="tel">
-                        <span class="esim-field-error" id="esimPhoneError">Phone number is required</span>
-                    </div>
-                    <div class="esim-form-field">
-                        <label class="esim-field-label">Email Address *</label>
-                        <input type="email" class="esim-field-input" id="esimEmail" placeholder="you@email.com" autocomplete="email">
-                        <span class="esim-field-error" id="esimEmailError">Valid email is required</span>
-                    </div>
-                    <div class="esim-form-field">
-                        <label class="esim-field-label">Confirm Email *</label>
-                        <input type="email" class="esim-field-input" id="esimEmailConfirm" placeholder="Confirm your email" autocomplete="off">
-                        <span class="esim-field-error" id="esimEmailConfirmError">Emails do not match</span>
-                    </div>
-                </div>
-            </div>
-
-            <button class="esim-pay-btn" id="esimPayBtn" disabled>
-                <div class="btn-spinner"></div>
-                <span class="btn-label">PAY SECURELY</span>
-                <span class="btn-loading-text">Processing...</span>
-            </button>
-            <div class="esim-secure-badge">
-                <i class="fa-solid fa-lock"></i>
-                256-bit SSL Encrypted
-            </div>
-
-            <div class="esim-error-msg" id="esimErrorMsg"></div>
         </div>
     </section>
 
@@ -2379,11 +2390,8 @@
 
         POPULAR_DESTINATIONS.forEach(function(d) {
             html += '<div class="esim-popular-card" data-iso3="' + d.iso3 + '" data-iso2="' + d.iso2 + '" data-name="' + d.name.replace(/"/g, '&quot;') + '">';
-            html += '<span class="esim-popular-flag">' + getFlagImg(d.iso2, 80) + '</span>';
-            html += '<div class="esim-popular-info">';
-            html += '<div class="esim-popular-name">' + d.short + '</div>';
-            html += '<div class="esim-popular-cta">View Plans &rarr;</div>';
-            html += '</div>';
+            html += '<span class="esim-popular-flag">' + getFlagImg(d.iso2, 40) + '</span>';
+            html += '<span class="esim-popular-name">' + d.short + '</span>';
             html += '</div>';
         });
 
