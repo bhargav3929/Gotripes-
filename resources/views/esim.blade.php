@@ -36,7 +36,7 @@
        ============================================================ */
     .esim-page-header {
         text-align: center;
-        padding: 24px 28px 0;
+        padding: 24px 28px 16px;
     }
 
     .esim-hero-badge {
@@ -53,7 +53,7 @@
         border-radius: 50px;
     }
 
-    /* Progress bar styles removed - keeping placeholder for wizard container */
+    /* Progress bar - hidden */
     .esim-progress-wrap { display: none; }
 
     .esim-progress-step {
@@ -1551,14 +1551,40 @@
     }
 
     @media (max-width: 768px) {
-        .esim-page-header {
-            padding: 16px 16px 0;
+        .esim-hero {
+            padding: 20px 16px 0;
         }
 
         .esim-hero-badge {
             font-size: 9px;
             padding: 5px 16px;
             letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .esim-hero-title {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .esim-hero-subtitle {
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .esim-hero-cta {
+            font-size: 11px;
+            padding: 9px 22px;
+            margin-bottom: 12px;
+        }
+
+        .esim-trust-badges {
+            gap: 12px;
+        }
+
+        .esim-trust-badge {
+            font-size: 9px;
+            letter-spacing: 1px;
         }
 
         .esim-wizard-container {
@@ -1765,6 +1791,19 @@
     }
 
     @media (max-width: 375px) {
+        .esim-hero-title {
+            font-size: 22px;
+        }
+
+        .esim-hero-subtitle {
+            font-size: 12px;
+        }
+
+        .esim-trust-badges {
+            flex-direction: column;
+            gap: 6px;
+        }
+
         .esim-popular-grid {
             grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 6px;
@@ -1796,7 +1835,7 @@
 </style>
 
 <!-- ============================================================
-     TRAVEL ESIM BADGE
+     PAGE HEADER - TRAVEL eSIM BADGE ONLY
      ============================================================ -->
 <div class="esim-page-header">
     <div class="esim-hero-badge">TRAVEL eSIM</div>
