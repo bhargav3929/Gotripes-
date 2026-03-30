@@ -294,86 +294,86 @@
 <!-- Ad TV Boxes - Each box is a dedicated TV with rotating media -->
 <div class="container ad-cards-wrapper">
   <div class="ad-grid">
-    @if(isset($adSlots) && $adSlots->count() > 0)
-      @php $slotIndex = 0; @endphp
-      @foreach($adSlots as $slotNumber => $mediaItems)
-        @php $slotIndex++; @endphp
+    <?php if(isset($adSlots) && $adSlots->count() > 0): ?>
+      <?php $slotIndex = 0; ?>
+      <?php $__currentLoopData = $adSlots; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $slotNumber => $mediaItems): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php $slotIndex++; ?>
 
-        {{-- Insert eSIM promo as the 3rd window --}}
-        @if($slotIndex === 3)
+        
+        <?php if($slotIndex === 3): ?>
           <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
             <div class="esim-promo-pulse"></div>
-            <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
+            <img src="<?php echo e(asset('assets/homepageads/ad_esim_user_choice.jpg')); ?>" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
           </a>
-        @endif
+        <?php endif; ?>
 
-        @php $slotLink = $mediaItems->first()->linkUrl ?? null; @endphp
-        @if($slotLink)
-          <a href="{{ $slotLink }}" class="ad-grid-item ad-tv-box" data-tv="{{ $slotNumber }}" style="text-decoration:none;color:inherit;display:block;">
-        @else
-          <div class="ad-grid-item ad-tv-box" data-tv="{{ $slotNumber }}">
-        @endif
-          @foreach($mediaItems as $idx => $media)
-            <div class="ad-tv-slide {{ $idx === 0 ? 'active' : '' }}"
-                 data-type="{{ $media->mediaType }}"
-                 data-duration="{{ $media->duration ?? 5 }}">
-              @if($media->mediaType === 'video')
+        <?php $slotLink = $mediaItems->first()->linkUrl ?? null; ?>
+        <?php if($slotLink): ?>
+          <a href="<?php echo e($slotLink); ?>" class="ad-grid-item ad-tv-box" data-tv="<?php echo e($slotNumber); ?>" style="text-decoration:none;color:inherit;display:block;">
+        <?php else: ?>
+          <div class="ad-grid-item ad-tv-box" data-tv="<?php echo e($slotNumber); ?>">
+        <?php endif; ?>
+          <?php $__currentLoopData = $mediaItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $media): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="ad-tv-slide <?php echo e($idx === 0 ? 'active' : ''); ?>"
+                 data-type="<?php echo e($media->mediaType); ?>"
+                 data-duration="<?php echo e($media->duration ?? 5); ?>">
+              <?php if($media->mediaType === 'video'): ?>
                 <video muted playsinline preload="metadata" class="ad-carousel-media">
-                  <source src="{{ asset($media->imgPath) }}" type="video/mp4">
+                  <source src="<?php echo e(asset($media->imgPath)); ?>" type="video/mp4">
                 </video>
-              @else
-                <img src="{{ asset($media->imgPath) }}" alt="Ad Slot {{ $slotNumber }}" class="ad-carousel-media" loading="lazy">
-              @endif
+              <?php else: ?>
+                <img src="<?php echo e(asset($media->imgPath)); ?>" alt="Ad Slot <?php echo e($slotNumber); ?>" class="ad-carousel-media" loading="lazy">
+              <?php endif; ?>
             </div>
-          @endforeach
-          {{-- Progress bar for this TV --}}
-          @if($mediaItems->count() > 1)
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+          
+          <?php if($mediaItems->count() > 1): ?>
             <div class="ad-tv-progress">
               <div class="ad-tv-progress-bar"></div>
             </div>
-          @endif
-        @if($slotLink)
+          <?php endif; ?>
+        <?php if($slotLink): ?>
           </a>
-        @else
+        <?php else: ?>
           </div>
-        @endif
-      @endforeach
+        <?php endif; ?>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-      {{-- If fewer than 3 slots exist, append eSIM promo at the end --}}
-      @if($slotIndex < 3)
+      
+      <?php if($slotIndex < 3): ?>
         <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
           <div class="esim-promo-pulse"></div>
-          <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
+          <img src="<?php echo e(asset('assets/homepageads/ad_esim_user_choice.jpg')); ?>" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
         </a>
-      @endif
-    @else
-      {{-- Fallback static images --}}
+      <?php endif; ?>
+    <?php else: ?>
+      
       <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
-          <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+          <img src="<?php echo e(asset('assets/homepageads/ad_flight.png')); ?>" alt="Flights" class="ad-carousel-media">
         </div>
       </div>
       <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
-          <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
+          <img src="<?php echo e(asset('assets/homepageads/ad_hotel.png')); ?>" alt="Hotels" class="ad-carousel-media">
         </div>
       </div>
-      {{-- eSIM promo in fallback position 3 --}}
+      
       <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
         <div class="esim-promo-pulse"></div>
-        <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
+        <img src="<?php echo e(asset('assets/homepageads/ad_esim_user_choice.jpg')); ?>" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
       </a>
       <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
-          <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">
+          <img src="<?php echo e(asset('assets/homepageads/ad_tour.png')); ?>" alt="Tours" class="ad-carousel-media">
         </div>
       </div>
       <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
-          <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
+          <img src="<?php echo e(asset('assets/homepageads/ad_flight.png')); ?>" alt="Flights" class="ad-carousel-media">
         </div>
       </div>
-    @endif
+    <?php endif; ?>
   </div>
 </div>
 
@@ -391,16 +391,16 @@
 <!-- Tab Sections -->
 <div class="container" style="width:100%;">
   <div id="flights" class="tab-section active hero-section">
-    @include('banner1')
+    <?php echo $__env->make('banner1', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
   </div>
   <div id="hotels" class="tab-section hero-section">
-    @include('banner2')
+    <?php echo $__env->make('banner2', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
   </div>
   <div id="cars" class="tab-section hero-section">
-    @include('banner3')
+    <?php echo $__env->make('banner3', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
   </div>
   <div id="flights+hotels" class="tab-section hero-section">
-    @include('banner4')
+    <?php echo $__env->make('banner4', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
   </div>
 </div>
 
@@ -600,7 +600,7 @@
   });
 </script>
 
-{{-- Airport TV Slideshow Engine --}}
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var tvBoxes = document.querySelectorAll('.ad-tv-box');
@@ -690,3 +690,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<?php /**PATH C:\Users\Pragathi\Desktop\GoTrips-Complete\resources\views/banner0.blade.php ENDPATH**/ ?>

@@ -23,7 +23,7 @@
                         ['title' => 'CITY TOUR', 'img' => 'assets/index_files/service_city_tour_1767532704738.png', 'link' => '/'],
                         ['title' => 'PICK & DROP GUESTS', 'img' => 'assets/index_files/service_pick_drop_1767532722482.png', 'link' => '/'],
                         ['title' => 'LIWA GUESTS ASSISTANCE', 'img' => 'assets/index_files/service_liwa_assistance_1767532741495.png', 'link' => '/'],
-                        ['title' => 'WORLD TRAVEL ESIM AVAILABLE', 'img' => 'assets/index_files/service_esim_1767532759373.png', 'link' => '/'],
+                        ['title' => 'WORLD TRAVEL ESIM AVAILABLE', 'img' => 'assets/homepageads/ad_esim.png', 'link' => '/'],
                         ['title' => 'TRIPS ORGANISING', 'img' => 'assets/index_files/service_trips_organizing_1767532787246.png', 'link' => '/'],
                         ['title' => 'HOTEL BOOKINGS', 'img' => 'assets/index_files/service_hotel_bookings_1767532833171.png', 'link' => '/'],
                         ['title' => 'BUSINESS WHATSAPP INTEGRATION', 'img' => 'assets/index_files/service_whatsapp_integration_1767532912170.png', 'link' => '/'],
