@@ -20,58 +20,23 @@
 
     * { box-sizing: border-box; }
 
-    body { background-color: var(--c-dark-bg); }
+    html {
+        background-color: #000 !important;
+        overflow-x: hidden;
+    }
+
+    body {
+        background-color: #000 !important;
+        overflow-x: hidden;
+        width: 100%;
+    }
 
     /* ============================================================
-       HERO BANNER
+       PAGE HEADER
        ============================================================ */
-    .esim-hero {
-        position: relative;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .esim-page-header {
         text-align: center;
-        padding: 30px 28px 0;
-        margin-bottom: 0;
-        background: linear-gradient(180deg, #000 0%, #080808 50%, var(--c-dark-bg) 100%);
-        overflow: hidden;
-    }
-
-    .esim-hero::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background:
-            radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.015) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.01) 0%, transparent 50%),
-            radial-gradient(1px 1px at 10% 20%, rgba(255, 215, 0, 0.08) 50%, transparent 50%),
-            radial-gradient(1px 1px at 30% 60%, rgba(255, 215, 0, 0.06) 50%, transparent 50%),
-            radial-gradient(1px 1px at 50% 10%, rgba(255, 215, 0, 0.07) 50%, transparent 50%),
-            radial-gradient(1px 1px at 70% 40%, rgba(255, 215, 0, 0.05) 50%, transparent 50%),
-            radial-gradient(1px 1px at 90% 80%, rgba(255, 215, 0, 0.06) 50%, transparent 50%),
-            radial-gradient(1px 1px at 15% 85%, rgba(255, 215, 0, 0.04) 50%, transparent 50%),
-            radial-gradient(1px 1px at 45% 45%, rgba(255, 215, 0, 0.05) 50%, transparent 50%),
-            radial-gradient(1px 1px at 65% 15%, rgba(255, 215, 0, 0.06) 50%, transparent 50%),
-            radial-gradient(1px 1px at 85% 55%, rgba(255, 215, 0, 0.04) 50%, transparent 50%),
-            radial-gradient(1px 1px at 25% 75%, rgba(255, 215, 0, 0.05) 50%, transparent 50%),
-            radial-gradient(1px 1px at 55% 90%, rgba(255, 215, 0, 0.03) 50%, transparent 50%),
-            radial-gradient(1px 1px at 75% 25%, rgba(255, 215, 0, 0.05) 50%, transparent 50%),
-            radial-gradient(1.5px 1.5px at 40% 35%, rgba(255, 215, 0, 0.04) 50%, transparent 50%),
-            radial-gradient(1.5px 1.5px at 60% 65%, rgba(255, 215, 0, 0.03) 50%, transparent 50%);
-        background-size:
-            100% 100%, 100% 100%,
-            200px 200px, 180px 220px, 250px 190px, 170px 230px, 220px 210px,
-            190px 180px, 210px 250px, 230px 170px, 200px 200px, 180px 220px,
-            250px 190px, 170px 230px, 240px 240px, 200px 200px;
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    .esim-hero-inner {
-        position: relative;
-        z-index: 1;
-        max-width: 600px;
+        padding: 24px 28px 16px;
     }
 
     .esim-hero-badge {
@@ -86,121 +51,10 @@
         text-transform: uppercase;
         padding: 6px 20px;
         border-radius: 50px;
-        margin-bottom: 14px;
     }
 
-    .esim-hero-title {
-        font-family: 'Outfit', sans-serif;
-        font-size: 36px;
-        font-weight: 700;
-        color: var(--c-gold);
-        letter-spacing: -0.5px;
-        line-height: 1.1;
-        margin: 0 0 10px;
-        text-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
-    }
-
-    .esim-hero-subtitle {
-        font-family: 'Outfit', sans-serif;
-        font-size: 14px;
-        font-weight: 300;
-        color: var(--c-text-muted);
-        line-height: 1.6;
-        margin: 0 auto 16px;
-        max-width: 500px;
-    }
-
-    .esim-hero-cta {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--c-gold-gradient);
-        color: #000;
-        font-family: 'Outfit', sans-serif;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        padding: 10px 26px;
-        border-radius: 50px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
-        margin-bottom: 16px;
-    }
-
-    .esim-hero-cta:hover {
-        box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
-        transform: translateY(-2px);
-        filter: brightness(1.08);
-    }
-
-    .esim-hero-cta i {
-        font-size: 12px;
-        transition: transform 0.3s ease;
-    }
-
-    .esim-hero-cta:hover i {
-        transform: translateX(3px);
-    }
-
-    .esim-trust-badges {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 32px;
-        flex-wrap: wrap;
-        padding-bottom: 6px;
-    }
-
-    .esim-trust-badge {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: 'Outfit', sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--c-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-    }
-
-    .esim-trust-badge i {
-        color: var(--c-gold);
-        font-size: 14px;
-    }
-
-    /* ============================================================
-       PROGRESS BAR
-       ============================================================ */
-    .esim-progress-wrap {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 8px 28px 0;
-        font-family: 'Outfit', sans-serif;
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: opacity 0.4s ease, transform 0.4s ease;
-        pointer-events: none;
-        height: 0;
-        overflow: hidden;
-    }
-
-    .esim-progress-wrap.visible {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-        height: auto;
-        padding-bottom: 8px;
-    }
-
-    .esim-progress-bar {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        position: relative;
-    }
+    /* Progress bar - hidden */
+    .esim-progress-wrap { display: none; }
 
     .esim-progress-step {
         display: flex;
@@ -304,7 +158,7 @@
     .esim-wizard-container {
         position: relative;
         min-height: 400px;
-        margin-top: -20px;
+        margin-top: 0;
     }
 
     /* ============================================================
@@ -1734,11 +1588,11 @@
         }
 
         .esim-wizard-container {
-            margin-top: -10px;
+            margin-top: 0;
         }
 
         .esim-popular-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
         }
 
@@ -1746,6 +1600,7 @@
             padding: 10px;
             gap: 8px;
             border-radius: 8px;
+            min-width: 0;
         }
 
         .esim-popular-flag {
@@ -1758,7 +1613,7 @@
         }
 
         .esim-country-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
         }
 
@@ -1766,6 +1621,8 @@
             padding: 10px;
             gap: 8px;
             border-radius: 8px;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .esim-country-flag {
@@ -1780,8 +1637,8 @@
         .esim-step1,
         .esim-step2,
         .esim-step3 {
-            padding-left: 12px;
-            padding-right: 12px;
+            padding-left: 16px;
+            padding-right: 16px;
         }
 
         .esim-step1 {
@@ -1792,6 +1649,7 @@
             font-size: 9px;
             letter-spacing: 2px;
             margin-bottom: 10px;
+            text-align: center;
         }
 
         .esim-checkout-grid {
@@ -1856,7 +1714,7 @@
         }
 
         .esim-features-section {
-            padding: 40px 12px 0;
+            padding: 40px 16px 0;
         }
 
         .esim-feature-card {
@@ -1873,7 +1731,7 @@
         }
 
         .esim-how-section {
-            padding: 40px 12px 0;
+            padding: 40px 16px 0;
         }
 
         .esim-how-card {
@@ -1881,7 +1739,7 @@
         }
 
         .esim-faq-section {
-            padding: 40px 12px 48px;
+            padding: 40px 16px 48px;
         }
 
         .esim-selected-header {
@@ -1947,17 +1805,17 @@
         }
 
         .esim-popular-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 6px;
         }
 
         .esim-country-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 6px;
         }
 
         .esim-bundles-list {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 5px;
         }
 
@@ -1977,48 +1835,10 @@
 </style>
 
 <!-- ============================================================
-     HERO BANNER
+     PAGE HEADER - TRAVEL eSIM BADGE ONLY
      ============================================================ -->
-<section class="esim-hero">
-    <div class="esim-hero-inner">
-        <div class="esim-hero-badge">TRAVEL eSIM</div>
-        <h1 class="esim-hero-title">Stay Connected Worldwide</h1>
-        <p class="esim-hero-subtitle">Instant data plans for 186+ countries</p>
-        <button class="esim-hero-cta" onclick="var el=document.getElementById('esimPopularGrid');var y=el.getBoundingClientRect().top+window.pageYOffset-160;window.scrollTo({top:y,behavior:'smooth'})">
-            Browse Plans <i class="fa-solid fa-arrow-right"></i>
-        </button>
-        <div class="esim-trust-badges">
-            <span class="esim-trust-badge"><i class="fa-solid fa-earth-americas"></i> 186+ Countries</span>
-            <span class="esim-trust-badge"><i class="fa-solid fa-bolt"></i> Instant Activation</span>
-            <span class="esim-trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure Payment</span>
-        </div>
-    </div>
-</section>
-
-<!-- ============================================================
-     PROGRESS BAR
-     ============================================================ -->
-<div class="esim-progress-wrap" id="esimProgressWrap">
-    <div class="esim-progress-bar">
-        <div class="esim-progress-step active" id="esimProgressStep1">
-            <div class="esim-progress-circle" id="esimProgressCircle1">1</div>
-            <span class="esim-progress-label">Destination</span>
-        </div>
-        <div class="esim-progress-line esim-progress-line-1">
-            <div class="esim-progress-line-fill" id="esimProgressFill1"></div>
-        </div>
-        <div class="esim-progress-step" id="esimProgressStep2">
-            <div class="esim-progress-circle" id="esimProgressCircle2">2</div>
-            <span class="esim-progress-label">Plan</span>
-        </div>
-        <div class="esim-progress-line esim-progress-line-2">
-            <div class="esim-progress-line-fill" id="esimProgressFill2"></div>
-        </div>
-        <div class="esim-progress-step" id="esimProgressStep3">
-            <div class="esim-progress-circle" id="esimProgressCircle3">3</div>
-            <span class="esim-progress-label">Checkout</span>
-        </div>
-    </div>
+<div class="esim-page-header">
+    <div class="esim-hero-badge">TRAVEL eSIM</div>
 </div>
 
 <!-- ============================================================
