@@ -303,7 +303,7 @@
         @if($slotIndex === 3)
           <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
             <div class="esim-promo-pulse"></div>
-            <img src="{{ asset('assets/homepageads/ad_esim_user_choice.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
+            <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
           </a>
         @endif
 
@@ -343,7 +343,7 @@
       @if($slotIndex < 3)
         <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
           <div class="esim-promo-pulse"></div>
-          <img src="{{ asset('assets/homepageads/ad_esim_user_choice.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
+          <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
         </a>
       @endif
     @else
@@ -361,7 +361,7 @@
       {{-- eSIM promo in fallback position 3 --}}
       <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
         <div class="esim-promo-pulse"></div>
-        <img src="{{ asset('assets/homepageads/ad_esim_user_choice.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
+        <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; border-radius:12px;">
       </a>
       <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
