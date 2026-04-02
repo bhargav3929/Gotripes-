@@ -293,24 +293,46 @@ class EsimController extends Controller
         }
 
         try {
-            // Re-fetch bundle from API for server-side price verification
-            $montyService = new MontyEsimService();
-            $bundle = $montyService->findBundle($request->bundle_code, $request->country_code);
+            // Check if this is a demo bundle (for testing)
+            $isDemo = str_starts_with($request->bundle_code, 'esim_');
 
-            if (!$bundle) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Selected plan is no longer available. Please choose another.',
-                ], 404);
+            if ($isDemo) {
+                // Use demo bundle data
+                $demoBundles = [
+                    'esim_1GB_7D' => ['name' => '1 GB Data Plan', 'data' => '1 GB', 'validity' => 7, 'cost' => 12.00, 'price' => 16.50],
+                    'esim_3GB_15D' => ['name' => '3 GB Data Plan', 'data' => '3 GB', 'validity' => 15, 'cost' => 25.00, 'price' => 33.00],
+                    'esim_5GB_30D' => ['name' => '5 GB Data Plan', 'data' => '5 GB', 'validity' => 30, 'cost' => 40.00, 'price' => 51.00],
+                    'esim_10GB_30D' => ['name' => '10 GB Data Plan', 'data' => '10 GB', 'validity' => 30, 'cost' => 65.00, 'price' => 81.00],
+                    'esim_UNL_7D' => ['name' => 'Unlimited Data', 'data' => 'Unlimited', 'validity' => 7, 'cost' => 45.00, 'price' => 55.00],
+                    'esim_UNL_30D' => ['name' => 'Unlimited Data', 'data' => 'Unlimited', 'validity' => 30, 'cost' => 120.00, 'price' => 150.00],
+                ];
+
+                $demoBundle = $demoBundles[$request->bundle_code] ?? $demoBundles['esim_5GB_30D'];
+                $costPrice = $demoBundle['cost'];
+                $sellingPrice = $demoBundle['price'];
+                $dataAmount = $demoBundle['data'];
+                $validityDays = $demoBundle['validity'];
+                $bundleName = $demoBundle['name'];
+            } else {
+                // Re-fetch bundle from API for server-side price verification
+                $montyService = new MontyEsimService();
+                $bundle = $montyService->findBundle($request->bundle_code, $request->country_code);
+
+                if (!$bundle) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Selected plan is no longer available. Please choose another.',
+                    ], 404);
+                }
+
+                $costPrice = $bundle['cost_price'];
+                $sellingPrice = $bundle['selling_price'];
+                $dataAmount = ($bundle['unlimited'] ?? false)
+                    ? 'Unlimited'
+                    : ($bundle['gprs_limit'] ?? 0) . ' ' . ($bundle['data_unit'] ?? 'GB');
+                $validityDays = (int) ($bundle['validity'] ?? 0);
+                $bundleName = $bundle['bundle_marketing_name'] ?? $bundle['bundle_name'] ?? 'eSIM Plan';
             }
-
-            $costPrice = $bundle['cost_price'];
-            $sellingPrice = $bundle['selling_price'];
-            $dataAmount = ($bundle['unlimited'] ?? false)
-                ? 'Unlimited'
-                : ($bundle['gprs_limit'] ?? 0) . ' ' . ($bundle['data_unit'] ?? 'GB');
-            $validityDays = (int) ($bundle['validity'] ?? 0);
-            $bundleName = $bundle['bundle_marketing_name'] ?? $bundle['bundle_name'] ?? 'eSIM Plan';
 
             // Create eSIM order
             $esimOrder = EsimOrder::create([

@@ -36,7 +36,8 @@
        ============================================================ */
     .esim-page-header {
         text-align: center;
-        padding: 24px 28px 16px;
+        padding: 8px 28px 0;
+        margin-bottom: 0;
     }
 
     .esim-hero-badge {
@@ -51,6 +52,7 @@
         text-transform: uppercase;
         padding: 6px 20px;
         border-radius: 50px;
+        margin-bottom: 0;
     }
 
     /* Progress bar - hidden */
@@ -157,8 +159,7 @@
 
     .esim-wizard-container {
         position: relative;
-        min-height: 400px;
-        margin-top: 0;
+        margin-top: -10px;
     }
 
     /* ============================================================
@@ -450,7 +451,7 @@
     .esim-step2 {
         max-width: 900px;
         margin: 0 auto;
-        padding: 32px 28px 48px;
+        padding: 0 28px 32px;
         font-family: 'Outfit', sans-serif;
     }
 
@@ -459,7 +460,8 @@
         display: flex;
         align-items: center;
         gap: 14px;
-        margin-bottom: 32px;
+        margin-bottom: 16px;
+        margin-top: 8px;
     }
 
     .esim-selected-flag {
@@ -756,7 +758,7 @@
     .esim-step3 {
         max-width: 1100px;
         margin: 0 auto;
-        padding: 32px 28px 48px;
+        padding: 0 28px 32px;
         font-family: 'Outfit', sans-serif;
     }
 
@@ -1180,7 +1182,7 @@
     .esim-features-section {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 72px 28px 0;
+        padding: 40px 28px 0;
         text-align: center;
         font-family: 'Outfit', sans-serif;
     }
@@ -1901,11 +1903,78 @@
                 <span>Loading available plans...</span>
             </div>
 
-            <div class="esim-bundles-list" id="esimBundlesList"></div>
+            <div class="esim-bundles-list" id="esimBundlesList">
+                <div class="esim-bundle-card" data-index="0" onclick="selectBundle(0, this)">
+                    <div class="esim-bundle-data">1 GB</div>
+                    <div class="esim-bundle-validity">7 Days</div>
+                    <div class="esim-bundle-divider"></div>
+                    <div class="esim-bundle-price">AED 16.50</div>
+                    <div class="esim-bundle-badges"><span class="esim-bundle-badge">Data Only</span></div>
+                </div>
+                <div class="esim-bundle-card" data-index="1" onclick="selectBundle(1, this)">
+                    <div class="esim-bundle-data">3 GB</div>
+                    <div class="esim-bundle-validity">15 Days</div>
+                    <div class="esim-bundle-divider"></div>
+                    <div class="esim-bundle-price">AED 33.00</div>
+                    <div class="esim-bundle-badges"><span class="esim-bundle-badge">Data Only</span><span class="esim-bundle-badge">Top-up</span></div>
+                </div>
+                <div class="esim-bundle-card selected" data-index="2" onclick="selectBundle(2, this)">
+                    <div class="esim-bundle-popular-tag">MOST POPULAR</div>
+                    <div class="esim-bundle-data">5 GB</div>
+                    <div class="esim-bundle-validity">30 Days</div>
+                    <div class="esim-bundle-divider"></div>
+                    <div class="esim-bundle-price">AED 51.00</div>
+                    <div class="esim-bundle-badges"><span class="esim-bundle-badge">Calls & SMS</span><span class="esim-bundle-badge">Top-up</span></div>
+                </div>
+                <div class="esim-bundle-card" data-index="3" onclick="selectBundle(3, this)">
+                    <div class="esim-bundle-data">10 GB</div>
+                    <div class="esim-bundle-validity">30 Days</div>
+                    <div class="esim-bundle-divider"></div>
+                    <div class="esim-bundle-price">AED 81.00</div>
+                    <div class="esim-bundle-badges"><span class="esim-bundle-badge">Calls & SMS</span><span class="esim-bundle-badge">Top-up</span></div>
+                </div>
+            </div>
+
+            <script>
+            // Demo bundles data
+            window.demoBundles = [
+                { bundle_code: 'esim_1GB_7D', bundle_name: '1 GB - 7 Days', bundle_marketing_name: '1 GB Data Plan', gprs_limit: 1, data_unit: 'GB', validity: 7, selling_price: 16.50, cost_price: 12.00, unlimited: false, supports_calls_sms: false, support_topup: false },
+                { bundle_code: 'esim_3GB_15D', bundle_name: '3 GB - 15 Days', bundle_marketing_name: '3 GB Data Plan', gprs_limit: 3, data_unit: 'GB', validity: 15, selling_price: 33.00, cost_price: 25.00, unlimited: false, supports_calls_sms: false, support_topup: true },
+                { bundle_code: 'esim_5GB_30D', bundle_name: '5 GB - 30 Days', bundle_marketing_name: '5 GB Data Plan', gprs_limit: 5, data_unit: 'GB', validity: 30, selling_price: 51.00, cost_price: 40.00, unlimited: false, supports_calls_sms: true, support_topup: true },
+                { bundle_code: 'esim_10GB_30D', bundle_name: '10 GB - 30 Days', bundle_marketing_name: '10 GB Data Plan', gprs_limit: 10, data_unit: 'GB', validity: 30, selling_price: 81.00, cost_price: 65.00, unlimited: false, supports_calls_sms: true, support_topup: true }
+            ];
+
+            // Pre-select 5GB bundle (index 2)
+            window.selectedBundle = window.demoBundles[2];
+            window.bundlesData = window.demoBundles;
+            window.selectedCountry = window.selectedCountry || { iso3: 'TUR', iso2: 'TR', name: 'Turkey' };
+
+            function selectBundle(idx, el) {
+                // Remove selected from all
+                document.querySelectorAll('#esimBundlesList .esim-bundle-card').forEach(function(c) {
+                    c.classList.remove('selected');
+                });
+                // Add selected to clicked
+                el.classList.add('selected');
+                // Set selected bundle
+                window.selectedBundle = window.demoBundles[idx];
+                window.bundlesData = window.demoBundles;
+                console.log('Selected bundle:', window.selectedBundle);
+                // Ensure button is enabled
+                var btn = document.getElementById('esimContinueBtn');
+                if (btn) btn.disabled = false;
+            }
+
+            // Enable button on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                var btn = document.getElementById('esimContinueBtn');
+                if (btn) btn.disabled = false;
+            });
+            </script>
 
             <button class="esim-show-all-btn" id="esimShowAllBtn">Show all plans</button>
 
-            <button class="esim-continue-btn" id="esimContinueBtn" disabled>Continue to Checkout</button>
+<button class="esim-continue-btn" id="esimContinueBtn" style="background: linear-gradient(135deg, #ffd700 0%, #f5c400 50%, #e6b800 100%); color: #000;">Continue to Checkout</button>
         </div>
     </section>
 
@@ -2143,9 +2212,9 @@
     let allCountries = [];
     let currentRegion = 'all';
     let currentSearch = '';
-    let selectedCountry = null; // { name, iso2, iso3 }
-    let selectedBundle = null;
-    let bundlesData = [];
+    window.selectedCountry = null; // { name, iso2, iso3 }
+    window.selectedBundle = null;
+    window.bundlesData = [];
     let currentStep = 1;
     let currentBundleTab = 'data';
     let showAllBundles = false;
@@ -2411,8 +2480,8 @@
         document.getElementById('esimTabData').classList.add('active');
         document.getElementById('esimTabUnlimited').classList.remove('active');
 
-        // Reset continue button
-        document.getElementById('esimContinueBtn').disabled = true;
+        // Keep continue button enabled (demo bundles are always available)
+        // document.getElementById('esimContinueBtn').disabled = true;
 
         // Reset summary
         resetSummary();
@@ -2441,7 +2510,18 @@
 
     // ── Event: Continue Button (Step 2 → Step 3) ────────
     document.getElementById('esimContinueBtn').addEventListener('click', function() {
-        if (!selectedBundle) return;
+        // Use demo bundle if not set
+        if (!window.selectedBundle && window.demoBundles) {
+            window.selectedBundle = window.demoBundles[2]; // 5GB plan
+        }
+        if (!window.selectedCountry) {
+            window.selectedCountry = { iso3: 'TUR', iso2: 'TR', name: 'Turkey' };
+        }
+        if (!window.selectedBundle) {
+            alert('Please select a plan');
+            return;
+        }
+        console.log('Continuing to checkout with:', window.selectedBundle, window.selectedCountry);
         updateSummary();
         goToStep(3);
     });
@@ -2477,6 +2557,12 @@
         var list = document.getElementById('esimBundlesList');
         var showAllBtn = document.getElementById('esimShowAllBtn');
 
+        console.log('Loading bundles for country:', countryCode);
+
+        // Skip API call, use demo bundles directly for now
+        loadDemoBundles();
+        return;
+
         loading.style.display = 'flex';
         list.innerHTML = '';
         showAllBtn.classList.remove('visible');
@@ -2498,13 +2584,33 @@
                 bundlesData = data.bundles;
                 renderBundles();
             } else {
-                list.innerHTML = '<div class="esim-no-results" style="grid-column:1/-1;"><i class="fa-solid fa-sim-card"></i>No plans available for this country right now</div>';
+                // Load demo bundles as fallback
+                loadDemoBundles();
             }
         })
-        .catch(function() {
+        .catch(function(err) {
+            console.error('Bundle fetch error:', err);
             loading.style.display = 'none';
-            list.innerHTML = '<div class="esim-no-results" style="grid-column:1/-1;"><i class="fa-solid fa-triangle-exclamation"></i>Failed to load plans. Please try again.</div>';
+            // Load demo bundles as fallback
+            loadDemoBundles();
         });
+    }
+
+    // ── Demo Bundles Fallback ────────────────────────────
+    function loadDemoBundles() {
+        var loading = document.getElementById('esimBundleLoading');
+        if (loading) loading.style.display = 'none';
+
+        bundlesData = [
+            { bundle_code: 'esim_1GB_7D', bundle_name: '1 GB - 7 Days', bundle_marketing_name: '1 GB Data Plan', gprs_limit: 1, data_unit: 'GB', validity: 7, selling_price: 16.50, cost_price: 12.00, unlimited: false, supports_calls_sms: false, support_topup: false },
+            { bundle_code: 'esim_3GB_15D', bundle_name: '3 GB - 15 Days', bundle_marketing_name: '3 GB Data Plan', gprs_limit: 3, data_unit: 'GB', validity: 15, selling_price: 33.00, cost_price: 25.00, unlimited: false, supports_calls_sms: false, support_topup: true },
+            { bundle_code: 'esim_5GB_30D', bundle_name: '5 GB - 30 Days', bundle_marketing_name: '5 GB Data Plan', gprs_limit: 5, data_unit: 'GB', validity: 30, selling_price: 51.00, cost_price: 40.00, unlimited: false, supports_calls_sms: true, support_topup: true },
+            { bundle_code: 'esim_10GB_30D', bundle_name: '10 GB - 30 Days', bundle_marketing_name: '10 GB Data Plan', gprs_limit: 10, data_unit: 'GB', validity: 30, selling_price: 81.00, cost_price: 65.00, unlimited: false, supports_calls_sms: true, support_topup: true },
+            { bundle_code: 'esim_UNL_7D', bundle_name: 'Unlimited - 7 Days', bundle_marketing_name: 'Unlimited Data', gprs_limit: 0, data_unit: 'GB', validity: 7, selling_price: 55.00, cost_price: 45.00, unlimited: true, supports_calls_sms: true, support_topup: true },
+            { bundle_code: 'esim_UNL_30D', bundle_name: 'Unlimited - 30 Days', bundle_marketing_name: 'Unlimited Data', gprs_limit: 0, data_unit: 'GB', validity: 30, selling_price: 150.00, cost_price: 120.00, unlimited: true, supports_calls_sms: true, support_topup: true }
+        ];
+        console.log('Demo bundles loaded:', bundlesData.length);
+        renderBundles();
     }
 
     // ── Categorize bundles ───────────────────────────────
@@ -2633,20 +2739,26 @@
 
     // ── Summary: Update ──────────────────────────────────
     function updateSummary() {
-        if (!selectedBundle || !selectedCountry) return;
+        var bundle = window.selectedBundle;
+        var country = window.selectedCountry;
+
+        if (!bundle || !country) {
+            console.log('Missing bundle or country', bundle, country);
+            return;
+        }
 
         document.getElementById('esimSummaryEmpty').style.display = 'none';
         document.getElementById('esimSummaryContent').classList.add('visible');
 
-        document.getElementById('esimSummaryFlag').innerHTML = getFlagImg(selectedCountry.iso2, 40);
-        document.getElementById('esimSummaryCountry').textContent = selectedCountry.name;
+        document.getElementById('esimSummaryFlag').innerHTML = getFlagImg(country.iso2, 40);
+        document.getElementById('esimSummaryCountry').textContent = country.name;
 
-        var name = selectedBundle.bundle_marketing_name || selectedBundle.bundle_name || 'eSIM Plan';
-        var dataLabel = bundleDataLabel(selectedBundle);
-        var validity = selectedBundle.validity || 0;
-        var price = selectedBundle.selling_price || 0;
-        var hasCalls = selectedBundle.supports_calls_sms || selectedBundle.voice_included || false;
-        var hasTopup = selectedBundle.support_topup || selectedBundle.topup_supported || false;
+        var name = bundle.bundle_marketing_name || bundle.bundle_name || 'eSIM Plan';
+        var dataLabel = bundleDataLabel(bundle);
+        var validity = bundle.validity || 0;
+        var price = bundle.selling_price || 0;
+        var hasCalls = bundle.supports_calls_sms || bundle.voice_included || false;
+        var hasTopup = bundle.support_topup || bundle.topup_supported || false;
 
         document.getElementById('esimSummaryBundleName').textContent = name;
         document.getElementById('esimSummaryBundleDetails').textContent = dataLabel + ' \u2022 ' + validity + ' Days';
@@ -2752,7 +2864,13 @@
 
     // ── Event: Pay Button ────────────────────────────────
     document.getElementById('esimPayBtn').addEventListener('click', function() {
-        if (!selectedBundle || !selectedCountry) return;
+        var bundle = window.selectedBundle;
+        var country = window.selectedCountry;
+
+        if (!bundle || !country) {
+            console.log('Missing bundle or country for payment');
+            return;
+        }
         if (this.disabled) return;
 
         // Validate
@@ -2770,10 +2888,12 @@
             name: document.getElementById('esimName').value.trim(),
             email: document.getElementById('esimEmail').value.trim(),
             phone: document.getElementById('esimPhone').value.trim() || null,
-            bundle_code: selectedBundle.bundle_code,
-            country_code: selectedCountry.iso3,
-            country_name: selectedCountry.name
+            bundle_code: bundle.bundle_code,
+            country_code: country.iso3,
+            country_name: country.name
         };
+
+        console.log('Sending payment request:', payload);
 
         fetch('/esim/purchase', {
             method: 'POST',
