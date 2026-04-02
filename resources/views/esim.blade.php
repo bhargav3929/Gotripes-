@@ -36,7 +36,8 @@
        ============================================================ */
     .esim-page-header {
         text-align: center;
-        padding: 12px 28px 8px;
+        padding: 8px 28px 0;
+        margin-bottom: 0;
     }
 
     .esim-hero-badge {
@@ -51,6 +52,7 @@
         text-transform: uppercase;
         padding: 6px 20px;
         border-radius: 50px;
+        margin-bottom: 0;
     }
 
     /* Progress bar - hidden */
@@ -157,7 +159,7 @@
 
     .esim-wizard-container {
         position: relative;
-        margin-top: 0;
+        margin-top: -10px;
     }
 
     /* ============================================================
@@ -449,7 +451,7 @@
     .esim-step2 {
         max-width: 900px;
         margin: 0 auto;
-        padding: 12px 28px 32px;
+        padding: 0 28px 32px;
         font-family: 'Outfit', sans-serif;
     }
 
@@ -458,7 +460,8 @@
         display: flex;
         align-items: center;
         gap: 14px;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
+        margin-top: 8px;
     }
 
     .esim-selected-flag {
@@ -755,7 +758,7 @@
     .esim-step3 {
         max-width: 1100px;
         margin: 0 auto;
-        padding: 12px 28px 32px;
+        padding: 0 28px 32px;
         font-family: 'Outfit', sans-serif;
     }
 
