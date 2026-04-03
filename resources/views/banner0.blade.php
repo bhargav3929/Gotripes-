@@ -303,7 +303,7 @@
         @if($slotIndex === 3)
           <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
             <div class="esim-promo-pulse"></div>
-            <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px;">
+            <img src="{{ asset('assets/esim_promo_ad.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px; background:#000;">
           </a>
         @endif
 
@@ -343,7 +343,7 @@
       @if($slotIndex < 3)
         <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
           <div class="esim-promo-pulse"></div>
-          <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px;">
+          <img src="{{ asset('assets/esim_promo_ad.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px; background:#000;">
         </a>
       @endif
     @else
@@ -361,7 +361,7 @@
       {{-- eSIM promo in fallback position 3 --}}
       <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
         <div class="esim-promo-pulse"></div>
-        <img src="{{ asset('assets/esim_hero_banner.png') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px;">
+        <img src="{{ asset('assets/esim_promo_ad.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px; background:#000;">
       </a>
       <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">

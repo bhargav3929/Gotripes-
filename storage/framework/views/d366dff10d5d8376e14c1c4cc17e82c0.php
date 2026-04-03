@@ -116,7 +116,7 @@
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/homepageads/ad_esim.png" alt="World Travel eSIM"
-                class="service-card-img">
+                class="service-card-img esim-card-img">
               <div class="service-card-overlay"></div>
             </div>
             <div class="service-card-content">
@@ -530,6 +530,11 @@
 
   .service-card:hover .service-card-img {
     transform: scale(1.1);
+  }
+
+  .esim-card-img {
+    object-fit: contain;
+    object-position: center;
   }
 
   .service-card-overlay {
