@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Partner Registration</title>
   <!-- Bootstrap CSS -->
@@ -25,7 +25,7 @@
       position: relative;
       overflow: hidden;
       height: auto;
-      background: url("{{ asset('assets/index_files/s1.jpg') }}") no-repeat center center;
+      background: url("<?php echo e(asset('assets/index_files/s1.jpg')); ?>") no-repeat center center;
       background-size: cover;
       display: flex;
       flex-direction: column;
@@ -797,7 +797,7 @@
 
               <div class="partner-modal-body">
                 <form id="partnerRegistrationForm">
-                  @csrf
+                  <?php echo csrf_field(); ?>
 
                   <!-- GRID WRAPPER -->
                   <div class="partner-form-grid">
@@ -927,7 +927,7 @@
 
           <div class="container">
             <div class="mt-0 w-100">
-              @include('banner0')
+              <?php echo $__env->make('banner0', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             </div>
           </div>
 
@@ -1352,4 +1352,4 @@
 
 </body>
 
-</html>
+</html><?php /**PATH C:\Users\Pragathi\Desktop\GoTrips-Complete\resources\views/banner.blade.php ENDPATH**/ ?>

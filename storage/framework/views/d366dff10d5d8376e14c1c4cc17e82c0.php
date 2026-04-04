@@ -1,8 +1,8 @@
-@include('header')
+<?php echo $__env->make('header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <!-- START HOME -->
-@include('banner')
+<?php echo $__env->make('banner', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
-{{-- Mobile fix: override overflow:hidden on banner containers so ad cards stay visible in original position --}}
+
 <style>
 @media (max-width: 768px) {
   .image-overlay,
@@ -1785,7 +1785,7 @@
   }
 </style>
 
-{{-- Premium Lead Capture Popup - Appears after 5 seconds for first-time visitors --}}
-@include('partials.lead-popup')
 
-@include('footer')
+<?php echo $__env->make('partials.lead-popup', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
+<?php echo $__env->make('footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Pragathi\Desktop\GoTrips-Complete\resources\views/welcome.blade.php ENDPATH**/ ?>

@@ -228,13 +228,41 @@
       padding: 25px;
     }
   }
+
+  @media (max-width: 575px) {
+    .premium-title {
+        font-size: 24px;
+        letter-spacing: 1px;
+    }
+    .glass-card {
+        padding: 20px 15px;
+        border-radius: 14px;
+    }
+    .content-section {
+        padding: 30px 0;
+    }
+    .btn-gold {
+        min-width: 200px;
+        padding: 14px 30px;
+        font-size: 13px;
+    }
+    .info-card {
+        padding: 20px;
+    }
+    .section-title-sm {
+        font-size: 17px;
+    }
+    .status-card {
+        padding: 15px;
+    }
+  }
 </style>
 
 <!-- Intro Section -->
 <section class="content-section pb-4">
   <div class="container text-center">
     <h1 class="premium-title">Working in the UAE</h1>
-    <p class="mx-auto text-muted" style="max-width: 800px;">
+    <p class="mx-auto" style="max-width: 800px; color: rgba(255,255,255,0.7); padding: 0 15px;">
       Finding a job in the UAE requires strategy, persistence, and the right approach. Whether you are on a visit visa
       or looking to switch careers, follow our roadmap to success.
     </p>

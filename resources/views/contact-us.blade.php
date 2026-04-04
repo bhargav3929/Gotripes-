@@ -340,6 +340,53 @@
         }
 
     }
+
+    @media (max-width: 575px) {
+        .premium-title {
+            font-size: 22px;
+            letter-spacing: 0.5px;
+        }
+        .premium-subtitle {
+            font-size: 14px;
+        }
+        .glass-card {
+            padding: 20px 15px;
+            border-radius: 12px;
+        }
+        .map-frame {
+            min-height: 250px;
+        }
+        .premium-form .form-control,
+        .premium-form .form-select {
+            height: 44px;
+            font-size: 13px;
+            padding: 0 14px;
+        }
+        .btn-gold {
+            padding: 12px;
+            font-size: 13px;
+        }
+        .qr-img {
+            width: 70px;
+            height: 70px;
+        }
+        .qr-title {
+            font-size: 14px;
+        }
+        .qr-text {
+            font-size: 12px;
+        }
+        .value-box {
+            padding: 20px 12px;
+        }
+        .value-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .value-title {
+            font-size: 14px;
+        }
+    }
 </style>
 
 <!-- About Us Section -->

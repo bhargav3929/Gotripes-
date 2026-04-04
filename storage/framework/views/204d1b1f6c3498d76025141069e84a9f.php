@@ -1,4 +1,4 @@
-@include('header')
+<?php echo $__env->make('header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <main style="background: #000; min-height: 100vh; color: #fff; font-family: 'Outfit', sans-serif;">
     <!-- Hero Section -->
@@ -44,38 +44,38 @@
         <div class="container">
             <h2 class="section-title">UMRAH PACKAGES</h2>
 
-            @if(isset($umrahPackages) && $umrahPackages->count() > 0)
+            <?php if(isset($umrahPackages) && $umrahPackages->count() > 0): ?>
             <div class="row g-4 mt-4">
-                @foreach($umrahPackages as $pkg)
+                <?php $__currentLoopData = $umrahPackages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pkg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-lg-4">
-                    <div class="package-card {{ $pkg->isFeatured ? 'featured' : '' }}">
-                        <div class="package-img" style="background-image: url('{{ asset($pkg->image) }}');">
-                            @if($pkg->tag)
-                            <span class="badge-gold">{{ $pkg->tag }}</span>
-                            @endif
+                    <div class="package-card <?php echo e($pkg->isFeatured ? 'featured' : ''); ?>">
+                        <div class="package-img" style="background-image: url('<?php echo e(asset($pkg->image)); ?>');">
+                            <?php if($pkg->tag): ?>
+                            <span class="badge-gold"><?php echo e($pkg->tag); ?></span>
+                            <?php endif; ?>
                         </div>
                         <div class="package-body">
-                            <h3>{{ $pkg->title }}</h3>
-                            <p>{{ $pkg->description }}</p>
+                            <h3><?php echo e($pkg->title); ?></h3>
+                            <p><?php echo e($pkg->description); ?></p>
 
-                            @if($pkg->features && count($pkg->features) > 0)
+                            <?php if($pkg->features && count($pkg->features) > 0): ?>
                             <ul class="package-features">
-                                @foreach($pkg->features as $feature)
-                                <li><i class="bi bi-check2"></i> {{ $feature }}</li>
-                                @endforeach
+                                <?php $__currentLoopData = $pkg->features; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feature): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li><i class="bi bi-check2"></i> <?php echo e($feature); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
-                            @endif
+                            <?php endif; ?>
 
                             <div class="package-footer">
-                                <span class="price">From <strong>AED {{ number_format($pkg->price, 0) }}</strong></span>
-                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('{{ $pkg->title }}', {{ $pkg->price }})">Buy Now</button>
+                                <span class="price">From <strong>AED <?php echo e(number_format($pkg->price, 0)); ?></strong></span>
+                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('<?php echo e($pkg->title); ?>', <?php echo e($pkg->price); ?>)">Buy Now</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
-            @else
+            <?php else: ?>
             <!-- Fallback: Static packages when none in database -->
             <div class="row g-4 mt-4">
                 <div class="col-lg-4">
@@ -142,7 +142,7 @@
                     </div>
                 </div>
             </div>
-            @endif
+            <?php endif; ?>
         </div>
     </section>
 
@@ -457,4 +457,5 @@ function initiateUmrahPayment(packageName, amount) {
 }
 </script>
 
-@include('footer')
+<?php echo $__env->make('footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<?php /**PATH C:\Users\Pragathi\Desktop\GoTrips-Complete\resources\views/hajj-umrah.blade.php ENDPATH**/ ?>

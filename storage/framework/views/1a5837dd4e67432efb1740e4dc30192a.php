@@ -1,4 +1,4 @@
-@include('header')
+<?php echo $__env->make('header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <style>
   html, body { background: #000 !important; }
@@ -501,4 +501,5 @@
   });
 </script>
 
-@include('footer')
+<?php echo $__env->make('footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+<?php /**PATH C:\Users\Pragathi\Desktop\GoTrips-Complete\resources\views/countriestour.blade.php ENDPATH**/ ?>

@@ -23,6 +23,8 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UAEDetailsController;
 use App\Http\Controllers\Admin\TravelPackageController;
 use App\Http\Controllers\Admin\UmrahPackageController;
+use App\Http\Controllers\UmrahPaymentController;
+use App\Http\Controllers\EsimController;
 
 // Search API
 Route::get('/api/search', [SearchController::class, 'search'])->name('search');
@@ -183,6 +185,9 @@ Route::get('/payment/nomod/success', [NomodController::class, 'success'])->name(
 Route::get('/payment/nomod/failure', [NomodController::class, 'failure'])->name('nomod.failure');
 Route::get('/payment/nomod/cancelled', [NomodController::class, 'cancelled'])->name('nomod.cancelled');
 
+// Umrah package payment
+Route::post('/umrah/payment/initiate', [UmrahPaymentController::class, 'initiate'])->name('umrah.payment.initiate');
+
 Route::post('/uaev/submit', [UAEVisaController::class, 'submit'])->name('uaev.submit');
 
 
@@ -251,6 +256,12 @@ Route::get('/uaevisa', function () {
 // Add this route alongside your existing activity routes
 Route::post('/activity/payment/initiate', [ActivityBookingController::class, 'initiateActivityPayment'])->name('activity.payment.initiate');
 Route::post('/agent/pay', [AgentBookingController::class, 'submit'])->name('agent.pay');
+
+// ─── eSIM Routes ────────────────────────────────────────────────────
+Route::get('/esim', [EsimController::class, 'index'])->name('esim.index');
+Route::get('/api/esim/countries', [EsimController::class, 'getCountries'])->name('esim.countries');
+Route::post('/esim/bundles', [EsimController::class, 'getBundles'])->name('esim.bundles');
+Route::post('/esim/purchase', [EsimController::class, 'purchase'])->name('esim.purchase');
 
 Auth::routes(['register' => false]);
 

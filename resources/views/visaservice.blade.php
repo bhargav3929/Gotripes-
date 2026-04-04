@@ -24,6 +24,51 @@
         margin-bottom: 0px; text-align:center;
     }
     .blog_box p{ color: #cbcaca; font-size: 13px; text-align:center; }
+    .box_images img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    @media (max-width: 991px) {
+        .about.industries {
+            padding-top: 20px !important;
+        }
+        .blog_inner_page {
+            margin-bottom: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .box_images {
+            height: 200px !important;
+        }
+        .blog_box h3 {
+            font-size: 16px;
+            line-height: 18px;
+        }
+        .blog_box p {
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .box_images {
+            height: 180px !important;
+        }
+        .blog_box {
+            padding: 12px 10px;
+        }
+        .blog_box h3 {
+            font-size: 15px;
+        }
+        .blog_box p {
+            font-size: 11px;
+        }
+        .about.industries {
+            padding-top: 10px !important;
+        }
+    }
 
 </style>      
       
@@ -46,7 +91,7 @@
          
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 500, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 500, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/dubai-global-village">
          <div class="box_images" style="height:220px;">
@@ -92,7 +137,7 @@
 
 
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 600, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 600, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/lotus-cruise-dubai">
          <div class="box_images" style="height:220px;">
@@ -137,7 +182,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 700, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 700, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/motiongate-dubai-park-and-resorts">
          <div class="box_images" style="height:220px;">
@@ -182,7 +227,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 800, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 800, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/legoland-water-park-dubai-unitedarabemirates">
          <div class="box_images" style="height:220px;">
@@ -227,7 +272,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 900, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 900, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/laperle-by-dragone-dubai-bronze">
          <div class="box_images" style="height:220px;">
@@ -272,7 +317,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1000, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1000, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/ski-dubai-polar-pass">
          <div class="box_images" style="height:220px;">
@@ -317,7 +362,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1100, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1100, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/hot-airballoon-bubai">
          <div class="box_images" style="height:220px;">
@@ -362,7 +407,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1200, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1200, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/dubai-safari-park">
          <div class="box_images" style="height:220px;">
@@ -407,7 +452,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1300, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1300, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/Desert-safari-dubai">
          <div class="box_images" style="height:220px;">
@@ -452,7 +497,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1400, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1400, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/deep-sea-fishing-dubai">
          <div class="box_images" style="height:220px;">
@@ -497,7 +542,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1500, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1500, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/scuba-diving-dubai">
          <div class="box_images" style="height:220px;">
@@ -542,7 +587,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1600, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1600, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/flyboarding-dubai-uae">
          <div class="box_images" style="height:220px;">
@@ -587,7 +632,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1700, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1700, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/yellow-boats-dubai">
          <div class="box_images" style="height:220px;">
@@ -633,7 +678,7 @@
  
  
 
-<div class="col-lg-4 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1800, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
+<div class="col-lg-4 col-md-6 text-left appear anime-child anime-complete" data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;translateY&quot;: [50, 0], &quot;opacity&quot;: [0,1], &quot;duration&quot;: 1800, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 200, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
  <div class="blog_inner_page" style="">
      <a href="/uaeactivities/jet-ski-dubai">
          <div class="box_images" style="height:220px;">

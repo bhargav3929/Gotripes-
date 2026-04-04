@@ -1,4 +1,4 @@
-@include('header')
+<?php echo $__env->make('header', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <style>
     /* =====================================================
@@ -426,29 +426,29 @@
 
 <div class="emirates-page-wrapper">
     <div class="container">
-        @if($emirate)
-            {{-- ─── ACTIVITIES VIEW ─── --}}
+        <?php if($emirate): ?>
+            
             <nav class="breadcrumb-nav">
                 <div class="breadcrumb-luxury">
-                    <a href="{{ route('emirates.index') }}">Emirates</a>
+                    <a href="<?php echo e(route('emirates.index')); ?>">Emirates</a>
                     <span>/</span>
-                    <div class="active">{{ $emirate->emiratesName }}</div>
+                    <div class="active"><?php echo e($emirate->emiratesName); ?></div>
                 </div>
             </nav>
 
             <div class="hero-header">
-                <h1>{{ $emirate->emiratesName }} <span>Experiences</span></h1>
-                <p>{{ $emirate->emiratesDescription }}</p>
+                <h1><?php echo e($emirate->emiratesName); ?> <span>Experiences</span></h1>
+                <p><?php echo e($emirate->emiratesDescription); ?></p>
             </div>
 
             <div class="activities-grid-luxury">
-                @forelse($activities as $activity)
+                <?php $__empty_1 = true; $__currentLoopData = $activities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $activity): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <div class="activity-v2-card">
                         <div class="activity-v2-img-container">
                             <span class="activity-v2-tag">Verified Escape</span>
-                            <a href="{{ route('activities.detail.slug', ['emirateSlug' => Str::slug($emirate->emiratesName), 'activitySlug' => Str::slug($activity->activityName)]) }}">
-                                <img src="{{ !empty($activity->activityImage) ? (str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage)) : 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800' }}"
-                                     alt="{{ $activity->activityName }}"
+                            <a href="<?php echo e(route('activities.detail.slug', ['emirateSlug' => Str::slug($emirate->emiratesName), 'activitySlug' => Str::slug($activity->activityName)])); ?>">
+                                <img src="<?php echo e(!empty($activity->activityImage) ? (str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage)) : 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800'); ?>"
+                                     alt="<?php echo e($activity->activityName); ?>"
                                      class="activity-v2-img"
                                      loading="lazy"
                                      onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src='https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=800';}">
@@ -456,39 +456,40 @@
                         </div>
                         <div class="activity-v2-info">
                             <div>
-                                <a href="{{ route('activities.detail.slug', ['emirateSlug' => Str::slug($emirate->emiratesName), 'activitySlug' => Str::slug($activity->activityName)]) }}" style="text-decoration: none;">
-                                    <h3 class="activity-v2-title">{{ $activity->activityName }}</h3>
+                                <a href="<?php echo e(route('activities.detail.slug', ['emirateSlug' => Str::slug($emirate->emiratesName), 'activitySlug' => Str::slug($activity->activityName)])); ?>" style="text-decoration: none;">
+                                    <h3 class="activity-v2-title"><?php echo e($activity->activityName); ?></h3>
                                 </a>
                                 <div class="text-white-50" style="font-size: 14px;">
-                                    <i class="bi bi-geo-alt-fill text-warning me-1"></i> {{ $activity->activityLocation }}
+                                    <i class="bi bi-geo-alt-fill text-warning me-1"></i> <?php echo e($activity->activityLocation); ?>
+
                                 </div>
                             </div>
                             
                             <div class="activity-v2-footer">
                                 <div class="activity-v2-price">
                                     <span class="price-small">Starting From</span>
-                                    <span class="price-big">AED {{ number_format($activity->activityPrice, 2) }}</span>
+                                    <span class="price-big">AED <?php echo e(number_format($activity->activityPrice, 2)); ?></span>
                                 </div>
                                 <button type="button" class="book-btn-v2 open-booking-modal"
-                                    data-id="{{ $activity->activityID }}"
-                                    data-name="{{ $activity->activityName }}"
-                                    data-price="{{ $activity->activityPrice }}">
+                                    data-id="<?php echo e($activity->activityID); ?>"
+                                    data-name="<?php echo e($activity->activityName); ?>"
+                                    data-price="<?php echo e($activity->activityPrice); ?>">
                                     Book Now
                                 </button>
                             </div>
                         </div>
                     </div>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <div class="col-12 text-center py-5">
                         <h3 class="text-white-50">Discovery Collection Coming Soon</h3>
-                        <p>We are currently vetting the finest experiences in {{ $emirate->emiratesName }}.</p>
-                        <a href="{{ route('emirates.index') }}" class="book-btn-v2 mt-4 d-inline-block" style="text-decoration:none;">Explore Other Emirates</a>
+                        <p>We are currently vetting the finest experiences in <?php echo e($emirate->emiratesName); ?>.</p>
+                        <a href="<?php echo e(route('emirates.index')); ?>" class="book-btn-v2 mt-4 d-inline-block" style="text-decoration:none;">Explore Other Emirates</a>
                     </div>
-                @endforelse
+                <?php endif; ?>
             </div>
 
-        @else
-            {{-- ─── EMIRATES SELECTION VIEW ─── --}}
+        <?php else: ?>
+            
             <div class="hero-header">
                 <h1><span class="white">EXPLORE</span> <span class="green">UNITED</span> <span class="white">ARAB</span> <span class="red">EMIRATES</span></h1>
                 <p>
@@ -498,7 +499,7 @@
             </div>
 
             <div class="emirates-cinematic-grid">
-                @php
+                <?php
                     $manualData = [
                         'Abu Dhabi'      => ['img' => asset('assets/emirates/abudhabi.png'), 'tag' => 'The Imperial Capital'],
                         'Dubai'          => ['img' => asset('assets/emirates/dubai.png'), 'tag' => 'The World City'],
@@ -509,47 +510,47 @@
                         'Fujairah'       => ['img' => asset('assets/emirates/fujairah.png'), 'tag' => 'Mountain Escape'],
                         'Western Region' => ['img' => asset('assets/emirates/westernregion.png'), 'tag' => 'Desert Gateway']
                     ];
-                @endphp
+                ?>
 
-                @forelse($emirates as $emirateItem)
-                    @php
+                <?php $__empty_1 = true; $__currentLoopData = $emirates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $emirateItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
                         $name = $emirateItem->emiratesName;
                         $hasManual = isset($manualData[$name]);
                         $displayImg = $hasManual ? $manualData[$name]['img'] : (asset($emirateItem->emiratesImage) ?: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800');
                         $displayTag = $hasManual ? $manualData[$name]['tag'] : 'Premium Experience';
-                    @endphp
-                    <a href="{{ route('emirates.show', ['slug' => Str::slug($emirateItem->emiratesName)]) }}" class="emirate-card-v2">
-                        <img src="{{ $displayImg }}" alt="{{ $name }}" class="emirate-v2-img" onerror="this.src='https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800';">
+                    ?>
+                    <a href="<?php echo e(route('emirates.show', ['slug' => Str::slug($emirateItem->emiratesName)])); ?>" class="emirate-card-v2">
+                        <img src="<?php echo e($displayImg); ?>" alt="<?php echo e($name); ?>" class="emirate-v2-img" onerror="this.src='https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800';">
                         <div class="emirate-v2-overlay"></div>
                         
                         <div class="emirate-v2-content">
                             <span class="emirate-v2-badge">
-                                {{ $emirateItem->activities_count }} Collections
+                                <?php echo e($emirateItem->activities_count); ?> Collections
                             </span>
-                            <div class="emirate-v2-name">{{ $name }}</div>
-                            <p class="emirate-v2-desc">{{ $emirateItem->emiratesDescription }}</p>
+                            <div class="emirate-v2-name"><?php echo e($name); ?></div>
+                            <p class="emirate-v2-desc"><?php echo e($emirateItem->emiratesDescription); ?></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-white-50 fw-bold" style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px;">{{ $displayTag }}</span>
+                                <span class="text-white-50 fw-bold" style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px;"><?php echo e($displayTag); ?></span>
                                 <div class="emirate-v2-arrow">
                                     <i class="bi bi-arrow-right"></i>
                                 </div>
                             </div>
                         </div>
                     </a>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <div class="col-12 text-center py-5">
                         <p class="text-white-50">New regions launching soon...</p>
                     </div>
-                @endforelse
+                <?php endif; ?>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
 
 <div class="classic-snackbar" id="mainSnackbar"></div>
 
-@include('partials.activity_booking_modal')
+<?php echo $__env->make('partials.activity_booking_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <script type="text/javascript">
     // Tawk.to and other script initializations
@@ -564,4 +565,4 @@
     })();
 </script>
 
-@include('footer')
+<?php echo $__env->make('footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Pragathi\Desktop\GoTrips-Complete\resources\views/Emirates.blade.php ENDPATH**/ ?>

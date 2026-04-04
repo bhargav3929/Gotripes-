@@ -5,7 +5,7 @@
                 <i class="bi bi-x-lg"></i>
             </button>
             <div class="modal-body pt-4 px-4">
-                {{-- Step Indicator --}}
+                
                 <div class="modal-step-indicator">
                     <div class="step-item active" data-step="1">
                         <div class="step-circle">
@@ -29,11 +29,11 @@
                 </h5>
 
                 <form method="POST" id="activityBookingForm" autocomplete="off">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <input type="hidden" name="activityId" id="modalActivityId">
                     <input type="hidden" name="currency" id="formCurrency" value="AED">
 
-                    {{-- Two-column layout for sections --}}
+                    
                     <div class="booking-columns">
                         <!-- Left: Primary Contact Information -->
                         <div class="booking-section-group">
@@ -123,7 +123,7 @@
 
                     <input type="hidden" name="payment_option" value="book_and_pay_yourself">
 
-                    {{-- Price summary + button in a horizontal bar --}}
+                    
                     <div class="booking-bottom-bar">
                         <div id="modalPriceSummary" class="price-summary-inline" style="display: none;">
                             <div class="summary-inline-items">
@@ -152,12 +152,12 @@
 <!-- Modal Pricing Overlay (Secondary Modal for Confirmation before payment) -->
 <div id="modalChargePreview" class="payment-overlay">
     <div class="payment-card">
-        {{-- Close button --}}
+        
         <button type="button" id="closePrevModal" class="payment-close-btn">
             <i class="bi bi-arrow-left"></i>
         </button>
 
-        {{-- Header with icon --}}
+        
         <div class="payment-header">
             <div class="payment-icon">
                 <i class="bi bi-shield-lock-fill"></i>
@@ -166,7 +166,7 @@
             <p class="payment-subtitle">Review your booking details</p>
         </div>
 
-        {{-- Price breakdown --}}
+        
         <div class="payment-breakdown">
             <div class="payment-row">
                 <div class="payment-row-left">
@@ -205,7 +205,7 @@
             </div>
         </div>
 
-        {{-- Total --}}
+        
         <div class="payment-total">
             <span class="payment-total-label">Total Amount</span>
             <div class="payment-total-value">
@@ -214,7 +214,7 @@
             </div>
         </div>
 
-        {{-- Pay button --}}
+        
         <button type="button" id="modalFinalPayBtn" class="payment-pay-btn">
             <i class="bi bi-lock-fill"></i>
             <span>PAY NOW SECURELY</span>
@@ -1097,10 +1097,10 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('final_payment_amount', calculateTotal());
             formData.append('currency', 'AED');
 
-            const response = await fetch('{{ route("activity.book") }}', {
+            const response = await fetch('<?php echo e(route("activity.book")); ?>', {
                 method: 'POST',
                 body: formData,
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                headers: { 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' }
             });
 
             const bookText = await response.text();
@@ -1123,9 +1123,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Step 2: Initiate payment
             payBtn.innerHTML = '<span class="btn-loader"></span> Connecting to Payment...';
 
-            const payResponse = await fetch('{{ route("activity.payment.initiate") }}', {
+            const payResponse = await fetch('<?php echo e(route("activity.payment.initiate")); ?>', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                 body: JSON.stringify({ booking_id: data.booking_id, amount: calculateTotal() })
             });
 
@@ -1160,3 +1160,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<?php /**PATH C:\Users\Pragathi\Desktop\GoTrips-Complete\resources\views/partials/activity_booking_modal.blade.php ENDPATH**/ ?>
