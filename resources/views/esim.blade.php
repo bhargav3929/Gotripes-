@@ -872,6 +872,108 @@
         margin-bottom: 12px;
     }
 
+    /* ── How It Works Grid Layout ────────────────── */
+    .esim-how-section {
+        padding: 60px 4% 80px;
+        background: #000;
+        text-align: center;
+    }
+
+    .esim-how-title {
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .esim-how-subtitle {
+        color: rgba(255,255,255,0.6);
+        font-family: 'Outfit', sans-serif;
+        font-size: 16px;
+        margin-bottom: 50px;
+    }
+
+    .esim-how-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        max-width: 1240px;
+        margin: 0 auto;
+    }
+
+    .esim-how-card {
+        background: #0a0a0a;
+        border: 1px solid rgba(255, 215, 0, 0.1);
+        border-radius: 20px;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: all 0.4s ease;
+        position: relative;
+    }
+
+    .esim-how-card:hover {
+        transform: translateY(-8px);
+        background: #111;
+        border-color: rgba(255, 215, 0, 0.3);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .esim-how-icon {
+        width: 100%;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .esim-how-icon img {
+        width: 100%;
+        max-width: 180px;
+        height: auto;
+        border-radius: 12px;
+    }
+
+    .esim-how-num {
+        width: 28px;
+        height: 28px;
+        background: var(--c-gold-gradient);
+        color: #000;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(255,215,0,0.3);
+    }
+
+    .esim-how-card-title {
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .esim-how-card-desc {
+        color: rgba(255,255,255,0.5);
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    @media (max-width: 1024px) {
+        .esim-how-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+        .esim-how-grid { grid-template-columns: 1fr; }
+    }
+
     /* ============================================================
        STEP 2 — SELECT PLAN
        ============================================================ */
@@ -2423,43 +2525,52 @@
      ============================================================ -->
 <section class="esim-how-section">
     <div class="esim-how-badge">TUTORIAL</div>
-    <h2 class="esim-how-title">Get Online in 4 Easy Steps</h2>
-    <p class="esim-how-subtitle">From purchase to browsing — it only takes a few minutes.</p>
+    <h2 class="esim-how-title">How to Get Your eSIM</h2>
+    <p class="esim-how-subtitle">A simple step-by-step guide to get you connected in minutes.</p>
+
     <div class="esim-how-grid">
+        <!-- Step 1: Installation Part A -->
         <div class="esim-how-card">
             <div class="esim-how-icon">
-                <img src="/assets/img/step1.png" alt="Choose & Buy">
+                <img src="/assets/img/step1.png" alt="Check Compatibility">
             </div>
             <div class="esim-how-num">1</div>
-            <h3 class="esim-how-card-title">Choose & Buy</h3>
-            <p class="esim-how-card-desc">Select your destination and the data plan that fits your travel needs.</p>
+            <h3 class="esim-how-card-title">Check Compatibility</h3>
+            <p class="esim-how-card-desc">Make sure your device supports eSIM. Most modern smartphones (iPhone XS+, Pixel 3+, Samsung S20+) are compatible.</p>
         </div>
+
+        <!-- Step 2: Installation Part B -->
         <div class="esim-how-card">
             <div class="esim-how-icon">
-                <img src="/assets/img/step2.png" alt="Get QR Code">
+                <img src="/assets/img/step2.png" alt="Scan & Install eSIM">
             </div>
             <div class="esim-how-num">2</div>
-            <h3 class="esim-how-card-title">Get QR Code</h3>
-            <p class="esim-how-card-desc">Receive your digital eSIM QR code instantly via your registered email.</p>
+            <h3 class="esim-how-card-title">Scan & Install eSIM</h3>
+            <p class="esim-how-card-desc">Open your phone Settings → Cellular → Add eSIM. Scan the QR code we send to your email to install your profile.</p>
         </div>
+
+        <!-- Step 3: Buying Part A -->
         <div class="esim-how-card">
             <div class="esim-how-icon">
-                <img src="/assets/img/step3.png" alt="Install eSIM">
+                <img src="/assets/img/step3.png" alt="Choose Your Plan">
             </div>
             <div class="esim-how-num">3</div>
-            <h3 class="esim-how-card-title">Install eSIM</h3>
-            <p class="esim-how-card-desc">Scan the QR code in your phone settings to install your new data plan.</p>
+            <h3 class="esim-how-card-title">Choose Your Plan</h3>
+            <p class="esim-how-card-desc">Select your destination country and pick a data plan that suits your travel duration and usage needs.</p>
         </div>
+
+        <!-- Step 4: Buying Part B -->
         <div class="esim-how-card">
             <div class="esim-how-icon">
-                <img src="/assets/img/step4.png" alt="Go Online">
+                <img src="/assets/img/step4.png" alt="Pay & Go Online">
             </div>
             <div class="esim-how-num">4</div>
-            <h3 class="esim-how-card-title">Go Online</h3>
-            <p class="esim-how-card-desc">Switch on your new data line and start browsing as soon as you land.</p>
+            <h3 class="esim-how-card-title">Pay & Go Online</h3>
+            <p class="esim-how-card-desc">Complete your secure payment. Your QR code is emailed instantly — activate and start browsing right away!</p>
         </div>
     </div>
 </section>
+
 
 <!-- ============================================================
      WIZARD CONTAINER
