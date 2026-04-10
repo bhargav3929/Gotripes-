@@ -1365,9 +1365,12 @@
 
     .esim-checkout-grid {
         display: grid;
-        grid-template-columns: 1fr 380px;
+        grid-template-columns: 1fr 1fr;
         gap: 32px;
-        align-items: start;
+        align-items: stretch;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
     }
 
     /* Back button */
@@ -1407,7 +1410,9 @@
         border-radius: 14px;
         overflow: hidden;
         position: relative;
-        padding: 24px;
+        padding: 28px;
+        height: 100%;
+        box-sizing: border-box;
     }
 
     .esim-summary-card::before {
@@ -1429,7 +1434,9 @@
         font-size: 18px;
         font-weight: 700;
         color: #fff;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .esim-summary-empty {
@@ -1457,7 +1464,9 @@
     }
 
     .esim-summary-content.visible {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
     }
 
     .esim-summary-row {
@@ -1601,12 +1610,11 @@
 
     /* Checkout Summary Side */
     .esim-checkout-summary-side {
-        position: sticky;
-        top: 100px;
+        /* Match form side */
     }
 
     .esim-summary-section {
-        margin-bottom: 20px;
+        margin-bottom: 24px;
     }
 
     .esim-summary-section:last-of-type {
@@ -1672,7 +1680,9 @@
     }
 
     .esim-summary-pricing {
-        padding-top: 16px;
+        padding-top: 20px;
+        margin-top: auto;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .esim-price-row {
@@ -1682,7 +1692,7 @@
         font-family: 'Outfit', sans-serif;
         font-size: 14px;
         color: var(--c-text-muted);
-        margin-bottom: 12px;
+        margin-bottom: 16px;
     }
 
     .esim-price-row:last-child {
@@ -1690,9 +1700,10 @@
     }
 
     .esim-price-row.total {
-        margin-top: 14px;
-        padding-top: 14px;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 24px;
     }
 
     .esim-price-row.total span:first-child {
@@ -1702,20 +1713,19 @@
     }
 
     .esim-price-row.total span:last-child {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
         color: var(--c-gold);
-        text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     }
 
     .esim-price-row .free {
-        background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.08) 100%);
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.18) 0%, rgba(76, 175, 80, 0.08) 100%);
         color: #4CAF50;
         font-size: 11px;
         font-weight: 700;
-        padding: 4px 10px;
+        padding: 5px 12px;
         border-radius: 6px;
-        border: 1px solid rgba(76, 175, 80, 0.2);
+        border: 1px solid rgba(76, 175, 80, 0.25);
     }
 
     /* Customer Form */
@@ -1816,8 +1826,10 @@
     .esim-checkout-form-side {
         background: var(--c-card-bg);
         border: 1px solid rgba(255, 215, 0, 0.1);
-        border-radius: 16px;
+        border-radius: 14px;
         padding: 28px;
+        height: 100%;
+        box-sizing: border-box;
     }
 
     .esim-checkout-title {
@@ -2078,8 +2090,9 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        margin-top: 16px;
-        color: #555;
+        margin-top: 20px;
+        padding-top: 16px;
+        color: #666;
         font-family: 'Outfit', sans-serif;
         font-size: 12px;
         font-weight: 400;
@@ -2087,7 +2100,7 @@
 
     .esim-secure-footer i {
         color: var(--c-gold);
-        font-size: 14px;
+        font-size: 13px;
     }
 
     /* Back Link */
@@ -3232,10 +3245,12 @@
                         </div>
                     </div>
                     
-                    <button class="esim-back-link" id="esimBackToPlans">
-                        <i class="fa-solid fa-arrow-left"></i> Back to Plans
-                    </button>
                 </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="esim-back-link" id="esimBackToPlans">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Plans
+                </button>
             </div>
         </div>
     </section>
@@ -3354,8 +3369,8 @@
     let allCountries = [];
     let currentRegion = 'all';
     let currentSearch = '';
-    let selectedCountry = null; // { name, iso2, iso3 }
-    let selectedBundle = null;
+    window.selectedCountry = null; // { name, iso2, iso3 }
+    window.selectedBundle = null;
     let bundlesData = [];
     let currentStep = 1;
     let currentBundleTab = 'data';
@@ -3545,7 +3560,7 @@
             var name = c.country_name || c.name || '';
             var iso3 = c.iso3_code || c.iso3 || '';
             var iso2 = c.iso2_code || c.iso2 || '';
-            var isActive = selectedCountry && selectedCountry.iso3 === iso3 ? ' active-country' : '';
+            var isActive = window.selectedCountry && window.selectedCountry.iso3 === iso3 ? ' active-country' : '';
             html += '<div class="esim-country-card' + isActive + '" data-iso3="' + iso3 + '" data-iso2="' + iso2 + '" data-name="' + name.replace(/"/g, '&quot;') + '">';
             html += '<span class="esim-country-flag">' + getFlagImg(iso2, 40) + '</span>';
             html += '<span class="esim-country-name">' + name + '</span>';
@@ -3608,8 +3623,8 @@
 
     // ── Event: Country Click ─────────────────────────────
     function onCountryClick(iso3, iso2, name) {
-        selectedCountry = { iso3: iso3, iso2: iso2, name: name };
-        selectedBundle = null;
+        window.selectedCountry = { iso3: iso3, iso2: iso2, name: name };
+        window.selectedBundle = null;
         bundlesData = [];
         showAllBundles = false;
         currentBundleTab = 'data';
@@ -3652,28 +3667,36 @@
 
     // ── Event: Continue Button (Step 2 → Step 3) ────────
     document.getElementById('esimContinueBtn').addEventListener('click', function() {
-        if (!selectedBundle && bundlesData.length > 0) {
+        if (!window.selectedBundle && bundlesData.length > 0) {
             // Find most popular or first bundle as default if none selected
             var popularIdx = findMostPopularIndex(currentBundleTab === 'data' ? getDataBundles() : getUnlimitedBundles());
             if (popularIdx !== -1) {
                 var activeBundles = currentBundleTab === 'data' ? getDataBundles() : getUnlimitedBundles();
-                selectedBundle = activeBundles[popularIdx];
+                window.selectedBundle = activeBundles[popularIdx];
             } else {
-                selectedBundle = bundlesData[0];
+                window.selectedBundle = bundlesData[0];
             }
         }
 
-        if (!selectedBundle) {
+        if (!window.selectedBundle) {
             alert('Please select a plan to continue');
             return;
         }
 
-        console.log('Continuing to checkout with:', selectedBundle, selectedCountry);
+        console.log('Continuing to checkout with:', window.selectedBundle, window.selectedCountry);
         updateSummary();
         goToStep(3);
-        
-        // Scroll to top of content
-        document.getElementById('esimActivation').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Smooth scroll to checkout form with header offset
+        setTimeout(function() {
+            var checkoutSection = document.getElementById('esimStep3');
+            var headerHeight = 70;
+            var elementTop = checkoutSection.getBoundingClientRect().top + window.pageYOffset;
+            window.scrollTo({
+                top: elementTop - headerHeight,
+                behavior: 'smooth'
+            });
+        }, 50);
     });
 
 
@@ -3681,7 +3704,7 @@
     document.getElementById('esimTabData').addEventListener('click', function() {
         currentBundleTab = 'data';
         showAllBundles = false;
-        selectedBundle = null; // Clear selection when switching tabs to force fresh selection
+        window.selectedBundle = null; // Clear selection when switching tabs to force fresh selection
         this.classList.add('active');
         document.getElementById('esimTabUnlimited').classList.remove('active');
         renderBundles();
@@ -3690,7 +3713,7 @@
     document.getElementById('esimTabUnlimited').addEventListener('click', function() {
         currentBundleTab = 'unlimited';
         showAllBundles = false;
-        selectedBundle = null; // Clear selection when switching tabs
+        window.selectedBundle = null; // Clear selection when switching tabs
         this.classList.add('active');
         document.getElementById('esimTabData').classList.remove('active');
         renderBundles();
@@ -3858,11 +3881,11 @@
         var mostPopularIdx = currentBundleTab === 'data' ? findMostPopularIndex(activeBundles) : -1;
         
         // Auto-select most popular on first render if nothing selected
-        if (!selectedBundle && mostPopularIdx !== -1) {
-            selectedBundle = activeBundles[mostPopularIdx];
+        if (!window.selectedBundle && mostPopularIdx !== -1) {
+            window.selectedBundle = activeBundles[mostPopularIdx];
             document.getElementById('esimContinueBtn').disabled = false;
-        } else if (!selectedBundle && activeBundles.length > 0) {
-            selectedBundle = activeBundles[0];
+        } else if (!window.selectedBundle && activeBundles.length > 0) {
+            window.selectedBundle = activeBundles[0];
             document.getElementById('esimContinueBtn').disabled = false;
         }
 
@@ -3888,7 +3911,7 @@
             var globalIndex = bundlesData.indexOf(b);
             
             // Check if selected by code
-            var isSelected = (selectedBundle && selectedBundle.bundle_code === code);
+            var isSelected = (window.selectedBundle && window.selectedBundle.bundle_code === code);
             var isPopular = (idx === mostPopularIdx);
 
             html += '<div class="esim-bundle-card' + (isSelected ? ' selected' : '') + '" data-index="' + globalIndex + '" data-code="' + code + '">';
@@ -3932,7 +3955,7 @@
 
     // ── Event: Bundle Click ──────────────────────────────
     function onBundleClick(index) {
-        selectedBundle = bundlesData[index];
+        window.selectedBundle = bundlesData[index];
 
         // Update selected class
         document.querySelectorAll('.esim-bundle-card').forEach(function(c) { c.classList.remove('selected'); });
@@ -3945,7 +3968,7 @@
 
     // ── Summary: Reset ───────────────────────────────────
     function resetSummary() {
-        selectedBundle = null;
+        window.selectedBundle = null;
         document.getElementById('esimSummaryEmpty').style.display = 'block';
         document.getElementById('esimSummaryContent').classList.remove('visible');
         document.getElementById('esimPayBtn').disabled = true;
@@ -3955,8 +3978,8 @@
 
     // ── Summary: Update ──────────────────────────────────
     function updateSummary() {
-        var bundle = selectedBundle;
-        var country = selectedCountry;
+        var bundle = window.selectedBundle;
+        var country = window.selectedCountry;
 
         if (!bundle || !country) {
             console.log('Missing bundle or country for summary', bundle, country);
