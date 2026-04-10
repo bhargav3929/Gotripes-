@@ -1407,6 +1407,7 @@
         border-radius: 14px;
         overflow: hidden;
         position: relative;
+        padding: 24px;
     }
 
     .esim-summary-card::before {
@@ -1425,11 +1426,9 @@
 
     .esim-summary-title {
         font-family: 'Outfit', sans-serif;
-        font-size: 10px;
+        font-size: 18px;
         font-weight: 700;
-        color: var(--c-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 2px;
+        color: #fff;
         margin-bottom: 20px;
     }
 
@@ -1440,6 +1439,17 @@
         font-family: 'Outfit', sans-serif;
         font-size: 13px;
         font-weight: 400;
+    }
+
+    .esim-summary-empty i {
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .esim-summary-empty p {
+        margin: 0;
     }
 
     .esim-summary-content {
@@ -1589,6 +1599,125 @@
         text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     }
 
+    /* Checkout Summary Side */
+    .esim-checkout-summary-side {
+        position: sticky;
+        top: 100px;
+    }
+
+    .esim-summary-section {
+        margin-bottom: 20px;
+    }
+
+    .esim-summary-section:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .esim-summary-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 10px;
+    }
+
+    .esim-summary-destination {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+    }
+
+    .esim-summary-plan {
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .esim-summary-plan-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .esim-summary-plan-meta {
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        color: var(--c-text-muted);
+    }
+
+    .esim-summary-change {
+        display: inline-block;
+        margin-top: 14px;
+        background: none;
+        border: none;
+        color: var(--c-gold);
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .esim-summary-change:hover {
+        opacity: 0.7;
+    }
+
+    .esim-summary-pricing {
+        padding-top: 16px;
+    }
+
+    .esim-price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        color: var(--c-text-muted);
+        margin-bottom: 12px;
+    }
+
+    .esim-price-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .esim-price-row.total {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .esim-price-row.total span:first-child {
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .esim-price-row.total span:last-child {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--c-gold);
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+
+    .esim-price-row .free {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.08) 100%);
+        color: #4CAF50;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(76, 175, 80, 0.2);
+    }
+
     /* Customer Form */
     .esim-form-area {
         margin-bottom: 32px;
@@ -1683,6 +1812,148 @@
         display: block;
     }
 
+    /* Checkout Form Styles */
+    .esim-checkout-form-side {
+        background: var(--c-card-bg);
+        border: 1px solid rgba(255, 215, 0, 0.1);
+        border-radius: 16px;
+        padding: 28px;
+    }
+
+    .esim-checkout-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 8px;
+    }
+
+    .esim-checkout-subtitle {
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--c-text-muted);
+        margin: 0 0 24px;
+    }
+
+    .esim-form-group {
+        margin-bottom: 20px;
+    }
+
+    .esim-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .esim-label {
+        display: block;
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-bottom: 8px;
+    }
+
+    .esim-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .esim-input-wrapper i {
+        position: absolute;
+        left: 16px;
+        color: var(--c-gold);
+        font-size: 14px;
+        z-index: 1;
+    }
+
+    .esim-input {
+        width: 100%;
+        height: 50px;
+        background: #0a0a0a;
+        border: 1px solid rgba(255, 215, 0, 0.2);
+        border-radius: 10px;
+        padding: 0 16px 0 44px;
+        color: var(--c-text-light);
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .esim-input::placeholder {
+        color: #555;
+    }
+
+    .esim-input:hover {
+        border-color: rgba(255, 215, 0, 0.35);
+        background: #0d0d0d;
+    }
+
+    .esim-input:focus {
+        border-color: var(--c-gold);
+        box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        background: #0f0f0f;
+    }
+
+    .esim-input:-webkit-autofill,
+    .esim-input:-webkit-autofill:hover,
+    .esim-input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px #0a0a0a inset !important;
+        -webkit-text-fill-color: var(--c-text-light) !important;
+        border-color: rgba(255, 215, 0, 0.2);
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    .esim-input.input-error {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+        animation: esimShake 0.4s ease;
+    }
+
+    .esim-error {
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px;
+        color: #dc3545;
+        margin-top: 6px;
+        display: none;
+    }
+
+    .esim-error.visible {
+        display: block;
+    }
+
+    .esim-checkout-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: rgba(255, 215, 0, 0.05);
+        border: 1px solid rgba(255, 215, 0, 0.1);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 24px;
+    }
+
+    .esim-checkout-notice i {
+        color: var(--c-gold);
+        font-size: 16px;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .esim-checkout-notice span {
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.5;
+    }
+
     /* Pay Button */
     .esim-pay-btn {
         width: 100%;
@@ -1775,6 +2046,74 @@
 
     .esim-error-msg.visible {
         display: block;
+    }
+
+    /* Payment Error */
+    .esim-payment-error {
+        background: rgba(220, 53, 69, 0.08);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-top: 16px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        color: #dc3545;
+        display: none;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .esim-payment-error.visible {
+        display: flex;
+    }
+
+    .esim-payment-error i {
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    /* Secure Footer */
+    .esim-secure-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+        color: #555;
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .esim-secure-footer i {
+        color: var(--c-gold);
+        font-size: 14px;
+    }
+
+    /* Back Link */
+    .esim-back-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+        background: none;
+        border: none;
+        color: var(--c-gold);
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .esim-back-link:hover {
+        opacity: 0.7;
+    }
+
+    .esim-back-link i {
+        font-size: 12px;
     }
 
     /* ============================================================
@@ -2302,6 +2641,32 @@
         .esim-checkout-right {
             position: static;
             order: -1;
+        }
+
+        .esim-checkout-form-side {
+            padding: 20px;
+        }
+
+        .esim-checkout-summary-side {
+            position: static;
+        }
+
+        .esim-form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .esim-checkout-title {
+            font-size: 20px;
+        }
+
+        .esim-checkout-subtitle {
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .esim-input {
+            height: 48px;
         }
 
         .esim-features-grid {
