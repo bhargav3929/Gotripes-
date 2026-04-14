@@ -1819,6 +1819,15 @@
                     </li>
                 @endif
 
+                @if($user->isAdmin())
+                    <li class="nav-item {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.referrals.dashboard') }}" class="nav-link {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}">
+                            <i class="fas fa-users-cog"></i>
+                            <span>Referral System</span>
+                        </a>
+                    </li>
+                @endif
+
                 {{-- Fallback for partners/legacy users who have UAE Activities access via session --}}
                 @if($isPartnerRestricted && $userType === 'approved_partner' && !$user->hasPermission('activity_access'))
                     <li class="nav-item">

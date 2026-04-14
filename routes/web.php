@@ -347,3 +347,50 @@ Route::post('/deploy/github-webhook', function (\Illuminate\Http\Request $reques
     return response()->json(['success' => true, 'message' => 'Deploy completed', 'pusher' => $pusher]);
 })->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
+// ─── Referral System Routes ─────────────────────────────────────────
+use App\Http\Controllers\ReferralAgentDashboardController;
+use App\Http\Controllers\Admin\ReferralAgentController;
+use App\Http\Controllers\Admin\ReferralCommissionController;
+
+// Referral Agent Authentication
+Route::get('/partner/login', [ReferralAgentDashboardController::class, 'showLoginForm'])->name('referral.login');
+Route::post('/partner/login', [ReferralAgentDashboardController::class, 'login'])->name('referral.login.submit');
+Route::post('/partner/logout', [ReferralAgentDashboardController::class, 'logout'])->name('referral.logout');
+
+// Referral Agent Dashboard (Protected)
+Route::middleware(['referral.agent'])->prefix('partner')->name('referral.')->group(function () {
+    Route::get('/', [ReferralAgentDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/orders', [ReferralAgentDashboardController::class, 'orders'])->name('orders');
+    Route::get('/earnings', [ReferralAgentDashboardController::class, 'earnings'])->name('earnings');
+    Route::get('/profile', [ReferralAgentDashboardController::class, 'profile'])->name('profile');
+    Route::put('/profile', [ReferralAgentDashboardController::class, 'updateProfile'])->name('profile.update');
+});
+
+// Admin Referral Management Routes
+Route::middleware(['auth', 'isAdmin'])->prefix('admin/referrals')->name('admin.referrals.')->group(function () {
+    // Dashboard
+    Route::get('/', [ReferralAgentController::class, 'dashboard'])->name('dashboard');
+
+    // Agents Management
+    Route::get('/agents', [ReferralAgentController::class, 'index'])->name('agents.index');
+    Route::get('/agents/create', [ReferralAgentController::class, 'create'])->name('agents.create');
+    Route::post('/agents', [ReferralAgentController::class, 'store'])->name('agents.store');
+    Route::get('/agents/{agent}', [ReferralAgentController::class, 'show'])->name('agents.show');
+    Route::get('/agents/{agent}/edit', [ReferralAgentController::class, 'edit'])->name('agents.edit');
+    Route::put('/agents/{agent}', [ReferralAgentController::class, 'update'])->name('agents.update');
+    Route::delete('/agents/{agent}', [ReferralAgentController::class, 'destroy'])->name('agents.destroy');
+    Route::post('/agents/{agent}/toggle-status', [ReferralAgentController::class, 'toggleStatus'])->name('agents.toggle-status');
+    Route::post('/agents/{agent}/regenerate-code', [ReferralAgentController::class, 'regenerateCode'])->name('agents.regenerate-code');
+    Route::get('/agents-export', [ReferralCommissionController::class, 'exportAgents'])->name('agents.export');
+
+    // Commissions Management
+    Route::get('/commissions', [ReferralCommissionController::class, 'index'])->name('commissions.index');
+    Route::get('/commissions/{commission}', [ReferralCommissionController::class, 'show'])->name('commissions.show');
+    Route::post('/commissions/{commission}/approve', [ReferralCommissionController::class, 'approve'])->name('commissions.approve');
+    Route::post('/commissions/{commission}/reject', [ReferralCommissionController::class, 'reject'])->name('commissions.reject');
+    Route::post('/commissions/{commission}/mark-paid', [ReferralCommissionController::class, 'markPaid'])->name('commissions.mark-paid');
+    Route::post('/commissions/bulk-approve', [ReferralCommissionController::class, 'bulkApprove'])->name('commissions.bulk-approve');
+    Route::post('/commissions/bulk-paid', [ReferralCommissionController::class, 'bulkMarkPaid'])->name('commissions.bulk-paid');
+    Route::get('/commissions-export', [ReferralCommissionController::class, 'export'])->name('commissions.export');
+});
+

@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ReferralTrackingMiddleware::class,
         ],
 
         'api' => [
@@ -67,5 +68,7 @@ class Kernel extends HttpKernel
         'isActivitiesManager' => \App\Http\Middleware\ActivitiesManagerMiddleware::class,
         'partner.access' => \App\Http\Middleware\PartnerAccessMiddleware::class,
         'manager.auth' => \App\Http\Middleware\ManagerAuthMiddleware::class,
+        'referral.agent' => \App\Http\Middleware\ReferralAgentMiddleware::class,
+        'referral.tracking' => \App\Http\Middleware\ReferralTrackingMiddleware::class,
     ];
 }

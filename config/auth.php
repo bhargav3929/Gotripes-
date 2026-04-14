@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'referral_agent' => [
+            'driver' => 'session',
+            'provider' => 'referral_agents',
+        ],
     ],
 
     /*
@@ -63,6 +68,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'referral_agents' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\ReferralAgent::class,
         ],
 
         // 'users' => [
