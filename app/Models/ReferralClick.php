@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ReferralClick extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToCompany;
 
     protected $table = 'referral_clicks';
 
@@ -25,6 +26,7 @@ class ReferralClick extends Model
         'os',
         'converted',
         'converted_at',
+        'company_id',
     ];
 
     protected $casts = [

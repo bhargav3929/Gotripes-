@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ReferralTracking extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToCompany;
 
     protected $table = 'referral_tracking';
 
@@ -34,6 +35,7 @@ class ReferralTracking extends Model
         'order_details',
         'ip_address',
         'user_agent',
+        'company_id',
     ];
 
     protected $casts = [

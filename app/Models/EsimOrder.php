@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class EsimOrder extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'esim_orders';
 
     protected $fillable = [
@@ -28,6 +31,11 @@ class EsimOrder extends Model
         'payment_status',
         'monty_response',
         'isActive',
+        'company_id',
+        'user_id',
+        'total_amount',
+        'status',
+        'referral_agent_id',
     ];
 
     protected $casts = [
@@ -35,5 +43,16 @@ class EsimOrder extends Model
         'isActive' => 'boolean',
         'monty_cost_price' => 'decimal:2',
         'selling_price' => 'decimal:2',
+        'total_amount' => 'decimal:2',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function referralAgent()
+    {
+        return $this->belongsTo(ReferralAgent::class);
+    }
 }

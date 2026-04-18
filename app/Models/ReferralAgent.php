@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,7 +11,7 @@ use Illuminate\Support\Str;
 
 class ReferralAgent extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, BelongsToCompany;
 
     protected $table = 'referral_agents';
 
@@ -30,6 +31,7 @@ class ReferralAgent extends Authenticatable
         'total_clicks',
         'notes',
         'last_login_at',
+        'company_id',
     ];
 
     protected $hidden = [

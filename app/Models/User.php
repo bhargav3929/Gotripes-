@@ -19,12 +19,54 @@ class User extends Authenticatable
         'access_type',
         'email_verified_at', // Now stores comma-separated emirates IDs
         'partner_document_path',
+        'company_id',
+        'role',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    /**
+     * Company relationship for multi-tenant
+     */
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * eSIM orders relationship
+     */
+    public function esimOrders()
+    {
+        return $this->hasMany(EsimOrder::class);
+    }
+
+    /**
+     * Check if user is a super admin
+     */
+    public function isSuperAdmin()
+    {
+        return $this->role === 'super_admin';
+    }
+
+    /**
+     * Check if user is a company owner
+     */
+    public function isCompanyOwner()
+    {
+        return $this->role === 'company_owner';
+    }
+
+    /**
+     * Check if user is a company admin
+     */
+    public function isCompanyAdmin()
+    {
+        return in_array($this->role, ['company_owner', 'company_admin']);
+    }
 
 
 

@@ -394,3 +394,9 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin/referrals')->name('admin.r
     Route::get('/commissions-export', [ReferralCommissionController::class, 'export'])->name('commissions.export');
 });
 
+// ─── Super Admin Routes ─────────────────────────────────────────────
+require __DIR__.'/superadmin.php';
+
+// ─── Client Admin Routes ────────────────────────────────────────────
+require __DIR__.'/client.php';
+

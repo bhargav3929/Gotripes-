@@ -1,0 +1,212 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+
+class Company extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'domain',
+        'subdomain',
+        'logo',
+        'favicon',
+        'primary_color',
+        'secondary_color',
+        'text_color',
+        'bg_color',
+        'email',
+        'phone',
+        'address',
+        'website',
+        'business_name',
+        'tax_id',
+        'currency',
+        'timezone',
+        'api_keys',
+        'markup_percentage',
+        'plan',
+        'trial_ends_at',
+        'subscription_ends_at',
+        'is_active',
+        'settings',
+        'features',
+    ];
+
+    protected $casts = [
+        'api_keys' => 'encrypted:array',
+        'settings' => 'array',
+        'features' => 'array',
+        'is_active' => 'boolean',
+        'trial_ends_at' => 'datetime',
+        'subscription_ends_at' => 'datetime',
+        'markup_percentage' => 'decimal:2',
+        'total_revenue' => 'decimal:2',
+    ];
+
+    protected $hidden = [
+        'api_keys',
+    ];
+
+    // Boot method to auto-generate slug
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($company) {
+            if (empty($company->slug)) {
+                $company->slug = Str::slug($company->name);
+            }
+            if (empty($company->subdomain)) {
+                $company->subdomain = $company->slug;
+            }
+        });
+    }
+
+    // Relationships
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function admins(): HasMany
+    {
+        return $this->hasMany(User::class)->whereIn('role', ['company_owner', 'company_admin']);
+    }
+
+    public function owner()
+    {
+        return $this->hasOne(User::class)->where('role', 'company_owner');
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(EsimOrder::class);
+    }
+
+    public function referralAgents(): HasMany
+    {
+        return $this->hasMany(ReferralAgent::class);
+    }
+
+    // Accessors
+    public function getLogoUrlAttribute(): string
+    {
+        return $this->logo
+            ? asset('storage/' . $this->logo)
+            : asset('images/default-logo.png');
+    }
+
+    public function getFaviconUrlAttribute(): string
+    {
+        return $this->favicon
+            ? asset('storage/' . $this->favicon)
+            : asset('favicon.ico');
+    }
+
+    public function getFullDomainAttribute(): string
+    {
+        if ($this->domain) {
+            return $this->domain;
+        }
+        return $this->subdomain . '.' . config('app.domain', 'gotrips.ai');
+    }
+
+    // Subscription helpers
+    public function isOnTrial(): bool
+    {
+        return $this->plan === 'trial' &&
+               $this->trial_ends_at &&
+               $this->trial_ends_at->isFuture();
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        if ($this->isOnTrial()) {
+            return true;
+        }
+        return $this->subscription_ends_at &&
+               $this->subscription_ends_at->isFuture();
+    }
+
+    public function isExpired(): bool
+    {
+        return !$this->hasActiveSubscription();
+    }
+
+    // Feature checks
+    public function hasFeature(string $feature): bool
+    {
+        $features = $this->features ?? [];
+        return in_array($feature, $features);
+    }
+
+    public function getSetting(string $key, $default = null)
+    {
+        $settings = $this->settings ?? [];
+        return $settings[$key] ?? $default;
+    }
+
+    public function setSetting(string $key, $value): void
+    {
+        $settings = $this->settings ?? [];
+        $settings[$key] = $value;
+        $this->settings = $settings;
+        $this->save();
+    }
+
+    // Branding array for frontend
+    public function getBrandingAttribute(): array
+    {
+        return [
+            'name' => $this->name,
+            'logo' => $this->logo_url,
+            'favicon' => $this->favicon_url,
+            'colors' => [
+                'primary' => $this->primary_color,
+                'secondary' => $this->secondary_color,
+                'text' => $this->text_color,
+                'background' => $this->bg_color,
+            ],
+            'contact' => [
+                'email' => $this->email,
+                'phone' => $this->phone,
+                'address' => $this->address,
+                'website' => $this->website,
+            ],
+        ];
+    }
+
+    // Stats
+    public function incrementOrderCount(): void
+    {
+        $this->increment('total_orders');
+    }
+
+    public function addRevenue(float $amount): void
+    {
+        $this->increment('total_revenue', $amount);
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeWithSubscription($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('plan', 'trial')
+              ->where('trial_ends_at', '>', now())
+              ->orWhere('subscription_ends_at', '>', now());
+        });
+    }
+}
