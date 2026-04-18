@@ -26,10 +26,10 @@ class IdentifyTenant
                 abort(403, 'This account has been suspended. Please contact support.');
             }
 
-            // Check subscription status (skip for trial)
+            // Check subscription status (skip for trial and super admin routes)
             if ($company->isExpired() && !$company->isOnTrial()) {
-                if (!$request->is('subscription*', 'billing*', 'logout')) {
-                    return redirect()->route('subscription.expired');
+                if (!$request->is('subscription*', 'billing*', 'logout', 'superadmin*', 'login*', 'admin*')) {
+                    abort(402, 'Your subscription has expired. Please contact support to renew.');
                 }
             }
         }
