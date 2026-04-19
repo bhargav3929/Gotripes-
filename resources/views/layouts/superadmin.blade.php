@@ -126,11 +126,15 @@
         }
 
         .card-header {
-            background: rgba(99, 102, 241, 0.15);
-            border-bottom: 1px solid var(--sa-border);
-            padding: 15px 20px;
-            font-weight: 600;
-            color: #ffffff;
+            background: rgba(99, 102, 241, 0.15) !important;
+            border-bottom: 1px solid var(--sa-border) !important;
+            padding: 15px 20px !important;
+            font-weight: 600 !important;
+            color: #ffffff !important;
+        }
+
+        .card-header i {
+            color: #ffffff !important;
         }
 
         .card-body { padding: 20px; }
