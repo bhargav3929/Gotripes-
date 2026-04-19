@@ -126,10 +126,11 @@
         }
 
         .card-header {
-            background: transparent;
+            background: rgba(99, 102, 241, 0.1);
             border-bottom: 1px solid var(--sa-border);
             padding: 15px 20px;
             font-weight: 600;
+            color: var(--sa-text);
         }
 
         .card-body { padding: 20px; }
