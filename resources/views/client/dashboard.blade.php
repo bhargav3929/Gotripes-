@@ -109,11 +109,11 @@
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
-                <i class="fas fa-trophy me-2" style="color: var(--client-primary);"></i>Top Referral Agents
+                <i class="fas fa-trophy me-2" style="color: var(--gold);"></i>Top Referral Agents
             </div>
             <div class="card-body p-0">
                 @forelse($topAgents as $index => $agent)
-                <div class="d-flex align-items-center p-3 border-bottom" style="border-color: var(--client-border) !important;">
+                <div class="d-flex align-items-center p-3 border-bottom" style="border-color: var(--border) !important;">
                     <div class="me-3">
                         <span class="badge bg-{{ $index === 0 ? 'warning' : ($index === 1 ? 'secondary' : 'dark') }}">
                             #{{ $index + 1 }}

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="page-title"><i class="fas fa-passport me-2" style="color: var(--client-primary);"></i>Visa Applications</h1>
+    <h1 class="page-title"><i class="fas fa-passport me-2" style="color: var(--gold);"></i>Visa Applications</h1>
 </div>
 
 <div class="card mb-3">
@@ -61,8 +61,21 @@
         </table>
     </div>
     @if($visas->hasPages())
-    <div class="card-footer d-flex justify-content-center">
-        {{ $visas->withQueryString()->links() }}
+    <div class="card-footer d-flex justify-content-between align-items-center py-2">
+        <small class="text-muted">Showing {{ $visas->firstItem() }}-{{ $visas->lastItem() }} of {{ $visas->total() }}</small>
+        <div class="d-flex gap-2">
+            @if($visas->onFirstPage())
+                <span class="btn btn-sm btn-outline-secondary disabled"><i class="fas fa-chevron-left"></i></span>
+            @else
+                <a href="{{ $visas->previousPageUrl() }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-chevron-left"></i></a>
+            @endif
+            <span class="btn btn-sm btn-dark disabled">{{ $visas->currentPage() }} / {{ $visas->lastPage() }}</span>
+            @if($visas->hasMorePages())
+                <a href="{{ $visas->nextPageUrl() }}" class="btn btn-sm btn-primary"><i class="fas fa-chevron-right"></i></a>
+            @else
+                <span class="btn btn-sm btn-outline-secondary disabled"><i class="fas fa-chevron-right"></i></span>
+            @endif
+        </div>
     </div>
     @endif
 </div>
