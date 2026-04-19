@@ -5,7 +5,7 @@
 @section('content')
 <div class="page-header">
     <div class="d-flex align-items-center gap-3">
-        <a href="{{ route('superadmin.users.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('superadmin.users.index') }}" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div>
@@ -21,8 +21,8 @@
             {{ str_replace('_', ' ', ucfirst($user->role ?? 'customer')) }}
         </span>
     </div>
-    <a href="{{ route('superadmin.users.edit', $user) }}" class="btn btn-warning">
-        <i class="fas fa-edit me-2"></i>Edit
+    <a href="{{ route('superadmin.users.edit', $user) }}" class="btn btn-warning btn-sm">
+        <i class="fas fa-edit me-1"></i>Edit
     </a>
 </div>
 
@@ -110,7 +110,7 @@
                   onsubmit="return confirm('Are you sure? This action cannot be undone.')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger" {{ $user->role === 'super_admin' ? 'disabled' : '' }}>
+                <button type="submit" class="btn btn-outline-danger btn-sm" {{ $user->role === 'super_admin' ? 'disabled' : '' }}>
                     Delete
                 </button>
             </form>

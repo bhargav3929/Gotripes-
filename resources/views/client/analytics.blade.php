@@ -10,18 +10,18 @@
 <!-- Date Filter -->
 <div class="card mb-4">
     <div class="card-body py-3">
-        <form method="GET" action="{{ route('client.analytics') }}" class="row g-3 align-items-end">
+        <form method="GET" action="{{ route('client.analytics') }}" class="row g-2 align-items-end">
             <div class="col-md-3">
-                <label class="form-label">From Date</label>
-                <input type="date" name="from" class="form-control" value="{{ request('from', now()->subMonth()->format('Y-m-d')) }}">
+                <label class="form-label mb-1" style="font-size: 0.75rem;">From Date</label>
+                <input type="date" name="from" class="form-control form-control-sm" value="{{ request('from', now()->subMonth()->format('Y-m-d')) }}">
             </div>
             <div class="col-md-3">
-                <label class="form-label">To Date</label>
-                <input type="date" name="to" class="form-control" value="{{ request('to', now()->format('Y-m-d')) }}">
+                <label class="form-label mb-1" style="font-size: 0.75rem;">To Date</label>
+                <input type="date" name="to" class="form-control form-control-sm" value="{{ request('to', now()->format('Y-m-d')) }}">
             </div>
             <div class="col-md-3">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i>Apply</button>
-                <a href="{{ route('client.analytics') }}" class="btn btn-outline-secondary"><i class="fas fa-times"></i></a>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter me-1"></i>Apply</button>
+                <a href="{{ route('client.analytics') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-times"></i></a>
             </div>
         </form>
     </div>

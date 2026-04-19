@@ -17,10 +17,10 @@
             <div class="card mb-4">
                 <div class="card-header"><i class="fas fa-briefcase me-2"></i>Business Settings</div>
                 <div class="card-body">
-                    <div class="row g-3">
+                    <div class="row g-2">
                         <div class="col-md-6">
-                            <label class="form-label">Currency</label>
-                            <select name="currency" class="form-select @error('currency') is-invalid @enderror">
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Currency</label>
+                            <select name="currency" class="form-select form-select-sm @error('currency') is-invalid @enderror">
                                 <option value="AED" {{ $company->currency === 'AED' ? 'selected' : '' }}>AED - UAE Dirham</option>
                                 <option value="USD" {{ $company->currency === 'USD' ? 'selected' : '' }}>USD - US Dollar</option>
                                 <option value="EUR" {{ $company->currency === 'EUR' ? 'selected' : '' }}>EUR - Euro</option>
@@ -30,8 +30,8 @@
                             @error('currency')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Timezone</label>
-                            <select name="timezone" class="form-select @error('timezone') is-invalid @enderror">
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Timezone</label>
+                            <select name="timezone" class="form-select form-select-sm @error('timezone') is-invalid @enderror">
                                 <option value="Asia/Dubai" {{ $company->timezone === 'Asia/Dubai' ? 'selected' : '' }}>Asia/Dubai (GMT+4)</option>
                                 <option value="UTC" {{ $company->timezone === 'UTC' ? 'selected' : '' }}>UTC</option>
                                 <option value="America/New_York" {{ $company->timezone === 'America/New_York' ? 'selected' : '' }}>America/New_York</option>
@@ -41,9 +41,9 @@
                             @error('timezone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Markup Percentage</label>
-                            <div class="input-group">
-                                <input type="number" name="markup_percentage" class="form-control @error('markup_percentage') is-invalid @enderror"
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Markup Percentage</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" name="markup_percentage" class="form-control form-control-sm @error('markup_percentage') is-invalid @enderror"
                                        value="{{ old('markup_percentage', $company->markup_percentage) }}" min="0" max="100" step="0.01">
                                 <span class="input-group-text">%</span>
                             </div>
@@ -54,8 +54,8 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save me-2"></i>Save Settings
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="fas fa-save me-1"></i>Save Settings
             </button>
         </form>
     </div>

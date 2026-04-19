@@ -5,8 +5,8 @@
 @section('content')
 <div class="page-header">
     <h1 class="page-title"><i class="fas fa-plus-circle"></i>Create New Company</h1>
-    <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to List
+    <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i>Back
     </a>
 </div>
 
@@ -25,20 +25,20 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label">Company Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                            <input type="text" name="name" class="form-control form-control-sm @error('name') is-invalid @enderror"
                                    value="{{ old('name') }}" placeholder="Enter company name" required>
                             @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Slug</label>
-                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror"
+                            <input type="text" name="slug" class="form-control form-control-sm @error('slug') is-invalid @enderror"
                                    value="{{ old('slug') }}" placeholder="Auto-generated if empty">
                             @error('slug')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Subdomain</label>
                             <div class="input-group">
-                                <input type="text" name="subdomain" class="form-control @error('subdomain') is-invalid @enderror"
+                                <input type="text" name="subdomain" class="form-control form-control-sm @error('subdomain') is-invalid @enderror"
                                        value="{{ old('subdomain') }}" placeholder="company">
                                 <span class="input-group-text">.gotrips.ai</span>
                             </div>
@@ -46,19 +46,19 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Custom Domain</label>
-                            <input type="text" name="domain" class="form-control @error('domain') is-invalid @enderror"
+                            <input type="text" name="domain" class="form-control form-control-sm @error('domain') is-invalid @enderror"
                                    value="{{ old('domain') }}" placeholder="www.company.com">
                             @error('domain')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                            <input type="email" name="email" class="form-control form-control-sm @error('email') is-invalid @enderror"
                                    value="{{ old('email') }}" placeholder="company@example.com" required>
                             @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Phone</label>
-                            <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
+                            <input type="text" name="phone" class="form-control form-control-sm @error('phone') is-invalid @enderror"
                                    value="{{ old('phone') }}" placeholder="+971 XX XXX XXXX">
                             @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
@@ -77,19 +77,19 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label">Admin Name <span class="text-danger">*</span></label>
-                            <input type="text" name="admin_name" class="form-control @error('admin_name') is-invalid @enderror"
+                            <input type="text" name="admin_name" class="form-control form-control-sm @error('admin_name') is-invalid @enderror"
                                    value="{{ old('admin_name') }}" placeholder="Full name" required>
                             @error('admin_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Admin Email <span class="text-danger">*</span></label>
-                            <input type="email" name="admin_email" class="form-control @error('admin_email') is-invalid @enderror"
+                            <input type="email" name="admin_email" class="form-control form-control-sm @error('admin_email') is-invalid @enderror"
                                    value="{{ old('admin_email') }}" placeholder="admin@company.com" required>
                             @error('admin_email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Admin Password <span class="text-danger">*</span></label>
-                            <input type="password" name="admin_password" class="form-control @error('admin_password') is-invalid @enderror"
+                            <input type="password" name="admin_password" class="form-control form-control-sm @error('admin_password') is-invalid @enderror"
                                    placeholder="Minimum 8 characters" required minlength="8">
                             @error('admin_password')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
@@ -107,19 +107,19 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label">Company Logo</label>
-                            <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror"
+                            <input type="file" name="logo" class="form-control form-control-sm @error('logo') is-invalid @enderror"
                                    accept="image/*">
                             <small class="text-muted d-block mt-2">Recommended: 200x200px, PNG or JPG format</small>
                             @error('logo')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Primary Color</label>
-                            <input type="color" name="primary_color" class="form-control form-control-color w-100"
+                            <input type="color" name="primary_color" class="form-control form-control-sm form-control-color w-100"
                                    value="{{ old('primary_color', '#F6C343') }}" style="height: 50px;">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Secondary Color</label>
-                            <input type="color" name="secondary_color" class="form-control form-control-color w-100"
+                            <input type="color" name="secondary_color" class="form-control form-control-sm form-control-color w-100"
                                    value="{{ old('secondary_color', '#3B82F6') }}" style="height: 50px;">
                         </div>
                     </div>
@@ -137,7 +137,7 @@
                 <div class="card-body">
                     <div class="mb-4">
                         <label class="form-label">Select Plan <span class="text-danger">*</span></label>
-                        <select name="plan" class="form-select @error('plan') is-invalid @enderror" required>
+                        <select name="plan" class="form-select form-select-sm @error('plan') is-invalid @enderror" required>
                             <option value="trial" {{ old('plan') === 'trial' ? 'selected' : '' }}>Trial (14 days free)</option>
                             <option value="basic" {{ old('plan') === 'basic' ? 'selected' : '' }}>Basic</option>
                             <option value="pro" {{ old('plan') === 'pro' ? 'selected' : '' }}>Professional</option>
@@ -149,7 +149,7 @@
                     <div>
                         <label class="form-label">Markup Percentage</label>
                         <div class="input-group">
-                            <input type="number" name="markup_percentage" class="form-control"
+                            <input type="number" name="markup_percentage" class="form-control form-control-sm"
                                    value="{{ old('markup_percentage', 20) }}" min="0" max="100" step="0.01">
                             <span class="input-group-text">%</span>
                         </div>
@@ -167,7 +167,7 @@
                 <div class="card-body">
                     <div class="mb-4">
                         <label class="form-label">Currency</label>
-                        <select name="currency" class="form-select">
+                        <select name="currency" class="form-select form-select-sm">
                             <option value="AED" {{ old('currency', 'AED') === 'AED' ? 'selected' : '' }}>AED - UAE Dirham</option>
                             <option value="USD" {{ old('currency') === 'USD' ? 'selected' : '' }}>USD - US Dollar</option>
                             <option value="EUR" {{ old('currency') === 'EUR' ? 'selected' : '' }}>EUR - Euro</option>
@@ -178,7 +178,7 @@
                     </div>
                     <div>
                         <label class="form-label">Timezone</label>
-                        <select name="timezone" class="form-select">
+                        <select name="timezone" class="form-select form-select-sm">
                             <option value="Asia/Dubai" {{ old('timezone', 'Asia/Dubai') === 'Asia/Dubai' ? 'selected' : '' }}>Dubai (GMT+4)</option>
                             <option value="UTC" {{ old('timezone') === 'UTC' ? 'selected' : '' }}>UTC (GMT+0)</option>
                             <option value="America/New_York" {{ old('timezone') === 'America/New_York' ? 'selected' : '' }}>New York (EST)</option>
@@ -192,11 +192,11 @@
             <!-- Actions -->
             <div class="card">
                 <div class="card-body">
-                    <button type="submit" class="btn btn-primary w-100 mb-3" style="padding: 16px;">
-                        <i class="fas fa-plus me-2"></i>Create Company
+                    <button type="submit" class="btn btn-primary btn-sm w-100 mb-2">
+                        <i class="fas fa-plus me-1"></i>Create Company
                     </button>
-                    <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary w-100">
-                        <i class="fas fa-times me-2"></i>Cancel
+                    <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary btn-sm w-100">
+                        Cancel
                     </a>
                 </div>
             </div>

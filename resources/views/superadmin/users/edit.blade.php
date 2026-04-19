@@ -5,8 +5,8 @@
 @section('content')
 <div class="page-header">
     <h1 class="page-title"><i class="fas fa-user-edit me-2"></i>Edit User</h1>
-    <a href="{{ route('superadmin.users.show', $user) }}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back
+    <a href="{{ route('superadmin.users.show', $user) }}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i>Back
     </a>
 </div>
 
@@ -22,19 +22,19 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                            <input type="text" name="name" class="form-control form-control-sm @error('name') is-invalid @enderror"
                                    value="{{ old('name', $user->name) }}" required>
                             @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                            <input type="email" name="email" class="form-control form-control-sm @error('email') is-invalid @enderror"
                                    value="{{ old('email', $user->email) }}" required>
                             @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Role <span class="text-danger">*</span></label>
-                            <select name="role" class="form-select @error('role') is-invalid @enderror" required>
+                            <select name="role" class="form-select form-select-sm @error('role') is-invalid @enderror" required>
                                 <option value="customer" {{ old('role', $user->role) === 'customer' ? 'selected' : '' }}>Customer</option>
                                 <option value="company_staff" {{ old('role', $user->role) === 'company_staff' ? 'selected' : '' }}>Company Staff</option>
                                 <option value="company_admin" {{ old('role', $user->role) === 'company_admin' ? 'selected' : '' }}>Company Admin</option>
@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Company</label>
-                            <select name="company_id" class="form-select @error('company_id') is-invalid @enderror">
+                            <select name="company_id" class="form-select form-select-sm @error('company_id') is-invalid @enderror">
                                 <option value="">No Company</option>
                                 @foreach($companies as $company)
                                 <option value="{{ $company->id }}" {{ old('company_id', $user->company_id) == $company->id ? 'selected' : '' }}>
@@ -57,7 +57,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">New Password</label>
-                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
+                            <input type="password" name="password" class="form-control form-control-sm @error('password') is-invalid @enderror"
                                    placeholder="Leave blank to keep current">
                             @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             <small class="text-muted">Minimum 8 characters</small>
@@ -70,10 +70,10 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    <button type="submit" class="btn btn-primary w-100 mb-2">
-                        <i class="fas fa-save me-2"></i>Save Changes
+                    <button type="submit" class="btn btn-primary btn-sm w-100 mb-2">
+                        <i class="fas fa-save me-1"></i>Save Changes
                     </button>
-                    <a href="{{ route('superadmin.users.show', $user) }}" class="btn btn-outline-secondary w-100">
+                    <a href="{{ route('superadmin.users.show', $user) }}" class="btn btn-outline-secondary btn-sm w-100">
                         Cancel
                     </a>
                 </div>

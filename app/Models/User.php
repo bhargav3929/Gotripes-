@@ -21,6 +21,13 @@ class User extends Authenticatable
         'partner_document_path',
         'company_id',
         'role',
+        'is_super_admin',
+        'last_login_at',
+    ];
+
+    protected $casts = [
+        'is_super_admin' => 'boolean',
+        'last_login_at' => 'datetime',
     ];
 
     protected $hidden = [

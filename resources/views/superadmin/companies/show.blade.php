@@ -5,7 +5,7 @@
 @section('content')
 <div class="page-header">
     <div class="d-flex align-items-center gap-3">
-        <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div>
@@ -19,12 +19,12 @@
     <div class="d-flex gap-2">
         <form action="{{ route('superadmin.companies.impersonate', $company) }}" method="POST">
             @csrf
-            <button type="submit" class="btn btn-outline-primary">
-                <i class="fas fa-user-secret me-2"></i>Impersonate
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-user-secret me-1"></i>Impersonate
             </button>
         </form>
-        <a href="{{ route('superadmin.companies.edit', $company) }}" class="btn btn-warning">
-            <i class="fas fa-edit me-2"></i>Edit
+        <a href="{{ route('superadmin.companies.edit', $company) }}" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit me-1"></i>Edit
         </a>
     </div>
 </div>
@@ -130,13 +130,13 @@
                 <form action="{{ route('superadmin.companies.change-plan', $company) }}" method="POST" class="mb-3">
                     @csrf
                     <div class="input-group">
-                        <select name="plan" class="form-select">
+                        <select name="plan" class="form-select form-select-sm">
                             <option value="trial" {{ $company->plan === 'trial' ? 'selected' : '' }}>Trial</option>
                             <option value="basic" {{ $company->plan === 'basic' ? 'selected' : '' }}>Basic</option>
                             <option value="pro" {{ $company->plan === 'pro' ? 'selected' : '' }}>Pro</option>
                             <option value="enterprise" {{ $company->plan === 'enterprise' ? 'selected' : '' }}>Enterprise</option>
                         </select>
-                        <button type="submit" class="btn btn-outline-primary">Change Plan</button>
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Change</button>
                     </div>
                 </form>
 
@@ -144,8 +144,8 @@
                 <form action="{{ route('superadmin.companies.extend-subscription', $company) }}" method="POST">
                     @csrf
                     <div class="input-group">
-                        <input type="number" name="days" class="form-control" placeholder="Days" min="1" max="365" value="30">
-                        <button type="submit" class="btn btn-outline-success">Extend</button>
+                        <input type="number" name="days" class="form-control form-control-sm" placeholder="Days" min="1" max="365" value="30">
+                        <button type="submit" class="btn btn-outline-success btn-sm">Extend</button>
                     </div>
                 </form>
             </div>
@@ -184,7 +184,7 @@
             </div>
             <form action="{{ route('superadmin.companies.toggle-status', $company) }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-{{ $company->is_active ? 'danger' : 'success' }}">
+                <button type="submit" class="btn btn-{{ $company->is_active ? 'danger' : 'success' }} btn-sm">
                     {{ $company->is_active ? 'Deactivate' : 'Activate' }}
                 </button>
             </form>
@@ -201,7 +201,7 @@
                   onsubmit="return confirm('Are you sure? This action cannot be undone.')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
             </form>
         </div>
     </div>

@@ -17,22 +17,22 @@
             <div class="card mb-4">
                 <div class="card-header"><i class="fas fa-building me-2"></i>Company Information</div>
                 <div class="card-body">
-                    <div class="row g-3">
+                    <div class="row g-2">
                         <div class="col-md-6">
-                            <label class="form-label">Company Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Company Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control form-control-sm @error('name') is-invalid @enderror"
                                    value="{{ old('name', $company->name) }}" required>
                             @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control form-control-sm @error('email') is-invalid @enderror"
                                    value="{{ old('email', $company->email) }}" required>
                             @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Phone</label>
-                            <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Phone</label>
+                            <input type="text" name="phone" class="form-control form-control-sm @error('phone') is-invalid @enderror"
                                    value="{{ old('phone', $company->phone) }}">
                             @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
@@ -53,7 +53,7 @@
                                 <small class="d-block text-muted mt-2">Current logo</small>
                             </div>
                             @endif
-                            <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror"
+                            <input type="file" name="logo" class="form-control form-control-sm @error('logo') is-invalid @enderror"
                                    accept="image/*">
                             @error('logo')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             <small class="text-muted">Recommended: PNG or SVG, max 2MB</small>
