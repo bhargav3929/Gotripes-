@@ -3,61 +3,22 @@
 @section('title', 'All Users')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-title"><i class="fas fa-users"></i>All Users</h1>
-</div>
-
-<!-- Stats Row -->
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-value">{{ $users->total() }}</div>
-            <div class="stat-label">Total Users</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
-                <i class="fas fa-user-shield"></i>
-            </div>
-            <div class="stat-value">{{ $users->where('role', 'super_admin')->count() }}</div>
-            <div class="stat-label">Super Admins</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--info);">
-                <i class="fas fa-user-tie"></i>
-            </div>
-            <div class="stat-value">{{ $users->where('role', 'company_owner')->count() }}</div>
-            <div class="stat-label">Company Owners</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: var(--success);">
-                <i class="fas fa-user"></i>
-            </div>
-            <div class="stat-value">{{ $users->where('role', 'customer')->count() }}</div>
-            <div class="stat-label">Customers</div>
-        </div>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 style="font-size: 1.3rem; font-weight: 800; margin: 0; color: var(--text-white);">
+        <i class="fas fa-users me-2" style="color: var(--gold);"></i>Users
+        <span class="badge bg-primary ms-2" style="font-size: 0.7rem;">{{ $users->total() }}</span>
+    </h1>
 </div>
 
 <!-- Filters -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form method="GET" action="{{ route('superadmin.users.index') }}" class="row g-3 align-items-end">
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="GET" action="{{ route('superadmin.users.index') }}" class="row g-2 align-items-center">
             <div class="col-md-4">
-                <label class="form-label">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Search by name or email..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search users..." value="{{ request('search') }}">
             </div>
             <div class="col-md-3">
-                <label class="form-label">Company</label>
-                <select name="company_id" class="form-select">
+                <select name="company_id" class="form-select form-select-sm">
                     <option value="">All Companies</option>
                     @foreach($companies as $company)
                     <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>
@@ -67,23 +28,17 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Role</label>
-                <select name="role" class="form-select">
+                <select name="role" class="form-select form-select-sm">
                     <option value="">All Roles</option>
                     <option value="super_admin" {{ request('role') === 'super_admin' ? 'selected' : '' }}>Super Admin</option>
-                    <option value="company_owner" {{ request('role') === 'company_owner' ? 'selected' : '' }}>Company Owner</option>
-                    <option value="company_admin" {{ request('role') === 'company_admin' ? 'selected' : '' }}>Company Admin</option>
-                    <option value="company_staff" {{ request('role') === 'company_staff' ? 'selected' : '' }}>Staff</option>
+                    <option value="company_owner" {{ request('role') === 'company_owner' ? 'selected' : '' }}>Owner</option>
+                    <option value="company_admin" {{ request('role') === 'company_admin' ? 'selected' : '' }}>Admin</option>
                     <option value="customer" {{ request('role') === 'customer' ? 'selected' : '' }}>Customer</option>
                 </select>
             </div>
             <div class="col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-primary flex-grow-1">
-                    <i class="fas fa-search me-2"></i>Search
-                </button>
-                <a href="{{ route('superadmin.users.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-redo"></i>
-                </a>
+                <button type="submit" class="btn btn-primary btn-sm flex-grow-1"><i class="fas fa-search"></i></button>
+                <a href="{{ route('superadmin.users.index') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-redo"></i></a>
             </div>
         </form>
     </div>
@@ -91,11 +46,6 @@
 
 <!-- Users Table -->
 <div class="card">
-    <div class="card-header">
-        <i class="fas fa-list"></i>
-        User Directory
-        <span class="badge bg-primary ms-2">{{ $users->total() }}</span>
-    </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -112,13 +62,13 @@
                 @forelse($users as $user)
                 <tr>
                     <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="company-avatar" style="width: 42px; height: 42px; font-size: 1rem;">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="company-avatar">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                             </div>
                             <div>
-                                <div class="fw-700 text-white">{{ $user->name }}</div>
-                                <small class="text-muted">{{ $user->email }}</small>
+                                <div class="fw-600 text-white">{{ $user->name }}</div>
+                                <small class="text-muted" style="font-size: 0.75rem;">{{ $user->email }}</small>
                             </div>
                         </div>
                     </td>

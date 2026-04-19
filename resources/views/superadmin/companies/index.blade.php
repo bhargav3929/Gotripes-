@@ -3,72 +3,33 @@
 @section('title', 'Companies')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-title"><i class="fas fa-building"></i>Companies</h1>
-    <a href="{{ route('superadmin.companies.create') }}" class="btn btn-primary">
-        <i class="fas fa-plus me-2"></i>Add Company
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 style="font-size: 1.3rem; font-weight: 800; margin: 0; color: var(--text-white);">
+        <i class="fas fa-building me-2" style="color: var(--gold);"></i>Companies
+        <span class="badge bg-primary ms-2" style="font-size: 0.7rem;">{{ $companies->total() }}</span>
+    </h1>
+    <a href="{{ route('superadmin.companies.create') }}" class="btn btn-primary btn-sm">
+        <i class="fas fa-plus me-1"></i>Add
     </a>
 </div>
 
-<!-- Stats Row -->
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-building"></i>
-            </div>
-            <div class="stat-value">{{ $companies->total() }}</div>
-            <div class="stat-label">Total Companies</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: var(--success);">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="stat-value">{{ $companies->where('is_active', true)->count() }}</div>
-            <div class="stat-label">Active Companies</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--info);">
-                <i class="fas fa-shopping-cart"></i>
-            </div>
-            <div class="stat-value">{{ $companies->sum('total_orders') }}</div>
-            <div class="stat-label">Total Orders</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: rgba(246, 195, 67, 0.1); color: var(--gold);">
-                <i class="fas fa-coins"></i>
-            </div>
-            <div class="stat-value">AED {{ number_format($companies->sum('total_revenue'), 0) }}</div>
-            <div class="stat-label">Total Revenue</div>
-        </div>
-    </div>
-</div>
 
 <!-- Filters -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form method="GET" action="{{ route('superadmin.companies.index') }}" class="row g-3 align-items-end">
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="GET" action="{{ route('superadmin.companies.index') }}" class="row g-2 align-items-center">
             <div class="col-md-5">
-                <label class="form-label">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Search by name, email, domain..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search companies..." value="{{ request('search') }}">
             </div>
             <div class="col-md-2">
-                <label class="form-label">Status</label>
-                <select name="status" class="form-select">
+                <select name="status" class="form-select form-select-sm">
                     <option value="">All Status</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Plan</label>
-                <select name="plan" class="form-select">
+                <select name="plan" class="form-select form-select-sm">
                     <option value="">All Plans</option>
                     <option value="trial" {{ request('plan') === 'trial' ? 'selected' : '' }}>Trial</option>
                     <option value="basic" {{ request('plan') === 'basic' ? 'selected' : '' }}>Basic</option>
@@ -77,10 +38,10 @@
                 </select>
             </div>
             <div class="col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-primary flex-grow-1">
-                    <i class="fas fa-search me-2"></i>Search
+                <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                    <i class="fas fa-search"></i>
                 </button>
-                <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary btn-sm">
                     <i class="fas fa-redo"></i>
                 </a>
             </div>
@@ -90,11 +51,6 @@
 
 <!-- Companies Table -->
 <div class="card">
-    <div class="card-header">
-        <i class="fas fa-list"></i>
-        All Companies
-        <span class="badge bg-primary ms-2">{{ $companies->total() }}</span>
-    </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
