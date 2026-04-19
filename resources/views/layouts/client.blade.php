@@ -386,14 +386,33 @@
             color: #000;
         }
         .page-link svg {
-            width: 16px !important;
-            height: 16px !important;
-            display: inline-block;
+            width: 12px !important;
+            height: 12px !important;
+            max-width: 12px !important;
+            max-height: 12px !important;
+            display: inline-block !important;
         }
         .page-item.disabled .page-link {
             background: var(--dark-2);
             border-color: var(--border);
             color: var(--text-muted);
+        }
+        nav[aria-label="Pagination Navigation"] svg {
+            width: 12px !important;
+            height: 12px !important;
+            max-width: 12px !important;
+            max-height: 12px !important;
+        }
+        .w-5, .h-5 {
+            width: 12px !important;
+            height: 12px !important;
+        }
+        [class*="pagination"] svg,
+        .card-footer svg {
+            width: 12px !important;
+            height: 12px !important;
+            max-width: 12px !important;
+            max-height: 12px !important;
         }
 
         /* Text utilities */
