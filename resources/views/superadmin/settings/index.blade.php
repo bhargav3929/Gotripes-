@@ -3,180 +3,115 @@
 @section('title', 'Settings')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-title"><i class="fas fa-cog me-2"></i>Platform Settings</h1>
-</div>
+<h1 class="page-title mb-3" style="font-size: 1.25rem;"><i class="fas fa-cog me-2"></i>Settings</h1>
 
-<div class="row g-4">
+<div class="row g-3">
     <div class="col-lg-8">
         <!-- General Settings -->
-        <div class="card mb-4">
-            <div class="card-header"><i class="fas fa-globe me-2"></i>General Settings</div>
-            <div class="card-body">
+        <div class="card mb-3">
+            <div class="card-header py-2" style="font-size: 0.85rem;"><i class="fas fa-globe me-2"></i>General</div>
+            <div class="card-body py-2">
                 <form action="{{ route('superadmin.settings.update') }}" method="POST">
                     @csrf
                     @method('PUT')
-
-                    <div class="row g-3">
+                    <div class="row g-2">
                         <div class="col-md-6">
-                            <label class="form-label">Platform Name</label>
-                            <input type="text" name="platform_name" class="form-control"
-                                   value="{{ $settings['platform_name'] ?? 'GoTrips SaaS' }}">
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Platform Name</label>
+                            <input type="text" name="platform_name" class="form-control form-control-sm" value="{{ $settings['platform_name'] ?? 'GoTrips SaaS' }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Support Email</label>
-                            <input type="email" name="support_email" class="form-control"
-                                   value="{{ $settings['support_email'] ?? 'support@gotrips.ai' }}">
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Support Email</label>
+                            <input type="email" name="support_email" class="form-control form-control-sm" value="{{ $settings['support_email'] ?? 'support@gotrips.ai' }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Default Currency</label>
-                            <select name="default_currency" class="form-select">
-                                <option value="AED" {{ ($settings['default_currency'] ?? 'AED') === 'AED' ? 'selected' : '' }}>AED - UAE Dirham</option>
-                                <option value="USD" {{ ($settings['default_currency'] ?? '') === 'USD' ? 'selected' : '' }}>USD - US Dollar</option>
-                                <option value="EUR" {{ ($settings['default_currency'] ?? '') === 'EUR' ? 'selected' : '' }}>EUR - Euro</option>
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Currency</label>
+                            <select name="default_currency" class="form-select form-select-sm">
+                                <option value="AED" {{ ($settings['default_currency'] ?? 'AED') === 'AED' ? 'selected' : '' }}>AED</option>
+                                <option value="USD" {{ ($settings['default_currency'] ?? '') === 'USD' ? 'selected' : '' }}>USD</option>
+                                <option value="EUR" {{ ($settings['default_currency'] ?? '') === 'EUR' ? 'selected' : '' }}>EUR</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Default Timezone</label>
-                            <select name="default_timezone" class="form-select">
+                            <label class="form-label mb-1" style="font-size: 0.75rem;">Timezone</label>
+                            <select name="default_timezone" class="form-select form-select-sm">
                                 <option value="Asia/Dubai" {{ ($settings['default_timezone'] ?? 'Asia/Dubai') === 'Asia/Dubai' ? 'selected' : '' }}>Asia/Dubai</option>
                                 <option value="UTC" {{ ($settings['default_timezone'] ?? '') === 'UTC' ? 'selected' : '' }}>UTC</option>
                             </select>
                         </div>
                     </div>
-
-                    <hr class="my-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Save General Settings
-                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm mt-2"><i class="fas fa-save me-1"></i>Save</button>
                 </form>
             </div>
         </div>
 
-        <!-- Trial Settings -->
-        <div class="card mb-4">
-            <div class="card-header"><i class="fas fa-clock me-2"></i>Trial Settings</div>
-            <div class="card-body">
-                <form action="{{ route('superadmin.settings.update') }}" method="POST">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Trial Duration (days)</label>
-                            <input type="number" name="trial_days" class="form-control"
-                                   value="{{ $settings['trial_days'] ?? 14 }}" min="1" max="90">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Default Trial Plan Features</label>
-                            <select name="trial_features" class="form-select" multiple>
-                                <option value="esim_sales" selected>eSIM Sales</option>
-                                <option value="referral_system" selected>Referral System</option>
-                                <option value="custom_branding">Custom Branding</option>
-                                <option value="api_access">API Access</option>
-                            </select>
-                        </div>
+        <!-- Trial & Email in one row -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header py-2" style="font-size: 0.85rem;"><i class="fas fa-clock me-2"></i>Trial</div>
+                    <div class="card-body py-2">
+                        <form action="{{ route('superadmin.settings.update') }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="mb-2">
+                                <label class="form-label mb-1" style="font-size: 0.75rem;">Duration (days)</label>
+                                <input type="number" name="trial_days" class="form-control form-control-sm" value="{{ $settings['trial_days'] ?? 14 }}" min="1" max="90">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save me-1"></i>Save</button>
+                        </form>
                     </div>
-
-                    <hr class="my-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Save Trial Settings
-                    </button>
-                </form>
+                </div>
             </div>
-        </div>
-
-        <!-- Email Settings -->
-        <div class="card mb-4">
-            <div class="card-header"><i class="fas fa-envelope me-2"></i>Email Settings</div>
-            <div class="card-body">
-                <form action="{{ route('superadmin.settings.update') }}" method="POST">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">SMTP Host</label>
-                            <input type="text" name="smtp_host" class="form-control"
-                                   value="{{ $settings['smtp_host'] ?? '' }}" placeholder="smtp.example.com">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">SMTP Port</label>
-                            <input type="number" name="smtp_port" class="form-control"
-                                   value="{{ $settings['smtp_port'] ?? 587 }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">SMTP Username</label>
-                            <input type="text" name="smtp_username" class="form-control"
-                                   value="{{ $settings['smtp_username'] ?? '' }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">SMTP Password</label>
-                            <input type="password" name="smtp_password" class="form-control"
-                                   placeholder="••••••••">
-                        </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header py-2" style="font-size: 0.85rem;"><i class="fas fa-envelope me-2"></i>SMTP</div>
+                    <div class="card-body py-2">
+                        <form action="{{ route('superadmin.settings.update') }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="row g-2">
+                                <div class="col-8">
+                                    <input type="text" name="smtp_host" class="form-control form-control-sm" placeholder="Host" value="{{ $settings['smtp_host'] ?? '' }}">
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" name="smtp_port" class="form-control form-control-sm" placeholder="Port" value="{{ $settings['smtp_port'] ?? 587 }}">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm mt-2"><i class="fas fa-save me-1"></i>Save</button>
+                        </form>
                     </div>
-
-                    <hr class="my-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Save Email Settings
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="col-lg-4">
         <!-- Quick Actions -->
-        <div class="card mb-4">
-            <div class="card-header"><i class="fas fa-bolt me-2"></i>Quick Actions</div>
-            <div class="card-body">
+        <div class="card mb-3">
+            <div class="card-header py-2" style="font-size: 0.85rem;"><i class="fas fa-bolt me-2"></i>Actions</div>
+            <div class="card-body py-2">
                 <div class="d-grid gap-2">
                     <form action="{{ route('superadmin.settings.clear-cache') }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-outline-warning w-100">
-                            <i class="fas fa-broom me-2"></i>Clear All Caches
-                        </button>
+                        <button type="submit" class="btn btn-outline-warning btn-sm w-100"><i class="fas fa-broom me-1"></i>Clear Cache</button>
                     </form>
-                    <a href="{{ route('superadmin.companies.create') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-plus me-2"></i>Create New Company
-                    </a>
-                    <a href="{{ route('superadmin.reports.index') }}" class="btn btn-outline-info">
-                        <i class="fas fa-chart-bar me-2"></i>View Reports
-                    </a>
+                    <a href="{{ route('superadmin.companies.create') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-plus me-1"></i>New Company</a>
+                    <a href="{{ route('superadmin.reports.index') }}" class="btn btn-outline-info btn-sm"><i class="fas fa-chart-bar me-1"></i>Reports</a>
                 </div>
             </div>
         </div>
 
         <!-- System Info -->
         <div class="card">
-            <div class="card-header"><i class="fas fa-server me-2"></i>System Information</div>
-            <div class="card-body">
-                <table class="table table-sm table-borderless mb-0">
-                    <tr>
-                        <td class="text-muted">PHP Version</td>
-                        <td>{{ PHP_VERSION }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Laravel Version</td>
-                        <td>{{ app()->version() }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Environment</td>
-                        <td><span class="badge bg-{{ app()->environment('production') ? 'danger' : 'warning' }}">{{ app()->environment() }}</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Debug Mode</td>
-                        <td><span class="badge bg-{{ config('app.debug') ? 'danger' : 'success' }}">{{ config('app.debug') ? 'ON' : 'OFF' }}</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Cache Driver</td>
-                        <td>{{ config('cache.default') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Queue Driver</td>
-                        <td>{{ config('queue.default') }}</td>
-                    </tr>
+            <div class="card-header py-2" style="font-size: 0.85rem;"><i class="fas fa-server me-2"></i>System</div>
+            <div class="card-body py-2">
+                <table class="table table-sm table-borderless mb-0" style="font-size: 0.8rem;">
+                    <tr><td class="text-muted py-1">PHP</td><td class="py-1">{{ PHP_VERSION }}</td></tr>
+                    <tr><td class="text-muted py-1">Laravel</td><td class="py-1">{{ app()->version() }}</td></tr>
+                    <tr><td class="text-muted py-1">Env</td><td class="py-1"><span class="badge bg-{{ app()->environment('production') ? 'success' : 'warning' }}" style="font-size: 0.65rem;">{{ app()->environment() }}</span></td></tr>
+                    <tr><td class="text-muted py-1">Debug</td><td class="py-1"><span class="badge bg-{{ config('app.debug') ? 'danger' : 'success' }}" style="font-size: 0.65rem;">{{ config('app.debug') ? 'ON' : 'OFF' }}</span></td></tr>
+                    <tr><td class="text-muted py-1">Cache</td><td class="py-1">{{ config('cache.default') }}</td></tr>
+                    <tr><td class="text-muted py-1">Queue</td><td class="py-1">{{ config('queue.default') }}</td></tr>
                 </table>
             </div>
         </div>
