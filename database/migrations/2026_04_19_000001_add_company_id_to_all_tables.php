@@ -8,94 +8,32 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // UAE Visa Applications
-        if (Schema::hasTable('uaev_application') && !Schema::hasColumn('uaev_application', 'company_id')) {
-            Schema::table('uaev_application', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
+        $tables = [
+            'uaev_application' => 'id',
+            'uae_visa_master' => 'vID',
+            'tbl_uaeactivities' => 'activityID',
+            'activity_bookings' => 'id',
+            'activitybookings' => 'id',
+            'tbl_travel_packages' => 'id',
+            'tbl_umrah_packages' => 'id',
+            'nomod_transactions' => 'id',
+            'banners' => 'id',
+            'tbl_homepageads' => 'id',
+            'payment_responses' => 'id',
+        ];
 
-        // UAE Visa Master (pricing per company)
-        if (Schema::hasTable('uae_visa_master') && !Schema::hasColumn('uae_visa_master', 'company_id')) {
-            Schema::table('uae_visa_master', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('vID');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
-
-        // UAE Activities
-        if (Schema::hasTable('tbl_uaeactivities') && !Schema::hasColumn('tbl_uaeactivities', 'company_id')) {
-            Schema::table('tbl_uaeactivities', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('activityID');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
-
-        // Activity Bookings
-        if (Schema::hasTable('activity_bookings') && !Schema::hasColumn('activity_bookings', 'company_id')) {
-            Schema::table('activity_bookings', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
-
-        // Travel Packages
-        if (Schema::hasTable('tbl_travel_packages') && !Schema::hasColumn('tbl_travel_packages', 'company_id')) {
-            Schema::table('tbl_travel_packages', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
-
-        // Umrah Packages
-        if (Schema::hasTable('tbl_umrah_packages') && !Schema::hasColumn('tbl_umrah_packages', 'company_id')) {
-            Schema::table('tbl_umrah_packages', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
-
-        // Nomod Transactions (Flights/Hotels)
-        if (Schema::hasTable('nomod_transactions') && !Schema::hasColumn('nomod_transactions', 'company_id')) {
-            Schema::table('nomod_transactions', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
-
-        // Banners
-        if (Schema::hasTable('banners') && !Schema::hasColumn('banners', 'company_id')) {
-            Schema::table('banners', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
-
-        // Homepage Ads
-        if (Schema::hasTable('tbl_homepageads') && !Schema::hasColumn('tbl_homepageads', 'company_id')) {
-            Schema::table('tbl_homepageads', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
-        }
-
-        // Payment Responses
-        if (Schema::hasTable('payment_responses') && !Schema::hasColumn('payment_responses', 'company_id')) {
-            Schema::table('payment_responses', function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->index('company_id');
-            });
+        foreach ($tables as $tableName => $afterColumn) {
+            try {
+                if (Schema::hasTable($tableName) && !Schema::hasColumn($tableName, 'company_id')) {
+                    Schema::table($tableName, function (Blueprint $table) use ($afterColumn) {
+                        $table->unsignedBigInteger('company_id')->nullable()->after($afterColumn);
+                        $table->index('company_id');
+                    });
+                }
+            } catch (\Exception $e) {
+                // Table doesn't exist or column already exists, skip
+                continue;
+            }
         }
     }
 
