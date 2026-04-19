@@ -12,17 +12,17 @@
 
     <style>
         :root {
-            --gold: #F6C343;
+            --gold: #FFD700;
             --gold-dark: #D4A72C;
             --gold-light: #FFF3CD;
-            --dark-1: #0B0F19;
-            --dark-2: #121828;
-            --dark-3: #1C2536;
-            --dark-4: #252F43;
-            --border: #2D3A52;
+            --dark-1: #0a0a0a;
+            --dark-2: #111111;
+            --dark-3: #1a1a1a;
+            --dark-4: #222222;
+            --border: rgba(255,255,255,0.1);
             --text-white: #FFFFFF;
             --text-light: #E5E7EB;
-            --text-muted: #8B95A9;
+            --text-muted: #888888;
             --success: #22C55E;
             --warning: #F59E0B;
             --danger: #EF4444;
