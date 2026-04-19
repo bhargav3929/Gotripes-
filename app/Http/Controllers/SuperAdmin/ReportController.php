@@ -27,18 +27,18 @@ class ReportController extends Controller
         }
 
         $stats = [
-            'total_revenue' => (clone $ordersQuery)->where('status', 'completed')->sum('total_amount'),
+            'total_revenue' => (clone $ordersQuery)->where('payment_status', 'paid')->sum('selling_price'),
             'total_orders' => (clone $ordersQuery)->count(),
             'new_users' => $usersQuery->count(),
             'new_companies' => $companiesQuery->count(),
         ];
 
         $revenueByCompany = Company::select('companies.*')
-            ->selectRaw('COALESCE(SUM(esim_orders.total_amount), 0) as revenue')
+            ->selectRaw('COALESCE(SUM(esim_orders.selling_price), 0) as revenue')
             ->selectRaw('COUNT(esim_orders.id) as orders_count')
             ->leftJoin('esim_orders', function ($join) use ($from, $to) {
                 $join->on('companies.id', '=', 'esim_orders.company_id')
-                     ->where('esim_orders.status', '=', 'completed')
+                     ->where('esim_orders.payment_status', '=', 'paid')
                      ->whereBetween('esim_orders.created_at', [$from, $to]);
             })
             ->groupBy('companies.id')
@@ -47,14 +47,14 @@ class ReportController extends Controller
             ->get();
 
         $ordersByStatus = EsimOrder::whereBetween('created_at', [$from, $to])
-            ->select('status', DB::raw('COUNT(*) as count'))
-            ->groupBy('status')
-            ->pluck('count', 'status')
+            ->select('payment_status', DB::raw('COUNT(*) as count'))
+            ->groupBy('payment_status')
+            ->pluck('count', 'payment_status')
             ->toArray();
 
         $monthlyTrend = EsimOrder::select(
                 DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
-                DB::raw('SUM(CASE WHEN status = "completed" THEN total_amount ELSE 0 END) as revenue'),
+                DB::raw('SUM(CASE WHEN payment_status = "paid" THEN selling_price ELSE 0 END) as revenue'),
                 DB::raw('COUNT(*) as orders')
             )
             ->whereBetween('created_at', [now()->subYear(), now()])
@@ -97,8 +97,8 @@ class ReportController extends Controller
                     $order->company->name ?? '-',
                     $order->user->name ?? $order->customer_name ?? '-',
                     $order->user->email ?? $order->customer_email ?? '-',
-                    $order->total_amount,
-                    $order->status,
+                    $order->selling_price,
+                    $order->payment_status,
                     $order->created_at->format('Y-m-d H:i'),
                 ]);
             }
