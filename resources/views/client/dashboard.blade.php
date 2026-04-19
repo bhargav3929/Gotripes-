@@ -13,11 +13,11 @@
     <div class="col-6 col-lg-3">
         <div class="stat-card">
             <div class="stat-icon">
-                <i class="fas fa-shopping-cart"></i>
+                <i class="fas fa-sim-card"></i>
             </div>
-            <div class="stat-value">{{ number_format($stats['total_orders']) }}</div>
-            <div class="stat-label">Total Orders</div>
-            <small class="text-success">+{{ $stats['today_orders'] }} today</small>
+            <div class="stat-value">{{ number_format($stats['esim_orders'] ?? 0) }}</div>
+            <div class="stat-label">eSIM Orders</div>
+            <small class="text-success">+{{ $stats['today_orders'] ?? 0 }} today</small>
         </div>
     </div>
 
@@ -26,19 +26,19 @@
             <div class="stat-icon">
                 <i class="fas fa-dollar-sign"></i>
             </div>
-            <div class="stat-value">{{ number_format($stats['total_revenue'], 0) }}</div>
-            <div class="stat-label">Total Revenue ({{ $company->currency }})</div>
-            <small class="text-success">+{{ number_format($stats['today_revenue'], 0) }} today</small>
+            <div class="stat-value">{{ number_format($stats['esim_revenue'] ?? 0, 0) }}</div>
+            <div class="stat-label">eSIM Revenue ({{ $company->currency ?? 'AED' }})</div>
+            <small class="text-success">+{{ number_format($stats['today_revenue'] ?? 0, 0) }} today</small>
         </div>
     </div>
 
     <div class="col-6 col-lg-3">
         <div class="stat-card">
             <div class="stat-icon">
-                <i class="fas fa-users"></i>
+                <i class="fas fa-passport"></i>
             </div>
-            <div class="stat-value">{{ number_format($stats['total_customers']) }}</div>
-            <div class="stat-label">Customers</div>
+            <div class="stat-value">{{ number_format($stats['visa_applications'] ?? 0) }}</div>
+            <div class="stat-label">Visa Applications</div>
         </div>
     </div>
 
@@ -47,9 +47,9 @@
             <div class="stat-icon">
                 <i class="fas fa-user-friends"></i>
             </div>
-            <div class="stat-value">{{ number_format($stats['total_agents']) }}</div>
+            <div class="stat-value">{{ number_format($stats['total_agents'] ?? 0) }}</div>
             <div class="stat-label">Referral Agents</div>
-            <small class="text-warning">{{ $company->currency }} {{ number_format($stats['pending_commissions'], 0) }} pending</small>
+            <small class="text-warning">{{ $company->currency ?? 'AED' }} {{ number_format($stats['pending_commissions'] ?? 0, 0) }} pending</small>
         </div>
     </div>
 </div>
