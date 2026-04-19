@@ -104,7 +104,21 @@
         </table>
     </div>
     @if($orders->hasPages())
-    <div class="card-footer">{{ $orders->withQueryString()->links() }}</div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <span class="text-muted">Showing {{ $orders->firstItem() }}-{{ $orders->lastItem() }} of {{ $orders->total() }}</span>
+        <div class="d-flex gap-2">
+            @if($orders->onFirstPage())
+                <span class="btn btn-sm btn-outline-secondary disabled">Previous</span>
+            @else
+                <a href="{{ $orders->previousPageUrl() }}" class="btn btn-sm btn-outline-primary">Previous</a>
+            @endif
+            @if($orders->hasMorePages())
+                <a href="{{ $orders->nextPageUrl() }}" class="btn btn-sm btn-primary">Next</a>
+            @else
+                <span class="btn btn-sm btn-outline-secondary disabled">Next</span>
+            @endif
+        </div>
+    </div>
     @endif
 </div>
 @endsection
