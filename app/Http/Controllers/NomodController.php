@@ -14,6 +14,7 @@ use App\Mail\CustomerPaymentConfirmationMail;
 use App\Mail\AdminPaymentNotificationMail;
 use App\Services\NomodService;
 use App\Services\MontyEsimService;
+use App\Services\ReferralService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -353,6 +354,11 @@ class NomodController extends Controller
 
     private function updateBookingStatus($orderId, $paymentStatus, $bookingType)
     {
+        // Process referral tracking for successful payments
+        if ($paymentStatus === 'Success') {
+            $this->processReferralTracking($orderId, $bookingType);
+        }
+
         if ($bookingType === 'umrah' && stripos($orderId, 'ORDUM') !== false) {
             // Umrah payments are tracked in nomod_transactions only; status already updated in handleCallback
             return;
@@ -517,5 +523,81 @@ class NomodController extends Controller
             return 2;
         }
         return 1;
+    }
+
+    /**
+     * Process referral tracking for successful payments
+     */
+    private function processReferralTracking($orderId, $bookingType)
+    {
+        try {
+            $transaction = NomodTransaction::where('order_id', $orderId)->first();
+
+            if (!$transaction) {
+                return;
+            }
+
+            // Get order details based on booking type
+            $orderDetails = $this->getOrderDetailsForReferral($orderId, $bookingType);
+
+            if (!$orderDetails) {
+                return;
+            }
+
+            // Determine order type string
+            $orderTypeMap = [
+                1 => 'visa',
+                2 => 'activity',
+                3 => 'agent_booking',
+                4 => 'esim',
+                'umrah' => 'umrah',
+            ];
+            $orderType = $orderTypeMap[$bookingType] ?? 'other';
+
+            // Process referral
+            $referralService = new ReferralService();
+            $referralService->processOrderReferral(
+                $orderId,
+                $orderType,
+                (float) $transaction->amount,
+                $orderDetails['email'],
+                $orderDetails['name'],
+                [
+                    'transaction_id' => $transaction->checkout_id,
+                    'booking_type' => $bookingType,
+                    'currency' => $transaction->currency ?? 'AED',
+                ],
+                request()
+            );
+
+            Log::info('Referral tracking processed for order', [
+                'order_id' => $orderId,
+                'order_type' => $orderType,
+                'amount' => $transaction->amount,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Referral tracking failed', [
+                'order_id' => $orderId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Get order details for referral processing
+     */
+    private function getOrderDetailsForReferral($orderId, $bookingType)
+    {
+        $customerData = $this->getCustomerData($orderId, $bookingType);
+
+        if ($customerData) {
+            return [
+                'name' => $customerData['name'] ?? null,
+                'email' => $customerData['email'] ?? null,
+            ];
+        }
+
+        return null;
     }
 }

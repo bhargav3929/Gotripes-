@@ -14,7 +14,8 @@ class SuperAdminMiddleware
             return redirect()->route('login');
         }
 
-        if (!auth()->user()->is_super_admin) {
+        $user = auth()->user();
+        if (!$user->is_super_admin && $user->role !== 'super_admin') {
             abort(403, 'Access denied. Super Admin privileges required.');
         }
 
