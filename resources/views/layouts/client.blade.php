@@ -218,7 +218,7 @@
         }
 
         .table tbody tr {
-            background: var(--dark-2);
+            background: var(--dark-2) !important;
         }
 
         .table tbody td {
@@ -226,10 +226,19 @@
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
             font-size: 0.85rem;
+            background: var(--dark-2) !important;
         }
 
         .table tbody tr:hover {
-            background: var(--dark-3);
+            background: var(--dark-3) !important;
+        }
+
+        .table tbody tr:hover td {
+            background: var(--dark-3) !important;
+        }
+
+        .table-responsive {
+            background: var(--dark-2);
         }
 
         /* Buttons */
