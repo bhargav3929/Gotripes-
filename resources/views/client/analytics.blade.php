@@ -31,26 +31,26 @@
 <div class="row g-4 mb-4">
     <div class="col-md-3">
         <div class="stat-card text-center">
-            <div class="stat-value text-success">{{ app('current_company')->currency ?? 'AED' }} {{ number_format($stats['revenue'], 0) }}</div>
-            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value text-success">{{ app('current_company')->currency ?? 'AED' }} {{ number_format($stats['esim_revenue'] ?? 0, 0) }}</div>
+            <div class="stat-label">eSIM Revenue</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card text-center">
-            <div class="stat-value">{{ number_format($stats['orders']) }}</div>
-            <div class="stat-label">Total Orders</div>
+            <div class="stat-value">{{ number_format($stats['esim_orders'] ?? 0) }}</div>
+            <div class="stat-label">eSIM Orders</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card text-center">
-            <div class="stat-value">{{ app('current_company')->currency ?? 'AED' }} {{ number_format($stats['avg_order_value'], 2) }}</div>
-            <div class="stat-label">Avg Order Value</div>
+            <div class="stat-value">{{ number_format($stats['visa_applications'] ?? 0) }}</div>
+            <div class="stat-label">Visa Applications</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card text-center">
-            <div class="stat-value">{{ number_format($stats['conversion_rate'], 1) }}%</div>
-            <div class="stat-label">Conversion Rate</div>
+            <div class="stat-value text-success">{{ app('current_company')->currency ?? 'AED' }} {{ number_format($stats['flight_hotel_revenue'] ?? 0, 0) }}</div>
+            <div class="stat-label">Flights & Hotels</div>
         </div>
     </div>
 </div>
@@ -95,7 +95,7 @@
             <div class="card-header"><i class="fas fa-globe me-2"></i>Top Countries</div>
             <div class="card-body p-0">
                 @forelse($topCountries as $country)
-                <div class="d-flex align-items-center p-3 border-bottom" style="border-color: var(--client-border) !important;">
+                <div class="d-flex align-items-center p-3 border-bottom" style="border-color: var(--border) !important;">
                     <div class="flex-grow-1">
                         <div class="fw-500">{{ $country->country_name }}</div>
                         <small class="text-muted">{{ $country->count }} orders</small>
