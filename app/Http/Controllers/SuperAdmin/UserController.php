@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with('company')->withCount('esimOrders');
+        $query = User::with('company');
 
         if ($request->search) {
             $query->where(function ($q) use ($request) {
@@ -37,11 +37,11 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('company', 'esimOrders');
+        $user->load('company');
 
         $stats = [
-            'total_orders' => $user->esimOrders()->count(),
-            'total_spent' => $user->esimOrders()->where('status', 'completed')->sum('total_amount'),
+            'total_orders' => 0,
+            'total_spent' => 0,
         ];
 
         return view('superadmin.users.show', compact('user', 'stats'));
