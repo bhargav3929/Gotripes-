@@ -385,6 +385,16 @@
             border-color: var(--gold);
             color: #000;
         }
+        .page-link svg {
+            width: 16px !important;
+            height: 16px !important;
+            display: inline-block;
+        }
+        .page-item.disabled .page-link {
+            background: var(--dark-2);
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
 
         /* Text utilities */
         .text-gold { color: var(--gold) !important; }
