@@ -15,9 +15,18 @@ Route::middleware(['web', 'auth', 'company.admin'])->prefix('client')->name('cli
     // Dashboard
     Route::get('/', [ClientDashboardController::class, 'index'])->name('dashboard');
 
-    // Orders
+    // eSIM Orders
     Route::get('/orders', [ClientDashboardController::class, 'orders'])->name('orders');
     Route::get('/orders/{order}', [ClientDashboardController::class, 'showOrder'])->name('orders.show');
+
+    // Visa Applications
+    Route::get('/visa', [ClientDashboardController::class, 'visaApplications'])->name('visa');
+
+    // Activity Bookings
+    Route::get('/activities', [ClientDashboardController::class, 'activityBookings'])->name('activities');
+
+    // Flight & Hotel Bookings
+    Route::get('/flights-hotels', [ClientDashboardController::class, 'flightHotelBookings'])->name('flights-hotels');
 
     // Branding
     Route::get('/branding', [ClientDashboardController::class, 'branding'])->name('branding');

@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class ActivityBooking extends Model
 {
+    use BelongsToCompany;
+
     protected $table = "activitybookings";
 
-    // Include ALL the columns that exist in your database
     protected $fillable = [
+        'company_id',
         'isActive',
         'createdBy',
         'createDate',

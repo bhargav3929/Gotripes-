@@ -278,10 +278,23 @@
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Business</div>
+                <div class="nav-section-title">Bookings</div>
                 <a href="{{ route('client.orders') }}" class="nav-link {{ request()->routeIs('client.orders*') ? 'active' : '' }}">
-                    <i class="fas fa-shopping-cart"></i> Orders
+                    <i class="fas fa-sim-card"></i> eSIM Orders
                 </a>
+                <a href="{{ route('client.visa') }}" class="nav-link {{ request()->routeIs('client.visa') ? 'active' : '' }}">
+                    <i class="fas fa-passport"></i> Visa Applications
+                </a>
+                <a href="{{ route('client.activities') }}" class="nav-link {{ request()->routeIs('client.activities') ? 'active' : '' }}">
+                    <i class="fas fa-ticket-alt"></i> Activities
+                </a>
+                <a href="{{ route('client.flights-hotels') }}" class="nav-link {{ request()->routeIs('client.flights-hotels') ? 'active' : '' }}">
+                    <i class="fas fa-plane"></i> Flights & Hotels
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Referrals</div>
                 <a href="{{ route('admin.referrals.dashboard') }}" class="nav-link {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i> Referral Agents
                 </a>

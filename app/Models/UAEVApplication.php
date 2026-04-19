@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
 class UAEVApplication extends Model
 {
-   protected $table = 'uaev_application';
+    use BelongsToCompany;
 
-protected $fillable = [
+    protected $table = 'uaev_application';
+
+    protected $fillable = [
+        'company_id',
     'UAEV_nationality',
     'UAEV_residence',
     'UAEV_first_name',

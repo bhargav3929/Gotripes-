@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class NomodTransaction extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'nomod_transactions';
 
     protected $fillable = [
+        'company_id',
         'checkout_id',
         'order_id',
         'status',

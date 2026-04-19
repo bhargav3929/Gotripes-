@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class TravelPackage extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'tbl_travel_packages';
     public $timestamps = false;
 
     protected $fillable = [
+        'company_id',
         'title',
         'image',
         'price',

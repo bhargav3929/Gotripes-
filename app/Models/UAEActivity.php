@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class UAEActivity extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'tbl_UAEActivities';
     protected $primaryKey = 'activityID';
     public $incrementing = true;
@@ -17,6 +20,7 @@ class UAEActivity extends Model
     }
 
     protected $fillable = [
+        'company_id',
         'isActive',
         'createdBy',
         'createdDate',

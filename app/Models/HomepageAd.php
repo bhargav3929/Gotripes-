@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class HomepageAd extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'tbl_homepageads';
-    
-    // Disable Laravel's default timestamps
+
     public $timestamps = false;
 
     protected $fillable = [
+        'company_id',
         'imgPath',
         'mediaType',
         'slotOrder',
