@@ -202,13 +202,13 @@
 
         /* Table */
         .table {
-            color: var(--text);
+            color: #ffffff !important;
             margin: 0;
         }
 
         .table thead th {
-            background: var(--dark-3);
-            color: var(--text-muted);
+            background: var(--dark-3) !important;
+            color: #aaaaaa !important;
             font-size: 0.7rem;
             text-transform: uppercase;
             font-weight: 600;
@@ -219,6 +219,7 @@
 
         .table tbody tr {
             background: var(--dark-2) !important;
+            color: #ffffff !important;
         }
 
         .table tbody td {
@@ -227,6 +228,17 @@
             vertical-align: middle;
             font-size: 0.85rem;
             background: var(--dark-2) !important;
+            color: #ffffff !important;
+        }
+
+        .table tbody td div,
+        .table tbody td span:not(.badge) {
+            color: #ffffff !important;
+        }
+
+        .table tbody td small,
+        .table tbody td .text-muted {
+            color: #888888 !important;
         }
 
         .table tbody tr:hover {
@@ -239,6 +251,11 @@
 
         .table-responsive {
             background: var(--dark-2);
+        }
+
+        /* Ensure all text is visible */
+        .card, .card-body, .card-header, .card-footer {
+            color: #ffffff;
         }
 
         /* Buttons */
