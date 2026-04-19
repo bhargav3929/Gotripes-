@@ -10,9 +10,49 @@
     </a>
 </div>
 
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="stat-value">{{ $companies->total() }}</div>
+            <div class="stat-label">Total Companies</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: var(--success);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-value">{{ $companies->where('is_active', true)->count() }}</div>
+            <div class="stat-label">Active Companies</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--info);">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-value">{{ $companies->sum('total_orders') }}</div>
+            <div class="stat-label">Total Orders</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(246, 195, 67, 0.1); color: var(--gold);">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-value">AED {{ number_format($companies->sum('total_revenue'), 0) }}</div>
+            <div class="stat-label">Total Revenue</div>
+        </div>
+    </div>
+</div>
+
 <!-- Filters -->
 <div class="card mb-4">
-    <div class="card-body py-3">
+    <div class="card-body">
         <form method="GET" action="{{ route('superadmin.companies.index') }}" class="row g-3 align-items-end">
             <div class="col-md-5">
                 <label class="form-label">Search</label>
@@ -38,10 +78,10 @@
             </div>
             <div class="col-md-3 d-flex gap-2">
                 <button type="submit" class="btn btn-primary flex-grow-1">
-                    <i class="fas fa-search me-2"></i>Filter
+                    <i class="fas fa-search me-2"></i>Search
                 </button>
                 <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-times"></i>
+                    <i class="fas fa-redo"></i>
                 </a>
             </div>
         </form>
@@ -50,6 +90,11 @@
 
 <!-- Companies Table -->
 <div class="card">
+    <div class="card-header">
+        <i class="fas fa-list"></i>
+        All Companies
+        <span class="badge bg-primary ms-2">{{ $companies->total() }}</span>
+    </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -77,14 +122,14 @@
                             </div>
                             @endif
                             <div>
-                                <div class="fw-600">{{ $company->name }}</div>
+                                <div class="fw-700 text-white">{{ $company->name }}</div>
                                 <small class="text-muted">{{ $company->slug }}</small>
                             </div>
                         </div>
                     </td>
                     <td>
                         @if($company->domain)
-                        <a href="https://{{ $company->domain }}" target="_blank" class="text-info text-decoration-none">
+                        <a href="https://{{ $company->domain }}" target="_blank">
                             <i class="fas fa-external-link-alt me-1" style="font-size: 0.7rem;"></i>{{ $company->domain }}
                         </a>
                         @else
@@ -93,37 +138,45 @@
                     </td>
                     <td>
                         @if($company->owner)
-                        <div class="fw-500">{{ $company->owner->name }}</div>
+                        <div class="fw-600">{{ $company->owner->name }}</div>
                         <small class="text-muted">{{ $company->owner->email }}</small>
                         @else
                         <span class="text-muted"><i class="fas fa-user-slash me-1"></i>No owner</span>
                         @endif
                     </td>
                     <td>
-                        <span class="badge bg-{{ $company->plan === 'enterprise' ? 'primary' : ($company->plan === 'pro' ? 'info' : ($company->plan === 'basic' ? 'success' : 'warning')) }}">
+                        @php
+                            $planColors = [
+                                'enterprise' => 'primary',
+                                'pro' => 'info',
+                                'basic' => 'success',
+                                'trial' => 'warning'
+                            ];
+                        @endphp
+                        <span class="badge bg-{{ $planColors[$company->plan] ?? 'secondary' }}">
                             {{ ucfirst($company->plan) }}
                         </span>
                         @if($company->isOnTrial())
-                        <div class="mt-1"><small class="text-warning"><i class="fas fa-clock me-1"></i>Ends {{ $company->trial_ends_at->diffForHumans() }}</small></div>
+                        <div class="mt-2"><small class="text-warning"><i class="fas fa-clock me-1"></i>{{ $company->trial_ends_at->diffForHumans() }}</small></div>
                         @elseif($company->subscription_ends_at)
-                        <div class="mt-1"><small class="text-muted">Ends {{ $company->subscription_ends_at->format('M d, Y') }}</small></div>
+                        <div class="mt-2"><small class="text-muted">Ends {{ $company->subscription_ends_at->format('M d, Y') }}</small></div>
                         @endif
                     </td>
                     <td class="text-center">
-                        <span class="fw-600">{{ number_format($company->total_orders) }}</span>
+                        <span class="fw-700 text-white">{{ number_format($company->total_orders) }}</span>
                     </td>
                     <td class="text-end">
-                        <span class="text-success fw-600">AED {{ number_format($company->total_revenue, 2) }}</span>
+                        <span class="text-gold fw-700">AED {{ number_format($company->total_revenue, 2) }}</span>
                     </td>
                     <td class="text-center">
                         @if($company->is_active)
-                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Active</span>
+                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>Active</span>
                         @else
-                        <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Inactive</span>
+                        <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Inactive</span>
                         @endif
                     </td>
                     <td class="text-center">
-                        <div class="d-flex gap-1 justify-content-center">
+                        <div class="btn-group">
                             <a href="{{ route('superadmin.companies.show', $company) }}" class="btn btn-xs btn-outline-info" title="View Details">
                                 <i class="fas fa-eye"></i>
                             </a>
@@ -132,7 +185,7 @@
                             </a>
                             <form action="{{ route('superadmin.companies.impersonate', $company) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-xs btn-outline-primary" title="Login as Company Admin">
+                                <button type="submit" class="btn btn-xs btn-outline-primary" title="Login as Admin">
                                     <i class="fas fa-user-secret"></i>
                                 </button>
                             </form>
@@ -147,13 +200,13 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center py-5">
-                        <div class="py-4">
-                            <i class="fas fa-building fa-4x mb-4 text-muted" style="opacity: 0.3;"></i>
-                            <h5 class="text-muted mb-3">No Companies Found</h5>
-                            <p class="text-muted mb-4">Get started by creating your first company</p>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="fas fa-building"></i>
+                            <h5>No Companies Found</h5>
+                            <p>Get started by creating your first company</p>
                             <a href="{{ route('superadmin.companies.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Create First Company
+                                <i class="fas fa-plus me-2"></i>Create Company
                             </a>
                         </div>
                     </td>

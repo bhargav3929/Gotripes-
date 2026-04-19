@@ -4,9 +4,9 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title"><i class="fas fa-plus-circle"></i>Create Company</h1>
+    <h1 class="page-title"><i class="fas fa-plus-circle"></i>Create New Company</h1>
     <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back
+        <i class="fas fa-arrow-left me-2"></i>Back to List
     </a>
 </div>
 
@@ -17,9 +17,12 @@
         <div class="col-lg-8">
             <!-- Company Details -->
             <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-building"></i>Company Details</div>
+                <div class="card-header">
+                    <i class="fas fa-building"></i>
+                    Company Information
+                </div>
                 <div class="card-body">
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label">Company Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
@@ -65,9 +68,13 @@
 
             <!-- Admin User -->
             <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-user-shield"></i>Admin User (Company Owner)</div>
+                <div class="card-header">
+                    <i class="fas fa-user-shield"></i>
+                    Admin Account
+                </div>
                 <div class="card-body">
-                    <div class="row g-3">
+                    <p class="text-muted mb-4">This user will be the company owner with full access to the client panel.</p>
+                    <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label">Admin Name <span class="text-danger">*</span></label>
                             <input type="text" name="admin_name" class="form-control @error('admin_name') is-invalid @enderror"
@@ -91,32 +98,29 @@
             </div>
 
             <!-- Branding -->
-            <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-palette"></i>Branding</div>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-palette"></i>
+                    White-Label Branding
+                </div>
                 <div class="card-body">
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label">Company Logo</label>
                             <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror"
                                    accept="image/*">
-                            <small class="text-muted">Recommended: 200x200px, PNG or JPG</small>
+                            <small class="text-muted d-block mt-2">Recommended: 200x200px, PNG or JPG format</small>
                             @error('logo')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Primary Color</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" name="primary_color" class="form-control form-control-color"
-                                       value="{{ old('primary_color', '#8b5cf6') }}" style="width: 50px; height: 44px;">
-                                <input type="text" class="form-control" value="{{ old('primary_color', '#8b5cf6') }}" readonly style="flex: 1;">
-                            </div>
+                            <input type="color" name="primary_color" class="form-control form-control-color w-100"
+                                   value="{{ old('primary_color', '#F6C343') }}" style="height: 50px;">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Secondary Color</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" name="secondary_color" class="form-control form-control-color"
-                                       value="{{ old('secondary_color', '#06b6d4') }}" style="width: 50px; height: 44px;">
-                                <input type="text" class="form-control" value="{{ old('secondary_color', '#06b6d4') }}" readonly style="flex: 1;">
-                            </div>
+                            <input type="color" name="secondary_color" class="form-control form-control-color w-100"
+                                   value="{{ old('secondary_color', '#3B82F6') }}" style="height: 50px;">
                         </div>
                     </div>
                 </div>
@@ -126,14 +130,17 @@
         <div class="col-lg-4">
             <!-- Subscription -->
             <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-credit-card"></i>Subscription</div>
+                <div class="card-header">
+                    <i class="fas fa-crown"></i>
+                    Subscription Plan
+                </div>
                 <div class="card-body">
                     <div class="mb-4">
-                        <label class="form-label">Plan <span class="text-danger">*</span></label>
+                        <label class="form-label">Select Plan <span class="text-danger">*</span></label>
                         <select name="plan" class="form-select @error('plan') is-invalid @enderror" required>
-                            <option value="trial" {{ old('plan') === 'trial' ? 'selected' : '' }}>Trial (14 days)</option>
+                            <option value="trial" {{ old('plan') === 'trial' ? 'selected' : '' }}>Trial (14 days free)</option>
                             <option value="basic" {{ old('plan') === 'basic' ? 'selected' : '' }}>Basic</option>
-                            <option value="pro" {{ old('plan') === 'pro' ? 'selected' : '' }}>Pro</option>
+                            <option value="pro" {{ old('plan') === 'pro' ? 'selected' : '' }}>Professional</option>
                             <option value="enterprise" {{ old('plan') === 'enterprise' ? 'selected' : '' }}>Enterprise</option>
                         </select>
                         @error('plan')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -146,31 +153,37 @@
                                    value="{{ old('markup_percentage', 20) }}" min="0" max="100" step="0.01">
                             <span class="input-group-text">%</span>
                         </div>
-                        <small class="text-muted">Markup applied to eSIM cost prices</small>
+                        <small class="text-muted d-block mt-2">Markup on eSIM cost prices for this company</small>
                     </div>
                 </div>
             </div>
 
             <!-- Settings -->
             <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-cog"></i>Settings</div>
+                <div class="card-header">
+                    <i class="fas fa-cog"></i>
+                    Regional Settings
+                </div>
                 <div class="card-body">
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label class="form-label">Currency</label>
                         <select name="currency" class="form-select">
                             <option value="AED" {{ old('currency', 'AED') === 'AED' ? 'selected' : '' }}>AED - UAE Dirham</option>
                             <option value="USD" {{ old('currency') === 'USD' ? 'selected' : '' }}>USD - US Dollar</option>
                             <option value="EUR" {{ old('currency') === 'EUR' ? 'selected' : '' }}>EUR - Euro</option>
                             <option value="GBP" {{ old('currency') === 'GBP' ? 'selected' : '' }}>GBP - British Pound</option>
+                            <option value="SAR" {{ old('currency') === 'SAR' ? 'selected' : '' }}>SAR - Saudi Riyal</option>
+                            <option value="INR" {{ old('currency') === 'INR' ? 'selected' : '' }}>INR - Indian Rupee</option>
                         </select>
                     </div>
                     <div>
                         <label class="form-label">Timezone</label>
                         <select name="timezone" class="form-select">
-                            <option value="Asia/Dubai" {{ old('timezone', 'Asia/Dubai') === 'Asia/Dubai' ? 'selected' : '' }}>Asia/Dubai (GMT+4)</option>
+                            <option value="Asia/Dubai" {{ old('timezone', 'Asia/Dubai') === 'Asia/Dubai' ? 'selected' : '' }}>Dubai (GMT+4)</option>
                             <option value="UTC" {{ old('timezone') === 'UTC' ? 'selected' : '' }}>UTC (GMT+0)</option>
-                            <option value="America/New_York" {{ old('timezone') === 'America/New_York' ? 'selected' : '' }}>America/New_York (EST)</option>
-                            <option value="Europe/London" {{ old('timezone') === 'Europe/London' ? 'selected' : '' }}>Europe/London (GMT)</option>
+                            <option value="America/New_York" {{ old('timezone') === 'America/New_York' ? 'selected' : '' }}>New York (EST)</option>
+                            <option value="Europe/London" {{ old('timezone') === 'Europe/London' ? 'selected' : '' }}>London (GMT)</option>
+                            <option value="Asia/Kolkata" {{ old('timezone') === 'Asia/Kolkata' ? 'selected' : '' }}>India (IST)</option>
                         </select>
                     </div>
                 </div>
@@ -179,11 +192,11 @@
             <!-- Actions -->
             <div class="card">
                 <div class="card-body">
-                    <button type="submit" class="btn btn-primary w-100 mb-3">
+                    <button type="submit" class="btn btn-primary w-100 mb-3" style="padding: 16px;">
                         <i class="fas fa-plus me-2"></i>Create Company
                     </button>
                     <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary w-100">
-                        Cancel
+                        <i class="fas fa-times me-2"></i>Cancel
                     </a>
                 </div>
             </div>
