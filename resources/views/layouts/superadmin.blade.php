@@ -263,16 +263,22 @@
             letter-spacing: 0.5px;
         }
 
+        .table tbody {
+            background: var(--dark-2);
+        }
+
         .table tbody td {
             padding: 12px 16px;
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
             color: var(--text-light);
             font-size: 0.85rem;
+            background: transparent;
         }
 
         .table tbody tr {
             transition: all 0.2s ease;
+            background: var(--dark-2);
         }
 
         .table tbody tr:hover {
@@ -281,6 +287,10 @@
 
         .table tbody tr:last-child td {
             border-bottom: none;
+        }
+
+        .table-responsive {
+            background: var(--dark-2);
         }
 
         /* Text helpers */
