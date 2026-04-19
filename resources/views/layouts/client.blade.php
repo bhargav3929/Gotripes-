@@ -368,51 +368,54 @@
 
         /* Pagination */
         .pagination { margin: 0; }
-        .page-link {
-            background: var(--dark-3);
-            border-color: var(--border);
-            color: var(--text);
+        .page-link,
+        nav[aria-label="Pagination Navigation"] a,
+        nav[aria-label="Pagination Navigation"] span,
+        nav[aria-label="Pagination Navigation"] button {
+            background: #222 !important;
+            border-color: #333 !important;
+            color: #fff !important;
             font-size: 0.8rem;
             padding: 6px 12px;
         }
-        .page-link:hover {
-            background: var(--dark-4);
-            border-color: var(--gold);
-            color: var(--gold);
+        .page-link:hover,
+        nav[aria-label="Pagination Navigation"] a:hover {
+            background: #333 !important;
+            border-color: var(--gold) !important;
+            color: var(--gold) !important;
         }
         .page-item.active .page-link {
-            background: var(--gold);
-            border-color: var(--gold);
-            color: #000;
+            background: var(--gold) !important;
+            border-color: var(--gold) !important;
+            color: #000 !important;
         }
-        .page-link svg {
+        .page-link svg,
+        nav svg {
             width: 12px !important;
             height: 12px !important;
             max-width: 12px !important;
             max-height: 12px !important;
             display: inline-block !important;
+            fill: currentColor !important;
         }
-        .page-item.disabled .page-link {
-            background: var(--dark-2);
-            border-color: var(--border);
-            color: var(--text-muted);
-        }
-        nav[aria-label="Pagination Navigation"] svg {
-            width: 12px !important;
-            height: 12px !important;
-            max-width: 12px !important;
-            max-height: 12px !important;
+        .page-item.disabled .page-link,
+        nav[aria-label="Pagination Navigation"] span[aria-disabled="true"] {
+            background: #1a1a1a !important;
+            border-color: #333 !important;
+            color: #666 !important;
         }
         .w-5, .h-5 {
             width: 12px !important;
             height: 12px !important;
         }
-        [class*="pagination"] svg,
-        .card-footer svg {
-            width: 12px !important;
-            height: 12px !important;
-            max-width: 12px !important;
-            max-height: 12px !important;
+        nav[aria-label="Pagination Navigation"] {
+            background: transparent !important;
+        }
+        nav[aria-label="Pagination Navigation"] > div {
+            background: transparent !important;
+        }
+        nav[aria-label="Pagination Navigation"] p {
+            color: #888 !important;
         }
 
         /* Text utilities */
