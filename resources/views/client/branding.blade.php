@@ -77,33 +77,31 @@
 
         <div class="col-lg-4">
             <!-- Preview -->
-            <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-eye me-2"></i>Live Preview</div>
-                <div class="card-body text-center">
-                    <div class="p-4 rounded mb-3" style="background: linear-gradient(135deg, {{ $company->primary_color }} 0%, {{ $company->secondary_color }} 100%);">
+            <div class="card mb-3">
+                <div class="card-header py-2"><i class="fas fa-eye me-2"></i>Live Preview</div>
+                <div class="card-body py-3 text-center">
+                    <div class="p-3 rounded mb-2" style="background: linear-gradient(135deg, {{ $company->primary_color }} 0%, {{ $company->secondary_color }} 100%);">
                         @if($company->logo)
-                        <img src="{{ $company->logo_url }}" alt="Logo" style="max-height: 40px;">
+                        <img src="{{ $company->logo_url }}" alt="Logo" style="max-height: 30px;">
                         @else
-                        <span class="text-dark fw-600 fs-5">{{ $company->name }}</span>
+                        <span class="text-dark fw-600">{{ $company->name }}</span>
                         @endif
                     </div>
-                    <button type="button" class="btn w-100 mb-2" style="background: {{ $company->primary_color }}; color: #000;">
-                        Primary Button
-                    </button>
-                    <button type="button" class="btn w-100" style="background: {{ $company->secondary_color }}; color: #000;">
-                        Secondary Button
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm flex-grow-1" style="background: {{ $company->primary_color }}; color: #000; font-size: 0.75rem;">
+                            Primary
+                        </button>
+                        <button type="button" class="btn btn-sm flex-grow-1" style="background: {{ $company->secondary_color }}; color: #000; font-size: 0.75rem;">
+                            Secondary
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Actions -->
-            <div class="card">
-                <div class="card-body">
-                    <button type="submit" class="btn btn-primary w-100 mb-2">
-                        <i class="fas fa-save me-2"></i>Save Branding
-                    </button>
-                </div>
-            </div>
+            <button type="submit" class="btn btn-primary btn-sm w-100 mb-3">
+                <i class="fas fa-save me-1"></i>Save Branding
+            </button>
 
             <!-- Domain Info -->
             <div class="card mt-4">
