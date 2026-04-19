@@ -33,7 +33,7 @@ class ReportController extends Controller
             'new_companies' => $companiesQuery->count(),
         ];
 
-        $revenueByCompany = Company::select('companies.*')
+        $revenueByCompany = Company::select('companies.id', 'companies.name')
             ->selectRaw('COALESCE(SUM(esim_orders.selling_price), 0) as revenue')
             ->selectRaw('COUNT(esim_orders.id) as orders_count')
             ->leftJoin('esim_orders', function ($join) use ($from, $to) {
@@ -41,7 +41,7 @@ class ReportController extends Controller
                      ->where('esim_orders.payment_status', '=', 'paid')
                      ->whereBetween('esim_orders.created_at', [$from, $to]);
             })
-            ->groupBy('companies.id')
+            ->groupBy('companies.id', 'companies.name')
             ->orderByDesc('revenue')
             ->limit(10)
             ->get();
