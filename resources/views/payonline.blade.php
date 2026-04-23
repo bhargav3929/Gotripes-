@@ -575,16 +575,24 @@
                 headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
                 body: fd
             })
-                .then(r => r.json())
+                .then(r => {
+                    if (!r.ok) {
+                        if (r.status === 419) {
+                            throw new Error('Session expired. Please refresh the page and try again.');
+                        }
+                        throw new Error('Server error. Please try again.');
+                    }
+                    return r.json();
+                })
                 .then(d => {
                     if (d.success && d.checkout_url) {
                         window.location.href = d.checkout_url;
                     } else {
-                        throw new Error(d.message || 'Failed');
+                        throw new Error(d.message || 'Payment failed. Please try again.');
                     }
                 })
                 .catch(e => {
-                    alert(e.message || 'Error occurred');
+                    alert(e.message || 'An error occurred. Please refresh and try again.');
                     btn.disabled = false;
                     btn.innerHTML = orig;
                 });
