@@ -36,7 +36,7 @@
        ============================================================ */
     .esim-hero {
         min-height: auto;
-        padding: 50px 32px 40px;
+        padding: 15px 32px 15px;
         display: flex;
         align-items: center;
         background: linear-gradient(180deg, #000000 0%, #080808 100%);
@@ -80,23 +80,24 @@
     }
 
     .esim-hero-inner {
-        max-width: 1200px;
+        max-width: 950px;
         margin: 0 auto;
         display: flex;
         align-items: center;
-        gap: 50px;
+        justify-content: space-between;
+        gap: 30px;
         position: relative;
         z-index: 1;
         width: 100%;
     }
 
     .esim-hero-left {
-        flex: 1.1;
+        flex: 0 1 auto;
         animation: esimFadeInUp 0.8s ease forwards;
     }
 
     .esim-hero-right {
-        flex: 0.9;
+        flex: 0 0 auto;
         display: flex;
         justify-content: center;
         animation: esimFadeInRight 1s ease forwards;
@@ -119,13 +120,13 @@
         background: linear-gradient(135deg, rgba(255, 215, 0, 0.12) 0%, rgba(255, 180, 0, 0.06) 100%);
         border: 1px solid rgba(255, 215, 0, 0.2);
         color: var(--c-gold);
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 600;
         letter-spacing: 2px;
         text-transform: uppercase;
-        padding: 10px 20px;
+        padding: 10px 18px;
         border-radius: 100px;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
     }
@@ -145,12 +146,12 @@
     }
 
     .esim-hero-title {
-        font-size: clamp(32px, 5vw, 50px);
+        font-size: clamp(32px, 4vw, 48px);
         font-weight: 800;
         color: #fff;
-        margin: 0 0 16px;
+        margin: 0 0 12px;
         letter-spacing: -1px;
-        line-height: 1.15;
+        line-height: 1.05;
     }
 
     .esim-hero-title-highlight {
@@ -161,12 +162,12 @@
     }
 
     .esim-hero-subtitle {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 400;
-        color: rgba(255, 255, 255, 0.6);
-        max-width: 500px;
-        margin: 0 0 26px;
-        line-height: 1.65;
+        color: rgba(255, 255, 255, 0.65);
+        max-width: 480px;
+        margin: 0 0 20px;
+        line-height: 1.6;
     }
 
     /* Primary CTA */
@@ -174,17 +175,17 @@
         display: flex;
         align-items: center;
         gap: 14px;
-        margin-bottom: 28px;
+        margin-bottom: 20px;
     }
 
     .esim-btn-primary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: 8px;
         background: var(--c-gold-gradient);
         color: #000;
-        padding: 16px 36px;
+        padding: 14px 28px;
         border-radius: 100px;
         font-size: 13px;
         font-weight: 700;
@@ -226,10 +227,10 @@
     .esim-btn-secondary {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         background: transparent;
         color: rgba(255, 255, 255, 0.7);
-        padding: 16px 24px;
+        padding: 14px 24px;
         border-radius: 100px;
         font-size: 13px;
         font-weight: 500;
@@ -249,14 +250,14 @@
     .esim-trust-row {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
     }
 
     .esim-trust-pill {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         padding: 10px 16px;
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -334,8 +335,8 @@
     /* Right Side Visual */
     .esim-visual-container {
         position: relative;
-        width: 100%;
-        max-width: 650px;
+        width: auto;
+        max-width: 320px;
     }
 
     .esim-visual-glow {
@@ -365,16 +366,16 @@
     }
 
     .esim-phone-frame {
-        width: 260px;
-        height: 500px;
+        width: 200px;
+        height: 380px;
         background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-        border-radius: 40px;
+        border-radius: 28px;
         border: 2px solid rgba(255,215,0,0.3);
-        box-shadow: 0 40px 100px rgba(0,0,0,0.8), 
-                    0 0 80px rgba(255,215,0,0.06), 
+        box-shadow: 0 30px 60px rgba(0,0,0,0.8),
+                    0 0 60px rgba(255,215,0,0.06),
                     inset 0 1px 2px rgba(255,255,255,0.08);
         overflow: hidden;
-        padding: 12px;
+        padding: 8px;
         position: relative;
     }
 
@@ -382,7 +383,7 @@
         width: 100%;
         height: 100%;
         background: #050505;
-        border-radius: 30px;
+        border-radius: 24px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -392,7 +393,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 14px 16px 8px;
+        padding: 10px 12px 6px;
         background: #0a0a0a;
     }
 
@@ -453,17 +454,17 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 20px 16px;
-        gap: 12px;
+        padding: 8px 10px;
+        gap: 6px;
     }
 
     .esim-globe-wrap {
-        margin-bottom: 4px;
+        margin-bottom: 0;
     }
 
     .esim-globe {
-        width: 90px;
-        height: 90px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         border: 2px solid rgba(255,215,0,0.3);
         display: flex;
@@ -474,7 +475,7 @@
     }
 
     .esim-globe i {
-        font-size: 48px;
+        font-size: 30px;
         color: #FFD700;
         position: relative;
         z-index: 1;
@@ -486,9 +487,9 @@
         border: 1px solid rgba(255,215,0,0.15);
         animation: esimRingPulse 3s ease-in-out infinite;
     }
-    .esim-globe-ring.ring1 { width: 110px; height: 110px; animation-delay: 0s; }
-    .esim-globe-ring.ring2 { width: 130px; height: 130px; animation-delay: 0.5s; }
-    .esim-globe-ring.ring3 { width: 150px; height: 150px; animation-delay: 1s; }
+    .esim-globe-ring.ring1 { width: 75px; height: 75px; animation-delay: 0s; }
+    .esim-globe-ring.ring2 { width: 88px; height: 88px; animation-delay: 0.5s; }
+    .esim-globe-ring.ring3 { width: 100px; height: 100px; animation-delay: 1s; }
 
     @keyframes esimRingPulse {
         0%, 100% { opacity: 0.4; transform: scale(1); }
@@ -496,7 +497,7 @@
     }
 
     .esim-status-text {
-        font-size: 11px;
+        font-size: 10px;
         color: rgba(255,255,255,0.6);
         font-family: 'Outfit', sans-serif;
         text-align: center;
@@ -504,7 +505,7 @@
 
     .esim-data-bar {
         width: 100%;
-        height: 6px;
+        height: 5px;
         background: rgba(255,255,255,0.08);
         border-radius: 3px;
         overflow: hidden;
@@ -524,7 +525,7 @@
     }
 
     .esim-data-label {
-        font-size: 11px;
+        font-size: 10px;
         color: rgba(255,255,255,0.5);
         font-family: 'Outfit', sans-serif;
         text-align: center;
@@ -533,13 +534,13 @@
     .esim-activate-btn {
         background: linear-gradient(135deg, #FFD700, #D4AF37);
         color: #000;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
-        padding: 8px 24px;
-        border-radius: 20px;
+        padding: 6px 18px;
+        border-radius: 16px;
         font-family: 'Outfit', sans-serif;
         letter-spacing: 0.5px;
-        box-shadow: 0 4px 16px rgba(255,215,0,0.3);
+        box-shadow: 0 4px 12px rgba(255,215,0,0.3);
     }
 
     /* Floating Badges */
@@ -548,23 +549,23 @@
         background: rgba(15,15,15,0.95);
         border: 1px solid rgba(255,215,0,0.25);
         color: #FFD700;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
-        padding: 8px 14px;
-        border-radius: 20px;
+        padding: 6px 10px;
+        border-radius: 16px;
         font-family: 'Outfit', sans-serif;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         backdrop-filter: blur(10px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.4);
         white-space: nowrap;
     }
 
-    .badge-f1 { top: 40px; left: -60px; animation: esimBadgeFloat 5s ease-in-out infinite; }
-    .badge-f2 { bottom: 80px; left: -70px; animation: esimBadgeFloat 5s ease-in-out infinite 1.2s; }
-    .badge-f3 { top: 80px; right: -70px; animation: esimBadgeFloat 5s ease-in-out infinite 2.4s; }
-    .badge-f4 { bottom: 40px; right: -50px; animation: esimBadgeFloat 5s ease-in-out infinite 0.6s; }
+    .badge-f1 { top: 20px; left: -35px; animation: esimBadgeFloat 5s ease-in-out infinite; }
+    .badge-f2 { bottom: 60px; left: -40px; animation: esimBadgeFloat 5s ease-in-out infinite 1.2s; }
+    .badge-f3 { top: 50px; right: -40px; animation: esimBadgeFloat 5s ease-in-out infinite 2.4s; }
+    .badge-f4 { bottom: 20px; right: -30px; animation: esimBadgeFloat 5s ease-in-out infinite 0.6s; }
 
     @keyframes esimBadgeFloat {
         0%, 100% { transform: translateY(0); }
@@ -2643,11 +2644,32 @@
 
     @media (max-width: 1024px) {
         .esim-hero {
-            padding: 32px 20px 24px;
+            padding: 15px 20px 15px;
+        }
+        .esim-hero-inner {
+            flex-direction: row;
+            gap: 20px;
+        }
+        .esim-phone-frame {
+            width: 180px;
+            height: 340px;
+        }
+        .esim-visual-container {
+            max-width: 300px;
+        }
+        .esim-step1 {
+            min-height: auto;
+            padding: 30px 16px 40px !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .esim-hero {
+            padding: 8px 16px 8px;
         }
         .esim-hero-inner {
             flex-direction: column;
-            gap: 30px;
+            gap: 10px;
             text-align: center;
         }
         .esim-hero-left {
@@ -2660,29 +2682,75 @@
             order: 2;
             justify-content: center;
         }
+        .esim-phone-frame {
+            width: 140px;
+            height: 260px;
+            border-radius: 22px;
+            padding: 6px;
+        }
+        .esim-phone-screen {
+            border-radius: 18px;
+        }
+        .esim-hero-badge {
+            display: none;
+        }
+        .esim-hero-title {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
         .esim-hero-subtitle {
-            margin: 0 auto 22px;
+            font-size: 11px;
+            margin: 0 auto 8px;
+            line-height: 1.4;
         }
         .esim-hero-cta {
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            max-width: 300px;
-        }
-        .esim-btn-primary,
-        .esim-btn-secondary {
-            width: 100%;
+            flex-direction: row;
+            gap: 6px;
             justify-content: center;
+            margin-bottom: 6px;
+        }
+        .esim-btn-primary {
+            font-size: 9px;
+            padding: 8px 14px;
+        }
+        .esim-btn-secondary {
+            display: none;
         }
         .esim-trust-row {
             justify-content: center;
         }
-        .esim-visual-container {
-            max-width: 400px;
+        .esim-trust-pill {
+            font-size: 8px;
+            padding: 4px 8px;
         }
-        .esim-step1 {
-            min-height: auto;
-            padding: 30px 16px 40px !important;
+        .esim-visual-container {
+            max-width: 220px;
+        }
+        .esim-floating-badge {
+            font-size: 7px;
+            padding: 3px 6px;
+        }
+        .badge-f1 { top: 10px; left: -20px; }
+        .badge-f2 { bottom: 40px; left: -25px; }
+        .badge-f3 { top: 30px; right: -25px; }
+        .badge-f4 { bottom: 10px; right: -15px; }
+        .esim-globe {
+            width: 45px;
+            height: 45px;
+        }
+        .esim-globe i {
+            font-size: 22px;
+        }
+        .esim-globe-ring.ring1 { width: 55px; height: 55px; }
+        .esim-globe-ring.ring2 { width: 65px; height: 65px; }
+        .esim-globe-ring.ring3 { width: 75px; height: 75px; }
+        .esim-screen-body {
+            padding: 6px 8px;
+            gap: 4px;
+        }
+        .esim-activate-btn {
+            font-size: 9px;
+            padding: 4px 12px;
         }
     }
 
@@ -2692,69 +2760,9 @@
         }
     }
 
-    @media (max-width: 768px) {
-        .esim-hero {
-            padding: 24px 16px 20px;
-        }
-
-        .esim-hero-badge {
-            font-size: 8px;
-            padding: 7px 12px;
-            letter-spacing: 1.5px;
-            margin-bottom: 12px;
-        }
-
-        .esim-hero-badge::before {
-            width: 5px;
-            height: 5px;
-        }
-
-        .esim-hero-title {
-            font-size: 26px;
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
-
-        .esim-hero-subtitle {
-            font-size: 13px;
-            margin-bottom: 18px;
-            line-height: 1.55;
-        }
-
-        .esim-hero-cta {
-            margin-bottom: 20px;
-        }
-
-        .esim-btn-primary {
-            font-size: 11px;
-            padding: 12px 24px;
-        }
-
-        .esim-btn-secondary {
-            font-size: 11px;
-            padding: 10px 18px;
-        }
-
-        .esim-trust-row {
-            gap: 6px;
-        }
-
-        .esim-trust-pill {
-            font-size: 9px;
-            padding: 6px 10px;
-            gap: 5px;
-        }
-
-        .esim-trust-pill i {
-            font-size: 9px;
-        }
-
-        .esim-trust-pill.rating .stars {
-            font-size: 7px;
-        }
-
+    @media (max-width: 767px) {
         .esim-step1 {
-            padding: 24px 16px 32px !important;
+            padding: 20px 16px 24px !important;
         }
 
         .esim-features-grid,
@@ -3118,11 +3126,20 @@
 
     @media (max-width: 375px) {
         .esim-hero-title {
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .esim-hero-subtitle {
-            font-size: 12px;
+            font-size: 10px;
+        }
+
+        .esim-phone-frame {
+            width: 120px;
+            height: 220px;
+        }
+
+        .esim-trust-pill {
+            display: none;
         }
 
         .esim-trust-badges {
