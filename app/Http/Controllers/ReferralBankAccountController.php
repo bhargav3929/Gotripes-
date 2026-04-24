@@ -13,10 +13,10 @@ class ReferralBankAccountController extends Controller
      */
     public function index()
     {
-        $agent    = Auth::guard('referral_agent')->user();
-        $accounts = $agent->bankAccounts()->orderByDesc('is_primary')->orderBy('created_at')->get();
+        $agent        = Auth::guard('referral_agent')->user();
+        $bankAccounts = $agent->bankAccounts()->orderByDesc('is_primary')->orderBy('created_at')->get();
 
-        return view('referral.bank-accounts', compact('accounts', 'agent'));
+        return view('referral.bank-accounts', compact('bankAccounts', 'agent'));
     }
 
     /**
