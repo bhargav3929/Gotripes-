@@ -27,25 +27,25 @@ class ReferralSettingsController extends Controller
         $section  = $request->input('form_section', 'commission');
 
         if ($section === 'commission') {
-            $validated = $request->validate([
-                'commission_type'  => 'required|in:percentage,fixed',
-                'commission_value' => 'required|numeric|min:0',
+            $type = $request->input('commission_type', 'percentage');
+            $valueField = $type === 'percentage' ? 'commission_percentage' : 'commission_flat';
+            $request->validate([
+                'commission_type' => 'required|in:percentage,fixed',
+                $valueField       => 'required|numeric|min:0',
             ]);
             $settings->update([
-                'commission_type'  => $validated['commission_type'],
-                'commission_value' => $validated['commission_value'],
+                'commission_type'  => $type,
+                'commission_value' => $request->input($valueField),
             ]);
             $message = 'Commission structure saved.';
         } else {
-            $validated = $request->validate([
+            $request->validate([
                 'min_withdrawal_amount' => 'required|numeric|min:0',
-                'auto_approve'          => 'boolean',
-                'signup_enabled'        => 'boolean',
             ]);
             $settings->update([
-                'min_withdrawal_amount' => $validated['min_withdrawal_amount'],
-                'auto_approve'          => $request->boolean('auto_approve'),
-                'signup_enabled'        => $request->boolean('signup_enabled'),
+                'min_withdrawal_amount' => $request->input('min_withdrawal_amount'),
+                'auto_approve'          => $request->boolean('auto_approve_commissions'),
+                'signup_enabled'        => $request->boolean('enable_public_signup'),
             ]);
             $message = 'Program settings saved.';
         }
