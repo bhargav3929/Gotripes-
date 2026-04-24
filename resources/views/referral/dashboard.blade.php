@@ -54,6 +54,36 @@
         </div>
     </div>
 
+    <!-- Available Balance Widget -->
+    @php
+        $pendingWithdrawal = $agent->withdrawalRequests()->whereIn('status', ['pending','processing'])->sum('amount');
+    @endphp
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="balance-widget">
+                <div class="balance-widget-left">
+                    <div class="balance-widget-label">
+                        <i class="fas fa-wallet me-2"></i>Available Balance
+                    </div>
+                    <div class="balance-widget-amount">AED {{ number_format($agent->availableBalance(), 2) }}</div>
+                    @if($pendingWithdrawal > 0)
+                    <div class="balance-widget-pending">
+                        <i class="fas fa-clock me-1"></i>Pending withdrawal: AED {{ number_format($pendingWithdrawal, 2) }}
+                    </div>
+                    @endif
+                </div>
+                <div class="balance-widget-right">
+                    <a href="{{ route('referral.withdraw') }}" class="btn btn-gold btn-sm withdraw-cta">
+                        <i class="fas fa-paper-plane me-1"></i>Withdraw Now
+                    </a>
+                    <a href="{{ route('referral.bank-accounts') }}" class="btn-bank-link">
+                        <i class="fas fa-university me-1"></i>Bank Accounts
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Stats Cards -->
     <div class="row g-4 mb-4">
         <div class="col-6 col-lg-3">
@@ -241,6 +271,63 @@
 <style>
     /* Compact Layout */
     .container { max-width: 1200px; }
+
+    /* Balance Widget */
+    .balance-widget {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 165, 0, 0.04) 100%);
+        border: 1px solid var(--border-gold);
+        border-radius: 10px;
+        padding: 16px 20px;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .balance-widget-left { flex: 1; min-width: 0; }
+    .balance-widget-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    .balance-widget-amount {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--primary-gold);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        margin-bottom: 4px;
+    }
+    .balance-widget-pending {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+    }
+    .balance-widget-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+    .withdraw-cta {
+        font-size: 0.78rem !important;
+        padding: 6px 14px !important;
+        border-radius: 7px !important;
+    }
+    .btn-bank-link {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .btn-bank-link:hover { color: var(--primary-gold); }
+    @media (max-width: 575.98px) {
+        .balance-widget-amount { font-size: 1.4rem; }
+        .balance-widget-right { align-items: flex-start; }
+    }
 
     /* Text Visibility Fixes */
     p, span, div, li, small {

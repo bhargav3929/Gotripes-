@@ -62,7 +62,8 @@ class ReferralAgentController extends Controller
      */
     public function create()
     {
-        return view('admin.referrals.agents.create');
+        $settings = \App\Models\ReferralSetting::getSettings();
+        return view('admin.referrals.agents.create', compact('settings'));
     }
 
     /**
@@ -81,6 +82,16 @@ class ReferralAgentController extends Controller
             'status' => 'required|in:active,inactive,suspended',
             'notes' => 'nullable|string|max:1000',
         ]);
+
+        $settings = \App\Models\ReferralSetting::getSettings();
+
+        // Fall back to global defaults when the admin hasn't overridden them
+        if (empty($validated['commission_type'])) {
+            $validated['commission_type'] = $settings->commission_type;
+        }
+        if (!isset($validated['commission_value']) || $validated['commission_value'] === '') {
+            $validated['commission_value'] = $settings->commission_value;
+        }
 
         // Generate referral code if not provided
         if (empty($validated['referral_code'])) {

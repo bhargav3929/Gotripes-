@@ -100,11 +100,19 @@
                     <div class="card-header"><i class="fas fa-percentage me-2 text-gold"></i>Commission Settings</div>
                     <div class="card-body">
                         <div class="row g-2">
+                            <div class="col-12">
+                                <div class="alert alert-info py-2 px-3 mb-2" style="font-size: 0.75rem; background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #93c5fd;">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Global default: <strong>{{ $settings->commission_type === 'percentage' ? $settings->commission_value . '%' : 'AED ' . number_format($settings->commission_value, 2) }}</strong> per sale.
+                                    Leaving these as-is will use the global rate.
+                                    <a href="{{ route('admin.referrals.settings') }}" class="text-warning">Change global rate →</a>
+                                </div>
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label">Type <span class="text-danger">*</span></label>
                                 <select name="commission_type" id="commissionType" class="form-select form-select-sm @error('commission_type') is-invalid @enderror" required>
-                                    <option value="percentage" {{ old('commission_type') == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
-                                    <option value="fixed" {{ old('commission_type') == 'fixed' ? 'selected' : '' }}>Fixed (AED)</option>
+                                    <option value="percentage" {{ old('commission_type', $settings->commission_type) == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                                    <option value="fixed" {{ old('commission_type', $settings->commission_type) == 'fixed' ? 'selected' : '' }}>Fixed (AED)</option>
                                 </select>
                                 @error('commission_type')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
@@ -113,7 +121,7 @@
                                 <div class="input-group input-group-sm">
                                     <input type="number" name="commission_value" step="0.01" min="0"
                                            class="form-control @error('commission_value') is-invalid @enderror"
-                                           value="{{ old('commission_value', 10) }}" required>
+                                           value="{{ old('commission_value', $settings->commission_value) }}" required>
                                     <span class="input-group-text" id="commissionSuffix">%</span>
                                 </div>
                                 @error('commission_value')<div class="invalid-feedback">{{ $message }}</div>@enderror

@@ -21,9 +21,18 @@
             <div class="col-lg-8">
                 <h6 class="text-white mb-1"><i class="fas fa-chart-pie me-2"></i>Program Summary</h6>
                 <p class="text-muted small mb-3">Total commissions and revenue from referral program</p>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 flex-wrap">
                     <a href="{{ route('admin.referrals.agents.index') }}" class="btn btn-sm btn-outline-light">View All Agents</a>
                     <a href="{{ route('admin.referrals.commissions.index') }}" class="btn btn-sm btn-outline-warning">Manage Commissions</a>
+                    <a href="{{ route('admin.referrals.withdrawals.index') }}" class="btn btn-sm btn-outline-info">
+                        Manage Withdrawals
+                        @if(($stats['pending_withdrawals'] ?? 0) > 0)
+                        <span class="badge bg-warning ms-1" style="font-size: 0.55rem; padding: 2px 5px;">{{ $stats['pending_withdrawals'] }}</span>
+                        @endif
+                    </a>
+                    <a href="{{ route('admin.referrals.settings') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-cog me-1"></i>Settings
+                    </a>
                 </div>
             </div>
             <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
@@ -97,6 +106,14 @@
                 <div class="stat-number">{{ $stats['total_orders'] > 0 ? $stats['total_orders'] : 0 }}</div>
                 <div class="stat-label">Review Pending</div>
                 <small class="text-warning">click to review</small>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card clickable" onclick="window.location='{{ route('admin.referrals.withdrawals.index', ['status' => 'pending']) }}'">
+                <div class="stat-icon red"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="stat-number text-danger">{{ $stats['pending_withdrawals'] ?? 0 }}</div>
+                <div class="stat-label">Pending Withdrawals</div>
+                <small class="text-danger">AED {{ number_format($stats['pending_withdrawal_amount'] ?? 0, 2) }}</small>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -232,6 +249,7 @@
     .stat-icon.orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
     .stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
     .stat-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+    .stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 
     .stat-number {
         font-size: 1.25rem;

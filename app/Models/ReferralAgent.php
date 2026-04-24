@@ -110,11 +110,55 @@ class ReferralAgent extends Authenticatable
     }
 
     /**
+     * Relationship with bank accounts
+     */
+    public function bankAccounts()
+    {
+        return $this->hasMany(ReferralBankAccount::class);
+    }
+
+    /**
+     * Relationship with withdrawal requests
+     */
+    public function withdrawalRequests()
+    {
+        return $this->hasMany(ReferralWithdrawalRequest::class);
+    }
+
+    /**
+     * Get the primary bank account for this agent.
+     */
+    public function primaryBankAccount(): ?ReferralBankAccount
+    {
+        return $this->bankAccounts()->where('is_primary', true)->first();
+    }
+
+    /**
+     * Calculate the agent's available balance (approved commissions minus completed/pending withdrawals).
+     */
+    public function availableBalance(): float
+    {
+        $totalApproved = $this->referralTracking()
+            ->whereIn('status', ['approved', 'paid'])
+            ->sum('commission_amount');
+
+        $totalWithdrawn = $this->withdrawalRequests()
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $pendingWithdrawals = $this->withdrawalRequests()
+            ->whereIn('status', ['pending', 'processing'])
+            ->sum('amount');
+
+        return max(0.0, (float) $totalApproved - (float) $totalWithdrawn - (float) $pendingWithdrawals);
+    }
+
+    /**
      * Get the full referral URL
      */
     public function getReferralUrlAttribute(): string
     {
-        return url('/?ref=' . $this->referral_code);
+        return url('/esim?ref=' . $this->referral_code);
     }
 
     /**

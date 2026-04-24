@@ -349,13 +349,22 @@ Route::post('/deploy/github-webhook', function (\Illuminate\Http\Request $reques
 
 // ─── Referral System Routes ─────────────────────────────────────────
 use App\Http\Controllers\ReferralAgentDashboardController;
+use App\Http\Controllers\ReferralAgentSignupController;
+use App\Http\Controllers\ReferralBankAccountController;
+use App\Http\Controllers\ReferralWithdrawalController;
 use App\Http\Controllers\Admin\ReferralAgentController;
 use App\Http\Controllers\Admin\ReferralCommissionController;
+use App\Http\Controllers\Admin\ReferralSettingsController;
+use App\Http\Controllers\Admin\ReferralWithdrawalAdminController;
 
 // Referral Agent Authentication
 Route::get('/partner/login', [ReferralAgentDashboardController::class, 'showLoginForm'])->name('referral.login');
 Route::post('/partner/login', [ReferralAgentDashboardController::class, 'login'])->name('referral.login.submit');
 Route::post('/partner/logout', [ReferralAgentDashboardController::class, 'logout'])->name('referral.logout');
+
+// Referral Agent Public Signup
+Route::get('/partner/register', [ReferralAgentSignupController::class, 'showRegister'])->name('referral.register');
+Route::post('/partner/register', [ReferralAgentSignupController::class, 'register'])->name('referral.register.submit');
 
 // Referral Agent Dashboard (Protected)
 Route::middleware(['referral.agent'])->prefix('partner')->name('referral.')->group(function () {
@@ -364,6 +373,16 @@ Route::middleware(['referral.agent'])->prefix('partner')->name('referral.')->gro
     Route::get('/earnings', [ReferralAgentDashboardController::class, 'earnings'])->name('earnings');
     Route::get('/profile', [ReferralAgentDashboardController::class, 'profile'])->name('profile');
     Route::put('/profile', [ReferralAgentDashboardController::class, 'updateProfile'])->name('profile.update');
+
+    // Bank Accounts
+    Route::get('/bank-accounts', [ReferralBankAccountController::class, 'index'])->name('bank-accounts');
+    Route::post('/bank-accounts', [ReferralBankAccountController::class, 'store'])->name('bank-accounts.store');
+    Route::delete('/bank-accounts/{account}', [ReferralBankAccountController::class, 'destroy'])->name('bank-accounts.destroy');
+    Route::patch('/bank-accounts/{account}/primary', [ReferralBankAccountController::class, 'setPrimary'])->name('bank-accounts.primary');
+
+    // Withdrawal Requests
+    Route::get('/withdraw', [ReferralWithdrawalController::class, 'index'])->name('withdraw');
+    Route::post('/withdraw', [ReferralWithdrawalController::class, 'store'])->name('withdraw.store');
 });
 
 // Admin Referral Management Routes
@@ -392,6 +411,16 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin/referrals')->name('admin.r
     Route::post('/commissions/bulk-approve', [ReferralCommissionController::class, 'bulkApprove'])->name('commissions.bulk-approve');
     Route::post('/commissions/bulk-paid', [ReferralCommissionController::class, 'bulkMarkPaid'])->name('commissions.bulk-paid');
     Route::get('/commissions-export', [ReferralCommissionController::class, 'export'])->name('commissions.export');
+
+    // Settings
+    Route::get('/settings', [ReferralSettingsController::class, 'index'])->name('settings');
+    Route::post('/settings', [ReferralSettingsController::class, 'update'])->name('settings.update');
+
+    // Withdrawal Requests (Admin)
+    Route::get('/withdrawals', [ReferralWithdrawalAdminController::class, 'index'])->name('withdrawals.index');
+    Route::post('/withdrawals/{withdrawal}/approve', [ReferralWithdrawalAdminController::class, 'approve'])->name('withdrawals.approve');
+    Route::post('/withdrawals/{withdrawal}/complete', [ReferralWithdrawalAdminController::class, 'complete'])->name('withdrawals.complete');
+    Route::post('/withdrawals/{withdrawal}/reject', [ReferralWithdrawalAdminController::class, 'reject'])->name('withdrawals.reject');
 });
 
 // ─── Super Admin Routes ─────────────────────────────────────────────

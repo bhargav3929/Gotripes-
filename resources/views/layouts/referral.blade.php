@@ -339,6 +339,18 @@
                             <i class="fas fa-coins me-1"></i> Earnings
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {{ request()->routeIs('referral.withdraw') ? 'active' : '' }}"
+                           href="{{ route('referral.withdraw') }}">
+                            <i class="fas fa-wallet me-1"></i> Withdraw
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {{ request()->routeIs('referral.bank-accounts') ? 'active' : '' }}"
+                           href="{{ route('referral.bank-accounts') }}">
+                            <i class="fas fa-university me-1"></i> Bank Accounts
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="dropdown user-dropdown">
