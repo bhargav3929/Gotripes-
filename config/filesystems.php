@@ -38,7 +38,10 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            // Write directly into public/storage on this host since
+            // public_html/public/storage is a real directory (not a symlink)
+            // and PHP's symlink() is disabled on Hostinger shared hosting.
+            'root' => public_path('storage'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
