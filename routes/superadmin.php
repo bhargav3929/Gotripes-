@@ -21,7 +21,7 @@ Route::middleware(['web'])->prefix('superadmin')->name('superadmin.')->group(fun
     Route::post('logout', [SuperAdminAuthController::class, 'logout'])->name('logout');
 });
 
-Route::middleware(['web', 'auth', 'super.admin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+Route::middleware(['web', 'super.admin'])->prefix('superadmin')->name('superadmin.')->group(function () {
 
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
