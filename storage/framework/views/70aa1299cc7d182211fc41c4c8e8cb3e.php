@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" type="image/png" href="{{ asset('assets/index_files/logo.png') }}">
+    <link rel="icon" type="image/png" href="<?php echo e(asset('assets/index_files/logo.png')); ?>">
 
     <meta charset="UTF-8">
     <title>Go Trips</title>
@@ -10,14 +10,14 @@
     <meta name="author" content="ThemeZaa">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="description" content="Go Trips - Your Gateway to Amazing Adventures">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:url" content="<?php echo e(url('/')); ?>">
     <meta property="og:title" content="Go Trips - Al Amir YN">
     <meta property="og:description" content="Go Trips - Your Gateway to Amazing Adventures">
-    <meta property="og:image" content="{{ asset('assets/index_files/social_sharing_logo.png') }}">
+    <meta property="og:image" content="<?php echo e(asset('assets/index_files/social_sharing_logo.png')); ?>">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="1200">
@@ -29,13 +29,13 @@
         rel="stylesheet">
 
     <!-- External Styles -->
-    <link rel="stylesheet" href="{{ asset('assets/index_files/swiper-bundle.min.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/index_files/swiper-bundle.min.css')); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ asset('assets/index_files/vendors.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/index_files/icon.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/index_files/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/index_files/responsive.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/index_files/vendors.min.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/index_files/icon.min.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/index_files/style.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/index_files/responsive.css')); ?>">
 
     <style>
         /* =====================================================
@@ -1025,7 +1025,7 @@
     </style>
 </head>
 
-<body class="{{ request()->is('/') ? 'has-ticker' : '' }}">
+<body class="<?php echo e(request()->is('/') ? 'has-ticker' : ''); ?>">
     <!-- ==================== PREMIUM HEADER ==================== -->
     <header class="gt-header">
 
@@ -1034,45 +1034,31 @@
             <div class="gt-nav-wrapper">
                 <!-- Left Menu -->
                 <div class="gt-nav-left">
-                    <a href="/" class="gt-nav-link {{ Request::is('/') ? 'active' : '' }}">Home</a>
-                    @feature('activities')
+                    <a href="/" class="gt-nav-link <?php echo e(Request::is('/') ? 'active' : ''); ?>">Home</a>
                     <a href="/activities"
-                        class="gt-nav-link {{ Request::is('activities') ? 'active' : '' }}">Activities</a>
-                    @endfeature
-                    @feature('visas')
-                    <a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">Visa
+                        class="gt-nav-link <?php echo e(Request::is('activities') ? 'active' : ''); ?>">Activities</a>
+                    <a href="/uaevisa" class="gt-nav-link <?php echo e(Request::is('uaevisa') ? 'active' : ''); ?>">Visa
                         Services</a>
-                    @endfeature
-                    @feature('tours')
-                    <a href="/countriestour" class="gt-nav-link {{ Request::is('countriestour') ? 'active' : '' }}">Tour
+                    <a href="/countriestour" class="gt-nav-link <?php echo e(Request::is('countriestour') ? 'active' : ''); ?>">Tour
                         Packages</a>
-                    @endfeature
-                    @feature('hajj_umrah')
-                    <a href="/hajj-umrah" class="gt-nav-link {{ Request::is('hajj-umrah') ? 'active' : '' }}">Hajj &
+                    <a href="/hajj-umrah" class="gt-nav-link <?php echo e(Request::is('hajj-umrah') ? 'active' : ''); ?>">Hajj &
                         Umrah</a>
-                    @endfeature
                 </div>
 
                 <!-- Center Logo -->
                 <a href="/" class="gt-logo">
-                    <img src="{{ asset('assets/index_files/logo.png') }}" alt="Go Trips">
+                    <img src="<?php echo e(asset('assets/index_files/logo.png')); ?>" alt="Go Trips">
                 </a>
 
                 <!-- Right Menu -->
                 <div class="gt-nav-right">
-                    <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our Services</a>
-                    @feature('shop')
-                    <a href="/shopnow" class="gt-nav-link {{ Request::is('shopnow') ? 'active' : '' }}">Shop Online</a>
-                    @endfeature
-                    @feature('pay_online')
-                    <a href="/payonline" class="gt-nav-link {{ Request::is('payonline') ? 'active' : '' }}">Pay
+                    <a href="/our-services" class="gt-nav-link <?php echo e(Request::is('our-services') ? 'active' : ''); ?>">Our Services</a>
+                    <a href="/shopnow" class="gt-nav-link <?php echo e(Request::is('shopnow') ? 'active' : ''); ?>">Shop Online</a>
+                    <a href="/payonline" class="gt-nav-link <?php echo e(Request::is('payonline') ? 'active' : ''); ?>">Pay
                         Online</a>
-                    @endfeature
-                    @feature('careers')
                     <a href="/lookingforajob"
-                        class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>
-                    @endfeature
-                    <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact
+                        class="gt-nav-link <?php echo e(Request::is('lookingforajob') ? 'active' : ''); ?>">Careers</a>
+                    <a href="/contact-us" class="gt-nav-link <?php echo e(Request::is('contact-us') ? 'active' : ''); ?>">Contact
                         Us</a>
                 </div>
             </div>
@@ -1087,7 +1073,7 @@
 
             <!-- Mobile Logo (Centered) -->
             <a href="/" class="gt-mobile-logo">
-                <img src="{{ asset('assets/index_files/logo.png') }}" alt="Go Trips">
+                <img src="<?php echo e(asset('assets/index_files/logo.png')); ?>" alt="Go Trips">
             </a>
 
             <!-- Empty div for flexbox spacing -->
@@ -1097,14 +1083,14 @@
         <!-- Mobile Menu Dropdown -->
         <nav class="gt-mobile-nav" id="mobileNav">
             <a href="/" class="gt-mobile-nav-link">Home</a>
-            @feature('activities')<a href="/activities" class="gt-mobile-nav-link">Activities</a>@endfeature
-            @feature('visas')<a href="/uaevisa" class="gt-mobile-nav-link">Visa Services</a>@endfeature
-            @feature('tours')<a href="/countriestour" class="gt-mobile-nav-link">Tour Packages</a>@endfeature
-            @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-mobile-nav-link">Hajj & Umrah</a>@endfeature
+            <a href="/activities" class="gt-mobile-nav-link">Activities</a>
+            <a href="/uaevisa" class="gt-mobile-nav-link">Visa Services</a>
+            <a href="/countriestour" class="gt-mobile-nav-link">Tour Packages</a>
+            <a href="/hajj-umrah" class="gt-mobile-nav-link">Hajj & Umrah</a>
             <a href="/our-services" class="gt-mobile-nav-link">Our Services</a>
-            @feature('shop')<a href="/shopnow" class="gt-mobile-nav-link">Shop Online</a>@endfeature
-            @feature('pay_online')<a href="/payonline" class="gt-mobile-nav-link">Pay Online</a>@endfeature
-            @feature('careers')<a href="/lookingforajob" class="gt-mobile-nav-link">Careers</a>@endfeature
+            <a href="/shopnow" class="gt-mobile-nav-link">Shop Online</a>
+            <a href="/payonline" class="gt-mobile-nav-link">Pay Online</a>
+            <a href="/lookingforajob" class="gt-mobile-nav-link">Careers</a>
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
         </nav>
 
@@ -1145,52 +1131,52 @@
                     </div>
                 </div>
             </div>
-            @if(request()->is('/'))
+            <?php if(request()->is('/')): ?>
             <div class="gt-partner-cta">
                 <span class="gt-partner-label">Join as a</span>
                 <span class="gt-partner-title">Partner / Customer</span>
                 <button class="gt-partner-btn" id="partnerRegisterBtn">Register Now</button>
             </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        @if(request()->is('/'))
+        <?php if(request()->is('/')): ?>
         <!-- NEWS TICKER - Continuous loop (duplicated content for seamless scroll) -->
         <div class="news-ticker">
             <div class="scroll text-uppercase">
-                {{-- First copy --}}
-                @forelse($tickerItems ?? [] as $ticker)
+                
+                <?php $__empty_1 = true; $__currentLoopData = $tickerItems ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ticker): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <a href="#" class="news-item">
-                        @if($ticker->tagType && $ticker->tagType !== 'none')
-                            <span class="{{ $ticker->tag_css_class }}">{{ $ticker->tag_label }}</span>
-                        @endif
-                        <span class="news-text">{{ $ticker->description }}</span>
+                        <?php if($ticker->tagType && $ticker->tagType !== 'none'): ?>
+                            <span class="<?php echo e($ticker->tag_css_class); ?>"><?php echo e($ticker->tag_label); ?></span>
+                        <?php endif; ?>
+                        <span class="news-text"><?php echo e($ticker->description); ?></span>
                     </a>
                     <span class="separator">|</span>
-                @empty
-                    <a href="#" class="news-item">
-                        <span class="news-text">Welcome to Go Trips - Your Gateway to Amazing Adventures</span>
-                    </a>
-                    <span class="separator">|</span>
-                @endforelse
-                {{-- Second copy (identical for seamless loop) --}}
-                @forelse($tickerItems ?? [] as $ticker)
-                    <a href="#" class="news-item">
-                        @if($ticker->tagType && $ticker->tagType !== 'none')
-                            <span class="{{ $ticker->tag_css_class }}">{{ $ticker->tag_label }}</span>
-                        @endif
-                        <span class="news-text">{{ $ticker->description }}</span>
-                    </a>
-                    <span class="separator">|</span>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <a href="#" class="news-item">
                         <span class="news-text">Welcome to Go Trips - Your Gateway to Amazing Adventures</span>
                     </a>
                     <span class="separator">|</span>
-                @endforelse
+                <?php endif; ?>
+                
+                <?php $__empty_1 = true; $__currentLoopData = $tickerItems ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ticker): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <a href="#" class="news-item">
+                        <?php if($ticker->tagType && $ticker->tagType !== 'none'): ?>
+                            <span class="<?php echo e($ticker->tag_css_class); ?>"><?php echo e($ticker->tag_label); ?></span>
+                        <?php endif; ?>
+                        <span class="news-text"><?php echo e($ticker->description); ?></span>
+                    </a>
+                    <span class="separator">|</span>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <a href="#" class="news-item">
+                        <span class="news-text">Welcome to Go Trips - Your Gateway to Amazing Adventures</span>
+                    </a>
+                    <span class="separator">|</span>
+                <?php endif; ?>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
     </header>
 
@@ -1489,3 +1475,4 @@
 </body>
 
 </html>
+<?php /**PATH /Users/bhargav/Desktop/Gotrips/Gotripes-/resources/views/header.blade.php ENDPATH**/ ?>

@@ -76,10 +76,10 @@ Route::prefix('/')->group(function () {
             ->orderBy('createdDate', 'desc')
             ->get();
         return view('hajj-umrah', compact('umrahPackages'));
-    })->name('hajj-umrah');
+    })->middleware('tenant.feature:hajj_umrah')->name('hajj-umrah');
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
     Route::get('banner0', fn() => view('banner0'));
-    Route::get('countriestour', fn() => view('countriestour'));
+    Route::get('countriestour', fn() => view('countriestour'))->middleware('tenant.feature:tours');
     Route::get('ourstory', fn() => view('ourstory'));
     Route::get('contact-us', fn() => view('contact-us'));
     Route::get('termsandconditions', fn() => view('termsandconditions'));
@@ -87,11 +87,11 @@ Route::prefix('/')->group(function () {
     Route::get('privacypolicy', fn() => view('privacypolicy'));
     // Route::get('dubai-global-village', fn() => view('dubai-global-village'));
     Route::get('lotus-cruise-dubai', fn() => view('lotus-cruise-dubai'));
-    Route::get('shopnow', fn() => view('shopnow'));
-    Route::get('payonline', fn() => view('payonline'));
-    Route::get('lookingforajob', fn() => view('lookingforajob'));
-    Route::get('visaservice', fn() => view('visaservice'));
-    Route::get('uaevisa', fn() => view('uaevisa'));
+    Route::get('shopnow', fn() => view('shopnow'))->middleware('tenant.feature:shop');
+    Route::get('payonline', fn() => view('payonline'))->middleware('tenant.feature:pay_online');
+    Route::get('lookingforajob', fn() => view('lookingforajob'))->middleware('tenant.feature:careers');
+    Route::get('visaservice', fn() => view('visaservice'))->middleware('tenant.feature:visas');
+    Route::get('uaevisa', fn() => view('uaevisa'))->middleware('tenant.feature:visas');
     Route::get('caro', fn() => view('uaecarousel'));
 
 
@@ -100,8 +100,8 @@ Route::prefix('/')->group(function () {
 
 
 
-Route::get('/activities', [EmiratesController::class, 'index'])->name('emirates.index');
-Route::get('/activities/{slug}', [EmiratesController::class, 'showBySlug'])->name('emirates.show');
+Route::get('/activities', [EmiratesController::class, 'index'])->middleware('tenant.feature:activities')->name('emirates.index');
+Route::get('/activities/{slug}', [EmiratesController::class, 'showBySlug'])->middleware('tenant.feature:activities')->name('emirates.show');
 Route::get('/Activities', fn() => redirect()->route('emirates.index'));
 Route::get('/uaeactivities', fn() => redirect()->route('emirates.index'));
 Route::get('/uaeactivities/{any}', fn() => redirect()->route('emirates.index'))->where('any', '.*');
@@ -258,7 +258,7 @@ Route::post('/activity/payment/initiate', [ActivityBookingController::class, 'in
 Route::post('/agent/pay', [AgentBookingController::class, 'submit'])->name('agent.pay');
 
 // ─── eSIM Routes ────────────────────────────────────────────────────
-Route::get('/esim', [EsimController::class, 'index'])->name('esim.index');
+Route::get('/esim', [EsimController::class, 'index'])->middleware('tenant.feature:esim')->name('esim.index');
 Route::get('/api/esim/countries', [EsimController::class, 'getCountries'])->name('esim.countries');
 Route::post('/esim/bundles', [EsimController::class, 'getBundles'])->name('esim.bundles');
 Route::post('/esim/purchase', [EsimController::class, 'purchase'])->name('esim.purchase');
