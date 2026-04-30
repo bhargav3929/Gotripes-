@@ -3,6 +3,10 @@
 @section('title', 'Create Company')
 
 @section('content')
+@php
+    $allFeatures = \App\Models\Company::AVAILABLE_FEATURES;
+    $oldFeatures = old('features', array_keys($allFeatures)); // default: all checked
+@endphp
 <div class="page-header">
     <h1 class="page-title"><i class="fas fa-plus-circle"></i>Create New Company</h1>
     <a href="{{ route('superadmin.companies.index') }}" class="btn btn-outline-secondary btn-sm">
@@ -92,6 +96,64 @@
                             <input type="password" name="admin_password" class="form-control form-control-sm @error('admin_password') is-invalid @enderror"
                                    placeholder="Minimum 8 characters" required minlength="8">
                             @error('admin_password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enabled Services / Features -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-toggle-on"></i>
+                    Enabled Services
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:13px;">
+                        Pick which services this partner can sell. Disabled services are hidden from menus and return 404 to visitors of <code>{{ '{subdomain}' }}.gotrips.ai</code>.
+                    </p>
+                    <div class="row g-3">
+                        @foreach($allFeatures as $key => $label)
+                            <div class="col-md-6">
+                                <div class="form-check" style="padding: 10px 14px 10px 38px; background: #fafafa; border: 1px solid #eee; border-radius: 8px;">
+                                    <input class="form-check-input" type="checkbox" name="features[]" value="{{ $key }}"
+                                           id="feat-{{ $key }}"
+                                           {{ in_array($key, (array) $oldFeatures, true) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="feat-{{ $key }}" style="font-weight:500;">
+                                        {{ $label }}
+                                        <small class="text-muted d-block" style="font-size:11px; font-weight:400;">{{ $key }}</small>
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <small class="text-muted d-block mt-2">Tip: leave all checked for full-access agents (like <em>amer</em>); uncheck for restricted resellers (like <em>bhargav</em> = activities only).</small>
+                </div>
+            </div>
+
+            <!-- Tenant Type + Auto-provision -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-globe"></i>
+                    Subdomain Provisioning
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tenant Type</label>
+                            <select name="type" class="form-select form-select-sm">
+                                <option value="agency" {{ old('type', 'agency') === 'agency' ? 'selected' : '' }}>Agency / B2B Partner</option>
+                                <option value="freelancer" {{ old('type') === 'freelancer' ? 'selected' : '' }}>Freelancer</option>
+                                <option value="corporate" {{ old('type') === 'corporate' ? 'selected' : '' }}>Corporate</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check" style="width:100%;">
+                                <input class="form-check-input" type="checkbox" name="auto_provision" value="1" id="autoProvision" {{ old('auto_provision', '1') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="autoProvision">
+                                    <strong>Auto-provision subdomain on Hostinger</strong>
+                                    <small class="text-muted d-block" style="font-size:11px;">Calls Hostinger API + symlinks to main Laravel app. Requires <code>HOSTINGER_API_TOKEN</code> + <code>HOSTINGER_ORDER_ID</code> in <code>.env</code>.</small>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -5,6 +5,7 @@ use App\Http\Controllers\SuperAdmin\CompanyController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\SuperAdmin\ReportController;
 use App\Http\Controllers\SuperAdmin\SettingsController;
+use App\Http\Controllers\SuperAdmin\SuperAdminAuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +13,13 @@ use Illuminate\Support\Facades\Route;
 | Super Admin Routes
 |--------------------------------------------------------------------------
 */
+
+// Dedicated super-admin login (no auth required)
+Route::middleware(['web'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::get('login', [SuperAdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('login', [SuperAdminAuthController::class, 'login'])->name('login.submit');
+    Route::post('logout', [SuperAdminAuthController::class, 'logout'])->name('logout');
+});
 
 Route::middleware(['web', 'auth', 'super.admin'])->prefix('superadmin')->name('superadmin.')->group(function () {
 
@@ -33,6 +41,10 @@ Route::middleware(['web', 'auth', 'super.admin'])->prefix('superadmin')->name('s
 
     Route::post('companies/{company}/change-plan', [CompanyController::class, 'changePlan'])
         ->name('companies.change-plan');
+
+    // Provision the Hostinger subdomain + symlink for this company
+    Route::post('companies/{company}/provision-subdomain', [CompanyController::class, 'provisionSubdomain'])
+        ->name('companies.provision-subdomain');
 
     // Return from impersonation
     Route::get('stop-impersonation', function () {

@@ -17,6 +17,13 @@
         </span>
     </div>
     <div class="d-flex gap-2">
+        <form action="{{ route('superadmin.companies.provision-subdomain', $company) }}" method="POST"
+              onsubmit="return confirm('Provision {{ $company->subdomain }}.gotrips.ai on Hostinger and link to the main Laravel app?');">
+            @csrf
+            <button type="submit" class="btn btn-outline-success btn-sm">
+                <i class="fas fa-globe me-1"></i>Provision Subdomain
+            </button>
+        </form>
         <form action="{{ route('superadmin.companies.impersonate', $company) }}" method="POST">
             @csrf
             <button type="submit" class="btn btn-outline-primary btn-sm">
@@ -28,6 +35,9 @@
         </a>
     </div>
 </div>
+
+@if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+@if(session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
 
 <!-- Stats -->
 <div class="row g-4 mb-4">

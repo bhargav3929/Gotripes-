@@ -16,6 +16,13 @@
         </span>
     </div>
     <div class="d-flex gap-2">
+        <form action="<?php echo e(route('superadmin.companies.provision-subdomain', $company)); ?>" method="POST"
+              onsubmit="return confirm('Provision <?php echo e($company->subdomain); ?>.gotrips.ai on Hostinger and link to the main Laravel app?');">
+            <?php echo csrf_field(); ?>
+            <button type="submit" class="btn btn-outline-success btn-sm">
+                <i class="fas fa-globe me-1"></i>Provision Subdomain
+            </button>
+        </form>
         <form action="<?php echo e(route('superadmin.companies.impersonate', $company)); ?>" method="POST">
             <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-outline-primary btn-sm">
@@ -27,6 +34,9 @@
         </a>
     </div>
 </div>
+
+<?php if(session('success')): ?><div class="alert alert-success"><?php echo e(session('success')); ?></div><?php endif; ?>
+<?php if(session('error')): ?><div class="alert alert-danger"><?php echo e(session('error')); ?></div><?php endif; ?>
 
 <!-- Stats -->
 <div class="row g-4 mb-4">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\User;
+use App\Services\HostingerSubdomainProvisioner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -56,6 +57,8 @@ class CompanyController extends Controller
             'slug' => $request->filled('slug') ? Str::slug($request->input('slug')) : Str::slug($request->input('name')),
         ]);
 
+        $allowedFeatures = array_keys(Company::AVAILABLE_FEATURES);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:100|unique:companies,slug',
@@ -64,10 +67,14 @@ class CompanyController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
             'plan' => 'required|in:trial,basic,pro,enterprise',
+            'type' => 'nullable|in:agency,freelancer,corporate',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'primary_color' => 'nullable|string|max:7',
             'secondary_color' => 'nullable|string|max:7',
             'markup_percentage' => 'nullable|numeric|min:0|max:100',
+            'features' => 'nullable|array',
+            'features.*' => 'string|in:'.implode(',', $allowedFeatures),
+            'auto_provision' => 'nullable|boolean',
             // Admin user
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email',
@@ -77,19 +84,28 @@ class CompanyController extends Controller
             'subdomain.not_in' => 'That subdomain is reserved. Please choose another.',
         ]);
 
+        // Normalize features to a clean array of allowed slugs.
+        $features = isset($validated['features']) && is_array($validated['features'])
+            ? array_values(array_intersect($allowedFeatures, $validated['features']))
+            : $allowedFeatures; // default: full access
+
         // Create company
         $companyData = collect($validated)->except([
-            'admin_name', 'admin_email', 'admin_password', 'logo'
+            'admin_name', 'admin_email', 'admin_password', 'logo', 'features', 'auto_provision'
         ])->toArray();
+        $companyData['features'] = $features;
+        $companyData['type'] = $validated['type'] ?? 'agency';
 
         // Handle logo upload
         if ($request->hasFile('logo')) {
             $companyData['logo'] = $request->file('logo')->store('companies/logos', 'public');
         }
 
-        // Set trial end date if trial plan
+        // Set trial end date if trial plan; otherwise give a 1-year subscription window
         if ($companyData['plan'] === 'trial') {
             $companyData['trial_ends_at'] = now()->addDays(14);
+        } else {
+            $companyData['subscription_ends_at'] = now()->addYear();
         }
 
         $company = Company::create($companyData);
@@ -103,9 +119,32 @@ class CompanyController extends Controller
             'role' => 'company_owner',
         ]);
 
+        // Optionally provision the Hostinger subdomain right now.
+        $provisionMessage = null;
+        if ($request->boolean('auto_provision', true)) {
+            try {
+                $result = app(HostingerSubdomainProvisioner::class)->provision($company);
+                $provisionMessage = $result['message'];
+            } catch (\Throwable $e) {
+                $provisionMessage = 'Subdomain provisioning failed: ' . $e->getMessage()
+                    . ' — you can retry from the company page.';
+            }
+        }
+
         return redirect()
             ->route('superadmin.companies.show', $company)
-            ->with('success', "Company '{$company->name}' created successfully with admin user.");
+            ->with('success', "Company '{$company->name}' created with admin user."
+                . ($provisionMessage ? ' ' . $provisionMessage : ''));
+    }
+
+    /**
+     * Manually trigger subdomain provisioning for an existing company.
+     */
+    public function provisionSubdomain(Company $company)
+    {
+        $result = app(HostingerSubdomainProvisioner::class)->provision($company);
+        $flash = $result['ok'] ? 'success' : 'error';
+        return back()->with($flash, $result['message']);
     }
 
     public function show(Company $company)
@@ -133,6 +172,8 @@ class CompanyController extends Controller
             $request->merge(['subdomain' => Company::normalizeSubdomain($request->input('subdomain'))]);
         }
 
+        $allowedFeatures = array_keys(Company::AVAILABLE_FEATURES);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:100|unique:companies,slug,' . $company->id,
@@ -142,6 +183,7 @@ class CompanyController extends Controller
             'phone' => 'nullable|string|max:50',
             'address' => 'nullable|string',
             'plan' => 'required|in:trial,basic,pro,enterprise',
+            'type' => 'nullable|in:agency,freelancer,corporate',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'favicon' => 'nullable|image|mimes:ico,png|max:512',
             'primary_color' => 'nullable|string|max:7',
@@ -151,7 +193,15 @@ class CompanyController extends Controller
             'markup_percentage' => 'nullable|numeric|min:0|max:100',
             'currency' => 'nullable|string|max:3',
             'is_active' => 'boolean',
+            'features' => 'nullable|array',
+            'features.*' => 'string|in:'.implode(',', $allowedFeatures),
         ]);
+
+        if (array_key_exists('features', $validated)) {
+            $validated['features'] = is_array($validated['features'])
+                ? array_values(array_intersect($allowedFeatures, $validated['features']))
+                : [];
+        }
 
         // Handle logo upload
         if ($request->hasFile('logo')) {

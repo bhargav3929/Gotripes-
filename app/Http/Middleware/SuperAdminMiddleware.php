@@ -11,12 +11,14 @@ class SuperAdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (!auth()->check()) {
-            return redirect()->route('login');
+            return redirect()->route('superadmin.login');
         }
 
         $user = auth()->user();
         if (!$user->is_super_admin && $user->role !== 'super_admin') {
-            abort(403, 'Access denied. Super Admin privileges required.');
+            auth()->logout();
+            return redirect()->route('superadmin.login')
+                ->withErrors(['email' => 'This account does not have super-admin access.']);
         }
 
         return $next($request);

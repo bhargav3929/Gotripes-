@@ -1035,14 +1035,22 @@
                 <!-- Left Menu -->
                 <div class="gt-nav-left">
                     <a href="/" class="gt-nav-link <?php echo e(Request::is('/') ? 'active' : ''); ?>">Home</a>
+                    <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'activities')): ?>
                     <a href="/activities"
                         class="gt-nav-link <?php echo e(Request::is('activities') ? 'active' : ''); ?>">Activities</a>
+                    <?php endif; ?>
+                    <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'visas')): ?>
                     <a href="/uaevisa" class="gt-nav-link <?php echo e(Request::is('uaevisa') ? 'active' : ''); ?>">Visa
                         Services</a>
+                    <?php endif; ?>
+                    <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'tours')): ?>
                     <a href="/countriestour" class="gt-nav-link <?php echo e(Request::is('countriestour') ? 'active' : ''); ?>">Tour
                         Packages</a>
+                    <?php endif; ?>
+                    <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'hajj_umrah')): ?>
                     <a href="/hajj-umrah" class="gt-nav-link <?php echo e(Request::is('hajj-umrah') ? 'active' : ''); ?>">Hajj &
                         Umrah</a>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Center Logo -->
@@ -1053,11 +1061,17 @@
                 <!-- Right Menu -->
                 <div class="gt-nav-right">
                     <a href="/our-services" class="gt-nav-link <?php echo e(Request::is('our-services') ? 'active' : ''); ?>">Our Services</a>
+                    <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'shop')): ?>
                     <a href="/shopnow" class="gt-nav-link <?php echo e(Request::is('shopnow') ? 'active' : ''); ?>">Shop Online</a>
+                    <?php endif; ?>
+                    <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'pay_online')): ?>
                     <a href="/payonline" class="gt-nav-link <?php echo e(Request::is('payonline') ? 'active' : ''); ?>">Pay
                         Online</a>
+                    <?php endif; ?>
+                    <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'careers')): ?>
                     <a href="/lookingforajob"
                         class="gt-nav-link <?php echo e(Request::is('lookingforajob') ? 'active' : ''); ?>">Careers</a>
+                    <?php endif; ?>
                     <a href="/contact-us" class="gt-nav-link <?php echo e(Request::is('contact-us') ? 'active' : ''); ?>">Contact
                         Us</a>
                 </div>
@@ -1083,14 +1097,14 @@
         <!-- Mobile Menu Dropdown -->
         <nav class="gt-mobile-nav" id="mobileNav">
             <a href="/" class="gt-mobile-nav-link">Home</a>
-            <a href="/activities" class="gt-mobile-nav-link">Activities</a>
-            <a href="/uaevisa" class="gt-mobile-nav-link">Visa Services</a>
-            <a href="/countriestour" class="gt-mobile-nav-link">Tour Packages</a>
-            <a href="/hajj-umrah" class="gt-mobile-nav-link">Hajj & Umrah</a>
+            <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'activities')): ?><a href="/activities" class="gt-mobile-nav-link">Activities</a><?php endif; ?>
+            <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'visas')): ?><a href="/uaevisa" class="gt-mobile-nav-link">Visa Services</a><?php endif; ?>
+            <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'tours')): ?><a href="/countriestour" class="gt-mobile-nav-link">Tour Packages</a><?php endif; ?>
+            <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'hajj_umrah')): ?><a href="/hajj-umrah" class="gt-mobile-nav-link">Hajj & Umrah</a><?php endif; ?>
             <a href="/our-services" class="gt-mobile-nav-link">Our Services</a>
-            <a href="/shopnow" class="gt-mobile-nav-link">Shop Online</a>
-            <a href="/payonline" class="gt-mobile-nav-link">Pay Online</a>
-            <a href="/lookingforajob" class="gt-mobile-nav-link">Careers</a>
+            <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'shop')): ?><a href="/shopnow" class="gt-mobile-nav-link">Shop Online</a><?php endif; ?>
+            <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'pay_online')): ?><a href="/payonline" class="gt-mobile-nav-link">Pay Online</a><?php endif; ?>
+            <?php if (\Illuminate\Support\Facades\Blade::check('feature', 'careers')): ?><a href="/lookingforajob" class="gt-mobile-nav-link">Careers</a><?php endif; ?>
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
         </nav>
 

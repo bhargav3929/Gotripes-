@@ -312,6 +312,37 @@ unset($__errorArgs, $__bag); ?>
                 </div>
             </div>
 
+            <!-- Enabled Services -->
+            <?php
+                $allFeatures = \App\Models\Company::AVAILABLE_FEATURES;
+                $current = old('features', is_array($company->features) ? $company->features : array_keys($allFeatures));
+            ?>
+            <div class="card mb-4">
+                <div class="card-header"><i class="fas fa-list-check me-2"></i>Enabled Services</div>
+                <div class="card-body">
+                    <?php $__currentLoopData = $allFeatures; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="features[]" value="<?php echo e($key); ?>"
+                                   id="ef-<?php echo e($key); ?>" <?php echo e(in_array($key, (array) $current, true) ? 'checked' : ''); ?>>
+                            <label class="form-check-label" for="ef-<?php echo e($key); ?>"><?php echo e($label); ?></label>
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <small class="text-muted d-block mt-2">Disabled services 404 and disappear from menus.</small>
+                </div>
+            </div>
+
+            <!-- Tenant Type -->
+            <div class="card mb-4">
+                <div class="card-header"><i class="fas fa-tag me-2"></i>Tenant Type</div>
+                <div class="card-body">
+                    <select name="type" class="form-select form-select-sm">
+                        <option value="agency" <?php echo e(old('type', $company->type ?? 'agency') === 'agency' ? 'selected' : ''); ?>>Agency / B2B Partner</option>
+                        <option value="freelancer" <?php echo e(old('type', $company->type) === 'freelancer' ? 'selected' : ''); ?>>Freelancer</option>
+                        <option value="corporate" <?php echo e(old('type', $company->type) === 'corporate' ? 'selected' : ''); ?>>Corporate</option>
+                    </select>
+                </div>
+            </div>
+
             <!-- Actions -->
             <div class="card">
                 <div class="card-body">
