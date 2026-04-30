@@ -80,27 +80,47 @@
     }
 
     .esim-hero-inner {
-        max-width: 950px;
+        max-width: 1280px;
         margin: 0 auto;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 30px;
+        gap: 40px;
         position: relative;
         z-index: 1;
         width: 100%;
     }
 
     .esim-hero-left {
-        flex: 0 1 auto;
+        flex: 0 1 480px;
+        min-width: 0;
         animation: esimFadeInUp 0.8s ease forwards;
     }
 
     .esim-hero-right {
-        flex: 0 0 auto;
+        flex: 1 1 600px;
         display: flex;
         justify-content: center;
+        align-items: center;
         animation: esimFadeInRight 1s ease forwards;
+        min-width: 0;
+    }
+
+    .esim-hero-artwork {
+        position: relative;
+        width: 100%;
+        max-width: 720px;
+        line-height: 0;
+        animation: esimHeroFloat 7s ease-in-out infinite;
+        filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.45))
+                drop-shadow(0 0 80px rgba(255, 180, 0, 0.08));
+    }
+
+    .esim-hero-artwork picture,
+    .esim-hero-artwork img {
+        display: block;
+        width: 100%;
+        height: auto;
     }
 
     @keyframes esimFadeInUp {
@@ -2644,18 +2664,17 @@
 
     @media (max-width: 1024px) {
         .esim-hero {
-            padding: 15px 20px 15px;
+            padding: 24px 20px;
         }
         .esim-hero-inner {
             flex-direction: row;
-            gap: 20px;
+            gap: 24px;
         }
-        .esim-phone-frame {
-            width: 180px;
-            height: 340px;
+        .esim-hero-left {
+            flex: 1 1 380px;
         }
-        .esim-visual-container {
-            max-width: 300px;
+        .esim-hero-artwork {
+            max-width: 540px;
         }
         .esim-step1 {
             min-height: auto;
@@ -2665,92 +2684,73 @@
 
     @media (max-width: 768px) {
         .esim-hero {
-            padding: 8px 16px 8px;
+            padding: 20px 16px 24px;
         }
         .esim-hero-inner {
             flex-direction: column;
-            gap: 10px;
+            gap: 18px;
             text-align: center;
         }
         .esim-hero-left {
-            order: 1;
+            order: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
+            flex: 0 0 auto;
         }
         .esim-hero-right {
-            order: 2;
+            order: 1;
             justify-content: center;
+            flex: 0 0 auto;
+            width: 100%;
         }
-        .esim-phone-frame {
-            width: 140px;
-            height: 260px;
-            border-radius: 22px;
-            padding: 6px;
-        }
-        .esim-phone-screen {
-            border-radius: 18px;
-        }
-        .esim-hero-badge {
-            display: none;
+        .esim-hero-artwork {
+            max-width: 100%;
+            margin: 0 auto;
+            filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.45));
         }
         .esim-hero-title {
-            font-size: 22px;
-            margin-bottom: 4px;
+            font-size: clamp(24px, 7vw, 32px);
+            margin-bottom: 8px;
         }
         .esim-hero-subtitle {
-            font-size: 11px;
-            margin: 0 auto 8px;
-            line-height: 1.4;
+            font-size: 13px;
+            margin: 0 auto 14px;
+            line-height: 1.5;
+            max-width: 90%;
         }
         .esim-hero-cta {
             flex-direction: row;
-            gap: 6px;
+            gap: 8px;
             justify-content: center;
-            margin-bottom: 6px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
         }
         .esim-btn-primary {
-            font-size: 9px;
-            padding: 8px 14px;
+            font-size: 11px;
+            padding: 11px 18px;
         }
         .esim-btn-secondary {
-            display: none;
+            font-size: 11px;
+            padding: 11px 16px;
         }
         .esim-trust-row {
             justify-content: center;
         }
         .esim-trust-pill {
-            font-size: 8px;
-            padding: 4px 8px;
+            font-size: 10px;
+            padding: 6px 10px;
         }
-        .esim-visual-container {
-            max-width: 220px;
+    }
+
+    @media (max-width: 420px) {
+        .esim-hero-badge {
+            font-size: 10px;
+            padding: 8px 14px;
+            letter-spacing: 1.5px;
         }
-        .esim-floating-badge {
-            font-size: 7px;
-            padding: 3px 6px;
-        }
-        .badge-f1 { top: 10px; left: -20px; }
-        .badge-f2 { bottom: 40px; left: -25px; }
-        .badge-f3 { top: 30px; right: -25px; }
-        .badge-f4 { bottom: 10px; right: -15px; }
-        .esim-globe {
-            width: 45px;
-            height: 45px;
-        }
-        .esim-globe i {
-            font-size: 22px;
-        }
-        .esim-globe-ring.ring1 { width: 55px; height: 55px; }
-        .esim-globe-ring.ring2 { width: 65px; height: 65px; }
-        .esim-globe-ring.ring3 { width: 75px; height: 75px; }
-        .esim-screen-body {
-            padding: 6px 8px;
-            gap: 4px;
-        }
-        .esim-activate-btn {
-            font-size: 9px;
-            padding: 4px 12px;
+        .esim-btn-secondary {
+            display: none;
         }
     }
 
@@ -3312,43 +3312,17 @@
             </div>
         </div>
 
-        <!-- Visual (Right) - Pure CSS eSIM Chip Animation -->
+        <!-- Visual (Right) — eSIM global network artwork -->
         <div class="esim-hero-right">
-            <div class="esim-visual-container">
-                <div class="esim-visual-glow"></div>
-                <div class="esim-chip-visual">
-                    <div class="esim-phone-frame">
-                        <div class="esim-phone-screen">
-                            <div class="esim-screen-top">
-                                <div class="esim-signal-bars">
-                                    <span></span><span></span><span></span><span></span>
-                                </div>
-                                <div class="esim-carrier-name">GoTrips eSIM</div>
-                                <div class="esim-battery-icon"><span></span></div>
-                            </div>
-                            <div class="esim-screen-body">
-                                <div class="esim-globe-wrap">
-                                    <div class="esim-globe">
-                                        <div class="esim-globe-ring ring1"></div>
-                                        <div class="esim-globe-ring ring2"></div>
-                                        <div class="esim-globe-ring ring3"></div>
-                                        <i class="fa-solid fa-earth-americas"></i>
-                                    </div>
-                                </div>
-                                <div class="esim-status-text">Connected · 186+ Countries</div>
-                                <div class="esim-data-bar">
-                                    <div class="esim-data-fill"></div>
-                                </div>
-                                <div class="esim-data-label">5 GB · 30 Days · AED 51</div>
-                                <div class="esim-activate-btn">✓ Active</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="esim-floating-badge badge-f1"><i class="fa-solid fa-wifi"></i> Connected</div>
-                    <div class="esim-floating-badge badge-f2"><i class="fa-solid fa-bolt"></i> Instant</div>
-                    <div class="esim-floating-badge badge-f3"><i class="fa-solid fa-shield-halved"></i> Secure</div>
-                    <div class="esim-floating-badge badge-f4"><i class="fa-solid fa-earth-americas"></i> 180+ Countries</div>
-                </div>
+            <div class="esim-hero-artwork">
+                <picture>
+                    <source srcset="{{ asset('assets/esim/hero-esim-network.webp') }}" type="image/webp">
+                    <img
+                        src="{{ asset('assets/esim/hero-esim-network.jpg') }}"
+                        alt="GoTrips eSIM connecting travelers across 180+ countries"
+                        width="1920" height="1072"
+                        loading="eager" fetchpriority="high" decoding="async">
+                </picture>
             </div>
         </div>
     </div>
