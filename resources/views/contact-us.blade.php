@@ -523,13 +523,18 @@
             </h3>
 
             @php
-                $cuLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
-                $cuEmail = (isset($company) && $company && $company->email) ? $company->email : 'info@aynalamirtourism.com';
-                $cuPhone = (isset($company) && $company && $company->phone) ? $company->phone : '+971-54 365 1065';
-                $cuAddress = (isset($company) && $company && $company->address) ? $company->address : 'Sanaiya, Beda Zayed Al Dhafra, Abu Dhabi, U.A.E';
                 $isMain = !isset($company) || !$company || $company->slug === 'gotrips';
+                $cuLogo = (isset($company) && $company && $company->logo)
+                    ? asset('storage/' . $company->logo)
+                    : ($isMain ? asset('assets/index_files/logo.png') : null);
+                // On tenant subdomains, only show contact info that the tenant has actually set —
+                // never fall back to GoTrips' info.
+                $cuEmail   = (isset($company) && $company && $company->email)   ? $company->email   : ($isMain ? 'info@aynalamirtourism.com' : null);
+                $cuPhone   = (isset($company) && $company && $company->phone)   ? $company->phone   : ($isMain ? '+971-54 365 1065' : null);
+                $cuAddress = (isset($company) && $company && $company->address) ? $company->address : ($isMain ? 'Sanaiya, Beda Zayed Al Dhafra, Abu Dhabi, U.A.E' : null);
             @endphp
             <!-- Address -->
+            @if($cuAddress)
             <div class="col-md-4 col-sm-6">
                 <div class="qr-card">
                     <div class="qr-img">
@@ -543,12 +548,18 @@
                     <p class="qr-text" style="line-height: 1.5;">{{ $cuAddress }}</p>
                 </div>
             </div>
+            @endif
 
             <!-- Email -->
+            @if($cuEmail)
             <div class="col-md-4 col-sm-6">
                 <div class="qr-card">
                     <div class="qr-img" style="background: transparent;">
-                        <img src="{{ $cuLogo }}" alt="{{ $cuName }} logo">
+                        @if($cuLogo)
+                            <img src="{{ $cuLogo }}" alt="{{ $cuName }} logo">
+                        @else
+                            <i class="fa-solid fa-envelope" style="font-size:64px; color:#FFD700;"></i>
+                        @endif
                     </div>
                     <div class="qr-title">Email Us</div>
                     <p class="qr-text" style="word-break: break-all;">
@@ -556,8 +567,10 @@
                     </p>
                 </div>
             </div>
+            @endif
 
             <!-- WhatsApp / Phone -->
+            @if($cuPhone)
             <div class="col-md-4 col-sm-6">
                 <div class="qr-card">
                     <div class="qr-img">
@@ -573,6 +586,14 @@
                     </p>
                 </div>
             </div>
+            @endif
+
+            @if(!$isMain && !$cuEmail && !$cuPhone && !$cuAddress)
+            <div class="col-12 text-center" style="padding: 40px 20px; color: #ccc;">
+                <i class="fa-solid fa-circle-info" style="font-size: 32px; color: #FFD700; margin-bottom: 16px;"></i>
+                <p>Contact information is being set up. Please check back shortly.</p>
+            </div>
+            @endif
         </div>
 
     </div>
