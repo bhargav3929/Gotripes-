@@ -143,8 +143,8 @@
             @csrf
 
             <div class="form-group">
-                <label for="username">Username</label>
-                <input id="username" type="text" name="username" value="{{ old('username') }}" required autofocus>
+                <label for="username">Email</label>
+                <input id="username" type="email" name="username" value="{{ old('username') }}" placeholder="you@example.com" required autofocus autocomplete="email">
             </div>
 
             <div class="form-group">
