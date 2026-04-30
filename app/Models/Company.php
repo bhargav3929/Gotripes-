@@ -16,6 +16,7 @@ class Company extends Model
         'slug',
         'domain',
         'subdomain',
+        'type',
         'logo',
         'favicon',
         'primary_color',
@@ -63,6 +64,7 @@ class Company extends Model
         'help', 'docs', 'blog', 'shop', 'store', 'pay', 'payment', 'checkout',
         'billing', 'subscription', 'status', 'monitor', 'test', 'staging',
         'dev', 'demo', 'sandbox', 'beta', 'alpha', 'gotrips',
+        'freelancer', 'freelancers',
     ];
 
     public function setSubdomainAttribute($value): void
@@ -174,11 +176,37 @@ class Company extends Model
         return !$this->hasActiveSubscription();
     }
 
+    // Canonical list of features tenants can be granted
+    public const AVAILABLE_FEATURES = [
+        'activities'   => 'UAE Activities',
+        'visas'        => 'UAE Visas',
+        'tours'        => 'Tour Packages',
+        'hajj_umrah'   => 'Hajj & Umrah',
+        'esim'         => 'eSIM',
+        'shop'         => 'Shop Online',
+        'careers'      => 'Careers / Jobs',
+        'pay_online'   => 'Pay Online',
+    ];
+
     // Feature checks
     public function hasFeature(string $feature): bool
     {
         $features = $this->features ?? [];
-        return in_array($feature, $features);
+        // If features is empty/null, treat as full-access (legacy / main tenant)
+        if (empty($features)) {
+            return true;
+        }
+        return in_array($feature, $features, true);
+    }
+
+    public function isFreelancer(): bool
+    {
+        return $this->type === 'freelancer';
+    }
+
+    public function isAgency(): bool
+    {
+        return $this->type === 'agency';
     }
 
     public function getSetting(string $key, $default = null)

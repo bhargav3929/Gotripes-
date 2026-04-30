@@ -20,6 +20,251 @@
 
     * { box-sizing: border-box; }
 
+    /* ============================================================
+       PARTNER CTA BANNER — used on homepage & esim page
+       ============================================================ */
+    .esim-partner-cta-banner {
+        position: relative;
+        max-width: 1240px;
+        margin: 56px auto;
+        padding: 0 24px;
+    }
+    .epcb-inner {
+        position: relative;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(212, 175, 55, 0.04) 100%);
+        border: 1px solid rgba(255, 215, 0, 0.25);
+        border-radius: 20px;
+        padding: 28px 36px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        overflow: hidden;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 12px 40px rgba(255, 215, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+    .epcb-inner::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -10%;
+        width: 60%; height: 200%;
+        background: linear-gradient(115deg, transparent 30%, rgba(255, 215, 0, 0.18) 50%, transparent 70%);
+        animation: epcb-shine 6s ease-in-out infinite;
+        pointer-events: none;
+    }
+    @keyframes epcb-shine {
+        0%, 100% { transform: translateX(-30%) skewX(-15deg); opacity: 0; }
+        50% { transform: translateX(180%) skewX(-15deg); opacity: 1; }
+    }
+    .epcb-content { display: flex; align-items: center; gap: 22px; flex: 1; min-width: 0; position: relative; z-index: 1; }
+    .epcb-icon {
+        flex-shrink: 0;
+        width: 64px; height: 64px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+        color: #0a0a0a;
+        font-size: 26px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 8px 24px rgba(255, 215, 0, 0.35);
+    }
+    .epcb-text { min-width: 0; }
+    .epcb-eyebrow {
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px; font-weight: 700;
+        letter-spacing: 2.2px;
+        color: #FFD700;
+        text-transform: uppercase;
+        display: block; margin-bottom: 4px;
+    }
+    .epcb-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 22px; font-weight: 800;
+        letter-spacing: -0.01em;
+        color: #ffffff;
+        margin: 0 0 4px 0;
+        line-height: 1.2;
+    }
+    .epcb-sub {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.65);
+        margin: 0;
+        line-height: 1.5;
+    }
+    .epcb-btn {
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+        display: inline-flex; align-items: center; gap: 10px;
+        background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+        color: #0a0a0a;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px; font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        padding: 14px 28px;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+        box-shadow: 0 6px 22px rgba(255, 215, 0, 0.25);
+    }
+    .epcb-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(255, 215, 0, 0.45);
+        color: #0a0a0a;
+    }
+    @media (max-width: 768px) {
+        .epcb-inner { flex-direction: column; align-items: flex-start; padding: 22px 20px; }
+        .epcb-content { gap: 14px; }
+        .epcb-icon { width: 52px; height: 52px; font-size: 22px; }
+        .epcb-title { font-size: 18px; }
+        .epcb-sub { font-size: 13px; }
+        .epcb-btn { width: 100%; justify-content: center; padding: 12px 18px; }
+    }
+
+    /* ============================================================
+       ANIMATED GOLDEN SECTION TITLES (between image sections)
+       ============================================================ */
+    .esim-golden-divider {
+        max-width: 1240px;
+        margin: 72px auto;
+        padding: 56px 32px;
+        text-align: center;
+        position: relative;
+    }
+    .esim-golden-divider::before,
+    .esim-golden-divider::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+    }
+    .esim-golden-divider::before { top: 0; }
+    .esim-golden-divider::after { bottom: 0; }
+    .esim-golden-eyebrow {
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px; font-weight: 600;
+        letter-spacing: 4px;
+        color: rgba(255, 215, 0, 0.7);
+        text-transform: uppercase;
+        margin-bottom: 14px;
+        display: block;
+        animation: gold-fade 1.2s ease-out;
+    }
+    .esim-golden-title {
+        font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+        font-size: clamp(34px, 5vw, 64px);
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.05;
+        margin: 0 auto;
+        max-width: 1000px;
+        background: linear-gradient(120deg,
+            #B8860B 0%,
+            #FFD700 25%,
+            #FFFAE5 50%,
+            #FFD700 75%,
+            #B8860B 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gold-shimmer 4s linear infinite;
+    }
+    .esim-golden-sub {
+        margin: 18px auto 0;
+        max-width: 680px;
+        font-size: 16px; line-height: 1.6;
+        color: rgba(255, 255, 255, 0.55);
+        font-weight: 400;
+    }
+    @keyframes gold-shimmer {
+        0% { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
+    @keyframes gold-fade {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+        .esim-golden-divider { margin: 48px auto; padding: 36px 20px; }
+        .esim-golden-divider::before, .esim-golden-divider::after { width: 140px; }
+        .esim-golden-sub { font-size: 14px; }
+    }
+
+    /* ============================================================
+       STEP 2 (PACKAGE COLLECTION) — LARGER, MORE READABLE
+       ============================================================ */
+    #esimStep2 .esim-selected-name { font-size: 22px; font-weight: 700; }
+    #esimStep2 .esim-bundle-tab { font-size: 16px; font-weight: 600; padding: 14px 22px; }
+    #esimStep2 .esim-bundles-list .bundle-card,
+    #esimStep2 .esim-bundles-list > * { font-size: 16px; }
+    #esimStep2 .bundle-name, #esimStep2 .esim-bundle-name { font-size: 19px; font-weight: 700; }
+    #esimStep2 .bundle-data, #esimStep2 .esim-bundle-data { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    #esimStep2 .bundle-validity, #esimStep2 .esim-bundle-validity,
+    #esimStep2 .bundle-meta, #esimStep2 .esim-bundle-meta { font-size: 15px; }
+    #esimStep2 .bundle-price, #esimStep2 .esim-bundle-price { font-size: 26px; font-weight: 800; }
+    #esimStep2 .esim-continue-btn { font-size: 17px; padding: 18px 34px; }
+
+    /* ============================================================
+       STEP 3 (CHECKOUT) — UNIFORM INPUTS, LARGER FONTS, COUNTRY CODE
+       ============================================================ */
+    #esimStep3 .esim-checkout-title { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+    #esimStep3 .esim-checkout-subtitle { font-size: 16px; line-height: 1.55; }
+    #esimStep3 .esim-label { font-size: 14px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: #cfcfcf; margin-bottom: 8px; display: block; }
+    #esimStep3 .esim-input,
+    #esimStep3 .esim-input-wrapper input,
+    #esimStep3 .esim-input-wrapper select {
+        font-size: 16px !important;
+        height: 56px !important;
+        padding: 14px 16px 14px 44px !important;
+        border-radius: 12px !important;
+        width: 100%;
+    }
+    #esimStep3 .esim-form-group { margin-bottom: 18px; }
+    #esimStep3 .esim-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+    @media (max-width: 640px) {
+        #esimStep3 .esim-form-row { grid-template-columns: 1fr; }
+    }
+    /* Phone with country code dropdown */
+    #esimStep3 .esim-phone-wrap {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: 10px;
+    }
+    #esimStep3 .esim-phone-wrap .esim-input-wrapper {
+        position: relative;
+    }
+    #esimStep3 .esim-phone-cc {
+        appearance: none;
+        -webkit-appearance: none;
+        background: var(--c-input-bg, #111);
+        color: #fff;
+        border: 1px solid var(--c-input-border, #222);
+        border-radius: 12px;
+        height: 56px;
+        font-size: 16px;
+        padding: 0 32px 0 16px !important;
+        font-weight: 600;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FFD700' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+    }
+    #esimStep3 .esim-phone-cc:focus {
+        outline: none;
+        border-color: #FFD700;
+    }
+    /* Side image to fill any remaining vertical space if checkout shorter than viewport */
+    #esimStep3 .esim-checkout-grid {
+        align-items: stretch;
+    }
+
     html {
         background-color: #000 !important;
         overflow-x: hidden;
@@ -3331,6 +3576,34 @@
 </section>
 
 <!-- ============================================================
+     ANIMATED GOLDEN TITLE — between hero and how-to-activate
+     ============================================================ -->
+<section class="esim-golden-divider" aria-hidden="false">
+    <span class="esim-golden-eyebrow">Powered by Global Carriers</span>
+    <h2 class="esim-golden-title">Connected in 186 Countries</h2>
+    <p class="esim-golden-sub">One eSIM. Every continent. Land in any country with high-speed data already active on your phone — no SIM swap, no roaming bills.</p>
+</section>
+
+<!-- ============================================================
+     PARTNER CTA BANNER (E-SIM page)
+     ============================================================ -->
+<section class="esim-partner-cta-banner">
+    <div class="epcb-inner">
+        <div class="epcb-content">
+            <div class="epcb-icon"><i class="fa-solid fa-handshake"></i></div>
+            <div class="epcb-text">
+                <span class="epcb-eyebrow">Partner Program</span>
+                <h3 class="epcb-title">E-SIM Partner Login &amp; Earn Commissions</h3>
+                <p class="epcb-sub">Refer travellers, earn on every eSIM sale — paid directly to your bank.</p>
+            </div>
+        </div>
+        <a href="{{ route('referral.login') }}" class="epcb-btn">
+            Click Here <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+
+<!-- ============================================================
      HOW TO ACTIVATE eSIM
      ============================================================ -->
 <section class="esim-how-section">
@@ -3522,9 +3795,50 @@
 
                         <div class="esim-form-group">
                             <label class="esim-label">WhatsApp / Phone Number</label>
-                            <div class="esim-input-wrapper">
-                                <i class="fa-solid fa-phone"></i>
-                                <input type="tel" id="esimPhone" class="esim-input" placeholder="+971 50 123 4567">
+                            <div class="esim-phone-wrap">
+                                <select id="esimPhoneCC" class="esim-phone-cc" aria-label="Country code">
+                                    <option value="+971" selected>🇦🇪 +971</option>
+                                    <option value="+966">🇸🇦 +966</option>
+                                    <option value="+974">🇶🇦 +974</option>
+                                    <option value="+965">🇰🇼 +965</option>
+                                    <option value="+973">🇧🇭 +973</option>
+                                    <option value="+968">🇴🇲 +968</option>
+                                    <option value="+91">🇮🇳 +91</option>
+                                    <option value="+92">🇵🇰 +92</option>
+                                    <option value="+880">🇧🇩 +880</option>
+                                    <option value="+44">🇬🇧 +44</option>
+                                    <option value="+1">🇺🇸 +1</option>
+                                    <option value="+1">🇨🇦 +1</option>
+                                    <option value="+61">🇦🇺 +61</option>
+                                    <option value="+49">🇩🇪 +49</option>
+                                    <option value="+33">🇫🇷 +33</option>
+                                    <option value="+39">🇮🇹 +39</option>
+                                    <option value="+34">🇪🇸 +34</option>
+                                    <option value="+20">🇪🇬 +20</option>
+                                    <option value="+962">🇯🇴 +962</option>
+                                    <option value="+961">🇱🇧 +961</option>
+                                    <option value="+90">🇹🇷 +90</option>
+                                    <option value="+63">🇵🇭 +63</option>
+                                    <option value="+62">🇮🇩 +62</option>
+                                    <option value="+60">🇲🇾 +60</option>
+                                    <option value="+65">🇸🇬 +65</option>
+                                    <option value="+94">🇱🇰 +94</option>
+                                    <option value="+977">🇳🇵 +977</option>
+                                    <option value="+234">🇳🇬 +234</option>
+                                    <option value="+254">🇰🇪 +254</option>
+                                    <option value="+27">🇿🇦 +27</option>
+                                    <option value="+55">🇧🇷 +55</option>
+                                    <option value="+52">🇲🇽 +52</option>
+                                    <option value="+54">🇦🇷 +54</option>
+                                    <option value="+7">🇷🇺 +7</option>
+                                    <option value="+86">🇨🇳 +86</option>
+                                    <option value="+81">🇯🇵 +81</option>
+                                    <option value="+82">🇰🇷 +82</option>
+                                </select>
+                                <div class="esim-input-wrapper">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <input type="tel" id="esimPhone" class="esim-input" placeholder="50 123 4567" inputmode="tel">
+                                </div>
                             </div>
                             <span class="esim-error" id="esimPhoneError">Please enter a valid phone number</span>
                         </div>
@@ -3622,6 +3936,16 @@
 <!-- ============================================================
      HOW IT WORKS
      ============================================================ -->
+
+<!-- ============================================================
+     ANIMATED GOLDEN TITLE — between wizard and features
+     ============================================================ -->
+<section class="esim-golden-divider">
+    <span class="esim-golden-eyebrow">Travel Without Limits</span>
+    <h2 class="esim-golden-title">Stay Connected Everywhere</h2>
+    <p class="esim-golden-sub">From the moment you land to the moment you get home — uninterrupted data, instant activation, zero hidden fees.</p>
+</section>
+
 <!-- ============================================================
      WHY CHOOSE eSIM
      ============================================================ -->
@@ -4493,7 +4817,12 @@
         var payload = {
             name: document.getElementById('esimName').value.trim(),
             email: document.getElementById('esimEmail').value.trim(),
-            phone: document.getElementById('esimPhone').value.trim() || null,
+            phone: (function() {
+                var cc = document.getElementById('esimPhoneCC');
+                var num = document.getElementById('esimPhone').value.trim();
+                if (!num) return null;
+                return (cc ? cc.value + ' ' : '') + num;
+            })(),
             bundle_code: bundle.bundle_code,
             country_code: country.iso3,
             country_name: country.name

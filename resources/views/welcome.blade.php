@@ -2,6 +2,86 @@
 <!-- START HOME -->
 @include('banner')
 
+{{-- E-SIM Partner CTA banner (homepage) --}}
+<style>
+.home-epcb {
+    position: relative;
+    max-width: 1240px;
+    margin: 48px auto;
+    padding: 0 24px;
+    font-family: 'Outfit', sans-serif;
+}
+.home-epcb-inner {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.10) 0%, rgba(212, 175, 55, 0.05) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.28);
+    border-radius: 20px;
+    padding: 28px 36px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(255, 215, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.home-epcb-inner::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -10%;
+    width: 60%; height: 200%;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 215, 0, 0.18) 50%, transparent 70%);
+    animation: home-epcb-shine 6s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes home-epcb-shine {
+    0%, 100% { transform: translateX(-30%) skewX(-15deg); opacity: 0; }
+    50% { transform: translateX(180%) skewX(-15deg); opacity: 1; }
+}
+.home-epcb-content { display: flex; align-items: center; gap: 22px; flex: 1; min-width: 0; position: relative; z-index: 1; }
+.home-epcb-icon {
+    flex-shrink: 0; width: 64px; height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+    color: #0a0a0a; font-size: 26px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.35);
+}
+.home-epcb-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2.2px; color: #FFD700; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.home-epcb-title { font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 4px 0; line-height: 1.2; letter-spacing: -0.01em; }
+.home-epcb-sub { font-size: 14px; color: rgba(255,255,255,0.65); margin: 0; line-height: 1.5; }
+.home-epcb-btn {
+    flex-shrink: 0; position: relative; z-index: 1;
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+    color: #0a0a0a; font-size: 14px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    padding: 14px 28px; border-radius: 50px;
+    text-decoration: none; transition: all 0.25s ease; white-space: nowrap;
+    box-shadow: 0 6px 22px rgba(255, 215, 0, 0.25);
+}
+.home-epcb-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255, 215, 0, 0.45); color: #0a0a0a; text-decoration: none; }
+@media (max-width: 768px) {
+    .home-epcb-inner { flex-direction: column; align-items: flex-start; padding: 22px 20px; }
+    .home-epcb-content { gap: 14px; }
+    .home-epcb-icon { width: 52px; height: 52px; font-size: 22px; }
+    .home-epcb-title { font-size: 18px; }
+    .home-epcb-sub { font-size: 13px; }
+    .home-epcb-btn { width: 100%; justify-content: center; padding: 12px 18px; }
+}
+</style>
+<section class="home-epcb">
+    <div class="home-epcb-inner">
+        <div class="home-epcb-content">
+            <div class="home-epcb-icon"><i class="fa-solid fa-handshake"></i></div>
+            <div>
+                <span class="home-epcb-eyebrow">Partner Program</span>
+                <h3 class="home-epcb-title">E-SIM Partner Login &amp; Earn Commissions</h3>
+                <p class="home-epcb-sub">Refer travellers, earn on every eSIM sale — paid directly to your bank.</p>
+            </div>
+        </div>
+        <a href="{{ route('referral.login') }}" class="home-epcb-btn">
+            Click Here <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+
 {{-- Mobile fix: override overflow:hidden on banner containers so ad cards stay visible in original position --}}
 <style>
 @media (max-width: 768px) {

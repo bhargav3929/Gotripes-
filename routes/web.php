@@ -271,6 +271,7 @@ use App\Http\Controllers\Manager\ManagerDashboardController;
 use App\Http\Controllers\Manager\ManagerAdSlotsController;
 use App\Http\Controllers\Manager\ManagerAnnouncementsController;
 use App\Http\Controllers\Manager\ManagerActivitiesController;
+use App\Http\Controllers\Manager\ManagerSettingsController;
 
 Route::get('/manager/login', [ManagerAuthController::class, 'showLogin'])->name('manager.login');
 Route::post('/manager/login', [ManagerAuthController::class, 'login'])->name('manager.login.submit');
@@ -281,6 +282,9 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::resource('adslots', ManagerAdSlotsController::class);
     Route::resource('announcements', ManagerAnnouncementsController::class);
     Route::resource('activities', ManagerActivitiesController::class);
+
+    Route::get('/settings/features', [ManagerSettingsController::class, 'features'])->name('settings.features');
+    Route::post('/settings/features', [ManagerSettingsController::class, 'updateFeatures'])->name('settings.features.update');
 });
 
 // GitHub auto-deploy webhook
@@ -365,6 +369,12 @@ Route::post('/partner/logout', [ReferralAgentDashboardController::class, 'logout
 // Referral Agent Public Signup
 Route::get('/partner/register', [ReferralAgentSignupController::class, 'showRegister'])->name('referral.register');
 Route::post('/partner/register', [ReferralAgentSignupController::class, 'register'])->name('referral.register.submit');
+
+// ─── Freelancer Platform (freelancers.gotrips.ai) ──────────────────
+use App\Http\Controllers\FreelancerSignupController;
+Route::get('/freelancer', [FreelancerSignupController::class, 'landing'])->name('freelancer.landing');
+Route::get('/freelancer/register', [FreelancerSignupController::class, 'showRegister'])->name('freelancer.register');
+Route::post('/freelancer/register', [FreelancerSignupController::class, 'register'])->name('freelancer.register.submit');
 
 // Referral Agent Dashboard (Protected)
 Route::middleware(['referral.agent'])->prefix('partner')->name('referral.')->group(function () {

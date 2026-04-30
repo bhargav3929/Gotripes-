@@ -72,6 +72,7 @@ class Kernel extends HttpKernel
         'referral.agent' => \App\Http\Middleware\ReferralAgentMiddleware::class,
         'referral.tracking' => \App\Http\Middleware\ReferralTrackingMiddleware::class,
         'tenant' => \App\Http\Middleware\IdentifyTenant::class,
+        'tenant.feature' => \App\Http\Middleware\EnsureTenantFeature::class,
         'super.admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
         'company.admin' => \App\Http\Middleware\CompanyAdminMiddleware::class,
     ];

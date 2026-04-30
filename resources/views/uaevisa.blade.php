@@ -137,23 +137,23 @@
 
     .field-label {
         color: var(--c-text-muted);
-        font-size: 9px;
+        font-size: 11px;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 4px;
+        letter-spacing: 1.6px;
+        margin-bottom: 6px;
     }
 
     .field-input {
         width: 100%;
-        height: 38px;
+        height: 48px;
         background: var(--c-input-bg);
         border: 1px solid var(--c-input-border);
-        border-radius: 8px;
-        padding: 0 14px;
+        border-radius: 10px;
+        padding: 0 16px;
         color: white;
         font-family: 'Outfit', sans-serif;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 500;
         transition: all 0.2s ease;
     }
@@ -498,36 +498,19 @@
                         </div>
                         <div class="form-field">
                             <label class="field-label">Number of Persons (Adults)</label>
-                            <input
-                                type="number"
-                                class="field-input"
-                                id="visaCount"
-                                name="visa_count"
-                                min="1"
-                                max="10"
-                                step="1"
-                                value="1"
-                                inputmode="numeric"
-                                pattern="[0-9]*"
-                                placeholder="e.g. 2"
-                                required
-                            >
+                            <select class="field-input" id="visaCount" name="visa_count" required>
+                                @for ($i = 1; $i <= 10; $i++)
+                                    <option value="{{ $i }}" {{ $i === 1 ? 'selected' : '' }}>{{ $i }} {{ $i === 1 ? 'Adult' : 'Adults' }}</option>
+                                @endfor
+                            </select>
                         </div>
                         <div class="form-field">
                             <label class="field-label">Number of Children</label>
-                            <input
-                                type="number"
-                                class="field-input"
-                                id="visaChildren"
-                                name="children_count"
-                                min="0"
-                                max="10"
-                                step="1"
-                                value="0"
-                                inputmode="numeric"
-                                pattern="[0-9]*"
-                                placeholder="e.g. 1"
-                            >
+                            <select class="field-input" id="visaChildren" name="children_count">
+                                @for ($i = 0; $i <= 10; $i++)
+                                    <option value="{{ $i }}" {{ $i === 0 ? 'selected' : '' }}>{{ $i }} {{ $i === 1 ? 'Child' : 'Children' }}</option>
+                                @endfor
+                            </select>
                         </div>
                         <div class="form-field">
                             <label class="field-label">Arrival Date</label>
@@ -650,8 +633,8 @@
                 if (!/^[0-9]+$/.test(text)) e.preventDefault();
             });
         }
-        enforceNumericOnly(visaCountSelect);
-        enforceNumericOnly(childrenCountInput);
+        // Numeric enforcement no longer needed for native select dropdowns
+        // (kept enforceNumericOnly defined in case other inputs reuse it)
 
         function readCount(el, min, max, fallback) {
             let v = parseInt(el.value, 10);
@@ -725,8 +708,8 @@
         // Initialize
         refreshForm();
 
-        visaCountSelect.addEventListener('input', refreshForm);
-        childrenCountInput.addEventListener('input', refreshForm);
+        visaCountSelect.addEventListener('change', refreshForm);
+        childrenCountInput.addEventListener('change', refreshForm);
 
         // --- Pricing Logic ---
         function updatePrice() {

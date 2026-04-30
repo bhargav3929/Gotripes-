@@ -10,25 +10,37 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class ReferralAgentSignupController extends Controller
+/**
+ * Freelancer signup — accessible at freelancers.gotrips.ai/register
+ * Stores agent with is_freelancer=true; reuses partner referral plumbing.
+ */
+class FreelancerSignupController extends Controller
 {
+    public function landing()
+    {
+        if (Auth::guard('referral_agent')->check()) {
+            return redirect()->route('referral.dashboard');
+        }
+        return view('freelancer.landing');
+    }
+
     public function showRegister()
     {
         $settings = ReferralSetting::getSettings();
         if (!$settings->signup_enabled) {
-            return redirect()->route('referral.login')->with('error', 'Registrations are currently closed.');
+            return redirect()->route('freelancer.landing')->with('error', 'Registrations are currently closed.');
         }
         if (Auth::guard('referral_agent')->check()) {
             return redirect()->route('referral.dashboard');
         }
-        return view('referral.auth.register');
+        return view('freelancer.register');
     }
 
     public function register(Request $request)
     {
         $settings = ReferralSetting::getSettings();
         if (!$settings->signup_enabled) {
-            return redirect()->route('referral.login')->with('error', 'Registrations are currently closed.');
+            return redirect()->route('freelancer.landing')->with('error', 'Registrations are currently closed.');
         }
 
         $validated = $request->validate([
@@ -36,8 +48,9 @@ class ReferralAgentSignupController extends Controller
             'email'               => 'required|email|unique:referral_agents,email',
             'phone'               => 'required|string|max:20',
             'country'             => 'required|string|max:100',
+            'profile_headline'    => 'nullable|string|max:160',
+            'services_offered'    => 'nullable|string|max:2000',
             'password'            => 'required|min:8|confirmed',
-            // Bank details for commission payouts
             'bank_name'           => 'required|string|max:255',
             'account_holder_name' => 'required|string|max:255',
             'account_number'      => 'required|string|max:64',
@@ -51,6 +64,9 @@ class ReferralAgentSignupController extends Controller
                 'email'            => $validated['email'],
                 'phone'            => $validated['phone'],
                 'country'          => $validated['country'],
+                'is_freelancer'    => true,
+                'profile_headline' => $validated['profile_headline'] ?? null,
+                'services_offered' => $validated['services_offered'] ?? null,
                 'password'         => Hash::make($validated['password']),
                 'commission_type'  => $settings->commission_type,
                 'commission_value' => $settings->commission_value,
@@ -76,6 +92,6 @@ class ReferralAgentSignupController extends Controller
         $agent->update(['last_login_at' => now()]);
 
         return redirect()->route('referral.dashboard')
-            ->with('success', 'Welcome to GoTrips Partner Program! Your referral link is ready.');
+            ->with('success', 'Welcome to GoTrips Freelancers! Your storefront is live.');
     }
 }

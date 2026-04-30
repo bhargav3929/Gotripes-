@@ -741,6 +741,78 @@
 
                     <div class="section-divider"></div>
 
+                    {{-- BANK DETAILS — for commission payouts --}}
+                    <div class="form-group" style="margin-bottom: 0.5rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                            <i class="fas fa-university" style="color: var(--primary-gold);"></i>
+                            <h3 style="font-size: 0.95rem; font-weight: 700; color:#fff; margin:0; letter-spacing:-0.01em;">Bank Details (for commission payouts)</h3>
+                        </div>
+                        <p style="font-size:0.75rem; color: var(--text-muted); margin: 0 0 0.85rem 0; line-height:1.5;">
+                            We pay your earned commissions directly into this account. You can update these later from your dashboard.
+                        </p>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="bank_name">Bank Name <span style="color: var(--danger);">*</span></label>
+                            <div class="input-wrap">
+                                <i class="fas fa-university input-icon"></i>
+                                <input type="text" id="bank_name" name="bank_name"
+                                    class="form-control {{ $errors->has('bank_name') ? 'is-invalid' : '' }}"
+                                    value="{{ old('bank_name') }}" placeholder="e.g. Emirates NBD" required>
+                            </div>
+                            @error('bank_name')<div class="field-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="account_holder_name">Account Holder Name <span style="color: var(--danger);">*</span></label>
+                            <div class="input-wrap">
+                                <i class="fas fa-id-card input-icon"></i>
+                                <input type="text" id="account_holder_name" name="account_holder_name"
+                                    class="form-control {{ $errors->has('account_holder_name') ? 'is-invalid' : '' }}"
+                                    value="{{ old('account_holder_name') }}" placeholder="As on bank record" required>
+                            </div>
+                            @error('account_holder_name')<div class="field-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="account_number">Account Number <span style="color: var(--danger);">*</span></label>
+                        <div class="input-wrap">
+                            <i class="fas fa-hashtag input-icon"></i>
+                            <input type="text" id="account_number" name="account_number"
+                                class="form-control {{ $errors->has('account_number') ? 'is-invalid' : '' }}"
+                                value="{{ old('account_number') }}" placeholder="Account / IBAN number" required>
+                        </div>
+                        @error('account_number')<div class="field-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="iban">IBAN <span style="font-size:0.7rem; color:var(--text-muted); font-weight:400;">(optional)</span></label>
+                            <div class="input-wrap">
+                                <i class="fas fa-file-invoice input-icon"></i>
+                                <input type="text" id="iban" name="iban"
+                                    class="form-control {{ $errors->has('iban') ? 'is-invalid' : '' }}"
+                                    value="{{ old('iban') }}" placeholder="AE07 0331 ...">
+                            </div>
+                            @error('iban')<div class="field-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="swift_code">SWIFT / BIC <span style="font-size:0.7rem; color:var(--text-muted); font-weight:400;">(optional)</span></label>
+                            <div class="input-wrap">
+                                <i class="fas fa-code input-icon"></i>
+                                <input type="text" id="swift_code" name="swift_code"
+                                    class="form-control {{ $errors->has('swift_code') ? 'is-invalid' : '' }}"
+                                    value="{{ old('swift_code') }}" placeholder="EBILAEAD">
+                            </div>
+                            @error('swift_code')<div class="field-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
                     <div class="form-group">
                         <label class="form-label" for="password">Password <span style="color: var(--danger);">*</span></label>
                         <div class="input-wrap password-wrap">

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Announcement;
@@ -35,6 +36,16 @@ class AppServiceProvider extends ServiceProvider
                 ->limit(6)
                 ->get();
             $view->with('tickerItems', $tickerItems);
+        });
+
+        // @feature('hajj_umrah') ... @endfeature — gates a block on tenant feature flag
+        Blade::if('feature', function (string $feature) {
+            $company = app()->bound('current_company') ? app('current_company') : null;
+            // No tenant bound (main gotrips.ai or unidentified) = full access
+            if (!$company instanceof \App\Models\Company) {
+                return true;
+            }
+            return $company->hasFeature($feature);
         });
     }
 }

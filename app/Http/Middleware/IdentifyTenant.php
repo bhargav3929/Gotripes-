@@ -11,6 +11,32 @@ class IdentifyTenant
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Special-case the freelancer platform subdomain. When a visitor hits
+        // freelancers.gotrips.ai/ we want them on the freelancer landing,
+        // not the main B2C homepage.
+        $host = $request->getHost();
+        $parts = explode('.', $host);
+        $firstPart = $parts[0] ?? '';
+        if (in_array($firstPart, ['freelancer', 'freelancers'], true) && count($parts) >= 3) {
+            $path = trim($request->path(), '/');
+            // Allow asset, partner, freelancer, login, logout, dashboard paths through.
+            $allowPrefixes = ['freelancer', 'partner', 'assets', 'storage', 'login', 'logout', 'css', 'js', 'images'];
+            $isAllowed = $path === '' ? false : false;
+            foreach ($allowPrefixes as $prefix) {
+                if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
+                    $isAllowed = true;
+                    break;
+                }
+            }
+            if ($path === '') {
+                return redirect()->route('freelancer.landing');
+            }
+            if (!$isAllowed && !str_starts_with($path, 'api/')) {
+                return redirect()->route('freelancer.landing');
+            }
+            return $next($request);
+        }
+
         $company = $this->identifyCompany($request);
 
         if ($company) {

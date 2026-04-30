@@ -579,8 +579,8 @@
         }
 
         .gt-partner-btn {
-            background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
-            color: #000;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: #ffffff;
             border: none;
             border-radius: 50px;
             padding: 0 24px;
@@ -593,13 +593,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
             white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.15);
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
         }
 
         .gt-partner-btn:hover {
-            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
         }
 
         /* Hide text labels on mid screens, keep button */

@@ -409,6 +409,16 @@
                 </li>
 
                 <div class="wp-nav-separator"></div>
+                <li class="wp-nav-label">Settings</li>
+
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.settings.features') }}" class="{{ request()->routeIs('manager.settings.*') ? 'active' : '' }}">
+                        <i class="fas fa-toggle-on"></i>
+                        <span>Features</span>
+                    </a>
+                </li>
+
+                <div class="wp-nav-separator"></div>
 
                 <li class="wp-nav-item">
                     <form action="{{ route('manager.logout') }}" method="POST" style="margin:0;">
