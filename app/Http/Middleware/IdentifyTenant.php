@@ -11,6 +11,13 @@ class IdentifyTenant
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Always make Laravel's URL generator use the current request's host
+        // so route()/url() helpers stay on the tenant subdomain instead of
+        // resolving back to APP_URL (gotrips.ai). This is what makes white-
+        // labelled subdomain links like bhargav.gotrips.ai/activities/dubai
+        // actually keep the bhargav. host instead of bouncing to the main site.
+        \URL::forceRootUrl($request->getSchemeAndHttpHost());
+
         // Special-case the freelancer platform subdomain. When a visitor hits
         // freelancers.gotrips.ai/ we want them on the freelancer landing,
         // not the main B2C homepage.

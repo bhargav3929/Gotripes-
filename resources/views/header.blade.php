@@ -2,22 +2,27 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" type="image/png" href="{{ asset('assets/index_files/logo.png') }}">
+    @php
+        $tenantLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
+        $tenantName = (isset($company) && $company && $company->name) ? $company->name : 'Go Trips';
+        $tenantTagline = (isset($company) && $company && $company->getSetting('tagline')) ? $company->getSetting('tagline') : 'Your Gateway to Amazing Adventures';
+    @endphp
+    <link rel="icon" type="image/png" href="{{ $tenantLogo }}">
 
     <meta charset="UTF-8">
-    <title>Go Trips</title>
+    <title>{{ $tenantName }}</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="author" content="ThemeZaa">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta name="description" content="Go Trips - Your Gateway to Amazing Adventures">
+    <meta name="description" content="{{ $tenantName }} - {{ $tenantTagline }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">
-    <meta property="og:title" content="Go Trips - Al Amir YN">
-    <meta property="og:description" content="Go Trips - Your Gateway to Amazing Adventures">
-    <meta property="og:image" content="{{ asset('assets/index_files/social_sharing_logo.png') }}">
+    <meta property="og:title" content="{{ $tenantName }}">
+    <meta property="og:description" content="{{ $tenantName }} - {{ $tenantTagline }}">
+    <meta property="og:image" content="{{ $tenantLogo }}">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="1200">
@@ -1055,7 +1060,7 @@
 
                 <!-- Center Logo -->
                 <a href="/" class="gt-logo">
-                    <img src="{{ asset('assets/index_files/logo.png') }}" alt="Go Trips">
+                    <img src="{{ $tenantLogo }}" alt="{{ $tenantName }}">
                 </a>
 
                 <!-- Right Menu -->
@@ -1087,7 +1092,7 @@
 
             <!-- Mobile Logo (Centered) -->
             <a href="/" class="gt-mobile-logo">
-                <img src="{{ asset('assets/index_files/logo.png') }}" alt="Go Trips">
+                <img src="{{ $tenantLogo }}" alt="{{ $tenantName }}">
             </a>
 
             <!-- Empty div for flexbox spacing -->
@@ -1169,7 +1174,7 @@
                     <span class="separator">|</span>
                 @empty
                     <a href="#" class="news-item">
-                        <span class="news-text">Welcome to Go Trips - Your Gateway to Amazing Adventures</span>
+                        <span class="news-text">Welcome to {{ $tenantName }} - {{ $tenantTagline }}</span>
                     </a>
                     <span class="separator">|</span>
                 @endforelse
@@ -1184,7 +1189,7 @@
                     <span class="separator">|</span>
                 @empty
                     <a href="#" class="news-item">
-                        <span class="news-text">Welcome to Go Trips - Your Gateway to Amazing Adventures</span>
+                        <span class="news-text">Welcome to {{ $tenantName }} - {{ $tenantTagline }}</span>
                     </a>
                     <span class="separator">|</span>
                 @endforelse

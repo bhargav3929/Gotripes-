@@ -149,9 +149,29 @@
   })();
 </script>
 <!--End of Tawk.to Script-->
+@php
+    $footerCompanyName = (isset($company) && $company && $company->name) ? $company->name : 'Go Trips';
+    $footerLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
+    $footerEmail = (isset($company) && $company && $company->email) ? $company->email : 'info@gotrips.ai';
+    $footerPhone = (isset($company) && $company && $company->phone) ? $company->phone : '+971 50 000 0000';
+    $footerAddress = (isset($company) && $company && $company->address) ? $company->address : 'Dubai, United Arab Emirates';
+    $footerWebsite = (isset($company) && $company && $company->website) ? $company->website : null;
+@endphp
 <footer class="gt-footer footer-light pb-0">
   <div class="container">
     <div class="row pt-5 pb-3">
+      <!-- Column 0: Brand + Contact -->
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+          <img src="{{ $footerLogo }}" alt="{{ $footerCompanyName }}" style="height:38px; width:38px; object-fit:contain; border-radius:8px; background:#fff; padding:4px;">
+          <span style="color:#fff; font-weight:700; font-size:16px; letter-spacing:-0.01em;">{{ $footerCompanyName }}</span>
+        </div>
+        <ul class="list-unstyled" style="font-size:13px; color:rgba(255,255,255,0.7); line-height:1.8;">
+          <li><i class="fa-solid fa-envelope" style="color:#FFD700; width:18px;"></i> <a href="mailto:{{ $footerEmail }}" style="color:inherit; text-decoration:none;">{{ $footerEmail }}</a></li>
+          <li><i class="fa-solid fa-phone" style="color:#FFD700; width:18px;"></i> <a href="tel:{{ preg_replace('/\s+/', '', $footerPhone) }}" style="color:inherit; text-decoration:none;">{{ $footerPhone }}</a></li>
+          <li style="display:flex; gap:8px;"><i class="fa-solid fa-location-dot" style="color:#FFD700; width:18px; padding-top:5px;"></i> <span>{{ $footerAddress }}</span></li>
+        </ul>
+      </div>
       <!-- Column 1 -->
       <div class="col-md-3 col-sm-6 mb-4">
         <h6 class="gt-footer-title">Popular Tours</h6>
@@ -184,23 +204,13 @@
         </ul>
       </div>
 
-      <!-- Column 4 (Social Icons) -->
-      <div class="col-md-3 col-sm-6 mb-4">
-        <h6 class="gt-footer-title">Follow Us</h6>
-        <div class="social-links">
-          <a class="gt-footer-social-link" href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-          <a class="gt-footer-social-link" href="http://www.twitter.com/" target="_blank"><i class="fa-brands fa-twitter"></i></a>
-          <a class="gt-footer-social-link" href="http://www.instagram.com/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-          <a class="gt-footer-social-link" href="http://www.dribbble.com/" target="_blank"><i class="fa-brands fa-dribbble"></i></a>
-        </div>
-      </div>
     </div>
 
     <div class="text-center mt-3 pb-3">
       <p class="gt-footer-copyright">
         Copyright ©
         <script>document.write(new Date().getFullYear());</script>
-        Go Trips. All rights reserved.
+        {{ $footerCompanyName }}. All rights reserved.
       </p>
     </div>
   </div>
