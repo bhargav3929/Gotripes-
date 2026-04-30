@@ -102,18 +102,24 @@ class HostingerSubdomainProvisioner
         }
 
         if (!is_link($newPublic)) {
-            // Remove existing public_html (Hostinger creates an empty one with parking page).
+            // Remove existing public_html if Hostinger created a default one.
             if (is_dir($newPublic)) {
                 $this->removeDir($newPublic);
             }
-            @symlink($mainPublic, $newPublic);
+            // PHP's symlink() is disabled on Hostinger shared hosting — fall back to /bin/ln via proc_open.
+            if (function_exists('symlink')) {
+                @symlink($mainPublic, $newPublic);
+            }
+            if (!is_link($newPublic) && function_exists('proc_open')) {
+                $this->runShell(['/bin/ln', '-s', '../' . $rootDomain . '/public_html', $newPublic]);
+            }
         }
 
         if (!is_link($newPublic)) {
             return [
                 'ok'      => false,
                 'step'    => 'symlink',
-                'message' => "Could not create symlink {$newPublic} → {$mainPublic}. Run manually via SSH.",
+                'message' => "Hostinger website created, but could not link {$newPublic} → {$mainPublic}. Run via SSH:  ln -s ../{$rootDomain}/public_html ~/domains/{$fullDomain}/public_html",
             ];
         }
 
@@ -122,6 +128,32 @@ class HostingerSubdomainProvisioner
             'step'    => 'done',
             'message' => "Subdomain {$fullDomain} provisioned and linked to main Laravel app.",
         ];
+    }
+
+    /**
+     * Run an external command using proc_open (the only PHP exec primitive
+     * left enabled on Hostinger shared hosting). Returns true on exit code 0.
+     */
+    private function runShell(array $argv): bool
+    {
+        if (!function_exists('proc_open')) {
+            return false;
+        }
+        $descriptors = [
+            0 => ['pipe', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ];
+        $proc = @proc_open($argv, $descriptors, $pipes);
+        if (!is_resource($proc)) {
+            return false;
+        }
+        fclose($pipes[0]);
+        stream_get_contents($pipes[1]);
+        stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        return proc_close($proc) === 0;
     }
 
     private function removeDir(string $path): void
