@@ -28,11 +28,12 @@ class IdentifyTenant
                     break;
                 }
             }
+            // Stay on the freelancers.gotrips.ai host — use a path-relative redirect.
             if ($path === '') {
-                return redirect()->route('freelancer.landing');
+                return redirect('/freelancer');
             }
             if (!$isAllowed && !str_starts_with($path, 'api/')) {
-                return redirect()->route('freelancer.landing');
+                return redirect('/freelancer');
             }
             return $next($request);
         }

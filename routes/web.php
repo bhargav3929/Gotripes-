@@ -245,7 +245,7 @@ Route::get('/uaevisa', function () {
     $visaData = UAEVisaMaster::where('isActive', true)->get();
     // Add other variables as needed by your form
     return view('uaevisa', compact('visaData'));
-});
+})->middleware('tenant.feature:visas');
 
 
 // CCAvenue initiate/response/cancel routes (deprecated — replaced by Nomod)
