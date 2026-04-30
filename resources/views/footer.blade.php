@@ -156,8 +156,8 @@
       <div class="col-md-3 col-sm-6 mb-4">
         <h6 class="gt-footer-title">Popular Tours</h6>
         <ul class="list-unstyled">
-          <li><a href="/activities" class="gt-footer-link">UAE Activities</a></li>
-          <li><a href="/countriestour" class="gt-footer-link">Countries Tour</a></li>
+          @feature('activities')<li><a href="/activities" class="gt-footer-link">UAE Activities</a></li>@endfeature
+          @feature('tours')<li><a href="/countriestour" class="gt-footer-link">Countries Tour</a></li>@endfeature
           <li><a href="/dubai-global-village" class="gt-footer-link">Dubai Global Village</a></li>
           <li><a href="/lotus-cruise-dubai" class="gt-footer-link">Lotus Cruise Dubai</a></li>
         </ul>
@@ -167,10 +167,10 @@
       <div class="col-md-3 col-sm-6 mb-4">
         <h6 class="gt-footer-title">Our Services</h6>
         <ul class="list-unstyled">
-          <li><a href="/shopnow" class="gt-footer-link">Shop Now</a></li>
-          <li><a href="/lookingforajob" class="gt-footer-link">Looking for a Job</a></li>
-          <li><a href="/visaservice" class="gt-footer-link">Visa Service</a></li>
-          <li><a href="/uaevisa" class="gt-footer-link">UAE Visa</a></li>
+          @feature('shop')<li><a href="/shopnow" class="gt-footer-link">Shop Now</a></li>@endfeature
+          @feature('careers')<li><a href="/lookingforajob" class="gt-footer-link">Looking for a Job</a></li>@endfeature
+          @feature('visas')<li><a href="/visaservice" class="gt-footer-link">Visa Service</a></li>@endfeature
+          @feature('visas')<li><a href="/uaevisa" class="gt-footer-link">UAE Visa</a></li>@endfeature
         </ul>
       </div>
 
