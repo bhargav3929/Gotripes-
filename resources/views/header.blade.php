@@ -583,12 +583,12 @@
             color: #000;
             border: none;
             border-radius: 50px;
-            padding: 0 16px;
-            height: 30px;
+            padding: 0 24px;
+            height: 34px;
             font-family: 'Outfit', sans-serif;
-            font-size: 10px;
+            font-size: 13px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -635,6 +635,13 @@
                 padding: 0 18px;
                 font-size: 11px;
                 height: 30px;
+            }
+
+            .gt-partner-btn {
+                padding: 0 18px;
+                font-size: 11px;
+                height: 30px;
+                letter-spacing: 1.2px;
             }
 
             .gt-partner-cta {
@@ -684,8 +691,9 @@
 
             .gt-partner-btn {
                 padding: 0 14px;
-                height: 28px;
-                font-size: 9px;
+                height: 30px;
+                font-size: 10px;
+                letter-spacing: 1.2px;
             }
         }
 
