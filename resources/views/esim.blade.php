@@ -35,48 +35,57 @@
        HERO SECTION — PREMIUM REDESIGN V2
        ============================================================ */
     .esim-hero {
-        min-height: auto;
-        padding: 15px 32px 15px;
+        min-height: 560px;
+        padding: 64px 32px;
         display: flex;
         align-items: center;
-        background: linear-gradient(180deg, #000000 0%, #080808 100%);
+        background-color: #000;
+        background-image: url('{{ asset('assets/esim/hero-esim-network.jpg') }}');
+        background-image: -webkit-image-set(
+            url('{{ asset('assets/esim/hero-esim-network.webp') }}') type('image/webp'),
+            url('{{ asset('assets/esim/hero-esim-network.jpg') }}') type('image/jpeg')
+        );
+        background-image: image-set(
+            url('{{ asset('assets/esim/hero-esim-network.webp') }}') type('image/webp'),
+            url('{{ asset('assets/esim/hero-esim-network.jpg') }}') type('image/jpeg')
+        );
+        background-size: cover;
+        background-position: center right;
+        background-repeat: no-repeat;
         font-family: 'Outfit', sans-serif;
         position: relative;
         overflow: hidden;
     }
 
-    /* Ambient Gradient Orbs */
+    /* Dark gradient overlay for text legibility — strong on the left, fading right.
+       This sits ON TOP of the image but UNDER the content. */
     .esim-hero::before {
         content: '';
         position: absolute;
-        top: -20%;
-        left: -10%;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 0%, transparent 70%);
-        filter: blur(80px);
+        inset: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.85) 0%,
+            rgba(0, 0, 0, 0.55) 35%,
+            rgba(0, 0, 0, 0.15) 60%,
+            rgba(0, 0, 0, 0) 80%
+        );
         pointer-events: none;
         z-index: 0;
-        animation: esimOrbFloat 8s ease-in-out infinite alternate;
     }
 
+    /* Subtle warm vignette in the bottom-left to match the artwork's natural glow */
     .esim-hero::after {
         content: '';
         position: absolute;
-        bottom: -30%;
-        right: -5%;
+        bottom: -20%;
+        left: -10%;
         width: 600px;
         height: 600px;
-        background: radial-gradient(circle, rgba(255, 180, 0, 0.06) 0%, transparent 70%);
-        filter: blur(100px);
+        background: radial-gradient(circle, rgba(255, 180, 0, 0.10) 0%, transparent 65%);
+        filter: blur(80px);
         pointer-events: none;
         z-index: 0;
-        animation: esimOrbFloat 10s ease-in-out infinite alternate-reverse;
-    }
-
-    @keyframes esimOrbFloat {
-        0% { transform: translate(0, 0) scale(1); }
-        100% { transform: translate(30px, -20px) scale(1.1); }
     }
 
     .esim-hero-inner {
@@ -84,44 +93,19 @@
         margin: 0 auto;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 40px;
         position: relative;
         z-index: 1;
         width: 100%;
     }
 
     .esim-hero-left {
-        flex: 0 1 480px;
+        flex: 0 1 540px;
+        max-width: 540px;
         min-width: 0;
         animation: esimFadeInUp 0.8s ease forwards;
     }
 
-    .esim-hero-right {
-        flex: 1 1 600px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        animation: esimFadeInRight 1s ease forwards;
-        min-width: 0;
-    }
-
-    .esim-hero-artwork {
-        position: relative;
-        width: 100%;
-        max-width: 720px;
-        line-height: 0;
-        animation: esimHeroFloat 7s ease-in-out infinite;
-        filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.45))
-                drop-shadow(0 0 80px rgba(255, 180, 0, 0.08));
-    }
-
-    .esim-hero-artwork picture,
-    .esim-hero-artwork img {
-        display: block;
-        width: 100%;
-        height: auto;
-    }
+    .esim-hero-right { display: none; } /* legacy markup hook — image is now section bg */
 
     @keyframes esimFadeInUp {
         from { opacity: 0; transform: translateY(30px); }
@@ -2664,17 +2648,12 @@
 
     @media (max-width: 1024px) {
         .esim-hero {
-            padding: 24px 20px;
-        }
-        .esim-hero-inner {
-            flex-direction: row;
-            gap: 24px;
+            padding: 56px 24px;
+            min-height: 520px;
         }
         .esim-hero-left {
-            flex: 1 1 380px;
-        }
-        .esim-hero-artwork {
-            max-width: 540px;
+            flex: 0 1 460px;
+            max-width: 460px;
         }
         .esim-step1 {
             min-height: auto;
@@ -2682,42 +2661,68 @@
         }
     }
 
+    /* Tablet — image stays as bg, text gets stronger overlay so it sits cleanly over the artwork */
+    @media (max-width: 900px) {
+        .esim-hero {
+            background-position: 70% center;
+            min-height: 480px;
+            padding: 48px 24px;
+        }
+        .esim-hero::before {
+            background: linear-gradient(
+                90deg,
+                rgba(0, 0, 0, 0.92) 0%,
+                rgba(0, 0, 0, 0.75) 40%,
+                rgba(0, 0, 0, 0.35) 70%,
+                rgba(0, 0, 0, 0.1) 100%
+            );
+        }
+    }
+
+    /* Mobile — artwork sits cleanly in the top third, text sits in the dark lower portion.
+       Avoids text overlapping the chip. */
     @media (max-width: 768px) {
         .esim-hero {
-            padding: 20px 16px 24px;
+            min-height: 640px;
+            padding: 28px 18px 32px;
+            background-size: auto 44%;
+            background-position: center 18px;
+            display: flex;
+            align-items: flex-end;
+        }
+        .esim-hero::before {
+            background: linear-gradient(
+                180deg,
+                rgba(0, 0, 0, 0) 0%,
+                rgba(0, 0, 0, 0.05) 30%,
+                rgba(0, 0, 0, 0.7) 48%,
+                rgba(0, 0, 0, 0.95) 65%,
+                rgba(0, 0, 0, 0.98) 100%
+            );
+        }
+        .esim-hero::after {
+            display: none;
         }
         .esim-hero-inner {
             flex-direction: column;
-            gap: 18px;
             text-align: center;
         }
         .esim-hero-left {
-            order: 2;
+            flex: 0 0 auto;
+            max-width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            flex: 0 0 auto;
-        }
-        .esim-hero-right {
-            order: 1;
-            justify-content: center;
-            flex: 0 0 auto;
-            width: 100%;
-        }
-        .esim-hero-artwork {
-            max-width: 100%;
-            margin: 0 auto;
-            filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.45));
         }
         .esim-hero-title {
-            font-size: clamp(24px, 7vw, 32px);
-            margin-bottom: 8px;
+            font-size: clamp(26px, 7.5vw, 34px);
+            margin-bottom: 10px;
         }
         .esim-hero-subtitle {
             font-size: 13px;
-            margin: 0 auto 14px;
-            line-height: 1.5;
-            max-width: 90%;
+            margin: 0 auto 16px;
+            line-height: 1.55;
+            max-width: 92%;
         }
         .esim-hero-cta {
             flex-direction: row;
@@ -2740,6 +2745,14 @@
         .esim-trust-pill {
             font-size: 10px;
             padding: 6px 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .esim-hero {
+            min-height: 620px;
+            background-size: auto 40%;
+            background-position: center 14px;
         }
     }
 
@@ -3312,20 +3325,9 @@
             </div>
         </div>
 
-        <!-- Visual (Right) — eSIM global network artwork -->
-        <div class="esim-hero-right">
-            <div class="esim-hero-artwork">
-                <picture>
-                    <source srcset="{{ asset('assets/esim/hero-esim-network.webp') }}" type="image/webp">
-                    <img
-                        src="{{ asset('assets/esim/hero-esim-network.jpg') }}"
-                        alt="GoTrips eSIM connecting travelers across 180+ countries"
-                        width="1920" height="1072"
-                        loading="eager" fetchpriority="high" decoding="async">
-                </picture>
-            </div>
-        </div>
     </div>
+    {{-- Preload hero artwork so the section background paints fast (LCP) --}}
+    <link rel="preload" as="image" href="{{ asset('assets/esim/hero-esim-network.webp') }}" type="image/webp" fetchpriority="high">
 </section>
 
 <!-- ============================================================
