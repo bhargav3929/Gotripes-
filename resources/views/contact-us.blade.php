@@ -401,17 +401,37 @@
             <div class="col-lg-7 ps-lg-5">
                 <h2 class="premium-title">About Us</h2>
                 <div class="premium-subtitle">
-                    <p class="mb-4">
-                        Welcome to <strong class="text-white">GOTRIPS</strong>, a part of <strong class="text-white">Ayn Al Amir
-                            Tourism</strong>, a dynamic travel agency dedicated to providing unparalleled solutions.
-                        Established in 2024 by <strong class="text-white">Mr. Amer Ali Mohammed</strong>, we are committed to excellence
-                        with over 13 years of expertise.
-                    </p>
-                    <p class="mb-4">
-                        We pride ourselves on customer satisfaction and innovation. Our partnership with <strong class="text-white">Portway
-                            Systems</strong> enables state-of-the-art Agency Management, ensuring a seamless experience
-                        for every client.
-                    </p>
+                    @php
+                        $cuName = (isset($company) && $company && $company->name) ? $company->name : 'GoTrips';
+                        $cuAbout = (isset($company) && $company && $company->getSetting('about')) ? $company->getSetting('about') : null;
+                    @endphp
+                    @if($cuAbout)
+                        {!! nl2br(e($cuAbout)) !!}
+                    @else
+                        @platformOnly
+                            <p class="mb-4">
+                                Welcome to <strong class="text-white">GOTRIPS</strong>, a part of <strong class="text-white">Ayn Al Amir
+                                    Tourism</strong>, a dynamic travel agency dedicated to providing unparalleled solutions.
+                                Established in 2024 by <strong class="text-white">Mr. Amer Ali Mohammed</strong>, we are committed to excellence
+                                with over 13 years of expertise.
+                            </p>
+                            <p class="mb-4">
+                                We pride ourselves on customer satisfaction and innovation. Our partnership with <strong class="text-white">Portway
+                                    Systems</strong> enables state-of-the-art Agency Management, ensuring a seamless experience
+                                for every client.
+                            </p>
+                        @endplatformOnly
+                        @unless(app()->bound('current_company') && app('current_company')->slug === 'gotrips')
+                        @if(isset($company) && $company && $company->slug !== 'gotrips')
+                            <p class="mb-4">
+                                Welcome to <strong class="text-white">{{ strtoupper($cuName) }}</strong>, your trusted travel partner. We help you discover unforgettable experiences with personalised service and end-to-end booking support.
+                            </p>
+                            <p class="mb-4">
+                                Reach out using the form, the email or the phone number below — we usually respond within a few hours during business days.
+                            </p>
+                        @endif
+                        @endunless
+                    @endif
                 </div>
             </div>
         </div>
@@ -502,15 +522,25 @@
             <h3 class="premium-title text-center mb-4 text-white d-block w-100" style="font-size: 28px;">Connect With Us
             </h3>
 
-            <!-- Address QR -->
+            @php
+                $cuLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
+                $cuEmail = (isset($company) && $company && $company->email) ? $company->email : 'info@aynalamirtourism.com';
+                $cuPhone = (isset($company) && $company && $company->phone) ? $company->phone : '+971-54 365 1065';
+                $cuAddress = (isset($company) && $company && $company->address) ? $company->address : 'Sanaiya, Beda Zayed Al Dhafra, Abu Dhabi, U.A.E';
+                $isMain = !isset($company) || !$company || $company->slug === 'gotrips';
+            @endphp
+            <!-- Address -->
             <div class="col-md-4 col-sm-6">
                 <div class="qr-card">
                     <div class="qr-img">
-                        <img src="{{ asset('assets/index_files/LocationQR-2.jpg') }}" alt="Location QR">
+                        @if($isMain)
+                            <img src="{{ asset('assets/index_files/LocationQR-2.jpg') }}" alt="Location QR">
+                        @else
+                            <i class="fa-solid fa-location-dot" style="font-size:64px; color:#FFD700;"></i>
+                        @endif
                     </div>
                     <div class="qr-title">Visit Us</div>
-                    <p class="qr-text" style="line-height: 1.5;">Sanaiya, Beda Zayed Al Dhafra,<br>Abu
-                        Dhabi, U.A.E</p>
+                    <p class="qr-text" style="line-height: 1.5;">{{ $cuAddress }}</p>
                 </div>
             </div>
 
@@ -518,21 +548,29 @@
             <div class="col-md-4 col-sm-6">
                 <div class="qr-card">
                     <div class="qr-img" style="background: transparent;">
-                        <img src="{{ asset('assets/index_files/logo.png') }}" alt="Logo">
+                        <img src="{{ $cuLogo }}" alt="{{ $cuName }} logo">
                     </div>
                     <div class="qr-title">Email Us</div>
-                    <p class="qr-text" style="word-break: break-all;">info@aynalamirtourism.com</p>
+                    <p class="qr-text" style="word-break: break-all;">
+                        <a href="mailto:{{ $cuEmail }}" style="color:inherit; text-decoration:none;">{{ $cuEmail }}</a>
+                    </p>
                 </div>
             </div>
 
-            <!-- WhatsApp -->
+            <!-- WhatsApp / Phone -->
             <div class="col-md-4 col-sm-6">
                 <div class="qr-card">
                     <div class="qr-img">
-                        <img src="{{ asset('assets/index_files/WhatsappQR.jpg') }}" alt="WA QR">
+                        @if($isMain)
+                            <img src="{{ asset('assets/index_files/WhatsappQR.jpg') }}" alt="WA QR">
+                        @else
+                            <i class="fa-brands fa-whatsapp" style="font-size:64px; color:#25D366;"></i>
+                        @endif
                     </div>
                     <div class="qr-title">Call / WhatsApp</div>
-                    <p class="qr-text">+971-54 365 1065</p>
+                    <p class="qr-text">
+                        <a href="tel:{{ preg_replace('/\s+/', '', $cuPhone) }}" style="color:inherit; text-decoration:none;">{{ $cuPhone }}</a>
+                    </p>
                 </div>
             </div>
         </div>

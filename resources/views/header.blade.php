@@ -1151,11 +1151,13 @@
                 </div>
             </div>
             @if(request()->is('/'))
-            <div class="gt-partner-cta">
-                <span class="gt-partner-label">Join as a</span>
-                <span class="gt-partner-title">Partner / Customer</span>
-                <button class="gt-partner-btn" id="partnerRegisterBtn">Register Now</button>
-            </div>
+                @platformOnly
+                <div class="gt-partner-cta">
+                    <span class="gt-partner-label">Join as a</span>
+                    <span class="gt-partner-title">Partner / Customer</span>
+                    <button class="gt-partner-btn" id="partnerRegisterBtn">Register Now</button>
+                </div>
+                @endplatformOnly
             @endif
         </div>
 

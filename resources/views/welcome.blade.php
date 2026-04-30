@@ -66,6 +66,7 @@
     .home-epcb-btn { width: 100%; justify-content: center; padding: 12px 18px; }
 }
 </style>
+@platformOnly
 <section class="home-epcb">
     <div class="home-epcb-inner">
         <div class="home-epcb-content">
@@ -81,6 +82,7 @@
         </a>
     </div>
 </section>
+@endplatformOnly
 
 {{-- Mobile fix: override overflow:hidden on banner containers so ad cards stay visible in original position --}}
 <style>

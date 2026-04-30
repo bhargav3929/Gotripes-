@@ -3585,8 +3585,9 @@
 </section>
 
 <!-- ============================================================
-     PARTNER CTA BANNER (E-SIM page)
+     PARTNER CTA BANNER (E-SIM page) — main GoTrips site only
      ============================================================ -->
+@platformOnly
 <section class="esim-partner-cta-banner">
     <div class="epcb-inner">
         <div class="epcb-content">
@@ -3602,6 +3603,7 @@
         </a>
     </div>
 </section>
+@endplatformOnly
 
 <!-- ============================================================
      HOW TO ACTIVATE eSIM

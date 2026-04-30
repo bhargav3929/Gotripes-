@@ -299,12 +299,14 @@
       @foreach($adSlots as $slotNumber => $mediaItems)
         @php $slotIndex++; @endphp
 
-        {{-- Insert eSIM promo as the 3rd window --}}
+        {{-- Insert eSIM promo as the 3rd window — only if this tenant has eSIM enabled --}}
         @if($slotIndex === 3)
+          @feature('esim')
           <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
             <div class="esim-promo-pulse"></div>
             <img src="{{ asset('assets/esim_promo_ad.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px; background:#000;">
           </a>
+          @endfeature
         @endif
 
         @php $slotLink = $mediaItems->first()->linkUrl ?? null; @endphp
@@ -339,12 +341,14 @@
         @endif
       @endforeach
 
-      {{-- If fewer than 3 slots exist, append eSIM promo at the end --}}
+      {{-- If fewer than 3 slots exist, append eSIM promo at the end — only if tenant has eSIM --}}
       @if($slotIndex < 3)
+        @feature('esim')
         <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
           <div class="esim-promo-pulse"></div>
           <img src="{{ asset('assets/esim_promo_ad.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px; background:#000;">
         </a>
+        @endfeature
       @endif
     @else
       {{-- Fallback static images --}}
@@ -358,11 +362,13 @@
           <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
         </div>
       </div>
-      {{-- eSIM promo in fallback position 3 --}}
+      {{-- eSIM promo in fallback position 3 — only if tenant has eSIM --}}
+      @feature('esim')
       <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
         <div class="esim-promo-pulse"></div>
         <img src="{{ asset('assets/esim_promo_ad.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px; background:#000;">
       </a>
+      @endfeature
       <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
           <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">

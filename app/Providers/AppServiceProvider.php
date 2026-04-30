@@ -47,5 +47,15 @@ class AppServiceProvider extends ServiceProvider
             }
             return $company->hasFeature($feature);
         });
+
+        // @platformOnly ... @endplatformOnly — content visible ONLY on the main
+        // gotrips.ai site, never on white-label tenant subdomains.
+        Blade::if('platformOnly', function () {
+            $company = app()->bound('current_company') ? app('current_company') : null;
+            if (!$company instanceof \App\Models\Company) {
+                return true; // no tenant = main site
+            }
+            return $company->slug === 'gotrips';
+        });
     }
 }
