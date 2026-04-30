@@ -55,7 +55,40 @@ class Company extends Model
         'api_keys',
     ];
 
-    // Boot method to auto-generate slug
+    public const RESERVED_SUBDOMAINS = [
+        'www', 'admin', 'superadmin', 'api', 'app', 'mail', 'ftp', 'smtp',
+        'pop', 'imap', 'webmail', 'cpanel', 'whm', 'cdn', 'static', 'assets',
+        'public', 'root', 'login', 'logout', 'signup', 'register', 'auth',
+        'oauth', 'dashboard', 'manager', 'partner', 'client', 'support',
+        'help', 'docs', 'blog', 'shop', 'store', 'pay', 'payment', 'checkout',
+        'billing', 'subscription', 'status', 'monitor', 'test', 'staging',
+        'dev', 'demo', 'sandbox', 'beta', 'alpha', 'gotrips',
+    ];
+
+    public function setSubdomainAttribute($value): void
+    {
+        $this->attributes['subdomain'] = static::normalizeSubdomain($value);
+    }
+
+    public static function normalizeSubdomain(?string $value): ?string
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+
+        $value = strtolower(trim($value));
+        $value = preg_replace('/\.gotrips\.(ai|com)$/i', '', $value);
+        $value = preg_replace('/[^a-z0-9-]+/', '-', $value);
+        $value = preg_replace('/-+/', '-', $value);
+        $value = trim($value, '-');
+
+        if ($value === '' || strlen($value) > 63) {
+            return null;
+        }
+
+        return $value;
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -65,7 +98,7 @@ class Company extends Model
                 $company->slug = Str::slug($company->name);
             }
             if (empty($company->subdomain)) {
-                $company->subdomain = $company->slug;
+                $company->subdomain = static::normalizeSubdomain($company->slug);
             }
         });
     }

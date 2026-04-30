@@ -49,10 +49,17 @@ class CompanyController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'subdomain' => Company::normalizeSubdomain($request->input('subdomain'))
+                ?? Company::normalizeSubdomain($request->input('slug'))
+                ?? Company::normalizeSubdomain($request->input('name')),
+            'slug' => $request->filled('slug') ? Str::slug($request->input('slug')) : Str::slug($request->input('name')),
+        ]);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:100|unique:companies,slug',
-            'subdomain' => 'nullable|string|max:100|unique:companies,subdomain',
+            'subdomain' => ['required', 'string', 'min:2', 'max:63', 'regex:/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/', 'unique:companies,subdomain', 'not_in:'.implode(',', Company::RESERVED_SUBDOMAINS)],
             'domain' => 'nullable|string|max:255|unique:companies,domain',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
@@ -65,19 +72,15 @@ class CompanyController extends Controller
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email',
             'admin_password' => 'required|string|min:8',
+        ], [
+            'subdomain.regex' => 'Subdomain must be lowercase letters, numbers, and hyphens only (no leading/trailing hyphen).',
+            'subdomain.not_in' => 'That subdomain is reserved. Please choose another.',
         ]);
 
         // Create company
         $companyData = collect($validated)->except([
             'admin_name', 'admin_email', 'admin_password', 'logo'
         ])->toArray();
-
-        if (empty($companyData['slug'])) {
-            $companyData['slug'] = Str::slug($validated['name']);
-        }
-        if (empty($companyData['subdomain'])) {
-            $companyData['subdomain'] = $companyData['slug'];
-        }
 
         // Handle logo upload
         if ($request->hasFile('logo')) {
@@ -126,10 +129,14 @@ class CompanyController extends Controller
 
     public function update(Request $request, Company $company)
     {
+        if ($request->filled('subdomain')) {
+            $request->merge(['subdomain' => Company::normalizeSubdomain($request->input('subdomain'))]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:100|unique:companies,slug,' . $company->id,
-            'subdomain' => 'nullable|string|max:100|unique:companies,subdomain,' . $company->id,
+            'subdomain' => ['required', 'string', 'min:2', 'max:63', 'regex:/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/', 'unique:companies,subdomain,' . $company->id, 'not_in:'.implode(',', Company::RESERVED_SUBDOMAINS)],
             'domain' => 'nullable|string|max:255|unique:companies,domain,' . $company->id,
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
