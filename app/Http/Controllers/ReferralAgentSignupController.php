@@ -33,6 +33,7 @@ class ReferralAgentSignupController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:referral_agents,email',
             'phone'    => 'required|string|max:20',
+            'country'  => 'required|string|max:100',
             'password' => 'required|min:8|confirmed',
         ]);
 
@@ -40,6 +41,7 @@ class ReferralAgentSignupController extends Controller
             'name'             => $validated['name'],
             'email'            => $validated['email'],
             'phone'            => $validated['phone'],
+            'country'          => $validated['country'],
             'password'         => Hash::make($validated['password']),
             'commission_type'  => $settings->commission_type,
             'commission_value' => $settings->commission_value,

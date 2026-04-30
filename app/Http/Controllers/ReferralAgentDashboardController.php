@@ -161,6 +161,7 @@ class ReferralAgentDashboardController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
+            'country' => 'nullable|string|max:100',
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:8|confirmed',
         ]);
@@ -175,6 +176,7 @@ class ReferralAgentDashboardController extends Controller
 
         $agent->name = $validated['name'];
         $agent->phone = $validated['phone'] ?? $agent->phone;
+        $agent->country = $validated['country'] ?? $agent->country;
         $agent->save();
 
         return back()->with([

@@ -45,6 +45,14 @@
                                 @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label">Country</label>
+                                <input type="text" name="country" list="agent-country-options"
+                                       class="form-control form-control-sm @error('country') is-invalid @enderror"
+                                       value="{{ old('country', $agent->country) }}" placeholder="Start typing">
+                                <datalist id="agent-country-options"></datalist>
+                                @error('country')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Status <span class="text-danger">*</span></label>
                                 <select name="status" class="form-select form-select-sm @error('status') is-invalid @enderror" required>
                                     <option value="active" {{ old('status', $agent->status) == 'active' ? 'selected' : '' }}>Active</option>
@@ -299,6 +307,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    const countryDatalist = document.getElementById('agent-country-options');
+    if (countryDatalist) {
+        fetch('https://restcountries.com/v3.1/all?fields=name')
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(data => {
+                data.map(c => c.name?.common).filter(Boolean)
+                    .sort((a, b) => a.localeCompare(b))
+                    .forEach(n => {
+                        const o = document.createElement('option');
+                        o.value = n;
+                        countryDatalist.appendChild(o);
+                    });
+            })
+            .catch(() => {});
+    }
 
     document.getElementById('regenerateCode').addEventListener('click', function() {
         if (!confirm('Regenerate code? Old link will stop working.')) return;

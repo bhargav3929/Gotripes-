@@ -21,6 +21,7 @@ class UAEVisaController extends Controller
             'visaDuration' => 'required',
             'price' => 'required',
             'visa_count' => 'required|integer|min:1|max:10',
+            'children_count' => 'nullable|integer|min:0|max:10',
             'arrival_date' => 'required|date',
             'departure_date' => 'required|date|after_or_equal:arrival_date',
             'email' => 'required|email',
@@ -37,7 +38,9 @@ class UAEVisaController extends Controller
             'supporting_document.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
-        $visaCount = (int) $validated['visa_count'];
+        $adultCount = (int) $validated['visa_count'];
+        $childrenCount = (int) ($validated['children_count'] ?? 0);
+        $visaCount = $adultCount + $childrenCount;
         $unitPrice = $validated['price']; // This is Total from frontend, but we need unit price validation logic if strictly needed. 
         // Frontend sends TOTAL price in 'price'. Let's trust frontend total for now or recalculate.
         // Actually, logic below recalculates per person to be safe? 
@@ -73,12 +76,18 @@ class UAEVisaController extends Controller
                 $supportingDocPath = $request->file("supporting_document.$i")->store('visas/supporting_docs', 'public');
             }
 
+            $isChild = $i >= $adultCount;
+            $childNum = $i - $adultCount + 1;
+            $applicantLabel = $isChild
+                ? 'Child ' . $childNum
+                : 'Applicant ' . ($i + 1);
+
             // DB Record
             $dbData = [
                 'UAEV_nationality' => $validated['nationality'] ?? null,
                 'UAEV_residence' => $validated['residence'] ?? null,
-                'UAEV_first_name' => 'Applicant ' . ($i + 1), // Placeholder as name fields removed
-                'UAEV_last_name' => 'Guest',
+                'UAEV_first_name' => $applicantLabel, // Placeholder as name fields removed
+                'UAEV_last_name' => $isChild ? 'Child' : 'Guest',
                 'UAEV_passport_valid' => $validated['passport_valid'] ?? null,
                 'UAEV_not_stay_long' => $validated['not_stay_long'] ?? null,
                 'UAEV_arrival_date' => $validated['arrival_date'],

@@ -311,8 +311,9 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
-            <a class="navbar-brand" href="{{ route('referral.dashboard') }}">
-                Go<span>Trips</span> <small class="fs-6 text-muted">Partner</small>
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('referral.dashboard') }}">
+                <img src="{{ asset('assets/index_files/logo.png') }}" alt="GoTrips" style="height:36px;width:auto;">
+                <small class="fs-6 text-muted fw-normal">Partner</small>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

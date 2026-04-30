@@ -20,6 +20,7 @@ class ReferralAgent extends Authenticatable
         'email',
         'password',
         'phone',
+        'country',
         'referral_code',
         'commission_type',
         'commission_value',

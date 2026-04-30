@@ -39,6 +39,14 @@
                                        value="{{ old('phone', $agent->phone) }}" placeholder="+971 50 123 4567">
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label">Country</label>
+                                <input type="text" name="country" list="profile-country-options"
+                                       class="form-control form-control-sm @error('country') is-invalid @enderror"
+                                       value="{{ old('country', $agent->country) }}" placeholder="Start typing">
+                                <datalist id="profile-country-options"></datalist>
+                                @error('country')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Status</label>
                                 <div>
                                     <span class="badge bg-{{ $agent->status === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($agent->status) }}</span>
@@ -234,6 +242,23 @@ document.querySelectorAll('.copy-btn').forEach(btn => {
         });
     });
 });
+
+(function () {
+    const datalist = document.getElementById('profile-country-options');
+    if (!datalist) return;
+    fetch('https://restcountries.com/v3.1/all?fields=name')
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(data => {
+            data.map(c => c.name?.common).filter(Boolean)
+                .sort((a, b) => a.localeCompare(b))
+                .forEach(n => {
+                    const o = document.createElement('option');
+                    o.value = n;
+                    datalist.appendChild(o);
+                });
+        })
+        .catch(() => {});
+})();
 </script>
 @endpush
 @endsection

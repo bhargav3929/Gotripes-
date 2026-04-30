@@ -87,6 +87,7 @@
                         </div>
                     </div>
                     <div class="info-row"><span>Phone</span><span>{{ $agent->phone ?? 'N/A' }}</span></div>
+                    <div class="info-row"><span>Country</span><span>{{ $agent->country ?? 'N/A' }}</span></div>
                     <div class="info-row"><span>Created</span><span>{{ $agent->created_at->format('M d, Y') }}</span></div>
                     <div class="info-row"><span>Last Login</span><span>{{ $agent->last_login_at ? $agent->last_login_at->format('M d, Y H:i') : 'Never' }}</span></div>
                 </div>

@@ -497,12 +497,37 @@
                             <input type="hidden" name="price" id="hiddenPrice" value="0">
                         </div>
                         <div class="form-field">
-                            <label class="field-label">Number of Visas</label>
-                            <select class="field-input" id="visaCount" name="visa_count" required>
-                                @for ($i = 1; $i <= 10; $i++)
-                                    <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'Person' : 'People' }}</option>
-                                @endfor
-                            </select>
+                            <label class="field-label">Number of Persons (Adults)</label>
+                            <input
+                                type="number"
+                                class="field-input"
+                                id="visaCount"
+                                name="visa_count"
+                                min="1"
+                                max="10"
+                                step="1"
+                                value="1"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                placeholder="e.g. 2"
+                                required
+                            >
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">Number of Children</label>
+                            <input
+                                type="number"
+                                class="field-input"
+                                id="visaChildren"
+                                name="children_count"
+                                min="0"
+                                max="10"
+                                step="1"
+                                value="0"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                placeholder="e.g. 1"
+                            >
                         </div>
                         <div class="form-field">
                             <label class="field-label">Arrival Date</label>
@@ -606,18 +631,52 @@
             .catch(err => console.error(err));
 
         const visaCountSelect = document.getElementById('visaCount');
+        const childrenCountInput = document.getElementById('visaChildren');
         const applicantsContainer = document.getElementById('applicantsContainer');
         const durationSelect = document.getElementById('visaDuration');
 
+        // Numeric-only enforcement (block letters/symbols, allow nav keys)
+        function enforceNumericOnly(input) {
+            input.addEventListener('keydown', function (e) {
+                const allowed = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Home', 'End', 'Enter'];
+                if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
+                if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+            });
+            input.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+            input.addEventListener('paste', function (e) {
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                if (!/^[0-9]+$/.test(text)) e.preventDefault();
+            });
+        }
+        enforceNumericOnly(visaCountSelect);
+        enforceNumericOnly(childrenCountInput);
+
+        function readCount(el, min, max, fallback) {
+            let v = parseInt(el.value, 10);
+            if (isNaN(v)) v = fallback;
+            if (v < min) v = min;
+            if (v > max) v = max;
+            return v;
+        }
+
+        function getAdults() { return readCount(visaCountSelect, 1, 10, 1); }
+        function getChildren() { return readCount(childrenCountInput, 0, 10, 0); }
+
         // --- Dynamic Form Generation ---
-        function generateApplicants(count) {
+        function generateApplicants(adults, children) {
             applicantsContainer.innerHTML = ''; // Clear existing
-            for (let i = 0; i < count; i++) {
-                const num = i + 1;
+            const total = adults + children;
+            for (let i = 0; i < total; i++) {
+                const isChild = i >= adults;
+                const label = isChild
+                    ? `Child #${i - adults + 1}`
+                    : `Applicant #${i + 1}`;
                 const html = `
                     <div class="applicant-box">
                         <div class="applicant-header">
-                            <span><i class="bi bi-person-fill"></i> Applicant #${num}</span>
+                            <span><i class="bi bi-person-fill"></i> ${label}</span>
                             <small class="text-muted" style="font-size:9px;">DOCUMENTS REQUIRED</small>
                         </div>
                         <div class="form-grid-3">
@@ -658,28 +717,32 @@
             }
         }
 
-        // Initialize with 1 applicant
-        generateApplicants(1);
-
-        visaCountSelect.addEventListener('change', function () {
-            generateApplicants(parseInt(this.value));
+        function refreshForm() {
+            generateApplicants(getAdults(), getChildren());
             updatePrice();
-        });
+        }
+
+        // Initialize
+        refreshForm();
+
+        visaCountSelect.addEventListener('input', refreshForm);
+        childrenCountInput.addEventListener('input', refreshForm);
 
         // --- Pricing Logic ---
         function updatePrice() {
-            const count = parseInt(visaCountSelect.value) || 1;
+            const adults = getAdults();
+            const children = getChildren();
+            const total = adults + children;
             const option = durationSelect.options[durationSelect.selectedIndex];
             const unitPrice = parseFloat(option.getAttribute('data-price')) || 0;
 
-            const totalBase = unitPrice * count;
-            const total = totalBase;
+            const totalBase = unitPrice * total;
 
-            document.getElementById('hiddenPrice').value = total.toFixed(2);
-            document.getElementById('countDisplay').textContent = count;
+            document.getElementById('hiddenPrice').value = totalBase.toFixed(2);
+            document.getElementById('countDisplay').textContent = total;
 
             document.getElementById('summaryBase').textContent = 'AED ' + totalBase.toFixed(2);
-            document.getElementById('summaryTotal').textContent = 'AED ' + total.toFixed(2);
+            document.getElementById('summaryTotal').textContent = 'AED ' + totalBase.toFixed(2);
         }
 
         durationSelect.addEventListener('change', updatePrice);
@@ -695,8 +758,9 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> PROCESSING...';
 
             const formData = new FormData(this);
-            // Append count explicitly just in case
-            formData.set('visa_count', visaCountSelect.value);
+            // Append counts explicitly just in case
+            formData.set('visa_count', String(getAdults()));
+            formData.set('children_count', String(getChildren()));
 
             fetch(this.action, {
                 method: 'POST',

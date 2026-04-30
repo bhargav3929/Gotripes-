@@ -106,6 +106,30 @@
             color: var(--text-main);
         }
 
+        .brand-logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-logo-mark img {
+            height: 44px;
+            width: 44px;
+            object-fit: contain;
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .brand-logo-mark span {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
         .brand-tagline {
             font-size: 2.75rem;
             font-weight: 800;
@@ -343,6 +367,36 @@
             gap: 0.3rem;
         }
 
+        /* Country select chevron */
+        .country-wrap .country-chevron {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            pointer-events: none;
+            transition: color 0.15s ease;
+        }
+
+        .country-wrap input:focus ~ .country-chevron {
+            color: var(--primary-gold);
+        }
+
+        .country-wrap input {
+            padding-right: 2.5rem;
+        }
+
+        /* Hide native datalist dropdown arrow on webkit while keeping list functionality */
+        .country-wrap input::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
         /* Password toggle */
         .password-wrap {
             position: relative;
@@ -496,7 +550,10 @@
 
         <!-- Left Brand Panel -->
         <div class="brand-panel">
-            <div class="brand-logo">Go<span>Trips</span></div>
+            <div class="brand-logo-mark">
+                <img src="{{ asset('assets/index_files/logo.png') }}" alt="GoTrips">
+                <span>GoTrips</span>
+            </div>
 
             <h1 class="brand-tagline">
                 Join the GoTrips
@@ -560,7 +617,11 @@
         <div class="form-panel">
             <div class="form-container">
 
-                <div class="mobile-logo">Go<span>Trips</span> Partner</div>
+                <div class="mobile-logo">
+                    <img src="{{ asset('assets/index_files/logo.png') }}" alt="GoTrips" style="height:34px;width:34px;object-fit:contain;vertical-align:middle;">
+                    <span style="font-size:1rem;color:#fff;font-weight:700;margin-left:0.5rem;">GoTrips</span>
+                    <span style="font-size:0.8rem;color:var(--text-muted);font-weight:400;margin-left:0.4rem;">Partner</span>
+                </div>
 
                 <div class="form-header">
                     <h2>Create your account</h2>
@@ -655,6 +716,29 @@
                         @enderror
                     </div>
 
+                    <div class="form-group">
+                        <label class="form-label" for="country">Country <span style="color: var(--danger);">*</span></label>
+                        <div class="input-wrap country-wrap">
+                            <i class="fas fa-globe input-icon"></i>
+                            <input
+                                type="text"
+                                id="country"
+                                name="country"
+                                class="form-control {{ $errors->has('country') ? 'is-invalid' : '' }}"
+                                value="{{ old('country') }}"
+                                placeholder="Start typing your country"
+                                autocomplete="country-name"
+                                list="country-options"
+                                required
+                            >
+                            <i class="fas fa-chevron-down country-chevron"></i>
+                        </div>
+                        <datalist id="country-options"></datalist>
+                        @error('country')
+                        <div class="field-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <div class="section-divider"></div>
 
                     <div class="form-group">
@@ -731,6 +815,34 @@
                 icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
+
+        // Populate country datalist from REST Countries (no fixed list)
+        (function () {
+            const datalist = document.getElementById('country-options');
+            if (!datalist) return;
+
+            const FALLBACK = ['United Arab Emirates','Saudi Arabia','Qatar','Kuwait','Bahrain','Oman','India','Pakistan','Bangladesh','United Kingdom','United States','Canada','Australia','Germany','France','Italy','Spain','Egypt','Jordan','Lebanon','Turkey','Philippines','Indonesia','Malaysia','Singapore','Sri Lanka','Nepal','Nigeria','Kenya','South Africa','Brazil','Mexico','Argentina','Russia','China','Japan','South Korea'];
+
+            function populate(list) {
+                datalist.innerHTML = '';
+                list.forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    datalist.appendChild(opt);
+                });
+            }
+
+            fetch('https://restcountries.com/v3.1/all?fields=name')
+                .then(r => r.ok ? r.json() : Promise.reject(r.status))
+                .then(data => {
+                    const names = data
+                        .map(c => c && c.name && c.name.common)
+                        .filter(Boolean)
+                        .sort((a, b) => a.localeCompare(b));
+                    populate(names);
+                })
+                .catch(() => populate(FALLBACK.slice().sort((a, b) => a.localeCompare(b))));
+        })();
     </script>
 </body>
 </html>

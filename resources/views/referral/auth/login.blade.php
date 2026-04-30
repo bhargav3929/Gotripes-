@@ -247,7 +247,7 @@
 
     <div class="login-container">
         <div class="login-header">
-            <div class="login-logo">Go<span>Trips</span></div>
+            <img src="{{ asset('assets/index_files/logo.png') }}" alt="GoTrips" style="height:48px;width:auto;margin-bottom:0.5rem;">
             <p class="login-subtitle">Partner Portal</p>
         </div>
 
