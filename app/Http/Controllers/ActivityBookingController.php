@@ -223,6 +223,19 @@ class ActivityBookingController extends Controller
             
             $booking->save();
 
+            // Record commission for the tenant company (if a tenant subdomain is bound).
+            if (app()->bound('current_company')) {
+                $tenantCompany = app('current_company');
+                if ($tenantCompany instanceof \App\Models\Company && $tenantCompany->slug !== 'gotrips') {
+                    try {
+                        app(\App\Services\CommissionService::class)
+                            ->record($tenantCompany, 'activity_booking', $booking->id, (float) $finalAmount, $currency, 'pending');
+                    } catch (\Throwable $e) {
+                        \Log::warning('Commission record failed', ['booking_id' => $booking->id, 'err' => $e->getMessage()]);
+                    }
+                }
+            }
+
             // Log::info('Activity booking saved to database', [
             //     'booking'   => $booking->toArray(),
             //     'timestamp' => now()->toDateTimeString(),

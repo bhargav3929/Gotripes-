@@ -409,6 +409,34 @@
                 </li>
 
                 <div class="wp-nav-separator"></div>
+                <li class="wp-nav-label">Finance</li>
+
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.finance.index') }}" class="{{ request()->routeIs('manager.finance.index') ? 'active' : '' }}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Earnings</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.finance.bookings') }}" class="{{ request()->routeIs('manager.finance.bookings') ? 'active' : '' }}">
+                        <i class="fas fa-receipt"></i>
+                        <span>Bookings</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.finance.bank-accounts') }}" class="{{ request()->routeIs('manager.finance.bank-accounts') ? 'active' : '' }}">
+                        <i class="fas fa-university"></i>
+                        <span>Bank Accounts</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.finance.withdrawals') }}" class="{{ request()->routeIs('manager.finance.withdrawals') ? 'active' : '' }}">
+                        <i class="fas fa-money-bill-transfer"></i>
+                        <span>Withdrawals</span>
+                    </a>
+                </li>
+
+                <div class="wp-nav-separator"></div>
                 <li class="wp-nav-label">Settings</li>
 
                 <li class="wp-nav-item">

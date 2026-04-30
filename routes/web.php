@@ -272,6 +272,7 @@ use App\Http\Controllers\Manager\ManagerAdSlotsController;
 use App\Http\Controllers\Manager\ManagerAnnouncementsController;
 use App\Http\Controllers\Manager\ManagerActivitiesController;
 use App\Http\Controllers\Manager\ManagerSettingsController;
+use App\Http\Controllers\Manager\ManagerFinanceController;
 
 Route::get('/manager/login', [ManagerAuthController::class, 'showLogin'])->name('manager.login');
 Route::post('/manager/login', [ManagerAuthController::class, 'login'])->name('manager.login.submit');
@@ -285,6 +286,15 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
 
     Route::get('/settings/features', [ManagerSettingsController::class, 'features'])->name('settings.features');
     Route::post('/settings/features', [ManagerSettingsController::class, 'updateFeatures'])->name('settings.features.update');
+
+    // Finance: earnings, bookings, bank accounts, withdrawals
+    Route::get('/finance', [ManagerFinanceController::class, 'index'])->name('finance.index');
+    Route::get('/finance/bookings', [ManagerFinanceController::class, 'bookings'])->name('finance.bookings');
+    Route::get('/finance/bank-accounts', [ManagerFinanceController::class, 'bankAccounts'])->name('finance.bank-accounts');
+    Route::post('/finance/bank-accounts', [ManagerFinanceController::class, 'storeBankAccount'])->name('finance.bank-accounts.store');
+    Route::delete('/finance/bank-accounts/{bank}', [ManagerFinanceController::class, 'deleteBankAccount'])->name('finance.bank-accounts.destroy');
+    Route::get('/finance/withdrawals', [ManagerFinanceController::class, 'withdrawals'])->name('finance.withdrawals');
+    Route::post('/finance/withdrawals', [ManagerFinanceController::class, 'requestWithdrawal'])->name('finance.withdrawals.request');
 });
 
 // GitHub auto-deploy webhook

@@ -208,7 +208,7 @@
                         @error('plan')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
-                    <div>
+                    <div class="mb-4">
                         <label class="form-label">Markup Percentage</label>
                         <div class="input-group">
                             <input type="number" name="markup_percentage" class="form-control form-control-sm"
@@ -216,6 +216,22 @@
                             <span class="input-group-text">%</span>
                         </div>
                         <small class="text-muted d-block mt-2">Markup on eSIM cost prices for this company</small>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight:600;">Commission to Partner</label>
+                        <small class="text-muted d-block mb-2" style="font-size:12px;">What this partner earns on every booking from their subdomain.</small>
+                        <select name="commission_type" class="form-select form-select-sm mb-2">
+                            <option value="percentage" {{ old('commission_type', 'percentage') === 'percentage' ? 'selected' : '' }}>Percentage of order</option>
+                            <option value="flat" {{ old('commission_type') === 'flat' ? 'selected' : '' }}>Flat per order</option>
+                        </select>
+                        <div class="input-group">
+                            <input type="number" name="commission_value" class="form-control form-control-sm"
+                                   value="{{ old('commission_value', 15) }}" min="0" step="0.01" placeholder="e.g. 15">
+                            <span class="input-group-text">% / AED</span>
+                        </div>
                     </div>
                 </div>
             </div>

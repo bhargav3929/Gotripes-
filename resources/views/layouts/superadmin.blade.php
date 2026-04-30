@@ -560,7 +560,10 @@
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Analytics</div>
+                <div class="nav-section-title">Finance</div>
+                <a href="{{ route('superadmin.withdrawals.index') }}" class="nav-link {{ request()->routeIs('superadmin.withdrawals.*') ? 'active' : '' }}">
+                    <i class="fas fa-money-bill-transfer"></i> Withdrawals
+                </a>
                 <a href="{{ route('superadmin.reports.index') }}" class="nav-link {{ request()->routeIs('superadmin.reports.*') ? 'active' : '' }}">
                     <i class="fas fa-chart-line"></i> Reports
                 </a>

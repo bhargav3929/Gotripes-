@@ -95,6 +95,31 @@
                 </div>
             </div>
 
+            <!-- Commission -->
+            <div class="card mb-4">
+                <div class="card-header"><i class="fas fa-percent me-2"></i>Commission to Partner</div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:13px;">What this partner earns on every booking from their subdomain.</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Type</label>
+                            <select name="commission_type" class="form-select form-select-sm">
+                                <option value="percentage" {{ old('commission_type', $company->commission_type ?? 'percentage') === 'percentage' ? 'selected' : '' }}>Percentage of order</option>
+                                <option value="flat" {{ old('commission_type', $company->commission_type) === 'flat' ? 'selected' : '' }}>Flat per order</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Value</label>
+                            <div class="input-group">
+                                <input type="number" name="commission_value" class="form-control form-control-sm"
+                                       value="{{ old('commission_value', $company->commission_value ?? 15) }}" min="0" step="0.01">
+                                <span class="input-group-text">% / AED</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Settings -->
             <div class="card mb-4">
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>

@@ -17,6 +17,11 @@ class Company extends Model
         'domain',
         'subdomain',
         'type',
+        'commission_type',
+        'commission_value',
+        'pending_commission',
+        'paid_commission',
+        'total_commission',
         'logo',
         'favicon',
         'primary_color',
@@ -49,6 +54,10 @@ class Company extends Model
         'trial_ends_at' => 'datetime',
         'subscription_ends_at' => 'datetime',
         'markup_percentage' => 'decimal:2',
+        'commission_value' => 'decimal:2',
+        'pending_commission' => 'decimal:2',
+        'paid_commission' => 'decimal:2',
+        'total_commission' => 'decimal:2',
         'total_revenue' => 'decimal:2',
     ];
 
@@ -129,6 +138,26 @@ class Company extends Model
     public function referralAgents(): HasMany
     {
         return $this->hasMany(ReferralAgent::class);
+    }
+
+    public function commissions(): HasMany
+    {
+        return $this->hasMany(TenantCommission::class);
+    }
+
+    public function bankAccounts(): HasMany
+    {
+        return $this->hasMany(TenantBankAccount::class);
+    }
+
+    public function withdrawals(): HasMany
+    {
+        return $this->hasMany(TenantWithdrawal::class);
+    }
+
+    public function activityBookings(): HasMany
+    {
+        return $this->hasMany(\App\Models\ActivityBooking::class);
     }
 
     // Accessors

@@ -73,6 +73,13 @@ Route::middleware(['web', 'super.admin'])->prefix('superadmin')->name('superadmi
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
 
+    // Withdrawals (review tenant payout requests)
+    Route::get('withdrawals', [\App\Http\Controllers\SuperAdmin\WithdrawalController::class, 'index'])->name('withdrawals.index');
+    Route::post('withdrawals/{withdrawal}/approve', [\App\Http\Controllers\SuperAdmin\WithdrawalController::class, 'approve'])->name('withdrawals.approve');
+    Route::post('withdrawals/{withdrawal}/reject', [\App\Http\Controllers\SuperAdmin\WithdrawalController::class, 'reject'])->name('withdrawals.reject');
+    Route::post('withdrawals/{withdrawal}/paid', [\App\Http\Controllers\SuperAdmin\WithdrawalController::class, 'markPaid'])->name('withdrawals.paid');
+    Route::post('withdrawals/release', [\App\Http\Controllers\SuperAdmin\WithdrawalController::class, 'releaseCommissions'])->name('withdrawals.release');
+
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
