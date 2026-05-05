@@ -33,7 +33,7 @@ class ManagerAnnouncementsController extends Controller
             'tagType' => $request->input('tagType', 'none'),
             'AnnouncementImportance' => 0,
             'isActive' => 1,
-            'createdBy' => session('manager_name', 'manager'),
+            'createdBy' => auth()->user()?->name ?? 'manager',
             'createdDate' => now(),
             'modifiedby' => null,
             'modifiedDate' => null,
@@ -58,7 +58,7 @@ class ManagerAnnouncementsController extends Controller
         $announcement->update([
             'description' => $request->input('description'),
             'tagType' => $request->input('tagType', 'none'),
-            'modifiedBy' => session('manager_name', 'manager'),
+            'modifiedBy' => auth()->user()?->name ?? 'manager',
             'modifiedDate' => now(),
         ]);
 
@@ -70,7 +70,7 @@ class ManagerAnnouncementsController extends Controller
     {
         $announcement->update([
             'isActive' => 0,
-            'modifiedBy' => session('manager_name', 'manager'),
+            'modifiedBy' => auth()->user()?->name ?? 'manager',
             'modifiedDate' => now(),
         ]);
 

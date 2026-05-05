@@ -94,25 +94,36 @@
     @endif
 
     <h2>Enabled Services</h2>
-    <p class="lede">Toggle which services this partner can sell from their site. Disabled services return a 404 to visitors and are hidden from menus.</p>
+    <p class="lede">
+        These are the services your account is currently allowed to sell.
+        To enable or disable a service, contact your platform administrator —
+        tenants cannot change their own access.
+    </p>
 
-    <form method="POST" action="{{ route('manager.settings.features.update') }}">
-        @csrf
-        <div class="features-grid">
-            @foreach($allFeatures as $key => $label)
-                <div class="feature-row">
-                    <label for="feat-{{ $key }}">
-                        {{ $label }}
-                        <span class="feat-key">{{ $key }}</span>
-                    </label>
-                    <input type="checkbox" id="feat-{{ $key }}" name="features[]" value="{{ $key }}" {{ in_array($key, $enabled, true) ? 'checked' : '' }}>
-                    <label for="feat-{{ $key }}" class="toggle"></label>
-                </div>
-            @endforeach
-        </div>
-        <button type="submit" class="save-btn" {{ $company ? '' : 'disabled' }}>
-            <i class="fas fa-check" style="margin-right:6px;"></i>Save Settings
-        </button>
-    </form>
+    <div class="features-grid">
+        @foreach($allFeatures as $key => $label)
+            @php $isOn = in_array($key, $enabled, true); @endphp
+            <div class="feature-row">
+                <label>
+                    {{ $label }}
+                    <span class="feat-key">{{ $key }}</span>
+                </label>
+                <span class="feat-status {{ $isOn ? 'on' : 'off' }}">
+                    <i class="fas {{ $isOn ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                    {{ $isOn ? 'Enabled' : 'Disabled' }}
+                </span>
+            </div>
+        @endforeach
+    </div>
 </div>
+
+<style>
+    .feat-status {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 12px; font-weight: 600;
+        padding: 6px 12px; border-radius: 99px;
+    }
+    .feat-status.on  { background: rgba(34,197,94,0.15);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .feat-status.off { background: rgba(214,54,56,0.10);  color: #888;     border: 1px solid rgba(214,54,56,0.2); }
+</style>
 @endsection

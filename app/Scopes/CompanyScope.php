@@ -10,18 +10,22 @@ class CompanyScope implements Scope
 {
     public function apply(Builder $builder, Model $model): void
     {
-        // Only apply if we have a current company and user is not super admin
-        if (app()->has('current_company')) {
-            $company = app('current_company');
-
-            // Check if current user is super admin
-            $user = auth()->user();
-            if ($user && $user->is_super_admin) {
-                // Super admins can see all data - don't apply scope
-                return;
-            }
-
-            $builder->where($model->getTable() . '.company_id', $company->id);
+        // Super-admin bypass is intentional and ROUTE-scoped, not user-scoped.
+        // A super admin browsing a tenant subdomain should see THAT tenant's data,
+        // not everything. The bypass only kicks in inside /superadmin/* routes.
+        if (request()->routeIs('superadmin.*')) {
+            return;
         }
+
+        $companyId = current_company_id();
+
+        // Fail closed: with no tenant context, return zero rows.
+        // Better to show an empty page than to leak another tenant's data.
+        if (!$companyId) {
+            $builder->whereRaw('1 = 0');
+            return;
+        }
+
+        $builder->where($model->getTable() . '.company_id', $companyId);
     }
 }

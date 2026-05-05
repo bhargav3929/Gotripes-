@@ -273,6 +273,8 @@ use App\Http\Controllers\Manager\ManagerAnnouncementsController;
 use App\Http\Controllers\Manager\ManagerActivitiesController;
 use App\Http\Controllers\Manager\ManagerSettingsController;
 use App\Http\Controllers\Manager\ManagerFinanceController;
+use App\Http\Controllers\Manager\OrdersController;
+use App\Http\Controllers\Manager\SettingsController;
 
 Route::get('/manager/login', [ManagerAuthController::class, 'showLogin'])->name('manager.login');
 Route::post('/manager/login', [ManagerAuthController::class, 'login'])->name('manager.login.submit');
@@ -284,8 +286,15 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::resource('announcements', ManagerAnnouncementsController::class);
     Route::resource('activities', ManagerActivitiesController::class);
 
+    // Features are managed by super-admin via /superadmin/companies/{c}/edit.
+    // Tenants get a read-only view here (no POST endpoint — see audit finding #13).
     Route::get('/settings/features', [ManagerSettingsController::class, 'features'])->name('settings.features');
-    Route::post('/settings/features', [ManagerSettingsController::class, 'updateFeatures'])->name('settings.features.update');
+
+    // Tenant Settings — profile/branding + preferences (Step D).
+    Route::get('/settings/profile',      [SettingsController::class, 'profile'])->name('settings.profile');
+    Route::post('/settings/profile',     [SettingsController::class, 'updateProfile'])->name('settings.profile.update');
+    Route::get('/settings/preferences',  [SettingsController::class, 'preferences'])->name('settings.preferences');
+    Route::post('/settings/preferences', [SettingsController::class, 'updatePreferences'])->name('settings.preferences.update');
 
     // Finance: earnings, bookings, bank accounts, withdrawals
     Route::get('/finance', [ManagerFinanceController::class, 'index'])->name('finance.index');
@@ -295,6 +304,18 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::delete('/finance/bank-accounts/{bank}', [ManagerFinanceController::class, 'deleteBankAccount'])->name('finance.bank-accounts.destroy');
     Route::get('/finance/withdrawals', [ManagerFinanceController::class, 'withdrawals'])->name('finance.withdrawals');
     Route::post('/finance/withdrawals', [ManagerFinanceController::class, 'requestWithdrawal'])->name('finance.withdrawals.request');
+
+    // Orders & Bookings (Step C). All queries are tenant-scoped automatically
+    // by the BelongsToCompany trait + CompanyScope global scope.
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/activities',                  [OrdersController::class, 'activities'])->name('activities');
+        Route::get('/activities/{booking}',        [OrdersController::class, 'activityDetail'])->name('activities.show');
+        Route::get('/esim',                        [OrdersController::class, 'esim'])->name('esim');
+        Route::get('/esim/{order}',                [OrdersController::class, 'esimDetail'])->name('esim.show');
+        Route::get('/visa',                        [OrdersController::class, 'visa'])->name('visa');
+        Route::get('/visa/{application}',          [OrdersController::class, 'visaDetail'])->name('visa.show');
+        Route::get('/flights-hotels',              [OrdersController::class, 'flightsHotels'])->name('flights-hotels');
+    });
 });
 
 // GitHub auto-deploy webhook

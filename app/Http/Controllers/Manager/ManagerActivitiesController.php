@@ -90,7 +90,7 @@ class ManagerActivitiesController extends Controller
             'supplierEmail'              => $request->supplierEmail,
             'activityImage'              => $firstImage,
             'isActive'                   => 1,
-            'createdBy'                  => session('manager_name', 'manager'),
+            'createdBy'                  => auth()->user()?->name ?? 'manager',
             'createdDate'                => now(),
             'modifiedBy'                 => null,
             'modifiedDate'               => null,
@@ -104,7 +104,7 @@ class ManagerActivitiesController extends Controller
             'detailsHighlights' => implode('#cseparator', $request->detailsHighlights),
             'activityImage'     => implode('#cseparator', $imagePaths),
             'isActive'          => 1,
-            'createdBy'         => session('manager_name', 'manager'),
+            'createdBy'         => auth()->user()?->name ?? 'manager',
             'createdDate'       => now(),
             'modifiedBy'        => null,
             'modifiedDate'      => null,
@@ -235,7 +235,7 @@ class ManagerActivitiesController extends Controller
             'supplierName'               => $request->supplierName,
             'supplierEmail'              => $request->supplierEmail,
             'activityImage'              => count($finalImagePaths) > 0 ? $finalImagePaths[0] : '',
-            'modifiedBy'                 => session('manager_name', 'manager'),
+            'modifiedBy'                 => auth()->user()?->name ?? 'manager',
             'modifiedDate'               => now(),
         ]);
 
@@ -246,12 +246,12 @@ class ManagerActivitiesController extends Controller
             'detailsHighlights' => implode('#cseparator', $request->detailsHighlights),
             'activityImage'     => implode('#cseparator', $finalImagePaths),
             'isActive'          => 1,
-            'modifiedBy'        => session('manager_name', 'manager'),
+            'modifiedBy'        => auth()->user()?->name ?? 'manager',
             'modifiedDate'      => now(),
         ];
 
         if (!$details->exists) {
-            $detailsData['createdBy']   = session('manager_name', 'manager');
+            $detailsData['createdBy']   = auth()->user()?->name ?? 'manager';
             $detailsData['createdDate'] = now();
         }
 
@@ -276,7 +276,7 @@ class ManagerActivitiesController extends Controller
         // Soft delete main activity
         $activity->update([
             'isActive'     => 0,
-            'modifiedBy'   => session('manager_name', 'manager'),
+            'modifiedBy'   => auth()->user()?->name ?? 'manager',
             'modifiedDate' => now(),
         ]);
 
@@ -284,7 +284,7 @@ class ManagerActivitiesController extends Controller
         UAEActivityDetail::where('activityID', $activity->activityID)
                          ->update([
                              'isActive'     => 0,
-                             'modifiedBy'   => session('manager_name', 'manager'),
+                             'modifiedBy'   => auth()->user()?->name ?? 'manager',
                              'modifiedDate' => now(),
                          ]);
 

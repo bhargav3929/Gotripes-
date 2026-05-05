@@ -223,18 +223,10 @@ class ActivityBookingController extends Controller
             
             $booking->save();
 
-            // Record commission for the tenant company (if a tenant subdomain is bound).
-            if (app()->bound('current_company')) {
-                $tenantCompany = app('current_company');
-                if ($tenantCompany instanceof \App\Models\Company && $tenantCompany->slug !== 'gotrips') {
-                    try {
-                        app(\App\Services\CommissionService::class)
-                            ->record($tenantCompany, 'activity_booking', $booking->id, (float) $finalAmount, $currency, 'pending');
-                    } catch (\Throwable $e) {
-                        \Log::warning('Commission record failed', ['booking_id' => $booking->id, 'err' => $e->getMessage()]);
-                    }
-                }
-            }
+            // NOTE: commission is NO LONGER recorded here. It is now driven by the
+            // PaymentConfirmed event dispatched from NomodController on payment
+            // success — so failed/cancelled payments don't inflate the tenant's
+            // pending balance. See app/Listeners/RecordCommission.php.
 
             // Log::info('Activity booking saved to database', [
             //     'booking'   => $booking->toArray(),
@@ -255,11 +247,12 @@ class ActivityBookingController extends Controller
             $mailData['supplierEmail'] = $activityModel->supplierEmail ?? '';
             
             // Recipients: Always send to user + admins for BOTH payment options
-            $recipients = [
-                config('mail.from.address'),
-                // 'Saideepak.c@vizcheck.com',
-                $mailData['email'], // User's email - THIS IS THE KEY ADDITION
-            ];
+            // Tenant inbox + customer's confirmation email
+            $tenantInbox = current_company()?->email ?: config('mail.from.address');
+            $recipients = array_filter([
+                $tenantInbox,
+                $mailData['email'], // User's email
+            ]);
 
             // Log::info('About to send activity booking email', [
             //     'recipients' => $recipients,

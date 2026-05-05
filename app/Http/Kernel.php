@@ -36,8 +36,14 @@ class Kernel extends HttpKernel
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            // IdentifyTenant MUST run before SubstituteBindings — the global
+            // CompanyScope on tenant-owned models reads current_company_id()
+            // when route-binding resolves a model. If IdentifyTenant runs
+            // after, the scope falls through to fail-closed and route binding
+            // 404s on every tenant-scoped route. (Discovered Step C, after
+            // /manager/orders/esim/14 returned 404 for a row owned by gotrips.)
             \App\Http\Middleware\IdentifyTenant::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ReferralTrackingMiddleware::class,
         ],
 
@@ -74,6 +80,5 @@ class Kernel extends HttpKernel
         'tenant' => \App\Http\Middleware\IdentifyTenant::class,
         'tenant.feature' => \App\Http\Middleware\EnsureTenantFeature::class,
         'super.admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
-        'company.admin' => \App\Http\Middleware\CompanyAdminMiddleware::class,
     ];
 }

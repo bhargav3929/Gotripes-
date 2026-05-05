@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class UAEActivity extends Model
 {
+    use BelongsToCompany;
 
     protected $table = 'tbl_UAEActivities';
     protected $primaryKey = 'activityID';
@@ -37,8 +39,9 @@ class UAEActivity extends Model
         'supplierName',
         'supplierEmail',
         'activityRoute',
-        'emiratesID', // Add this new foreign key
-        'activityCategory', // Optional for future filtering
+        'emiratesID',
+        'activityCategory',
+        'company_id',
     ];
 
     // Relationship with Emirates

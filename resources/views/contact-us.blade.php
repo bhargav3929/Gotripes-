@@ -452,13 +452,28 @@
 
         <div class="row g-4 d-flex align-items-stretch">
             <!-- Left: Map -->
+            @php
+                $contactTenant = current_company();
+                $contactMapUrl = $contactTenant?->googleMapsEmbedUrl();
+            @endphp
             <div class="col-lg-6">
                 <div class="glass-card p-0 overflow-hidden h-100">
-                    <div class="map-frame">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3654.465167809801!2d53.7285936!3d23.6593174!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e6767007471d31d%3A0x7d02367b5fcb1ff4!2sAyn%20Al%20Amir%20Tourism!5e0!3m2!1sen!2sin!4v1758352262359!5m2!1sen!2sin"
-                            class="w-100 h-100 border-0" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
+                    @if($contactMapUrl)
+                        <div class="map-frame">
+                            <iframe src="{{ $contactMapUrl }}"
+                                    class="w-100 h-100 border-0"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                    title="{{ $contactTenant->name }} location"></iframe>
+                        </div>
+                    @else
+                        <div class="d-flex flex-column justify-content-center align-items-center h-100 p-4 text-center" style="min-height:300px;">
+                            <i class="bi bi-geo-alt" style="font-size:48px;color:#FFD700;opacity:.5;"></i>
+                            <p class="text-white mt-3 mb-0" style="opacity:.7;">Visit us by appointment.</p>
+                            <p class="text-white" style="opacity:.5;font-size:13px;">Get in touch via the form to schedule.</p>
+                        </div>
+                    @endif
                 </div>
             </div>
 

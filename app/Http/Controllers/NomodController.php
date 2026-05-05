@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PaymentConfirmed;
 use App\Models\NomodTransaction;
 use App\Models\UAEVApplication;
 use App\Models\ActivityBooking;
@@ -103,6 +104,13 @@ class NomodController extends Controller
         // Update booking status
         $this->updateBookingStatus($referenceId, $orderStatus, $bookingType);
 
+        // Dispatch PaymentConfirmed → triggers RecordCommission listener.
+        // This is the SINGLE place commission is created — guarantees it only
+        // happens after a real payment success (no premature recording).
+        if ($orderStatus === 'Success') {
+            $this->dispatchPaymentConfirmed($referenceId, $transaction);
+        }
+
         // Build response array compatible with payment/status.blade.php
         $response = [
             'order_id' => $referenceId,
@@ -141,7 +149,8 @@ class NomodController extends Controller
             $mailData['sent_at'] = now()->toDateTimeString();
 
             $customerEmail = $this->extractCustomerEmail($bookingData['data'], $bookingData['type']);
-            $adminEmail = config('mail.from.address');
+            // Route admin notification to the tenant's inbox; fall back to platform default.
+            $adminEmail = current_company()?->email ?: config('mail.from.address');
 
             // Enrich with supplier info for activity bookings
             $activity = null;
@@ -203,6 +212,80 @@ class NomodController extends Controller
             Log::error('Payment email system failed', ['error' => $e->getMessage(), 'order_id' => $orderId]);
             return false;
         }
+    }
+
+    /**
+     * Resolve the underlying booking/order from the reference id and
+     * dispatch PaymentConfirmed. The RecordCommission listener picks it up.
+     *
+     * Looks at the order_id prefix to identify the service:
+     *   ORDAB*    → activity booking
+     *   ORDESIM*  → eSIM order
+     *   ORDUAEV*  → visa application
+     *   ORDAG*    → agent booking (flights/hotels)
+     *   ORDUM*    → umrah (no commission — direct billed by platform)
+     */
+    private function dispatchPaymentConfirmed(string $referenceId, NomodTransaction $transaction): void
+    {
+        try {
+            [$payable, $sourceType] = $this->resolvePayable($referenceId);
+
+            if (!$payable || !$sourceType) {
+                return; // umrah, or unknown type — nothing to record
+            }
+
+            $companyId = $payable->company_id ?? null;
+            if (!$companyId) {
+                Log::warning('PaymentConfirmed: payable has no company_id', [
+                    'reference_id' => $referenceId,
+                    'payable_type' => get_class($payable),
+                    'payable_id'   => $payable->getKey(),
+                ]);
+                return;
+            }
+
+            event(new PaymentConfirmed(
+                payable:     $payable,
+                companyId:   (int) $companyId,
+                grossAmount: (float) $transaction->amount,
+                currency:    (string) ($transaction->currency ?? 'AED'),
+                sourceType:  $sourceType,
+                reference:   $referenceId,
+            ));
+        } catch (\Throwable $e) {
+            // Never break the payment-confirmation response over commission bookkeeping.
+            Log::error('Failed to dispatch PaymentConfirmed', [
+                'reference_id' => $referenceId,
+                'error'        => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * @return array{0: ?\Illuminate\Database\Eloquent\Model, 1: ?string}
+     */
+    private function resolvePayable(string $referenceId): array
+    {
+        $services = config('commission.eligible_services', []);
+
+        if (str_contains($referenceId, 'ORDAB')) {
+            $id = (int) str_replace('ORDAB', '', $referenceId);
+            return [ActivityBooking::find($id), $services['activity'] ?? null];
+        }
+        if (str_contains($referenceId, 'ORDESIM')) {
+            $id = (int) str_replace('ORDESIM', '', $referenceId);
+            return [EsimOrder::find($id), $services['esim'] ?? null];
+        }
+        if (str_contains($referenceId, 'ORDUAEV')) {
+            $id = (int) str_replace('ORDUAEV', '', $referenceId);
+            return [UAEVApplication::find($id), $services['visa'] ?? null];
+        }
+        if (str_contains($referenceId, 'ORDAG')) {
+            $id = (int) str_replace('ORDAG', '', $referenceId);
+            return [AgentBooking::find($id), $services['agent_booking'] ?? null];
+        }
+
+        return [null, null];
     }
 
     private function extractCustomerEmail($bookingData, $bookingType)

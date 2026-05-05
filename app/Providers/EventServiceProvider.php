@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\PaymentConfirmed;
+use App\Events\PaymentRefunded;
+use App\Listeners\RecordCommission;
+use App\Listeners\ReverseCommission;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +21,14 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+
+        PaymentConfirmed::class => [
+            RecordCommission::class,
+        ],
+
+        PaymentRefunded::class => [
+            ReverseCommission::class,
         ],
     ];
 

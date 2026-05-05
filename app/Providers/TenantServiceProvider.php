@@ -11,7 +11,10 @@ class TenantServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Register a singleton for current company
+        // Load global tenant helpers (current_company, current_company_id, has_tenant)
+        require_once app_path('Helpers/tenant.php');
+
+        // Register a singleton for current company (default null until IdentifyTenant binds the real one)
         $this->app->singleton('current_company', function () {
             return null;
         });

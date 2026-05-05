@@ -165,7 +165,25 @@ class Company extends Model
     {
         return $this->logo
             ? asset('storage/' . $this->logo)
-            : asset('images/default-logo.png');
+            : asset('assets/index_files/logo.png');
+    }
+
+    public function hasCustomLogo(): bool
+    {
+        return !empty($this->logo);
+    }
+
+    public function hasAddress(): bool
+    {
+        return !empty(trim($this->address ?? ''));
+    }
+
+    public function googleMapsEmbedUrl(): ?string
+    {
+        if (!$this->hasAddress()) {
+            return null;
+        }
+        return 'https://www.google.com/maps?q=' . urlencode($this->address) . '&output=embed';
     }
 
     public function getFaviconUrlAttribute(): string
@@ -217,14 +235,18 @@ class Company extends Model
         'pay_online'   => 'Pay Online',
     ];
 
-    // Feature checks
+    // Feature checks — fail-closed: empty/null = NO access.
+    // To grant full access, the features array must explicitly list every feature.
+    // The migration `2026_05_02_200001_backfill_features_for_existing_companies` ensures
+    // pre-existing companies were backfilled with all features.
     public function hasFeature(string $feature): bool
     {
         $features = $this->features ?? [];
-        // If features is empty/null, treat as full-access (legacy / main tenant)
-        if (empty($features)) {
-            return true;
+
+        if (empty($features) || !is_array($features)) {
+            return false;
         }
+
         return in_array($feature, $features, true);
     }
 
@@ -272,6 +294,44 @@ class Company extends Model
                 'website' => $this->website,
             ],
         ];
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // Commission balance accessors — computed live from the ledger rows.
+    //
+    // The companies.{pending,paid,total}_commission columns are no longer
+    // load-bearing; they may exist as stale legacy data but are overridden
+    // by these accessors. Truth lives in the tenant_commissions table.
+    //
+    // To get the raw column value (e.g. for migration or debugging), use:
+    //   $company->getRawOriginal('pending_commission')
+    // ────────────────────────────────────────────────────────────────────
+    public function getPendingCommissionAttribute(): float
+    {
+        return (float) $this->commissions()->where('status', 'pending')->sum('commission_amount');
+    }
+
+    public function getAvailableCommissionAttribute(): float
+    {
+        return (float) $this->commissions()->where('status', 'available')->sum('commission_amount');
+    }
+
+    public function getReservedCommissionAttribute(): float
+    {
+        return (float) $this->commissions()->where('status', 'reserved')->sum('commission_amount');
+    }
+
+    public function getPaidCommissionAttribute(): float
+    {
+        return (float) $this->commissions()->where('status', 'paid')->sum('commission_amount');
+    }
+
+    public function getTotalCommissionAttribute(): float
+    {
+        // Total earned (excludes reversals).
+        return (float) $this->commissions()
+            ->whereIn('status', ['pending', 'available', 'reserved', 'paid'])
+            ->sum('commission_amount');
     }
 
     // Stats

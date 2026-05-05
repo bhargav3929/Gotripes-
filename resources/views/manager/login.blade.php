@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Manager Login - Go Trips</title>
-    <link rel="icon" type="image/png" href="{{ asset('assets/index_files/logo.png') }}">
+    @php
+        $loginTenant = current_company();
+        $loginTenantName = $loginTenant?->name ?? 'Manager Portal';
+        $loginTenantLogo = $loginTenant?->logo_url ?? asset('assets/index_files/logo.png');
+        $loginTenantFavicon = $loginTenant?->favicon_url ?? asset('assets/index_files/logo.png');
+    @endphp
+    <title>Manager Login - {{ $loginTenantName }}</title>
+    <link rel="icon" type="image/png" href="{{ $loginTenantFavicon }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -128,7 +134,7 @@
 </head>
 <body>
     <div class="login-logo">
-        <img src="{{ asset('assets/index_files/logo.png') }}" alt="Go Trips">
+        <img src="{{ $loginTenantLogo }}" alt="{{ $loginTenantName }}">
         <h1>Manager Portal</h1>
     </div>
 
@@ -143,13 +149,18 @@
             @csrf
 
             <div class="form-group">
-                <label for="username">Email</label>
-                <input id="username" type="email" name="username" value="{{ old('username') }}" placeholder="you@example.com" required autofocus autocomplete="email">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" placeholder="you@example.com" required autofocus autocomplete="email">
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input id="password" type="password" name="password" required>
+                <input id="password" type="password" name="password" required autocomplete="current-password">
+            </div>
+
+            <div class="form-group" style="display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" id="remember" name="remember" value="1" style="width:auto;height:auto;">
+                <label for="remember" style="margin:0;font-weight:400;color:#ccc;">Remember me</label>
             </div>
 
             <button type="submit" class="login-btn">Log In</button>
@@ -157,7 +168,7 @@
     </div>
 
     <div class="login-footer">
-        <a href="{{ url('/') }}">Back to Go Trips</a>
+        <a href="{{ url('/') }}">Back to {{ $loginTenantName }}</a>
     </div>
 </body>
 </html>

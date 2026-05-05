@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\SuperAdminAuditLog;
 use App\Models\User;
 use App\Services\HostingerSubdomainProvisioner;
 use Illuminate\Http\Request;
@@ -121,6 +122,12 @@ class CompanyController extends Controller
             'role' => 'company_owner',
         ]);
 
+        SuperAdminAuditLog::log('company.create', $company, [
+            'plan'         => $company->plan,
+            'features'     => $features,
+            'admin_email'  => $admin->email,
+        ]);
+
         // Optionally provision the Hostinger subdomain right now.
         $provisionMessage = null;
         if ($request->boolean('auto_provision', true)) {
@@ -223,7 +230,14 @@ class CompanyController extends Controller
             $validated['favicon'] = $request->file('favicon')->store('companies/favicons', 'public');
         }
 
+        $original = $company->only(array_keys($validated));
         $company->update($validated);
+        $diff = collect($validated)
+            ->mapWithKeys(fn($v, $k) => [$k => ['from' => $original[$k] ?? null, 'to' => $v]])
+            ->filter(fn($pair) => $pair['from'] !== $pair['to'])
+            ->all();
+
+        SuperAdminAuditLog::log('company.update', $company, $diff);
 
         return redirect()
             ->route('superadmin.companies.show', $company)
@@ -232,6 +246,11 @@ class CompanyController extends Controller
 
     public function destroy(Company $company)
     {
+        SuperAdminAuditLog::log('company.delete', $company, [
+            'subdomain' => $company->subdomain,
+            'plan'      => $company->plan,
+        ]);
+
         // Delete logo and favicon
         if ($company->logo) {
             Storage::disk('public')->delete($company->logo);
@@ -249,7 +268,12 @@ class CompanyController extends Controller
 
     public function toggleStatus(Company $company)
     {
-        $company->update(['is_active' => !$company->is_active]);
+        $was = (bool) $company->is_active;
+        $company->update(['is_active' => !$was]);
+
+        SuperAdminAuditLog::log('company.toggle_status', $company, [
+            'is_active' => ['from' => $was, 'to' => !$was],
+        ]);
 
         $status = $company->is_active ? 'activated' : 'deactivated';
         return back()->with('success', "Company {$status} successfully.");
@@ -257,19 +281,28 @@ class CompanyController extends Controller
 
     public function impersonate(Company $company)
     {
-        // Store original user ID to allow returning
-        session(['impersonating_from' => auth()->id()]);
-        session(['company_id' => $company->id]);
-
-        // Get company owner or first admin
+        // Find a target user before mutating any state
         $admin = $company->owner ?? $company->admins()->first();
 
-        if ($admin) {
-            auth()->login($admin);
-            return redirect('/admin')->with('info', "Impersonating {$company->name}");
+        if (!$admin) {
+            return back()->with('error', 'No admin user found for this company.');
         }
 
-        return back()->with('error', 'No admin user found for this company.');
+        SuperAdminAuditLog::log('company.impersonate', $company, [
+            'impersonated_user_id' => $admin->id,
+            'impersonated_email'   => $admin->email,
+        ]);
+
+        // Remember the SA's original ID so they can return later
+        session(['impersonating_from' => auth()->id()]);
+        // NOTE: we do NOT write session('company_id'). Tenant identity is now
+        // host-derived (see IdentifyTenant middleware). The session key is
+        // ignored and would only confuse future readers.
+
+        auth()->login($admin);
+
+        return redirect()->route('manager.dashboard')
+            ->with('info', "Impersonating {$company->name}");
     }
 
     public function extendSubscription(Request $request, Company $company)
@@ -283,8 +316,14 @@ class CompanyController extends Controller
             $currentEnd = now();
         }
 
+        $newEnd = $currentEnd->addDays($request->days);
         $company->update([
-            'subscription_ends_at' => $currentEnd->addDays($request->days),
+            'subscription_ends_at' => $newEnd,
+        ]);
+
+        SuperAdminAuditLog::log('company.extend_subscription', $company, [
+            'days'     => (int) $request->days,
+            'new_end'  => $newEnd->toDateTimeString(),
         ]);
 
         return back()->with('success', "Subscription extended by {$request->days} days.");
@@ -296,7 +335,12 @@ class CompanyController extends Controller
             'plan' => 'required|in:trial,basic,pro,enterprise',
         ]);
 
+        $oldPlan = $company->plan;
         $company->update(['plan' => $request->plan]);
+
+        SuperAdminAuditLog::log('company.change_plan', $company, [
+            'plan' => ['from' => $oldPlan, 'to' => $request->plan],
+        ]);
 
         return back()->with('success', "Plan changed to {$request->plan}.");
     }

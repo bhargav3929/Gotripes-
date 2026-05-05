@@ -51,16 +51,15 @@ class JobApplicationController extends Controller
         // ]);
 
         $fromEmail = config('mail.from.address');
-        $toEmail = config('mail.from.address');
+        // Route the application to the tenant whose subdomain the form was submitted on.
+        $toEmail = current_company()?->email ?: config('mail.from.address');
         $userEmail = $validated['email'];
 
-        // $additionalEmail = 'Saideepak.c@vizcheck.com';
         $recipients = array_unique([$toEmail, $userEmail]);
 
         if (empty($toEmail)) {
-            // Log::error('MAIL_USERNAME is not set in config/mail.php or .env');
-            $toEmail = 'amer@aynalamirtourism.com'; // fallback
-            $recipients = [$toEmail];
+            Log::error('No tenant email and no platform default — job application has nowhere to go.');
+            return redirect()->back()->with('error', 'Sorry, applications are temporarily unavailable.');
         }
 
         // Store resume file if uploaded

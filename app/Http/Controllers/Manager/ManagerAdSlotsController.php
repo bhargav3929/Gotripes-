@@ -74,7 +74,7 @@ class ManagerAdSlotsController extends Controller
                 'displayOrder' => $maxOrder + 1,
                 'duration' => $request->input('duration', 5),
                 'isActive' => 1,
-                'createdby' => session('manager_name', 'manager'),
+                'createdby' => auth()->user()?->name ?? 'manager',
                 'createddate' => now(),
                 'modifiedby' => null,
                 'modifieddate' => null,
@@ -141,7 +141,7 @@ class ManagerAdSlotsController extends Controller
             'mediaType' => $mediaType,
             'slotOrder' => $request->input('slotOrder', $adslot->slotOrder),
             'duration' => $request->input('duration', $adslot->duration ?? 5),
-            'modifiedby' => session('manager_name', 'manager'),
+            'modifiedby' => auth()->user()?->name ?? 'manager',
             'modifieddate' => now(),
         ]);
 
@@ -153,7 +153,7 @@ class ManagerAdSlotsController extends Controller
     {
         $adslot->update([
             'isActive' => 0,
-            'modifiedby' => session('manager_name', 'manager'),
+            'modifiedby' => auth()->user()?->name ?? 'manager',
             'modifieddate' => now(),
         ]);
 

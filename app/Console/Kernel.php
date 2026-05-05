@@ -12,7 +12,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Flip pending commissions to available once their hold period elapses.
+        // Runs hourly so released commissions appear within ~1h of becoming due.
+        // Production needs `php artisan schedule:run` in cron every minute.
+        $schedule->command('commissions:release')
+            ->hourly()
+            ->withoutOverlapping()
+            ->onOneServer();
     }
 
     /**

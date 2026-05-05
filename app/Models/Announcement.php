@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Announcement extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'tbl_announcements';
     public $timestamps = false;
 
@@ -18,7 +21,8 @@ class Announcement extends Model
         'modifiedDate',
         'isActive',
         'AnnouncementImportance',
-        'tagType'
+        'tagType',
+        'company_id',
     ];
 
     protected $casts = [

@@ -7,8 +7,10 @@ use App\Models\Company;
 use App\Models\TenantBankAccount;
 use App\Models\TenantCommission;
 use App\Models\TenantWithdrawal;
+use App\Services\CommissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ManagerFinanceController extends Controller
 {
@@ -28,11 +30,14 @@ class ManagerFinanceController extends Controller
             return view('manager.finance.no-tenant');
         }
 
+        // All four are now computed live from the ledger via Company accessors —
+        // no more drift between this dashboard and the SA dashboard.
         $totals = [
-            'pending'   => (float) $company->pending_commission,
-            'available' => (float) TenantCommission::where('company_id', $company->id)->where('status', 'available')->sum('commission_amount'),
-            'paid'      => (float) $company->paid_commission,
-            'total'     => (float) $company->total_commission,
+            'pending'   => $company->pending_commission,
+            'available' => $company->available_commission,
+            'reserved'  => $company->reserved_commission,
+            'paid'      => $company->paid_commission,
+            'total'     => $company->total_commission,
             'currency'  => $company->currency ?? 'AED',
         ];
 
@@ -136,9 +141,7 @@ class ManagerFinanceController extends Controller
             return view('manager.finance.no-tenant');
         }
 
-        $available = (float) TenantCommission::where('company_id', $company->id)
-            ->where('status', 'available')
-            ->sum('commission_amount');
+        $available = $company->available_commission;
 
         $accounts = TenantBankAccount::where('company_id', $company->id)->orderByDesc('is_primary')->get();
         $withdrawals = TenantWithdrawal::where('company_id', $company->id)->orderByDesc('id')->paginate(20);
@@ -146,36 +149,65 @@ class ManagerFinanceController extends Controller
         return view('manager.finance.withdrawals', compact('company', 'available', 'accounts', 'withdrawals'));
     }
 
-    public function requestWithdrawal(Request $request)
+    /**
+     * Request a withdrawal.
+     *
+     * The whole flow runs inside ONE serializable transaction with a row lock
+     * on the company. Two concurrent requests for the same tenant cannot both
+     * pass the balance check and both reserve the same commissions — the
+     * second one will see the post-reservation balance and either fail or
+     * reserve only what's still left.
+     */
+    public function requestWithdrawal(Request $request, CommissionService $commissions)
     {
         $company = $this->tenant();
         if (!$company) return back()->with('error', 'No tenant context.');
 
-        $available = (float) TenantCommission::where('company_id', $company->id)
-            ->where('status', 'available')
-            ->sum('commission_amount');
-
         $validated = $request->validate([
-            'amount'          => "required|numeric|min:50|max:{$available}",
+            'amount'          => 'required|numeric|min:50',
             'bank_account_id' => 'required|exists:tenant_bank_accounts,id',
             'notes'           => 'nullable|string|max:500',
-        ], [
-            'amount.max' => "You only have AED {$available} available to withdraw.",
         ]);
 
-        // Make sure the bank account belongs to this tenant
+        // Bank ownership check (still outside the transaction — cheap)
         $bank = TenantBankAccount::where('id', $validated['bank_account_id'])
             ->where('company_id', $company->id)->first();
         if (!$bank) abort(403);
 
-        TenantWithdrawal::create([
-            'company_id'      => $company->id,
-            'bank_account_id' => $bank->id,
-            'amount'          => $validated['amount'],
-            'currency'        => $company->currency ?? 'AED',
-            'status'          => 'pending',
-            'notes'           => $validated['notes'] ?? null,
-        ]);
+        try {
+            DB::transaction(function () use ($company, $bank, $validated, $commissions) {
+                // Lock the company row for the duration of the transaction.
+                // Any other request hitting this code path for THIS tenant
+                // will block here until we're done.
+                $locked = Company::lockForUpdate()->findOrFail($company->id);
+
+                // Recompute the available balance from rows AFTER taking the lock.
+                // (The `$company->available_commission` accessor already reads live data.)
+                $available = $locked->available_commission;
+                $amount = (float) $validated['amount'];
+
+                if ($amount > $available + 0.001) {
+                    throw ValidationException::withMessages([
+                        'amount' => "Insufficient available balance. You have " . number_format($available, 2) . " AED.",
+                    ]);
+                }
+
+                // Create withdrawal in 'pending' state.
+                $withdrawal = TenantWithdrawal::create([
+                    'company_id'      => $locked->id,
+                    'bank_account_id' => $bank->id,
+                    'amount'          => $amount,
+                    'currency'        => $locked->currency ?? 'AED',
+                    'status'          => 'pending',
+                    'notes'           => $validated['notes'] ?? null,
+                ]);
+
+                // Atomically reserve the commissions backing this request (FIFO).
+                $commissions->reserveFor($locked, $withdrawal, $amount);
+            });
+        } catch (ValidationException $e) {
+            throw $e;
+        }
 
         return redirect()->route('manager.finance.withdrawals')
             ->with('success', 'Withdrawal requested. Our team will review and process it shortly.');

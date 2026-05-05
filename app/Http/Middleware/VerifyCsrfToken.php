@@ -17,5 +17,8 @@ class VerifyCsrfToken extends Middleware
         'agent/pay',
         'payment/nomod/*',
         'esim/payment/*',
+        // /client/* is retired — bypass CSRF so the deprecation handler can
+        // return a clean 410 Gone instead of a misleading 419 Page Expired.
+        'client/*',
     ];
 }

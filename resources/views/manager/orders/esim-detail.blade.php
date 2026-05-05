@@ -1,0 +1,55 @@
+@extends('layouts.manager')
+
+@section('title', 'eSIM Order ' . ($order->order_reference ?: '#'.$order->id))
+@section('page-title', 'eSIM Order ' . ($order->order_reference ?: '#'.$order->id))
+
+@section('content')
+<div class="orders-toolbar">
+    <a href="{{ route('manager.orders.esim') }}" class="orders-btn orders-btn-ghost">
+        <i class="fas fa-arrow-left"></i> Back to eSIM orders
+    </a>
+</div>
+
+<div class="orders-detail-grid">
+    <div class="orders-card orders-detail-card">
+        <h3>Customer</h3>
+        <ul class="orders-detail-list">
+            <li><span class="label">Name</span>  <span class="value">{{ $order->customer_name ?: '—' }}</span></li>
+            <li><span class="label">Email</span> <span class="value">{{ $order->customer_email ?: '—' }}</span></li>
+            <li><span class="label">Phone</span> <span class="value">{{ $order->customer_phone ?: '—' }}</span></li>
+        </ul>
+    </div>
+
+    <div class="orders-card orders-detail-card">
+        <h3>Bundle</h3>
+        <ul class="orders-detail-list">
+            <li><span class="label">Country</span>      <span class="value">{{ $order->country_name ?: '—' }} ({{ $order->country_code ?: '—' }})</span></li>
+            <li><span class="label">Bundle</span>       <span class="value">{{ $order->bundle_name ?: '—' }}</span></li>
+            <li><span class="label">Bundle code</span>  <span class="value">{{ $order->bundle_code ?: '—' }}</span></li>
+            <li><span class="label">Data</span>         <span class="value">{{ $order->data_amount ?: '—' }}</span></li>
+            <li><span class="label">Validity</span>     <span class="value">{{ $order->validity_days ? $order->validity_days.' days' : '—' }}</span></li>
+        </ul>
+    </div>
+
+    <div class="orders-card orders-detail-card">
+        <h3>Payment</h3>
+        <ul class="orders-detail-list">
+            <li><span class="label">Selling price</span>  <span class="value">{{ number_format((float) $order->selling_price, 2) }} {{ $order->currency ?: 'AED' }}</span></li>
+            <li><span class="label">Cost price</span>     <span class="value">{{ number_format((float) $order->monty_cost_price, 2) }} {{ $order->currency ?: 'AED' }}</span></li>
+            <li><span class="label">Margin</span>         <span class="value">{{ number_format((float) $order->selling_price - (float) $order->monty_cost_price, 2) }} {{ $order->currency ?: 'AED' }}</span></li>
+            <li><span class="label">Payment status</span> <span class="value">{{ ucfirst($order->payment_status ?: 'pending') }}</span></li>
+        </ul>
+    </div>
+
+    <div class="orders-card orders-detail-card">
+        <h3>Provisioning</h3>
+        <ul class="orders-detail-list">
+            <li><span class="label">Order reference</span>     <span class="value">{{ $order->order_reference ?: '—' }}</span></li>
+            <li><span class="label">Reservation status</span>  <span class="value">{{ $order->reservation_status ?: '—' }}</span></li>
+            <li><span class="label">Monty order ID</span>      <span class="value">{{ $order->monty_order_id ?: '—' }}</span></li>
+            <li><span class="label">ICCID</span>               <span class="value">{{ $order->monty_iccid ?: '—' }}</span></li>
+            <li><span class="label">Created</span>             <span class="value">{{ $order->created_at?->format('d M Y H:i') ?: '—' }}</span></li>
+        </ul>
+    </div>
+</div>
+@endsection

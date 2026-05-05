@@ -33,12 +33,19 @@
 <!-- Font Awesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+@php
+    $waCompany = current_company();
+    $waPhone = $waCompany?->phone;
+    $waNumber = $waPhone ? preg_replace('/\D+/', '', $waPhone) : null;
+@endphp
+@if($waNumber)
 <div class="whats">
   <a target="_blank"
-    href="https://api.whatsapp.com/send/?phone=971543651065&amp;text&amp;type=phone_number&amp;app_absent=0">
+    href="https://api.whatsapp.com/send/?phone={{ $waNumber }}&amp;text&amp;type=phone_number&amp;app_absent=0">
     <i class="fab fa-whatsapp text-white"></i>
   </a>
 </div>
+@endif
 
 <style>
   .whats {
@@ -244,7 +251,7 @@
 
           <!-- Image Section -->
           <div class="col-lg-5 cover-background d-none d-lg-block"
-            style="background-image:url('https://gotrips.ai/assets/images/1855.jpg'); min-height: 500px;">
+            style="background-image:url('{{ asset('assets/images/1855.jpg') }}'); min-height: 500px;">
             <div
               style="background: linear-gradient(to right, rgba(0,0,0,0.3), rgba(17,17,17,1)); width: 100%; height: 100%;">
             </div>
@@ -259,7 +266,8 @@
               <h3 class="fw-700 text-white mb-4" style="font-family: 'Outfit', sans-serif;">Need Expert Travel Advice?
               </h3>
 
-              <form action="https://gotrips.ai/email-templates/contact-form.php" method="post" class="text-start">
+              <form action="{{ route('contact.submit') }}" method="post" class="text-start">
+                @csrf
                 <div class="mb-3 position-relative">
                   <i class="bi bi-person position-absolute text-muted" style="top: 15px; left: 15px;"></i>
                   <input type="text" name="name" class="form-control" placeholder="YOUR NAME"

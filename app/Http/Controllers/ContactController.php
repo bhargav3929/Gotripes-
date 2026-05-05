@@ -30,21 +30,17 @@ class ContactController extends Controller
             'message'       => $validated['booking-address'] ?? '',
         ];
 
-        // Get primary recipient email from MAIL_USERNAME in .env
-        // $toEmail = config('mail.mailers.smtp.username');
-        $toEmail = config('mail.mailers.smtp.address');
-        // $additionalEmail = 'saideepak.c@vizcheck.com';
-        
+        // Route the lead to the tenant whose subdomain the form was submitted on.
+        // Falls back to the platform inbox only if the tenant has no email set.
+        $tenant = current_company();
+        $toEmail = $tenant?->email ?: config('mail.from.address');
 
-        // Combine recipients into an array
-        $recipients = [$toEmail];
-
-        // Fallback for debugging/testing, remove in production
         if (empty($toEmail)) {
-            Log::error('MAIL_USERNAME is not set in config/mail.php or .env');
-            $toEmail = 'amer@aynalamirtourism.com'; // fallback email
-            $recipients = [$toEmail];
+            Log::error('No tenant email and no platform default — contact lead has nowhere to go.');
+            return redirect()->back()->with('error', 'Sorry, we cannot accept messages right now. Please try later.');
         }
+
+        $recipients = [$toEmail];
 
         try {
             // Send email to all recipients in one call
