@@ -128,13 +128,13 @@
                     <div class="row g-3">
                         @foreach($allFeatures as $key => $label)
                             <div class="col-md-6">
-                                <div class="form-check" style="padding: 10px 14px 10px 38px; background: #fafafa; border: 1px solid #eee; border-radius: 8px;">
+                                <div class="form-check" style="padding: 10px 14px 10px 38px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,215,0,0.18); border-radius: 8px; color: #f0f0f0;">
                                     <input class="form-check-input" type="checkbox" name="features[]" value="{{ $key }}"
                                            id="feat-{{ $key }}"
                                            {{ in_array($key, (array) $oldFeatures, true) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="feat-{{ $key }}" style="font-weight:500;">
+                                    <label class="form-check-label" for="feat-{{ $key }}" style="font-weight:500; color:#f0f0f0;">
                                         {{ $label }}
-                                        <small class="text-muted d-block" style="font-size:11px; font-weight:400;">{{ $key }}</small>
+                                        <small class="d-block" style="font-size:11px; font-weight:400; color:rgba(255,255,255,0.5);">{{ $key }}</small>
                                     </label>
                                 </div>
                             </div>
