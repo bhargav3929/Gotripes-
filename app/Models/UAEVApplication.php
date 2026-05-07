@@ -11,7 +11,10 @@ class UAEVApplication extends Model
 {
     use BelongsToCompany;
 
-    protected $table = 'uaev_application';
+    // The actual table on disk is named with mixed case (`UAEV_application`).
+    // SQLite is case-insensitive on table names so the lowercase form worked
+    // locally, but Linux MySQL is case-sensitive and threw "Table doesn't exist".
+    protected $table = 'UAEV_application';
 
     protected $fillable = [
         'company_id',
