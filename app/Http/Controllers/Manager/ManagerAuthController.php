@@ -43,10 +43,26 @@ class ManagerAuthController extends Controller
         $isSuperAdmin = $user->is_super_admin || $user->role === 'super_admin';
 
         if (!$isSuperAdmin && $tenant instanceof Company && (int) $user->company_id !== (int) $tenant->id) {
+            // The user IS a real manager — just on the wrong subdomain. Look up
+            // their actual tenant and bounce them there with a flash message,
+            // instead of leaving them stuck on the wrong login page.
+            $userTenant = Company::find($user->company_id);
             $this->logoutAndInvalidate($request);
+
+            if ($userTenant && $userTenant->subdomain && $userTenant->is_active) {
+                $appDomain = config('app.domain', 'gotrips.ai');
+                $scheme    = config('app.env') === 'production' ? 'https' : $request->getScheme();
+                $port      = $request->getPort();
+                $portPart  = (in_array($port, [80, 443, null], true)) ? '' : ':' . $port;
+                $target = "{$scheme}://{$userTenant->subdomain}.{$appDomain}{$portPart}/manager/login";
+
+                return redirect()->away($target)
+                    ->with('info', "Redirected you to your account at {$userTenant->subdomain}.{$appDomain}.");
+            }
+
             return back()
                 ->withInput($request->only('email'))
-                ->withErrors(['credentials' => 'This account does not belong to ' . $tenant->subdomain . '.gotrips.ai.']);
+                ->withErrors(['credentials' => 'This account does not belong to ' . ($tenant->subdomain ?? 'this site') . '.']);
         }
 
         $request->session()->regenerate();

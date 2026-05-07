@@ -67,6 +67,8 @@ class CompanyController extends Controller
             'domain' => 'nullable|string|max:255|unique:companies,domain',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:500',
+            'website' => 'nullable|url|max:255',
             'plan' => 'required|in:trial,basic,pro,enterprise',
             'type' => 'nullable|in:agency,freelancer,corporate',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
@@ -129,21 +131,45 @@ class CompanyController extends Controller
         ]);
 
         // Optionally provision the Hostinger subdomain right now.
+        // Surface the actual outcome instead of always flashing 'success'.
         $provisionMessage = null;
+        $provisionOk = true;
         if ($request->boolean('auto_provision', true)) {
             try {
                 $result = app(HostingerSubdomainProvisioner::class)->provision($company);
                 $provisionMessage = $result['message'];
+                $provisionOk = (bool) ($result['ok'] ?? false);
+                if (!$provisionOk) {
+                    \Illuminate\Support\Facades\Log::warning('Subdomain provisioning returned !ok', [
+                        'company_id' => $company->id,
+                        'subdomain'  => $company->subdomain,
+                        'step'       => $result['step'] ?? 'unknown',
+                        'message'    => $provisionMessage,
+                    ]);
+                }
             } catch (\Throwable $e) {
+                $provisionOk = false;
                 $provisionMessage = 'Subdomain provisioning failed: ' . $e->getMessage()
                     . ' — you can retry from the company page.';
+                \Illuminate\Support\Facades\Log::error('Subdomain provisioning threw exception', [
+                    'company_id' => $company->id,
+                    'subdomain'  => $company->subdomain,
+                    'error'      => $e->getMessage(),
+                    'trace'      => $e->getTraceAsString(),
+                ]);
             }
         }
 
-        return redirect()
-            ->route('superadmin.companies.show', $company)
-            ->with('success', "Company '{$company->name}' created with admin user."
-                . ($provisionMessage ? ' ' . $provisionMessage : ''));
+        $redirect = redirect()->route('superadmin.companies.show', $company)
+            ->with('success', "Company '{$company->name}' created with admin user.");
+
+        if ($provisionMessage) {
+            // Use 'warning' for provisioning failure so it's visually distinct
+            // from the green-success of the company creation itself.
+            $redirect->with($provisionOk ? 'info' : 'warning', $provisionMessage);
+        }
+
+        return $redirect;
     }
 
     /**

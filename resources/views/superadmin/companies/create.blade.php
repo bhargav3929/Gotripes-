@@ -65,6 +65,20 @@
                             <input type="text" name="phone" class="form-control form-control-sm @error('phone') is-invalid @enderror"
                                    value="{{ old('phone') }}" placeholder="+971 XX XXX XXXX">
                             @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <small class="text-muted">Used on tenant's contact page + WhatsApp button.</small>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Address</label>
+                            <textarea name="address" rows="2" class="form-control form-control-sm @error('address') is-invalid @enderror"
+                                      placeholder="Street, City, Country">{{ old('address') }}</textarea>
+                            @error('address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <small class="text-muted">Renders the embedded map on the tenant's contact page. Leave blank to hide the map.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Website</label>
+                            <input type="url" name="website" class="form-control form-control-sm @error('website') is-invalid @enderror"
+                                   value="{{ old('website') }}" placeholder="https://example.com">
+                            @error('website')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </div>
