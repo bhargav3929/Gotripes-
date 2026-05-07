@@ -19,7 +19,6 @@ return new class extends Migration {
         $tables = [
             'tbl_UAEActivities',
             'activitybookings',
-            'activityBookings',          // some setups have mixed case
             'tbl_announcements',
             'tbl_homepageads',
             'banners',
@@ -36,26 +35,63 @@ return new class extends Migration {
 
         $defaultCompanyId = DB::table('companies')->where('slug', 'gotrips')->value('id') ?? 1;
 
+        // Resolve real table names case-correctly. On Hostinger MySQL with
+        // lower_case_table_names=1, Schema::hasTable() may answer true for
+        // a wrong-cased name and then ALTER TABLE fails. We query the
+        // information_schema for the exact stored name.
+        $driver = DB::getDriverName();
+
         foreach ($tables as $table) {
-            if (!Schema::hasTable($table)) {
-                continue;
+            $realTable = $this->resolveRealTableName($table, $driver);
+            if ($realTable === null) {
+                continue; // table doesn't exist at all
             }
 
             // Add column if missing
-            if (!Schema::hasColumn($table, 'company_id')) {
-                Schema::table($table, function (Blueprint $t) {
-                    $t->unsignedBigInteger('company_id')->nullable();
-                    $t->index('company_id');
-                });
-                echo "  added company_id to {$table}\n";
+            if (!Schema::hasColumn($realTable, 'company_id')) {
+                try {
+                    Schema::table($realTable, function (Blueprint $t) {
+                        $t->unsignedBigInteger('company_id')->nullable();
+                        $t->index('company_id');
+                    });
+                    echo "  added company_id to {$realTable}\n";
+                } catch (\Throwable $e) {
+                    echo "  SKIP {$realTable}: " . $e->getMessage() . "\n";
+                    continue;
+                }
             }
 
             // Backfill any remaining NULL rows
-            $updated = DB::table($table)->whereNull('company_id')->update(['company_id' => $defaultCompanyId]);
+            $updated = DB::table($realTable)->whereNull('company_id')->update(['company_id' => $defaultCompanyId]);
             if ($updated > 0) {
-                echo "  backfilled {$updated} NULL rows in {$table}\n";
+                echo "  backfilled {$updated} NULL rows in {$realTable}\n";
             }
         }
+    }
+
+    /**
+     * Find the real (case-correct) table name on the current connection.
+     * Returns null if the table truly doesn't exist.
+     */
+    private function resolveRealTableName(string $candidate, string $driver): ?string
+    {
+        if (!Schema::hasTable($candidate)) {
+            return null;
+        }
+
+        // SQLite + most setups: the candidate name is already correct.
+        if ($driver !== 'mysql') {
+            return $candidate;
+        }
+
+        // MySQL: look up the exact case stored in information_schema.
+        $row = DB::selectOne(
+            "SELECT TABLE_NAME FROM information_schema.TABLES
+             WHERE TABLE_SCHEMA = DATABASE() AND LOWER(TABLE_NAME) = LOWER(?)
+             LIMIT 1",
+            [$candidate]
+        );
+        return $row?->TABLE_NAME ?? null;
     }
 
     public function down(): void
