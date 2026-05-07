@@ -52,9 +52,18 @@ class ReportController extends Controller
             ->pluck('count', 'payment_status')
             ->toArray();
 
+        // Cross-driver year+month bucket. MySQL has DATE_FORMAT, SQLite uses
+        // strftime. Postgres would use to_char. Pick by driver so this works
+        // both on Hostinger (MySQL) and local dev (SQLite).
+        $monthExpr = match (DB::getDriverName()) {
+            'sqlite' => "strftime('%Y-%m', created_at)",
+            'pgsql'  => "to_char(created_at, 'YYYY-MM')",
+            default  => "DATE_FORMAT(created_at, '%Y-%m')",
+        };
+
         $monthlyTrend = EsimOrder::select(
-                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
-                DB::raw('SUM(CASE WHEN payment_status = "paid" THEN selling_price ELSE 0 END) as revenue'),
+                DB::raw("{$monthExpr} as month"),
+                DB::raw("SUM(CASE WHEN payment_status = 'paid' THEN selling_price ELSE 0 END) as revenue"),
                 DB::raw('COUNT(*) as orders')
             )
             ->whereBetween('created_at', [now()->subYear(), now()])
