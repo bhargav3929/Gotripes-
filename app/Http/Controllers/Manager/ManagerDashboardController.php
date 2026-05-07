@@ -28,13 +28,18 @@ class ManagerDashboardController extends Controller
         };
 
         // ─── Period-filtered analytics (tenant scope auto-applied) ─────
-        // ActivityBooking, EsimOrder, UAEVApplication all use BelongsToCompany.
-        $activityBookings = ActivityBooking::whereBetween('created_at', [$from, $to])->count();
+        // Tables have different timestamp column names — these are legacy
+        // tables that pre-date Laravel conventions:
+        //   activitybookings  → createDate     (no created_at)
+        //   esim_orders       → created_at     (Laravel default)
+        //   UAEV_application  → UAEV_created_date
+        //   tenant_commissions→ created_at     (Laravel default)
+        $activityBookings = ActivityBooking::whereBetween('createDate', [$from, $to])->count();
         $esimOrders       = EsimOrder::whereBetween('created_at', [$from, $to])->count();
         $visaApps         = UAEVApplication::whereBetween('UAEV_created_date', [$from, $to])->count();
         $totalBookings    = $activityBookings + $esimOrders + $visaApps;
 
-        $revenue = (float) ActivityBooking::whereBetween('created_at', [$from, $to])->sum('amount')
+        $revenue = (float) ActivityBooking::whereBetween('createDate', [$from, $to])->sum('amount')
                  + (float) EsimOrder::whereBetween('created_at', [$from, $to])->sum('selling_price');
 
         // TenantCommission does not use BelongsToCompany — filter explicitly.
@@ -44,7 +49,7 @@ class ManagerDashboardController extends Controller
             ->sum('commission_amount');
 
         // ─── Fixed-window: last 7 days bookings ─────────────────────────
-        $last7DaysBookings = ActivityBooking::where('created_at', '>=', now()->subDays(7))->count()
+        $last7DaysBookings = ActivityBooking::where('createDate', '>=', now()->subDays(7))->count()
                            + EsimOrder::where('created_at', '>=', now()->subDays(7))->count()
                            + UAEVApplication::where('UAEV_created_date', '>=', now()->subDays(7))->count();
 
