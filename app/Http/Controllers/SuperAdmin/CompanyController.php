@@ -361,13 +361,37 @@ class CompanyController extends Controller
             'plan' => 'required|in:trial,basic,pro,enterprise',
         ]);
 
-        $oldPlan = $company->plan;
-        $company->update(['plan' => $request->plan]);
+        $oldPlan        = $company->plan;
+        $oldFeatures    = $company->features;
+        $oldCommission  = $company->commission_value;
+
+        // Pull the defaults for the target plan. Falls back to plan name
+        // only if config is missing.
+        $planConfig = config("plans.{$request->plan}");
+
+        $updates = ['plan' => $request->plan];
+        if (is_array($planConfig)) {
+            if (isset($planConfig['features']) && is_array($planConfig['features'])) {
+                $updates['features'] = $planConfig['features'];
+            }
+            if (isset($planConfig['commission_pct'])) {
+                $updates['commission_value'] = (float) $planConfig['commission_pct'];
+                $updates['commission_type']  = 'percentage';
+            }
+        }
+
+        $company->update($updates);
 
         SuperAdminAuditLog::log('company.change_plan', $company, [
-            'plan' => ['from' => $oldPlan, 'to' => $request->plan],
+            'plan'             => ['from' => $oldPlan,        'to' => $request->plan],
+            'features'         => ['from' => $oldFeatures,    'to' => $updates['features']         ?? null],
+            'commission_value' => ['from' => $oldCommission,  'to' => $updates['commission_value'] ?? null],
         ]);
 
-        return back()->with('success', "Plan changed to {$request->plan}.");
+        $msg = "Plan changed to {$request->plan}.";
+        if (isset($planConfig['name'])) {
+            $msg .= " Features and commission rate updated to {$planConfig['name']} defaults.";
+        }
+        return back()->with('success', $msg);
     }
 }
