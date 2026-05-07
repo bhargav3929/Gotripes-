@@ -19,9 +19,9 @@ class MakeLegacyAdmin extends Command
 
     public function handle(): int
     {
-        $name     = $this->argument('name');
-        $password = $this->argument('password');
-        $email    = $this->option('email') ?: $name . '@gotrips.ai';
+        $name      = $this->argument('name');
+        $password  = $this->argument('password');
+        $emailOpt  = $this->option('email');
         $roleTitle = $this->option('role');
 
         $role = Role::where('title', $roleTitle)->first();
@@ -30,13 +30,21 @@ class MakeLegacyAdmin extends Command
             return Command::FAILURE;
         }
 
-        $user = User::updateOrCreate(
-            ['name' => $name],
-            [
-                'email'    => $email,
+        $user = User::where('name', $name)->first();
+
+        if ($user) {
+            $user->password = Hash::make($password);
+            if ($emailOpt) {
+                $user->email = $emailOpt;
+            }
+            $user->save();
+        } else {
+            $user = User::create([
+                'name'     => $name,
+                'email'    => $emailOpt ?: $name . '@gotrips.ai',
                 'password' => Hash::make($password),
-            ]
-        );
+            ]);
+        }
 
         $user->roles()->syncWithoutDetaching([$role->id]);
 
