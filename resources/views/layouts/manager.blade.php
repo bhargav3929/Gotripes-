@@ -517,6 +517,33 @@
                 </li>
                 @endfeature
 
+                @feature('tours')
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.packages.index') }}" class="{{ request()->routeIs('manager.packages.*') ? 'active' : '' }}">
+                        <i class="fas fa-suitcase-rolling"></i>
+                        <span>Tour Packages</span>
+                    </a>
+                </li>
+                @endfeature
+
+                @feature('hajj_umrah')
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.umrah-packages.index') }}" class="{{ request()->routeIs('manager.umrah-packages.*') ? 'active' : '' }}">
+                        <i class="fas fa-kaaba"></i>
+                        <span>Hajj &amp; Umrah</span>
+                    </a>
+                </li>
+                @endfeature
+
+                @feature('visas')
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.visa-pricing.index') }}" class="{{ request()->routeIs('manager.visa-pricing.*') ? 'active' : '' }}">
+                        <i class="fas fa-passport"></i>
+                        <span>Visa Pricing</span>
+                    </a>
+                </li>
+                @endfeature
+
                 {{-- ────────────────  SETTINGS  ──────────────── --}}
                 {{-- Profile & Preferences land in Step D. Same coming-soon
                      pattern as Orders — Route::has() makes them light up

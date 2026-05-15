@@ -491,8 +491,17 @@
                             <label class="field-label">Visa Duration</label>
                             <select class="field-input" id="visaDuration" name="visaDuration" required>
                                 <option value="">Select Duration</option>
-                                <option value="30" data-price="300">30 DAYS VISA - 300 AED</option>
-                                <option value="60" data-price="600">60 DAYS VISA - 600 AED</option>
+                                @if(isset($visaData) && $visaData->count() > 0)
+                                    @foreach($visaData as $v)
+                                        <option value="{{ $v->UAEVisaDuration }}" data-price="{{ $v->UAEVPrice }}">
+                                            {{ $v->UAEVisaDuration }} — {{ number_format($v->UAEVPrice, 0) }} AED
+                                        </option>
+                                    @endforeach
+                                @else
+                                    {{-- Sensible defaults if the tenant hasn't configured visa pricing yet --}}
+                                    <option value="30 DAYS VISA" data-price="300">30 DAYS VISA — 300 AED</option>
+                                    <option value="60 DAYS VISA" data-price="600">60 DAYS VISA — 600 AED</option>
+                                @endif
                             </select>
                             <input type="hidden" name="price" id="hiddenPrice" value="0">
                         </div>

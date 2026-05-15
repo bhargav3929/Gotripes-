@@ -61,8 +61,10 @@ class ManagerActivitiesController extends Controller
             'detailsHighlights.*'        => 'required|string',
         ]);
 
-        // Ensure upload directory exists
-        $destinationPath = public_path('assets/activities');
+        // Ensure tenant-namespaced upload directory exists so two tenants can't collide on filenames.
+        $companyId = current_company()?->id ?? 0;
+        $relativeDir = "assets/activities/{$companyId}";
+        $destinationPath = public_path($relativeDir);
         if (!file_exists($destinationPath)) {
             mkdir($destinationPath, 0755, true);
         }
@@ -72,7 +74,7 @@ class ManagerActivitiesController extends Controller
         foreach ($request->file('activityImageFiles') as $imageFile) {
             $filename = time() . '_' . Str::random(10) . '.' . $imageFile->getClientOriginalExtension();
             $imageFile->move($destinationPath, $filename);
-            $imagePaths[] = 'assets/activities/' . $filename;
+            $imagePaths[] = $relativeDir . '/' . $filename;
         }
 
         $firstImage = count($imagePaths) > 0 ? $imagePaths[0] : '';
@@ -197,7 +199,9 @@ class ManagerActivitiesController extends Controller
 
         // Handle new image uploads if provided
         if ($request->hasFile('activityImageFiles')) {
-            $destinationPath = public_path('assets/activities');
+            $companyId = current_company()?->id ?? 0;
+            $relativeDir = "assets/activities/{$companyId}";
+            $destinationPath = public_path($relativeDir);
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0755, true);
             }
@@ -206,7 +210,7 @@ class ManagerActivitiesController extends Controller
             foreach ($request->file('activityImageFiles') as $imageFile) {
                 $filename = time() . '_' . Str::random(10) . '.' . $imageFile->getClientOriginalExtension();
                 $imageFile->move($destinationPath, $filename);
-                $newImages[] = 'assets/activities/' . $filename;
+                $newImages[] = $relativeDir . '/' . $filename;
             }
 
             if ($request->has('replace_images') && $request->replace_images) {

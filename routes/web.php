@@ -80,6 +80,14 @@ Route::prefix('/')->group(function () {
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
     Route::get('banner0', fn() => view('banner0'));
     Route::get('countriestour', fn() => view('countriestour'))->middleware('tenant.feature:tours');
+    Route::get('tour-packages', function () {
+        $packages = \App\Models\TravelPackage::where('isActive', 1)
+            ->orderBy('country')
+            ->orderBy('createdDate', 'desc')
+            ->get()
+            ->groupBy(fn($p) => $p->country ?: 'Other');
+        return view('tour-packages', compact('packages'));
+    })->middleware('tenant.feature:tours')->name('tour-packages');
     Route::get('ourstory', fn() => view('ourstory'));
     Route::get('contact-us', fn() => view('contact-us'));
     Route::get('termsandconditions', fn() => view('termsandconditions'));
@@ -271,6 +279,9 @@ use App\Http\Controllers\Manager\ManagerDashboardController;
 use App\Http\Controllers\Manager\ManagerAdSlotsController;
 use App\Http\Controllers\Manager\ManagerAnnouncementsController;
 use App\Http\Controllers\Manager\ManagerActivitiesController;
+use App\Http\Controllers\Manager\ManagerTravelPackagesController;
+use App\Http\Controllers\Manager\ManagerUmrahPackagesController;
+use App\Http\Controllers\Manager\ManagerVisaPricingController;
 use App\Http\Controllers\Manager\ManagerSettingsController;
 use App\Http\Controllers\Manager\ManagerFinanceController;
 use App\Http\Controllers\Manager\OrdersController;
@@ -285,6 +296,16 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::resource('adslots', ManagerAdSlotsController::class);
     Route::resource('announcements', ManagerAnnouncementsController::class);
     Route::resource('activities', ManagerActivitiesController::class);
+
+    // Tenant content: tour packages, hajj/umrah packages, visa pricing.
+    // BelongsToCompany trait auto-scopes queries; CRUD is per-tenant.
+    Route::resource('packages', ManagerTravelPackagesController::class)->except(['show']);
+    Route::resource('umrah-packages', ManagerUmrahPackagesController::class)->except(['show']);
+    // Visa pricing is a flat list of duration+price rows; CRUD is inline on the index page.
+    Route::get('visa-pricing',                [ManagerVisaPricingController::class, 'index'])->name('visa-pricing.index');
+    Route::post('visa-pricing',               [ManagerVisaPricingController::class, 'store'])->name('visa-pricing.store');
+    Route::put('visa-pricing/{id}',           [ManagerVisaPricingController::class, 'update'])->name('visa-pricing.update');
+    Route::delete('visa-pricing/{id}',        [ManagerVisaPricingController::class, 'destroy'])->name('visa-pricing.destroy');
 
     // Features are managed by super-admin via /superadmin/companies/{c}/edit.
     // Tenants get a read-only view here (no POST endpoint — see audit finding #13).

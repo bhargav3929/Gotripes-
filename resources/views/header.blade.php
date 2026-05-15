@@ -1049,7 +1049,7 @@
                         Services</a>
                     @endfeature
                     @feature('tours')
-                    <a href="/countriestour" class="gt-nav-link {{ Request::is('countriestour') ? 'active' : '' }}">Tour
+                    <a href="/tour-packages" class="gt-nav-link {{ Request::is('tour-packages') ? 'active' : '' }}">Tour
                         Packages</a>
                     @endfeature
                     @feature('hajj_umrah')
@@ -1104,7 +1104,7 @@
             <a href="/" class="gt-mobile-nav-link">Home</a>
             @feature('activities')<a href="/activities" class="gt-mobile-nav-link">Activities</a>@endfeature
             @feature('visas')<a href="/uaevisa" class="gt-mobile-nav-link">Visa Services</a>@endfeature
-            @feature('tours')<a href="/countriestour" class="gt-mobile-nav-link">Tour Packages</a>@endfeature
+            @feature('tours')<a href="/tour-packages" class="gt-mobile-nav-link">Tour Packages</a>@endfeature
             @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-mobile-nav-link">Hajj & Umrah</a>@endfeature
             <a href="/our-services" class="gt-mobile-nav-link">Our Services</a>
             @feature('shop')<a href="/shopnow" class="gt-mobile-nav-link">Shop Online</a>@endfeature
