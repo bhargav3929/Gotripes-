@@ -56,9 +56,10 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Phone</label>
-                            <input type="text" name="phone" class="form-control form-control-sm @error('phone') is-invalid @enderror"
-                                   value="{{ old('phone', $company->phone) }}">
-                            @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <x-phone-input name="phone" :value="$company->phone" placeholder="50 123 4567" />
+                            @error('phone_country_code')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            @error('phone_number')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            @error('phone')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </div>

@@ -56,6 +56,7 @@ class CompanyController extends Controller
                 ?? Company::normalizeSubdomain($request->input('slug'))
                 ?? Company::normalizeSubdomain($request->input('name')),
             'slug' => $request->filled('slug') ? Str::slug($request->input('slug')) : Str::slug($request->input('name')),
+            'phone' => $this->composePhone($request),
         ]);
 
         $allowedFeatures = array_keys(Company::AVAILABLE_FEATURES);
@@ -206,6 +207,8 @@ class CompanyController extends Controller
         if ($request->filled('subdomain')) {
             $request->merge(['subdomain' => Company::normalizeSubdomain($request->input('subdomain'))]);
         }
+
+        $request->merge(['phone' => $this->composePhone($request)]);
 
         $allowedFeatures = array_keys(Company::AVAILABLE_FEATURES);
 
@@ -393,5 +396,30 @@ class CompanyController extends Controller
             $msg .= " Features and commission rate updated to {$planConfig['name']} defaults.";
         }
         return back()->with('success', $msg);
+    }
+
+    /**
+     * Combine country dial code + local number into a single E.164-ish string
+     * for storage in the `phone` column. Returns null when no number was entered,
+     * so empty phones stay empty (not "+971").
+     */
+    private function composePhone(Request $request): ?string
+    {
+        $code   = trim((string) $request->input('phone_country_code', ''));
+        $number = trim((string) $request->input('phone_number', ''));
+
+        // Strip everything except digits and the leading + from the dial code.
+        $code = $code !== '' ? '+' . preg_replace('/\D+/', '', $code) : '';
+        // Keep digits, spaces, and dashes in the local number — drop the rest.
+        $number = preg_replace('/[^\d\s\-]/', '', $number);
+        $number = trim(preg_replace('/\s+/', ' ', $number));
+
+        if ($number === '') {
+            // Fall back to whatever was posted as `phone` (e.g. older clients) or null.
+            $legacy = trim((string) $request->input('phone', ''));
+            return $legacy !== '' ? $legacy : null;
+        }
+
+        return $code !== '+' && $code !== '' ? trim($code . ' ' . $number) : $number;
     }
 }
