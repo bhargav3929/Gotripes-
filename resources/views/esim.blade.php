@@ -26,7 +26,7 @@
     .esim-partner-cta-banner {
         position: relative;
         max-width: 1240px;
-        margin: 56px auto;
+        margin: 24px auto;
         padding: 0 24px;
     }
     .epcb-inner {
@@ -127,8 +127,8 @@
        ============================================================ */
     .esim-golden-divider {
         max-width: 1240px;
-        margin: 72px auto;
-        padding: 56px 32px;
+        margin: 36px auto;
+        padding: 32px 24px;
         text-align: center;
         position: relative;
     }
@@ -189,7 +189,7 @@
         to { opacity: 1; transform: translateY(0); }
     }
     @media (max-width: 768px) {
-        .esim-golden-divider { margin: 48px auto; padding: 36px 20px; }
+        .esim-golden-divider { margin: 24px auto; padding: 24px 16px; }
         .esim-golden-divider::before, .esim-golden-divider::after { width: 140px; }
         .esim-golden-sub { font-size: 14px; }
     }
@@ -280,8 +280,12 @@
        HERO SECTION — PREMIUM REDESIGN V2
        ============================================================ */
     .esim-hero {
-        min-height: 560px;
-        padding: 64px 32px;
+        /* Pull the section up so the dark sky / signal-curve area of the
+           image sits behind the header and is hidden; the visible region starts
+           directly at the dense landmark / SIM-card band. */
+        margin-top: -148px;       /* tuck exactly behind the 148px sticky header */
+        padding: 180px 32px 28px; /* 148 behind header + 32 gap above content */
+        min-height: 0;            /* content defines height — no empty artwork band */
         display: flex;
         align-items: center;
         background-color: #000;
@@ -295,7 +299,7 @@
             url('{{ asset('assets/esim/hero-esim-network.jpg') }}') type('image/jpeg')
         );
         background-size: cover;
-        background-position: center right;
+        background-position: right center;
         background-repeat: no-repeat;
         font-family: 'Outfit', sans-serif;
         position: relative;
@@ -308,27 +312,63 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(
-            90deg,
-            rgba(0, 0, 0, 0.85) 0%,
-            rgba(0, 0, 0, 0.55) 35%,
-            rgba(0, 0, 0, 0.15) 60%,
-            rgba(0, 0, 0, 0) 80%
-        );
+        background:
+            /* Tiny gold starfield filling the dark upper regions (around the SIM + upper-right gap) */
+            url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 800' preserveAspectRatio='xMidYMid slice'>\
+<g fill='%23FFD700'>\
+<circle cx='710' cy='90' r='1.4' opacity='0.55'/>\
+<circle cx='765' cy='150' r='1.1' opacity='0.45'/>\
+<circle cx='820' cy='60' r='1.7' opacity='0.6'/>\
+<circle cx='905' cy='115' r='1.2' opacity='0.5'/>\
+<circle cx='980' cy='75' r='1.5' opacity='0.55'/>\
+<circle cx='1050' cy='160' r='1.1' opacity='0.45'/>\
+<circle cx='1120' cy='95' r='1.6' opacity='0.6'/>\
+<circle cx='1190' cy='180' r='1.2' opacity='0.5'/>\
+<circle cx='1260' cy='110' r='1.4' opacity='0.55'/>\
+<circle cx='1340' cy='55' r='1.7' opacity='0.6'/>\
+<circle cx='1410' cy='140' r='1.1' opacity='0.45'/>\
+<circle cx='1480' cy='90' r='1.5' opacity='0.55'/>\
+<circle cx='1540' cy='200' r='1.3' opacity='0.5'/>\
+<circle cx='670' cy='220' r='1.1' opacity='0.4'/>\
+<circle cx='745' cy='280' r='1.3' opacity='0.45'/>\
+<circle cx='870' cy='240' r='1.5' opacity='0.55'/>\
+<circle cx='1040' cy='300' r='1.2' opacity='0.5'/>\
+<circle cx='1200' cy='250' r='1.4' opacity='0.55'/>\
+<circle cx='1370' cy='220' r='1.6' opacity='0.6'/>\
+<circle cx='1500' cy='320' r='1.2' opacity='0.5'/>\
+<circle cx='800' cy='400' r='1.0' opacity='0.4'/>\
+<circle cx='1100' cy='430' r='1.2' opacity='0.45'/>\
+<circle cx='1330' cy='420' r='1.4' opacity='0.5'/>\
+<circle cx='1480' cy='480' r='1.1' opacity='0.45'/>\
+</g>\
+<g fill='none' stroke='%23FFD700' stroke-width='0.7' opacity='0.25'>\
+<path d='M 1000 380 Q 1180 260 1380 200' stroke-dasharray='2 6'/>\
+<path d='M 1000 380 Q 1220 220 1500 130' stroke-dasharray='2 6'/>\
+<path d='M 1000 380 Q 920 230 850 100' stroke-dasharray='2 6'/>\
+<path d='M 1000 380 Q 800 280 680 180' stroke-dasharray='2 6'/>\
+<path d='M 1000 380 Q 1100 180 1240 60' stroke-dasharray='2 6'/>\
+</g>\
+</svg>") center center / cover no-repeat,
+            linear-gradient(
+                90deg,
+                rgba(0, 0, 0, 0.85) 0%,
+                rgba(0, 0, 0, 0.55) 35%,
+                rgba(0, 0, 0, 0.15) 60%,
+                rgba(0, 0, 0, 0) 80%
+            );
         pointer-events: none;
         z-index: 0;
     }
 
-    /* Subtle warm vignette in the bottom-left to match the artwork's natural glow */
+    /* Warm gold pools that flood the formerly-black regions (upper-left of SIM, upper-right corner, bottom-left vignette) */
     .esim-hero::after {
         content: '';
         position: absolute;
-        bottom: -20%;
-        left: -10%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(circle, rgba(255, 180, 0, 0.10) 0%, transparent 65%);
-        filter: blur(80px);
+        inset: 0;
+        background:
+            radial-gradient(ellipse 520px 340px at 70% 20%, rgba(255, 195, 0, 0.10) 0%, transparent 70%),
+            radial-gradient(ellipse 480px 320px at 92% 14%, rgba(255, 180, 0, 0.09) 0%, transparent 70%),
+            radial-gradient(circle 600px at 8% 92%, rgba(255, 180, 0, 0.10) 0%, transparent 65%);
         pointer-events: none;
         z-index: 0;
     }
@@ -956,7 +996,7 @@
         margin-top: -10px;
         padding-top: 0;
         padding-bottom: 0 !important;
-        margin-bottom: 20px;
+        margin-bottom: 0;
         overflow: hidden;
     }
 
@@ -966,7 +1006,7 @@
     .esim-step1 {
         max-width: 1300px;
         margin: 0 auto;
-        padding: 30px 40px 50px !important;
+        padding: 24px 40px 32px !important;
         font-family: 'Outfit', sans-serif;
         display: flex;
         flex-direction: column;
@@ -991,7 +1031,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 16px;
-        margin-bottom: 28px;
+        margin-bottom: 16px;
         width: 100%;
         justify-content: center;
     }
@@ -2529,8 +2569,8 @@
     .esim-features-section {
         max-width: 1200px;
         margin: 0 auto !important;
-        margin-top: 20px !important;
-        padding: 20px 28px 0 !important;
+        margin-top: 0 !important;
+        padding: 0 28px 0 !important;
         text-align: center;
         font-family: 'Outfit', sans-serif;
     }
@@ -2646,7 +2686,7 @@
     .esim-how-section {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 10px 28px 0;
+        padding: 0 28px 0;
         margin-bottom: 0 !important;
         text-align: center;
         font-family: 'Outfit', sans-serif;
@@ -2784,7 +2824,7 @@
     .esim-faq-section {
         max-width: 900px;
         margin: 0 auto;
-        padding: 32px 28px 48px;
+        padding: 0 28px 48px;
         text-align: center;
         font-family: 'Outfit', sans-serif;
     }
@@ -2893,8 +2933,8 @@
 
     @media (max-width: 1024px) {
         .esim-hero {
-            padding: 56px 24px;
-            min-height: 520px;
+            padding: 180px 24px 28px;
+            min-height: 0;
         }
         .esim-hero-left {
             flex: 0 1 460px;
@@ -2902,7 +2942,7 @@
         }
         .esim-step1 {
             min-height: auto;
-            padding: 30px 16px 40px !important;
+            padding: 20px 16px 28px !important;
         }
     }
 
@@ -2910,8 +2950,9 @@
     @media (max-width: 900px) {
         .esim-hero {
             background-position: 70% center;
-            min-height: 480px;
-            padding: 48px 24px;
+            margin-top: -224px;
+            min-height: 704px;
+            padding: 272px 24px 48px;
         }
         .esim-hero::before {
             background: linear-gradient(
@@ -2928,10 +2969,11 @@
        Avoids text overlapping the chip. */
     @media (max-width: 768px) {
         .esim-hero {
-            min-height: 640px;
-            padding: 28px 18px 32px;
+            margin-top: -248px;
+            min-height: 878px;
+            padding: 266px 18px 32px;
             background-size: auto 44%;
-            background-position: center 18px;
+            background-position: center 266px; /* shift image down to clear the header band */
             display: flex;
             align-items: flex-end;
         }
@@ -3168,7 +3210,7 @@
         }
 
         .esim-features-section {
-            padding: 16px 16px 0;
+            padding: 0 16px 0;
         }
 
         .esim-feature-card {
@@ -3202,7 +3244,7 @@
         }
 
         .esim-how-section {
-            padding: 16px 16px 0;
+            padding: 0 16px 0;
         }
 
         .esim-how-card {
@@ -3238,7 +3280,7 @@
         }
 
         .esim-faq-section {
-            padding: 20px 16px 28px;
+            padding: 0 16px 28px;
         }
 
         .esim-faq-question {
@@ -3380,6 +3422,13 @@
             padding: 14px 20px !important;
             font-size: 13px !important;
         }
+        .esim-golden-divider {
+            margin: 20px auto;
+            padding: 20px 16px;
+        }
+        .esim-partner-cta-banner {
+            margin: 16px auto;
+        }
     }
 
     @media (max-width: 375px) {
@@ -3441,7 +3490,7 @@
 
         .esim-how-section,
         .esim-features-section {
-            padding: 16px 14px 0;
+            padding: 0 14px 0;
         }
 
         .esim-how-badge,
@@ -3464,7 +3513,7 @@
         }
 
         .esim-faq-section {
-            padding: 20px 14px 24px;
+            padding: 0 14px 24px;
         }
 
         .esim-faq-badge {
@@ -3517,6 +3566,241 @@
             font-size: 8px;
             padding: 5px 8px;
         }
+        .esim-golden-divider {
+            margin: 16px auto;
+            padding: 16px 12px;
+        }
+        .esim-partner-cta-banner {
+            margin: 12px auto;
+        }
+    }
+
+    /* ============================================================
+       ENTRANCE ANIMATIONS & WOW-FACTOR SYSTEM
+       ============================================================ */
+
+    /* --- Scroll-triggered reveal base (dramatic) --- */
+    .esim-reveal {
+        opacity: 0;
+        transform: translateY(70px) scale(0.96);
+        filter: blur(4px);
+        transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+                    filter 0.8s ease-out;
+        will-change: opacity, transform, filter;
+    }
+    .esim-reveal.revealed {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+
+    /* --- Slide-in from left (dramatic) --- */
+    .esim-reveal-left {
+        opacity: 0;
+        transform: translateX(-80px);
+        filter: blur(4px);
+        transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+                    filter 0.8s ease-out;
+        will-change: opacity, transform, filter;
+    }
+    .esim-reveal-left.revealed {
+        opacity: 1;
+        transform: translateX(0);
+        filter: blur(0);
+    }
+
+    /* --- Staggered children delay (for grids) --- */
+    .esim-stagger > * {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform;
+    }
+    .esim-stagger.revealed > * {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    /* Stagger delays — generated for up to 20 children */
+    .esim-stagger.revealed > *:nth-child(1)  { transition-delay: 0.03s; }
+    .esim-stagger.revealed > *:nth-child(2)  { transition-delay: 0.06s; }
+    .esim-stagger.revealed > *:nth-child(3)  { transition-delay: 0.09s; }
+    .esim-stagger.revealed > *:nth-child(4)  { transition-delay: 0.12s; }
+    .esim-stagger.revealed > *:nth-child(5)  { transition-delay: 0.15s; }
+    .esim-stagger.revealed > *:nth-child(6)  { transition-delay: 0.18s; }
+    .esim-stagger.revealed > *:nth-child(7)  { transition-delay: 0.21s; }
+    .esim-stagger.revealed > *:nth-child(8)  { transition-delay: 0.24s; }
+    .esim-stagger.revealed > *:nth-child(9)  { transition-delay: 0.27s; }
+    .esim-stagger.revealed > *:nth-child(10) { transition-delay: 0.30s; }
+    .esim-stagger.revealed > *:nth-child(11) { transition-delay: 0.33s; }
+    .esim-stagger.revealed > *:nth-child(12) { transition-delay: 0.36s; }
+    .esim-stagger.revealed > *:nth-child(13) { transition-delay: 0.39s; }
+    .esim-stagger.revealed > *:nth-child(14) { transition-delay: 0.42s; }
+    .esim-stagger.revealed > *:nth-child(15) { transition-delay: 0.45s; }
+    .esim-stagger.revealed > *:nth-child(16) { transition-delay: 0.48s; }
+    .esim-stagger.revealed > *:nth-child(n+17) { transition-delay: 0.50s; }
+
+    /* --- Hero section: dramatic staged entrance --- */
+    .esim-hero-left .esim-hero-badge {
+        opacity: 0;
+        transform: translateY(60px) scale(0.9);
+        animation: esimHeroStage 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    }
+    .esim-hero-left .esim-hero-title {
+        opacity: 0;
+        transform: translateY(80px) scale(0.95);
+        animation: esimHeroStage 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+    }
+    .esim-hero-left .esim-hero-subtitle {
+        opacity: 0;
+        transform: translateY(60px);
+        animation: esimHeroStage 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+    }
+    .esim-hero-left .esim-hero-cta {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+        animation: esimHeroStage 1s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
+    }
+    .esim-hero-left .esim-trust-row {
+        opacity: 0;
+        transform: translateY(40px);
+        animation: esimHeroStage 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.4s forwards;
+    }
+    @keyframes esimHeroStage {
+        from { opacity: 0; transform: translateY(80px) scale(0.95); filter: blur(4px); }
+        to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    /* --- Animated counter glow/pulse for "186" --- */
+    .esim-counter-number {
+        display: inline-block;
+        position: relative;
+        font-variant-numeric: tabular-nums;
+    }
+    .esim-counter-number::after {
+        content: '';
+        position: absolute;
+        inset: -12px -18px;
+        border-radius: 16px;
+        background: radial-gradient(ellipse, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+        animation: esimCounterGlow 2.4s ease-in-out infinite;
+        pointer-events: none;
+        z-index: -1;
+    }
+    @keyframes esimCounterGlow {
+        0%, 100% { opacity: 0.4; transform: scale(1); }
+        50%      { opacity: 1;   transform: scale(1.12); }
+    }
+
+    /* --- Gold shimmer line divider between sections --- */
+    .esim-shimmer-line {
+        display: block;
+        width: 100%;
+        max-width: 600px;
+        height: 1px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+        background: rgba(255, 215, 0, 0.06);
+    }
+    .esim-shimmer-line::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.6), rgba(255, 215, 0, 0.9), rgba(255, 215, 0, 0.6), transparent);
+        animation: esimShimmerSlide 3s ease-in-out infinite;
+    }
+    @keyframes esimShimmerSlide {
+        0%   { left: -60%; }
+        100% { left: 100%; }
+    }
+
+    /* --- Parallax-like float for golden divider --- */
+    .esim-golden-float {
+        animation: esimGoldenFloat 6s ease-in-out infinite;
+    }
+    @keyframes esimGoldenFloat {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-10px); }
+    }
+
+    /* --- FAQ smooth accordion height transition upgrade --- */
+    .esim-faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                    opacity 0.35s ease;
+        opacity: 0;
+    }
+    .esim-faq-item.active .esim-faq-answer {
+        opacity: 1;
+    }
+    .esim-faq-toggle {
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                    color 0.3s ease;
+    }
+    .esim-faq-item.active .esim-faq-question-text {
+        color: var(--c-gold);
+        transition: color 0.3s ease;
+    }
+    .esim-faq-item {
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .esim-faq-item.active {
+        box-shadow: 0 4px 24px rgba(255, 215, 0, 0.06);
+    }
+
+    /* --- Feature card stagger --- */
+    .esim-features-grid.esim-stagger.revealed .esim-feature-card:nth-child(1) { transition-delay: 0.05s; }
+    .esim-features-grid.esim-stagger.revealed .esim-feature-card:nth-child(2) { transition-delay: 0.12s; }
+    .esim-features-grid.esim-stagger.revealed .esim-feature-card:nth-child(3) { transition-delay: 0.19s; }
+    .esim-features-grid.esim-stagger.revealed .esim-feature-card:nth-child(4) { transition-delay: 0.26s; }
+
+    /* --- How-to card slide-in-from-left stagger --- */
+    .esim-how-grid.esim-stagger-left > * {
+        opacity: 0;
+        transform: translateX(-50px);
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform;
+    }
+    .esim-how-grid.esim-stagger-left.revealed > * {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    .esim-how-grid.esim-stagger-left.revealed > *:nth-child(1) { transition-delay: 0.05s; }
+    .esim-how-grid.esim-stagger-left.revealed > *:nth-child(2) { transition-delay: 0.15s; }
+    .esim-how-grid.esim-stagger-left.revealed > *:nth-child(3) { transition-delay: 0.25s; }
+    .esim-how-grid.esim-stagger-left.revealed > *:nth-child(4) { transition-delay: 0.35s; }
+
+    /* --- Reduce motion: respect user preference --- */
+    @media (prefers-reduced-motion: reduce) {
+        .esim-reveal,
+        .esim-reveal-left,
+        .esim-stagger > *,
+        .esim-how-grid.esim-stagger-left > *,
+        .esim-hero-left .esim-hero-badge,
+        .esim-hero-left .esim-hero-title,
+        .esim-hero-left .esim-hero-subtitle,
+        .esim-hero-left .esim-hero-cta,
+        .esim-hero-left .esim-trust-row {
+            opacity: 1 !important;
+            transform: none !important;
+            animation: none !important;
+            transition: none !important;
+        }
+        .esim-counter-number::after,
+        .esim-shimmer-line::after {
+            animation: none !important;
+        }
+        .esim-golden-float {
+            animation: none !important;
+        }
     }
 </style>
 
@@ -3527,19 +3811,15 @@
     <div class="esim-hero-inner">
         <!-- Text Content -->
         <div class="esim-hero-left">
-            <div class="esim-hero-badge">PREMIUM TRAVEL CONNECTIVITY</div>
-            <h1 class="esim-hero-title">Stay Connected,<br><span class="esim-hero-title-highlight">Wherever You Roam</span></h1>
-            <p class="esim-hero-subtitle">Instantly activate high-speed mobile data in over 180 countries. Ditch physical SIM cards and heavy roaming fees with our digital eSIM.</p>
+            <div class="esim-hero-badge">TRAVEL eSIM</div>
+            <h1 class="esim-hero-title">Your eSIM,<br><span class="esim-hero-title-highlight">Ready in 2 Minutes</span></h1>
+            <p class="esim-hero-subtitle">Pick your destination below, choose a data plan, and we'll email your QR code instantly — no SIM swap, no roaming bills.</p>
 
-            <!-- Primary CTA -->
+            <!-- Primary CTA — jumps to the picker right below -->
             <div class="esim-hero-cta">
                 <button class="esim-btn-primary" onclick="document.getElementById('esimWizardContainer').scrollIntoView({ behavior: 'smooth' })">
-                    <i class="fa-solid fa-sim-card"></i>
-                    Get Your eSIM Now
-                </button>
-                <button class="esim-btn-secondary" onclick="document.querySelector('.esim-faq-section').scrollIntoView({ behavior: 'smooth' })">
-                    Learn More
-                    <i class="fa-solid fa-arrow-right"></i>
+                    <i class="fa-solid fa-location-dot"></i>
+                    Choose Your Destination
                 </button>
             </div>
 
@@ -3576,89 +3856,7 @@
 </section>
 
 <!-- ============================================================
-     ANIMATED GOLDEN TITLE — between hero and how-to-activate
-     ============================================================ -->
-<section class="esim-golden-divider" aria-hidden="false">
-    <span class="esim-golden-eyebrow">Powered by Global Carriers</span>
-    <h2 class="esim-golden-title">Connected in 186 Countries</h2>
-    <p class="esim-golden-sub">One eSIM. Every continent. Land in any country with high-speed data already active on your phone — no SIM swap, no roaming bills.</p>
-</section>
-
-<!-- ============================================================
-     PARTNER CTA BANNER (E-SIM page) — main GoTrips site only
-     ============================================================ -->
-@platformOnly
-<section class="esim-partner-cta-banner">
-    <div class="epcb-inner">
-        <div class="epcb-content">
-            <div class="epcb-icon"><i class="fa-solid fa-handshake"></i></div>
-            <div class="epcb-text">
-                <span class="epcb-eyebrow">Partner Program</span>
-                <h3 class="epcb-title">E-SIM Partner Login &amp; Earn Commissions</h3>
-                <p class="epcb-sub">Refer travellers, earn on every eSIM sale — paid directly to your bank.</p>
-            </div>
-        </div>
-        <a href="{{ route('referral.login') }}" class="epcb-btn">
-            Click Here <i class="fa-solid fa-arrow-right"></i>
-        </a>
-    </div>
-</section>
-@endplatformOnly
-
-<!-- ============================================================
-     HOW TO ACTIVATE eSIM
-     ============================================================ -->
-<section class="esim-how-section">
-    <div class="esim-how-badge">TUTORIAL</div>
-    <h2 class="esim-how-title">How to Get Your eSIM</h2>
-    <p class="esim-how-subtitle">A simple step-by-step guide to get you connected in minutes.</p>
-
-    <div class="esim-how-grid">
-        <!-- Step 1: Installation Part A -->
-        <div class="esim-how-card">
-            <div class="esim-how-icon">
-                <img src="/assets/img/step1.png" alt="Check Compatibility">
-            </div>
-            <div class="esim-how-num">1</div>
-            <h3 class="esim-how-card-title">Check Compatibility</h3>
-            <p class="esim-how-card-desc">Make sure your device supports eSIM. Most modern smartphones (iPhone XS+, Pixel 3+, Samsung S20+) are compatible.</p>
-        </div>
-
-        <!-- Step 2: Installation Part B -->
-        <div class="esim-how-card">
-            <div class="esim-how-icon">
-                <img src="/assets/img/step2.png" alt="Scan & Install eSIM">
-            </div>
-            <div class="esim-how-num">2</div>
-            <h3 class="esim-how-card-title">Scan & Install eSIM</h3>
-            <p class="esim-how-card-desc">Open your phone Settings → Cellular → Add eSIM. Scan the QR code we send to your email to install your profile.</p>
-        </div>
-
-        <!-- Step 3: Buying Part A -->
-        <div class="esim-how-card">
-            <div class="esim-how-icon">
-                <img src="/assets/img/step3.png" alt="Choose Your Plan">
-            </div>
-            <div class="esim-how-num">3</div>
-            <h3 class="esim-how-card-title">Choose Your Plan</h3>
-            <p class="esim-how-card-desc">Select your destination country and pick a data plan that suits your travel duration and usage needs.</p>
-        </div>
-
-        <!-- Step 4: Buying Part B -->
-        <div class="esim-how-card">
-            <div class="esim-how-icon">
-                <img src="/assets/img/step4.png" alt="Pay & Go Online">
-            </div>
-            <div class="esim-how-num">4</div>
-            <h3 class="esim-how-card-title">Pay & Go Online</h3>
-            <p class="esim-how-card-desc">Complete your secure payment. Your QR code is emailed instantly — activate and start browsing right away!</p>
-        </div>
-    </div>
-</section>
-
-
-<!-- ============================================================
-     WIZARD CONTAINER
+     WIZARD CONTAINER — practical buy box, directly under the hero
      ============================================================ -->
 <div class="esim-wizard-container" id="esimWizardContainer">
 
@@ -3690,12 +3888,6 @@
             <div class="esim-section-label">POPULAR DESTINATIONS</div>
             <div class="esim-popular-grid" id="esimPopularGrid">
                 <!-- Rendered by JS -->
-            </div>
-
-            <div class="esim-or-divider">
-                <div class="esim-or-divider-line"></div>
-                <span class="esim-or-divider-text">or</span>
-                <div class="esim-or-divider-line"></div>
             </div>
 
             <div class="esim-section-label">ALL COUNTRIES</div>
@@ -3936,26 +4128,64 @@
 </div>
 
 <!-- ============================================================
-     HOW IT WORKS
+     HOW TO ACTIVATE eSIM
      ============================================================ -->
+<section class="esim-how-section">
+    <div class="esim-how-badge esim-reveal">TUTORIAL</div>
+    <h2 class="esim-how-title esim-reveal">How to Get Your eSIM</h2>
+    <p class="esim-how-subtitle esim-reveal">A simple step-by-step guide to get you connected in minutes.</p>
 
-<!-- ============================================================
-     ANIMATED GOLDEN TITLE — between wizard and features
-     ============================================================ -->
-<section class="esim-golden-divider">
-    <span class="esim-golden-eyebrow">Travel Without Limits</span>
-    <h2 class="esim-golden-title">Stay Connected Everywhere</h2>
-    <p class="esim-golden-sub">From the moment you land to the moment you get home — uninterrupted data, instant activation, zero hidden fees.</p>
+    <div class="esim-how-grid esim-stagger-left">
+        <!-- Step 1: Installation Part A -->
+        <div class="esim-how-card">
+            <div class="esim-how-icon">
+                <img src="/assets/img/step1.png" alt="Check Compatibility">
+            </div>
+            <div class="esim-how-num">1</div>
+            <h3 class="esim-how-card-title">Check Compatibility</h3>
+            <p class="esim-how-card-desc">Make sure your device supports eSIM. Most modern smartphones (iPhone XS+, Pixel 3+, Samsung S20+) are compatible.</p>
+        </div>
+
+        <!-- Step 2: Installation Part B -->
+        <div class="esim-how-card">
+            <div class="esim-how-icon">
+                <img src="/assets/img/step2.png" alt="Scan & Install eSIM">
+            </div>
+            <div class="esim-how-num">2</div>
+            <h3 class="esim-how-card-title">Scan & Install eSIM</h3>
+            <p class="esim-how-card-desc">Open your phone Settings → Cellular → Add eSIM. Scan the QR code we send to your email to install your profile.</p>
+        </div>
+
+        <!-- Step 3: Buying Part A -->
+        <div class="esim-how-card">
+            <div class="esim-how-icon">
+                <img src="/assets/img/step3.png" alt="Choose Your Plan">
+            </div>
+            <div class="esim-how-num">3</div>
+            <h3 class="esim-how-card-title">Choose Your Plan</h3>
+            <p class="esim-how-card-desc">Select your destination country and pick a data plan that suits your travel duration and usage needs.</p>
+        </div>
+
+        <!-- Step 4: Buying Part B -->
+        <div class="esim-how-card">
+            <div class="esim-how-icon">
+                <img src="/assets/img/step4.png" alt="Pay & Go Online">
+            </div>
+            <div class="esim-how-num">4</div>
+            <h3 class="esim-how-card-title">Pay & Go Online</h3>
+            <p class="esim-how-card-desc">Complete your secure payment. Your QR code is emailed instantly — activate and start browsing right away!</p>
+        </div>
+    </div>
 </section>
 
 <!-- ============================================================
      WHY CHOOSE eSIM
      ============================================================ -->
 <section class="esim-features-section">
-    <div class="esim-features-badge">WHY CHOOSE eSIM</div>
-    <h2 class="esim-features-title">Travel Smarter, Stay Connected</h2>
-    <p class="esim-features-subtitle">Skip the hassle of physical SIM cards. Our eSIM works with 186+ countries worldwide.</p>
-    <div class="esim-features-grid">
+    <div class="esim-features-badge esim-reveal">WHY CHOOSE eSIM</div>
+    <h2 class="esim-features-title esim-reveal">Travel Smarter, Stay Connected</h2>
+    <p class="esim-features-subtitle esim-reveal">Skip the hassle of physical SIM cards. Our eSIM works with 186+ countries worldwide.</p>
+    <div class="esim-features-grid esim-stagger">
         <div class="esim-feature-card">
             <div class="esim-feature-icon"><i class="fa-solid fa-bolt"></i></div>
             <div class="esim-feature-card-title">Instant Setup</div>
@@ -3984,9 +4214,9 @@
      FAQ
      ============================================================ -->
 <section class="esim-faq-section">
-    <div class="esim-faq-badge">FAQ</div>
-    <h2 class="esim-faq-title">Common Questions</h2>
-    <div class="esim-faq-list">
+    <div class="esim-faq-badge esim-reveal">FAQ</div>
+    <h2 class="esim-faq-title esim-reveal">Common Questions</h2>
+    <div class="esim-faq-list esim-stagger">
         <div class="esim-faq-item">
             <div class="esim-faq-question">
                 <span class="esim-faq-question-text">What is an eSIM?</span>
@@ -4043,6 +4273,27 @@
         </div>
     </div>
 </section>
+
+<!-- ============================================================
+     PARTNER CTA BANNER (E-SIM page) — main GoTrips site only
+     ============================================================ -->
+@platformOnly
+<section class="esim-partner-cta-banner">
+    <div class="epcb-inner">
+        <div class="epcb-content">
+            <div class="epcb-icon"><i class="fa-solid fa-handshake"></i></div>
+            <div class="epcb-text">
+                <span class="epcb-eyebrow">Partner Program</span>
+                <h3 class="epcb-title">E-SIM Partner Login &amp; Earn Commissions</h3>
+                <p class="epcb-sub">Refer travellers, earn on every eSIM sale — paid directly to your bank.</p>
+            </div>
+        </div>
+        <a href="{{ route('referral.login') }}" class="epcb-btn">
+            Click Here <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+@endplatformOnly
 
 <!-- ============================================================
      JAVASCRIPT
@@ -4926,6 +5177,103 @@
     } else {
         init();
     }
+
+    // ── ENTRANCE ANIMATIONS — IntersectionObserver ───────
+    (function initAnimations() {
+        // Respect reduced-motion preference
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.querySelectorAll('.esim-reveal, .esim-reveal-left, .esim-stagger, .esim-stagger-left').forEach(function(el) {
+                el.classList.add('revealed');
+            });
+            // Set counter directly
+            var ctr = document.getElementById('esimCounterNum');
+            if (ctr) ctr.textContent = ctr.dataset.target || '186';
+            return;
+        }
+
+        var revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+        // Observe all reveal elements
+        document.querySelectorAll('.esim-reveal, .esim-reveal-left, .esim-stagger, .esim-stagger-left').forEach(function(el) {
+            revealObserver.observe(el);
+        });
+
+        // ── Animated Counter for "186 Countries" ─────────
+        var counterEl = document.getElementById('esimCounterNum');
+        if (counterEl) {
+            var counterDone = false;
+            var counterObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting && !counterDone) {
+                        counterDone = true;
+                        animateCounter(counterEl, parseInt(counterEl.dataset.target) || 186, 1800);
+                        counterObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+            counterObserver.observe(counterEl);
+        }
+
+        function animateCounter(el, target, duration) {
+            var start = 0;
+            var startTime = null;
+            // Ease-out-cubic for a satisfying deceleration
+            function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                var progress = Math.min((timestamp - startTime) / duration, 1);
+                var easedProgress = easeOutCubic(progress);
+                var current = Math.floor(easedProgress * target);
+                el.textContent = current;
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    el.textContent = target;
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // ── Dynamic stagger for country grid cards ───────
+        // Re-observe after countries render (MutationObserver)
+        var countryGrid = document.getElementById('esimCountryGrid');
+        if (countryGrid) {
+            countryGrid.classList.add('esim-stagger');
+            var gridMutObs = new MutationObserver(function() {
+                // Re-trigger stagger when grid content changes
+                countryGrid.classList.remove('revealed');
+                // Small RAF delay so the browser registers the removal
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        countryGrid.classList.add('revealed');
+                    });
+                });
+            });
+            gridMutObs.observe(countryGrid, { childList: true });
+        }
+
+        // ── Dynamic stagger for popular destinations grid ─
+        var popularGrid = document.getElementById('esimPopularGrid');
+        if (popularGrid) {
+            popularGrid.classList.add('esim-stagger');
+            var popMutObs = new MutationObserver(function() {
+                popularGrid.classList.remove('revealed');
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        popularGrid.classList.add('revealed');
+                    });
+                });
+            });
+            popMutObs.observe(popularGrid, { childList: true });
+        }
+    })();
 
 })();
 </script>
