@@ -30,7 +30,7 @@
 
     .checkout-subtitle {
         color: #aaa;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 400;
         letter-spacing: 2.5px;
         text-transform: uppercase;
@@ -70,7 +70,7 @@
     .card-title {
         color: #FFD700;
         font-family: 'Outfit', sans-serif;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 3px;
@@ -104,7 +104,7 @@
     .field-label {
         color: #888;
         font-family: 'Outfit', sans-serif;
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -258,7 +258,7 @@
 
     .total-label {
         color: #999;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -321,7 +321,7 @@
         text-align: center;
         margin-top: 18px;
         color: #444;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 600;
         letter-spacing: 1.5px;
         text-transform: uppercase;
@@ -438,7 +438,7 @@
                                     <option value="+974">🇶🇦 +974</option>
                                 </select>
                                 <input type="tel" class="field-input" id="client_phone_number" placeholder="50 123 4567"
-                                    required>
+                                    data-no-intl required>
                             </div>
                             <input type="hidden" id="client_phone" name="client_phone">
                         </div>
@@ -564,9 +564,16 @@
             btn.innerHTML = '<i class="bi bi-hourglass"></i> Processing...';
 
             const csrf = document.querySelector('input[name="_token"]').value;
-            const cc = document.getElementById('country_code').value;
-            const pn = document.getElementById('client_phone_number').value;
-            document.getElementById('client_phone').value = cc + pn;
+            // Build a clean E.164 number (Nomod requires it). Guard against the
+            // user typing the country code into the number field (doubled code)
+            // and against a national trunk-prefix zero.
+            const ccDigits = (document.getElementById('country_code').value || '').replace(/\D/g, '');
+            let pnDigits = (document.getElementById('client_phone_number').value || '').replace(/\D/g, '');
+            if (ccDigits && pnDigits.startsWith(ccDigits)) {
+                pnDigits = pnDigits.slice(ccDigits.length);
+            }
+            pnDigits = pnDigits.replace(/^0+/, '');
+            document.getElementById('client_phone').value = '+' + ccDigits + pnDigits;
 
             const fd = new FormData(form);
             fd.set('amount', document.getElementById('total_amount').value);

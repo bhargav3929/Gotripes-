@@ -81,17 +81,25 @@ Route::prefix('/')->group(function () {
     Route::get('banner0', fn() => view('banner0'));
     Route::get('countriestour', fn() => view('countriestour'))->middleware('tenant.feature:tours');
     Route::get('tour-packages', function () {
-        $packages = \App\Models\TravelPackage::where('isActive', 1)
-            ->orderBy('country')
+        $all = \App\Models\TravelPackage::orderBy('country')
             ->orderBy('createdDate', 'desc')
-            ->get()
+            ->get();
+
+        // Completed (published) packages — grouped by country, shown at the top.
+        $packages = $all->where('isActive', true)
             ->groupBy(fn($p) => $p->country ?: 'Other');
-        // Fallback: if the tenant manager hasn't published any tour packages yet,
-        // show the legacy country-flags grid so the page isn't empty.
-        if ($packages->isEmpty()) {
-            return view('countriestour');
-        }
-        return view('tour-packages', compact('packages'));
+
+        // Countries that only have pending (unpublished) packages → "Coming Soon".
+        // This keeps every destination flag visible instead of hiding the others
+        // the moment one package is published.
+        $activeCountries = $packages->keys();
+        $comingSoon = $all->where('isActive', false)
+            ->map(fn($p) => $p->country ?: 'Other')
+            ->unique()
+            ->reject(fn($c) => $activeCountries->contains($c))
+            ->values();
+
+        return view('tour-packages', compact('packages', 'comingSoon'));
     })->middleware('tenant.feature:tours')->name('tour-packages');
     Route::get('ourstory', fn() => view('ourstory'));
     Route::get('contact-us', fn() => view('contact-us'));

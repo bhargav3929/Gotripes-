@@ -46,7 +46,7 @@
   li {
     color: var(--text-muted);
     line-height: 1.7;
-    font-size: 15px;
+    font-size: 16px;
   }
 
   strong {
@@ -91,7 +91,7 @@
   .quick-stat .qs-label {
     color: #999;
     text-transform: uppercase;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 2px;
     margin-top: 8px;
     display: block;
@@ -107,7 +107,7 @@
     border: 1px solid rgba(255,215,0,0.18);
     border-radius: 999px;
     color: #ddd;
-    font-size: 13.5px;
+    font-size: 15px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -156,7 +156,7 @@
 
   /* Form Styles */
   .premium-form .form-label {
-    font-size: 11px;
+    font-size: 13px;
     text-transform: uppercase;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -172,7 +172,7 @@
     height: 40px;
     border-radius: 8px;
     padding: 0 12px;
-    font-size: 13px;
+    font-size: 15px;
     transition: all 0.3s ease;
   }
 
@@ -185,7 +185,7 @@
   /* Custom File Input */
   .premium-form input[type="file"] {
     padding-top: 10px;
-    font-size: 13px;
+    font-size: 15px;
   }
 
   /* Radios */

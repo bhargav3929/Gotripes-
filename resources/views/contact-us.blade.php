@@ -455,6 +455,14 @@
             @php
                 $contactTenant = current_company();
                 $contactMapUrl = $contactTenant?->googleMapsEmbedUrl();
+                // Fallback: on the main GoTrips site, always show the head-office map
+                // even when no company address/embed URL is configured.
+                $isMainSite = !$contactTenant || $contactTenant->slug === 'gotrips';
+                if (!$contactMapUrl && $isMainSite) {
+                    $contactMapUrl = 'https://www.google.com/maps?q='
+                        . urlencode('Sanaiya, Beda Zayed Al Dhafra, Abu Dhabi, U.A.E')
+                        . '&output=embed';
+                }
             @endphp
             <div class="col-lg-6">
                 <div class="glass-card p-0 overflow-hidden h-100">
@@ -465,7 +473,7 @@
                                     allowfullscreen=""
                                     loading="lazy"
                                     referrerpolicy="no-referrer-when-downgrade"
-                                    title="{{ $contactTenant->name }} location"></iframe>
+                                    title="{{ $contactTenant?->name ?? 'GoTrips' }} location"></iframe>
                         </div>
                     @else
                         <div class="d-flex flex-column justify-content-center align-items-center h-100 p-4 text-center" style="min-height:300px;">
