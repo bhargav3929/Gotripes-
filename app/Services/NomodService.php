@@ -45,7 +45,7 @@ class NomodService
                 'last_name' => $nameParts[1] ?? $nameParts[0] ?: 'Customer',
                 'email' => $c['email'] ?? '',
             ];
-            $phone = $c['phone'] ?? $c['phone_number'] ?? '';
+            $phone = $this->normalizePhone($c['phone'] ?? $c['phone_number'] ?? null);
             if (!empty($phone)) {
                 $payload['customer']['phone_number'] = $phone;
             }
@@ -96,6 +96,26 @@ class NomodService
                 'error' => 'Payment gateway unavailable. Please try again.',
             ];
         }
+    }
+
+    /**
+     * Normalize a phone number to E.164 (e.g. "+971501234567") as required by Nomod.
+     * Strips spaces, dashes, brackets and any other formatting and prefixes "+".
+     * The form is responsible for sending a valid number; this just cleans formatting.
+     */
+    private function normalizePhone($phone): ?string
+    {
+        if (empty($phone)) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D/', '', $phone);
+
+        if ($digits === '') {
+            return null;
+        }
+
+        return '+' . $digits;
     }
 
     public function getCheckout(string $checkoutId): array
