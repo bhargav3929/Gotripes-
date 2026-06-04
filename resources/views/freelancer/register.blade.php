@@ -224,5 +224,6 @@
             </div>
         </div>
     </div>
+@include('partials.intl-tel-init')
 </body>
 </html>

@@ -13,12 +13,12 @@ class MontyEsimService
     protected string $password;
     protected float $markupPercent;
 
-    public function __construct()
+    public function __construct(?float $markupPercent = null)
     {
         $this->baseUrl = rtrim(config('montyesim.base_url'), '/');
         $this->username = config('montyesim.username') ?? '';
         $this->password = config('montyesim.password') ?? '';
-        $this->markupPercent = (float) config('montyesim.markup_percent', 20);
+        $this->markupPercent = $markupPercent ?? (float) config('montyesim.markup_percent', 20);
     }
 
     /**
@@ -233,28 +233,27 @@ class MontyEsimService
      */
     public function getBundles(string $countryCode, string $currencyCode = 'USD'): array
     {
-        $cacheKey = "montyesim_bundles_{$countryCode}_{$currencyCode}";
+        $cacheKey = "montyesim_raw_bundles_{$countryCode}_{$currencyCode}";
 
-        return Cache::remember($cacheKey, 3600, function () use ($countryCode, $currencyCode) {
+        $rawBundles = Cache::remember($cacheKey, 3600, function () use ($countryCode, $currencyCode) {
             $result = $this->request('GET', 'Bundles', [], [
                 'country_code' => $countryCode,
                 'currency_code' => $currencyCode,
             ]);
 
-            if ($result['success'] && isset($result['data']['bundles'])) {
-                $bundles = $result['data']['bundles'];
-                $markup = 1 + ($this->markupPercent / 100);
-
-                return array_map(function ($bundle) use ($markup) {
-                    $costPrice = (float) ($bundle['bundle_price_final'] ?? $bundle['subscriber_price'] ?? 0);
-                    $bundle['cost_price'] = round($costPrice, 2);
-                    $bundle['selling_price'] = round($costPrice * $markup, 2);
-                    return $bundle;
-                }, $bundles);
-            }
-
-            return [];
+            return ($result['success'] && isset($result['data']['bundles']))
+                ? $result['data']['bundles']
+                : [];
         });
+
+        $markup = 1 + ($this->markupPercent / 100);
+
+        return array_map(function ($bundle) use ($markup) {
+            $costPrice = (float) ($bundle['bundle_price_final'] ?? $bundle['subscriber_price'] ?? 0);
+            $bundle['cost_price'] = round($costPrice, 2);
+            $bundle['selling_price'] = round($costPrice * $markup, 2);
+            return $bundle;
+        }, $rawBundles);
     }
 
     /**

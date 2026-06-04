@@ -46,11 +46,11 @@
         </div>
 
         <div class="form-row">
-            <label for="markup_percentage">Markup % <span class="req">*</span></label>
+            <label for="markup_percentage">eSIM Markup % <span class="req">*</span></label>
             <input type="number" step="0.01" min="0" max="100"
                    id="markup_percentage" name="markup_percentage" required
                    value="{{ old('markup_percentage', (float) ($company->markup_percentage ?? 0)) }}">
-            <small>Applied on top of supplier cost when displaying prices to customers (0–100%).</small>
+            <small>Markup added on top of eSIM supplier cost price. E.g. 20% means a $10 cost eSIM will be sold at $12. Set to 0 to use platform default.</small>
         </div>
 
         <div class="form-actions">

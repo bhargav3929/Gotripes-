@@ -223,8 +223,8 @@
             border-radius: 50px;
             padding: 0 6px 0 20px;
             width: 100%;
-            max-width: 580px;
-            height: 46px;
+            max-width: 420px;
+            height: 42px;
             transition: all 0.3s ease;
         }
 
@@ -566,9 +566,93 @@
             gap: 8px;
         }
 
+        /* ESIM SELLER CTA - Mirror of partner-cta on the LEFT side */
+        .gt-esim-cta {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .gt-esim-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            font-style: italic;
+            color: #ff8a8a;
+            white-space: nowrap;
+        }
+        .gt-esim-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+        }
+        .gt-esim-btn {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: #ffffff !important;
+            border: none;
+            border-radius: 50px;
+            padding: 0 24px;
+            height: 34px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none !important;
+        }
+        .gt-esim-btn:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+            color: #fff !important;
+            text-decoration: none !important;
+        }
+        @media (max-width: 1200px) {
+            .gt-esim-label,
+            .gt-esim-title { display: none; }
+        }
+        @media (min-width: 1201px) {
+            .gt-esim-cta {
+                border-right: 1px solid rgba(255, 215, 0, 0.12);
+                padding-right: 12px;
+            }
+        }
+        @media (max-width: 991px) {
+            .gt-esim-btn {
+                padding: 0 18px;
+                font-size: 11px;
+                height: 30px;
+                letter-spacing: 1.2px;
+            }
+            .gt-esim-cta {
+                position: static;
+                transform: none;
+                justify-content: center;
+                width: 100%;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-right: none;
+                padding-right: 0;
+                border-top: 1px solid rgba(255, 215, 0, 0.1);
+            }
+            .gt-esim-label,
+            .gt-esim-title { display: inline; }
+        }
+
         .gt-partner-label {
             font-family: 'Outfit', sans-serif;
-            font-size: 11px;
+            font-size: 14px;
             font-weight: 400;
             font-style: italic;
             color: #FFD23F;
@@ -577,7 +661,7 @@
 
         .gt-partner-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 12px;
+            font-size: 15px;
             font-weight: 700;
             color: #ffffff;
             white-space: nowrap;
@@ -588,10 +672,10 @@
             color: #ffffff;
             border: none;
             border-radius: 50px;
-            padding: 0 24px;
-            height: 34px;
+            padding: 0 28px;
+            height: 38px;
             font-family: 'Outfit', sans-serif;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
@@ -1031,6 +1115,7 @@
 </head>
 
 <body class="{{ request()->is('/') ? 'has-ticker' : '' }}">
+@include('partials.intl-tel-init')
     <!-- ==================== PREMIUM HEADER ==================== -->
     <header class="gt-header">
 
@@ -1152,6 +1237,11 @@
             </div>
             @if(request()->is('/'))
                 @platformOnly
+                <div class="gt-esim-cta">
+                    <span class="gt-esim-label">Sell our eSIM</span>
+                    <span class="gt-esim-title">Become an eSIM Seller</span>
+                    <a href="{{ route('freelancer.register') }}" class="gt-esim-btn">Register Now</a>
+                </div>
                 <div class="gt-partner-cta">
                     <span class="gt-partner-label">Join as a</span>
                     <span class="gt-partner-title">Partner / Customer</span>

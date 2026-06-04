@@ -57,20 +57,20 @@
   .nav-link2 {
     display: inline-block;
     margin: 0 8px;
-    padding: 12px 30px;
+    padding: 14px 34px;
     color: #ffd700;
     background: rgba(10, 10, 10, 0.8);
     border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 50px;
     font-family: 'Outfit', sans-serif;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     text-decoration: none;
     transition: all 0.3s ease;
     white-space: nowrap;
     backdrop-filter: blur(5px);
-    font-size: 14px;
-    letter-spacing: 0.5px;
+    font-size: 16px;
+    letter-spacing: 0.8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   }
 

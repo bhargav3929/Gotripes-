@@ -10,26 +10,64 @@ use Illuminate\Support\Facades\File;
 
 class ManagerTravelPackagesController extends Controller
 {
-    public function index()
+    /**
+     * Get the countries this tenant is allowed to use for tour packages.
+     * Returns null when unrestricted (backward-compatible).
+     */
+    private function allowedCountries(): ?array
     {
-        $packages = TravelPackage::where('isActive', 1)
-            ->orderBy('country')
-            ->orderBy('createdDate', 'desc')
-            ->paginate(15);
+        $company = current_company();
+        if (!$company) {
+            return null;
+        }
 
-        return view('manager.packages.index', compact('packages'));
+        $allowed = $company->getSetting('allowed_countries', []);
+        return is_array($allowed) && count($allowed) > 0 ? $allowed : null;
+    }
+
+    public function index(Request $request)
+    {
+        $query = TravelPackage::where('isActive', 1);
+
+        // Filter by country if requested
+        if ($request->filled('country')) {
+            $query->where('country', $request->country);
+        }
+
+        $packages = $query->orderBy('country')
+            ->orderBy('createdDate', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        $allowedCountries = $this->allowedCountries();
+
+        // Get distinct countries already used, for the filter dropdown
+        $usedCountries = TravelPackage::where('isActive', 1)
+            ->whereNotNull('country')
+            ->distinct()
+            ->orderBy('country')
+            ->pluck('country');
+
+        return view('manager.packages.index', compact('packages', 'allowedCountries', 'usedCountries'));
     }
 
     public function create()
     {
-        return view('manager.packages.create');
+        $allowedCountries = $this->allowedCountries();
+        return view('manager.packages.create', compact('allowedCountries'));
     }
 
     public function store(Request $request)
     {
+        $countryRule = 'required|string|max:100';
+        $allowed = $this->allowedCountries();
+        if ($allowed) {
+            $countryRule .= '|in:' . implode(',', $allowed);
+        }
+
         $validated = $request->validate([
             'title'       => 'required|string|max:255',
-            'country'     => 'required|string|max:100',
+            'country'     => $countryRule,
             'price'       => 'required|numeric|min:0',
             'description' => 'required|string',
             'duration'    => 'required|string|max:255',
@@ -57,16 +95,23 @@ class ManagerTravelPackagesController extends Controller
     public function edit($id)
     {
         $package = TravelPackage::where('id', $id)->where('isActive', 1)->firstOrFail();
-        return view('manager.packages.edit', compact('package'));
+        $allowedCountries = $this->allowedCountries();
+        return view('manager.packages.edit', compact('package', 'allowedCountries'));
     }
 
     public function update(Request $request, $id)
     {
         $package = TravelPackage::where('id', $id)->where('isActive', 1)->firstOrFail();
 
+        $countryRule = 'required|string|max:100';
+        $allowed = $this->allowedCountries();
+        if ($allowed) {
+            $countryRule .= '|in:' . implode(',', $allowed);
+        }
+
         $validated = $request->validate([
             'title'       => 'required|string|max:255',
-            'country'     => 'required|string|max:100',
+            'country'     => $countryRule,
             'price'       => 'required|numeric|min:0',
             'description' => 'required|string',
             'duration'    => 'required|string|max:255',

@@ -3,14 +3,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 18px;
-        padding: 14px 28px;
+        gap: 14px;
+        padding: 8px 22px;
         background: rgba(10, 10, 10, 0.75);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 215, 0, 0.25);
         border-radius: 50px;
-        margin: 0 auto 25px auto;
+        margin: 0 auto 10px auto;
         width: fit-content;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
         z-index: 10;

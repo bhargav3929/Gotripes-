@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Validator;
 
 class EsimController extends Controller
 {
+    private function tenantMarkup(): ?float
+    {
+        $company = current_company();
+        return $company && $company->markup_percentage > 0
+            ? (float) $company->markup_percentage
+            : null;
+    }
+
     public function index()
     {
         return view('esim');
@@ -24,7 +32,7 @@ class EsimController extends Controller
     public function getCountries(): JsonResponse
     {
         try {
-            $service = new MontyEsimService();
+            $service = new MontyEsimService($this->tenantMarkup());
             $countries = $service->getCountries();
 
             return response()->json([
@@ -251,7 +259,7 @@ class EsimController extends Controller
         }
 
         try {
-            $service = new MontyEsimService();
+            $service = new MontyEsimService($this->tenantMarkup());
             $bundles = $service->getBundles($request->country_code);
 
             return response()->json([
@@ -315,7 +323,7 @@ class EsimController extends Controller
                 $bundleName = $demoBundle['name'];
             } else {
                 // Re-fetch bundle from API for server-side price verification
-                $montyService = new MontyEsimService();
+                $montyService = new MontyEsimService($this->tenantMarkup());
                 $bundle = $montyService->findBundle($request->bundle_code, $request->country_code);
 
                 if (!$bundle) {

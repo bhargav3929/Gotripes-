@@ -14,7 +14,30 @@ class ManagerVisaPricingController extends Controller
             ->orderBy('UAEVisaDuration')
             ->get();
 
-        return view('manager.visa-pricing.index', compact('visas'));
+        $company = current_company();
+        $hotelFee  = $company?->getSetting('visa_hotel_booking_fee', 25) ?? 25;
+        $ticketFee = $company?->getSetting('visa_ticket_booking_fee', 25) ?? 25;
+
+        return view('manager.visa-pricing.index', compact('visas', 'hotelFee', 'ticketFee'));
+    }
+
+    public function updateServiceFees(Request $request)
+    {
+        $validated = $request->validate([
+            'visa_hotel_booking_fee'  => 'required|numeric|min:0',
+            'visa_ticket_booking_fee' => 'required|numeric|min:0',
+        ]);
+
+        $company = current_company();
+
+        $settings = $company->settings ?? [];
+        $settings['visa_hotel_booking_fee']  = (float) $validated['visa_hotel_booking_fee'];
+        $settings['visa_ticket_booking_fee'] = (float) $validated['visa_ticket_booking_fee'];
+        $company->settings = $settings;
+        $company->save();
+
+        return redirect()->route('manager.visa-pricing.index')
+            ->with('success', 'Service fees updated.');
     }
 
     public function store(Request $request)

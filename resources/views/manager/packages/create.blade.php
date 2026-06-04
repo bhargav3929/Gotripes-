@@ -3,7 +3,13 @@
 @section('title', 'Add Tour Package')
 @section('page-title', 'Tour Packages')
 
-@php $countries = \App\Support\CountryCodes::all(); @endphp
+@php
+    $allCountries = \App\Support\CountryCodes::all();
+    // If super admin assigned specific countries, filter to only those
+    $countries = ($allowedCountries ?? null)
+        ? array_filter($allCountries, fn($c) => in_array($c['name'], $allowedCountries, true))
+        : $allCountries;
+@endphp
 
 @section('content')
 <div class="wp-page-header">
@@ -30,7 +36,11 @@
                                 </option>
                             @endforeach
                         </select>
-                        <p class="wp-form-help">Customers will see packages grouped by country on your site.</p>
+                        @if($allowedCountries ?? null)
+                            <p class="wp-form-help">Showing {{ count($countries) }} countries assigned by admin.</p>
+                        @else
+                            <p class="wp-form-help">Customers will see packages grouped by country on your site.</p>
+                        @endif
                     </div>
 
                     <div class="wp-form-group">

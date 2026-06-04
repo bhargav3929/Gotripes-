@@ -235,6 +235,8 @@ class CompanyController extends Controller
             'is_active' => 'boolean',
             'features' => 'nullable|array',
             'features.*' => 'string|in:'.implode(',', $allowedFeatures),
+            'allowed_countries' => 'nullable|array',
+            'allowed_countries.*' => 'string|max:100',
         ]);
 
         if (array_key_exists('features', $validated)) {
@@ -242,6 +244,13 @@ class CompanyController extends Controller
                 ? array_values(array_intersect($allowedFeatures, $validated['features']))
                 : [];
         }
+
+        // Handle allowed_countries — store in settings JSON, not as a top-level column.
+        $allowedCountries = $validated['allowed_countries'] ?? [];
+        unset($validated['allowed_countries']);
+        $settings = $company->settings ?? [];
+        $settings['allowed_countries'] = array_values($allowedCountries);
+        $validated['settings'] = $settings;
 
         // Handle logo upload
         if ($request->hasFile('logo')) {

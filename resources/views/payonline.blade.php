@@ -10,9 +10,9 @@
     .checkout-page {
         background: linear-gradient(180deg, #000 0%, #080808 100%);
         min-height: 100vh;
-        padding-top: 40px;
+        padding-top: 8px;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         font-family: 'Outfit', sans-serif;
     }
@@ -20,30 +20,21 @@
     .checkout-wrapper {
         width: 100%;
         max-width: 1200px;
-        padding: 0 40px 30px;
+        padding: 0 32px 16px;
     }
 
     .checkout-header {
         text-align: center;
-        margin-bottom: 30px;
-    }
-
-    .checkout-title {
-        color: #FFD700;
-        font-family: 'Outfit', sans-serif;
-        font-weight: 700;
-        font-size: 32px;
-        text-transform: uppercase;
-        letter-spacing: 8px;
-        margin: 0 0 12px 0;
-        text-shadow: 0 0 60px rgba(255, 215, 0, 0.25);
+        margin-bottom: 10px;
     }
 
     .checkout-subtitle {
-        color: #666;
-        font-size: 14px;
+        color: #aaa;
+        font-size: 12px;
         font-weight: 400;
-        letter-spacing: 3px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        margin: 0;
     }
 
     .checkout-main {
@@ -57,8 +48,8 @@
     .card {
         background: linear-gradient(165deg, #0e0e0e 0%, #080808 100%);
         border: 1px solid rgba(255, 215, 0, 0.08);
-        border-radius: 20px;
-        padding: 35px 40px;
+        border-radius: 16px;
+        padding: 18px 22px;
         position: relative;
         box-shadow:
             0 25px 50px -12px rgba(0, 0, 0, 0.5),
@@ -83,7 +74,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 3px;
-        margin-bottom: 30px;
+        margin-bottom: 14px;
         display: flex;
         align-items: center;
         gap: 12px;
@@ -98,7 +89,7 @@
     .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 24px;
+        gap: 12px 18px;
     }
 
     .form-field {
@@ -113,19 +104,19 @@
     .field-label {
         color: #888;
         font-family: 'Outfit', sans-serif;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 2px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
 
     .field-input {
         width: 100%;
-        height: 54px;
+        height: 44px;
         background: #111;
         border: 1px solid #2a2a2a;
-        border-radius: 12px;
+        border-radius: 10px;
         padding: 0 20px;
         color: #fff;
         font-family: 'Outfit', sans-serif;
@@ -206,16 +197,16 @@
 
     .summary-placeholder {
         text-align: center;
-        padding: 40px 20px;
+        padding: 18px 12px;
         color: #3a3a3a;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 500;
     }
 
     .summary-placeholder i {
-        font-size: 32px;
+        font-size: 26px;
         display: block;
-        margin-bottom: 14px;
+        margin-bottom: 8px;
         color: #2a2a2a;
     }
 
@@ -223,7 +214,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 14px 0;
+        padding: 8px 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
 
@@ -256,7 +247,7 @@
     .summary-divider {
         height: 1px;
         background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
-        margin: 20px 0;
+        margin: 10px 0;
     }
 
     .summary-total {
@@ -285,11 +276,11 @@
     /* Pay Button */
     .pay-btn {
         width: 100%;
-        height: 56px;
+        height: 46px;
         background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
         border: none;
-        border-radius: 14px;
-        margin-top: 28px;
+        border-radius: 12px;
+        margin-top: 14px;
         color: #000;
         font-family: 'Outfit', sans-serif;
         font-size: 14px;
@@ -408,7 +399,6 @@
     <div class="checkout-wrapper">
         @include('payment-banners')
         <div class="checkout-header">
-            <h1 class="checkout-title">Secure Payment</h1>
             <p class="checkout-subtitle">Complete your payment securely</p>
         </div>
 

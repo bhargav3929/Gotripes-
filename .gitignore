@@ -67,3 +67,6 @@ verify_safari.php
 
 # Deployment credentials (sensitive)
 DEPLOYMENT.md
+
+# Compiled Blade view cache (generated at runtime)
+/storage/framework/views/*.php

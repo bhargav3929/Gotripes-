@@ -219,6 +219,61 @@
                 </div>
             </div>
 
+            <!-- Allowed Countries for Tour Packages -->
+            @php
+                $allCountries = \App\Support\CountryCodes::all();
+                $allowedCountries = old('allowed_countries', $company->getSetting('allowed_countries', []));
+                if (!is_array($allowedCountries)) $allowedCountries = [];
+            @endphp
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-globe me-2"></i>Allowed Countries (Tour Packages)</span>
+                    <small class="text-muted">{{ count($allowedCountries) }} selected</small>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2 d-flex align-items-center gap-2">
+                        <input type="text" id="countrySearch" class="form-control form-control-sm" placeholder="Search countries..." style="max-width: 220px;">
+                        <button type="button" class="btn btn-outline-warning btn-sm" id="selectAllCountries">Select All</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="deselectAllCountries">Clear</button>
+                    </div>
+                    <div id="countryList" style="max-height: 280px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px;">
+                        @foreach($allCountries as $c)
+                            <div class="form-check mb-1 country-item" data-name="{{ strtolower($c['name']) }}">
+                                <input class="form-check-input country-cb" type="checkbox" name="allowed_countries[]"
+                                       value="{{ $c['name'] }}" id="ac-{{ $c['iso'] }}"
+                                       {{ in_array($c['name'], $allowedCountries, true) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="ac-{{ $c['iso'] }}" style="font-size: 13px;">
+                                    {{ $c['flag'] }} {{ $c['name'] }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <small class="text-muted d-block mt-2">Partners can only create tour packages for these countries. Leave empty to allow all countries.</small>
+                </div>
+            </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const search = document.getElementById('countrySearch');
+                const items = document.querySelectorAll('.country-item');
+                const checkboxes = document.querySelectorAll('.country-cb');
+
+                search.addEventListener('input', function() {
+                    const q = this.value.toLowerCase();
+                    items.forEach(item => {
+                        item.style.display = item.dataset.name.includes(q) ? '' : 'none';
+                    });
+                });
+
+                document.getElementById('selectAllCountries').addEventListener('click', function() {
+                    checkboxes.forEach(cb => cb.checked = true);
+                });
+                document.getElementById('deselectAllCountries').addEventListener('click', function() {
+                    checkboxes.forEach(cb => cb.checked = false);
+                });
+            });
+            </script>
+
             <!-- Tenant Type -->
             <div class="card mb-4">
                 <div class="card-header"><i class="fas fa-tag me-2"></i>Tenant Type</div>

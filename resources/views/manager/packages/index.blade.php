@@ -11,7 +11,30 @@
     </a>
 </div>
 
-<div class="wp-card">
+{{-- Country Filter --}}
+@if(isset($usedCountries) && $usedCountries->count() > 1)
+<div class="wp-card" style="margin-bottom: 0; border-bottom: none; border-radius: 8px 8px 0 0;">
+    <div style="padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="color: var(--wp-text-muted); font-size: 13px; white-space: nowrap;">
+            <i class="fas fa-filter" style="margin-right: 4px;"></i> Filter:
+        </span>
+        <a href="{{ route('manager.packages.index') }}"
+           class="wp-btn {{ !request('country') ? 'wp-btn-primary' : 'wp-btn-secondary' }}"
+           style="padding: 4px 12px; font-size: 12px;">
+            All
+        </a>
+        @foreach($usedCountries as $c)
+            <a href="{{ route('manager.packages.index', ['country' => $c]) }}"
+               class="wp-btn {{ request('country') === $c ? 'wp-btn-primary' : 'wp-btn-secondary' }}"
+               style="padding: 4px 12px; font-size: 12px;">
+                {{ $c }}
+            </a>
+        @endforeach
+    </div>
+</div>
+@endif
+
+<div class="wp-card" @if(isset($usedCountries) && $usedCountries->count() > 1) style="border-radius: 0 0 8px 8px;" @endif>
     <div class="table-responsive">
         <table class="wp-table">
             <thead>

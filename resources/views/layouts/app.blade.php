@@ -86,5 +86,6 @@
             @yield('content')
         </main>
     </div>
+    @include('partials.intl-tel-init')
 </body>
 </html>

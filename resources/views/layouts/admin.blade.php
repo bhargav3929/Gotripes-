@@ -2217,5 +2217,6 @@
 
     @stack('scripts')
     @stack('script-alt')
+    @include('partials.intl-tel-init')
 </body>
 </html>

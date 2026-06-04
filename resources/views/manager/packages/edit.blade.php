@@ -3,7 +3,14 @@
 @section('title', 'Edit Tour Package')
 @section('page-title', 'Tour Packages')
 
-@php $countries = \App\Support\CountryCodes::all(); @endphp
+@php
+    $allCountries = \App\Support\CountryCodes::all();
+    // If super admin assigned specific countries, filter to only those.
+    // Always include the package's current country so it can be re-selected on edit.
+    $countries = ($allowedCountries ?? null)
+        ? array_filter($allCountries, fn($c) => in_array($c['name'], $allowedCountries, true) || $c['name'] === $package->country)
+        : $allCountries;
+@endphp
 
 @section('content')
 <div class="wp-page-header">
@@ -31,6 +38,9 @@
                                 </option>
                             @endforeach
                         </select>
+                        @if($allowedCountries ?? null)
+                            <p class="wp-form-help">Showing {{ count($countries) }} countries assigned by admin.</p>
+                        @endif
                     </div>
 
                     <div class="wp-form-group">

@@ -66,23 +66,7 @@
     .home-epcb-btn { width: 100%; justify-content: center; padding: 12px 18px; }
 }
 </style>
-@platformOnly
-<section class="home-epcb">
-    <div class="home-epcb-inner">
-        <div class="home-epcb-content">
-            <div class="home-epcb-icon"><i class="fa-solid fa-handshake"></i></div>
-            <div>
-                <span class="home-epcb-eyebrow">Partner Program</span>
-                <h3 class="home-epcb-title">E-SIM Partner Login &amp; Earn Commissions</h3>
-                <p class="home-epcb-sub">Refer travellers, earn on every eSIM sale — paid directly to your bank.</p>
-            </div>
-        </div>
-        <a href="{{ route('referral.login') }}" class="home-epcb-btn">
-            Click Here <i class="fa-solid fa-arrow-right"></i>
-        </a>
-    </div>
-</section>
-@endplatformOnly
+{{-- Partner Program section removed per client request (25 May 2026 meeting) --}}
 
 {{-- Mobile fix: override overflow:hidden on banner containers so ad cards stay visible in original position --}}
 <style>
@@ -111,7 +95,7 @@
 
 <!------ services ------->
 <section class="services-section"
-  style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 0 0 80px;">
+  style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 0 0 50px;">
   <div class="container">
 
     <!-- Section Title -->
@@ -128,7 +112,41 @@
 
     <div class="row g-4">
 
-      <!-- Service Card 1: Activities -->
+      {{-- ═══ ACTIVE / PRIORITY SERVICES (first row) ═══ --}}
+
+      <!-- Service Card 1: Visa Services -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="service-card">
+          <a href="/uaevisa" class="service-card-link">
+            <div class="service-card-image-wrapper">
+              <img src="assets/index_files/service_visa_services_1767532949283.png" alt="Visa Services"
+                class="service-card-img">
+              <div class="service-card-overlay"></div>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-card-title">VISA SERVICES</h3>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Service Card 2: World Travel eSIM -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="service-card">
+          <a href="/esim" class="service-card-link">
+            <div class="service-card-image-wrapper">
+              <img src="assets/homepageads/ad_esim.png" alt="World Travel eSIM"
+                class="service-card-img esim-card-img">
+              <div class="service-card-overlay"></div>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-card-title">WORLD TRAVEL ESIM</h3>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Service Card 3: Activities -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
           <a href="/activities" class="service-card-link">
@@ -144,7 +162,41 @@
         </div>
       </div>
 
-      <!-- Service Card 2: City Tour -->
+      <!-- Service Card 4: World Class Tour Packages -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="service-card">
+          <a href="/tour-packages" class="service-card-link">
+            <div class="service-card-image-wrapper">
+              <img src="assets/index_files/service_tour_packages_1767533057318.png" alt="World Class Tour Packages"
+                class="service-card-img">
+              <div class="service-card-overlay"></div>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-card-title">TOUR PACKAGES</h3>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Service Card 5: Hajj Umrah Services -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="service-card">
+          <a href="/" class="service-card-link">
+            <div class="service-card-image-wrapper">
+              <img src="assets/index_files/service_hajj_umrah_1767532980525.png" alt="Hajj Umrah Services"
+                class="service-card-img">
+              <div class="service-card-overlay"></div>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-card-title">HAJJ &amp; UMRAH SERVICES</h3>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      {{-- ═══ REMAINING SERVICES ═══ --}}
+
+      <!-- Service Card 6: City Tour -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
           <a href="/" class="service-card-link">
@@ -160,55 +212,7 @@
         </div>
       </div>
 
-      <!-- Service Card 3: Pick & Drop Guests -->
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="service-card">
-          <a href="/" class="service-card-link">
-            <div class="service-card-image-wrapper">
-              <img src="assets/index_files/service_pick_drop_1767532722482.png" alt="Pick & Drop Guests"
-                class="service-card-img">
-              <div class="service-card-overlay"></div>
-            </div>
-            <div class="service-card-content">
-              <h3 class="service-card-title">PICK & DROP GUESTS</h3>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Service Card 4: Liwa Guests Assistance -->
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="service-card">
-          <a href="/" class="service-card-link">
-            <div class="service-card-image-wrapper">
-              <img src="assets/index_files/service_liwa_assistance_1767532741495.png" alt="Liwa Guests Assistance"
-                class="service-card-img">
-              <div class="service-card-overlay"></div>
-            </div>
-            <div class="service-card-content">
-              <h3 class="service-card-title">LIWA GUESTS ASSISTANCE</h3>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Service Card 5: World Travel eSIM -->
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="service-card">
-          <a href="/" class="service-card-link">
-            <div class="service-card-image-wrapper">
-              <img src="assets/homepageads/ad_esim.png" alt="World Travel eSIM"
-                class="service-card-img esim-card-img">
-              <div class="service-card-overlay"></div>
-            </div>
-            <div class="service-card-content">
-              <h3 class="service-card-title">WORLD TRAVEL ESIM AVAILABLE</h3>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Service Card 6: Trips Organising -->
+      <!-- Service Card 7: Trips Organising -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
           <a href="/" class="service-card-link">
@@ -224,7 +228,7 @@
         </div>
       </div>
 
-      <!-- Service Card 7: Hotel Bookings -->
+      <!-- Service Card 8: Hotel Bookings -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
           <a href="/" class="service-card-link">
@@ -240,71 +244,7 @@
         </div>
       </div>
 
-      <!-- Service Card 8: Business WhatsApp Integration -->
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="service-card">
-          <a href="/" class="service-card-link">
-            <div class="service-card-image-wrapper">
-              <img src="assets/index_files/service_whatsapp_integration_1767532912170.png"
-                alt="Business WhatsApp Integration" class="service-card-img">
-              <div class="service-card-overlay"></div>
-            </div>
-            <div class="service-card-content">
-              <h3 class="service-card-title">BUSINESS WHATSAPP INTEGRATION</h3>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Service Card 9: Website Development -->
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="service-card">
-          <a href="/" class="service-card-link">
-            <div class="service-card-image-wrapper">
-              <img src="assets/index_files/service_website_development_1767532932173.png" alt="Website Development"
-                class="service-card-img">
-              <div class="service-card-overlay"></div>
-            </div>
-            <div class="service-card-content">
-              <h3 class="service-card-title">WEBSITE DEVELOPMENT</h3>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Service Card 10: Visa Services -->
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="service-card">
-          <a href="/" class="service-card-link">
-            <div class="service-card-image-wrapper">
-              <img src="assets/index_files/service_visa_services_1767532949283.png" alt="Visa Services"
-                class="service-card-img">
-              <div class="service-card-overlay"></div>
-            </div>
-            <div class="service-card-content">
-              <h3 class="service-card-title">VISA SERVICES</h3>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Service Card 11: Hajj Umrah Services -->
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="service-card">
-          <a href="/" class="service-card-link">
-            <div class="service-card-image-wrapper">
-              <img src="assets/index_files/service_hajj_umrah_1767532980525.png" alt="Hajj Umrah Services"
-                class="service-card-img">
-              <div class="service-card-overlay"></div>
-            </div>
-            <div class="service-card-content">
-              <h3 class="service-card-title">HAJJ UMRAH SERVICES</h3>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Service Card 12: Car Rentals -->
+      <!-- Service Card 9: Car Rentals -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
           <a href="/" class="service-card-link">
@@ -320,7 +260,39 @@
         </div>
       </div>
 
-      <!-- Service Card 13: Recruitment Services -->
+      <!-- Service Card 10: Pick & Drop Guests -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="service-card">
+          <a href="/" class="service-card-link">
+            <div class="service-card-image-wrapper">
+              <img src="assets/index_files/service_pick_drop_1767532722482.png" alt="Pick & Drop Guests"
+                class="service-card-img">
+              <div class="service-card-overlay"></div>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-card-title">PICK &amp; DROP GUESTS</h3>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Service Card 11: Liwa Guests Assistance -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="service-card">
+          <a href="/" class="service-card-link">
+            <div class="service-card-image-wrapper">
+              <img src="assets/index_files/service_liwa_assistance_1767532741495.png" alt="Liwa Guests Assistance"
+                class="service-card-img">
+              <div class="service-card-overlay"></div>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-card-title">LIWA GUESTS ASSISTANCE</h3>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Service Card 12: Recruitment Services -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
           <a href="/" class="service-card-link">
@@ -336,7 +308,7 @@
         </div>
       </div>
 
-      <!-- Service Card 14: Internships -->
+      <!-- Service Card 13: Internships -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
           <a href="/" class="service-card-link">
@@ -352,17 +324,33 @@
         </div>
       </div>
 
-      <!-- Service Card 15: World Class Tour Packages -->
+      <!-- Service Card 14: Business WhatsApp Integration -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
           <a href="/" class="service-card-link">
             <div class="service-card-image-wrapper">
-              <img src="assets/index_files/service_tour_packages_1767533057318.png" alt="World Class Tour Packages"
+              <img src="assets/index_files/service_whatsapp_integration_1767532912170.png"
+                alt="Business WhatsApp Integration" class="service-card-img">
+              <div class="service-card-overlay"></div>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-card-title">BUSINESS WHATSAPP INTEGRATION</h3>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Service Card 15: Website Development -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="service-card">
+          <a href="/" class="service-card-link">
+            <div class="service-card-image-wrapper">
+              <img src="assets/index_files/service_website_development_1767532932173.png" alt="Website Development"
                 class="service-card-img">
               <div class="service-card-overlay"></div>
             </div>
             <div class="service-card-content">
-              <h3 class="service-card-title">WORLD CLASS TOUR PACKAGES</h3>
+              <h3 class="service-card-title">WEBSITE DEVELOPMENT</h3>
             </div>
           </a>
         </div>
@@ -1696,7 +1684,7 @@
 
   /* Consistent typography overrides for carousel/blodgdf sections */
   .blodgdf {
-    padding: 60px 0 50px;
+    padding: 40px 0 30px;
   }
 
   .blodgdf a.card-title {

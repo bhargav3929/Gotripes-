@@ -32,6 +32,28 @@
         </div>
 
         <div class="wp-card" style="margin-top:16px;">
+            <div class="wp-card-header"><i class="fas fa-concierge-bell text-secondary-wp"></i> Add-On Service Fees</div>
+            <div class="wp-card-body">
+                <form action="{{ route('manager.visa-pricing.service-fees.update') }}" method="POST">
+                    @csrf @method('PUT')
+                    <div class="wp-form-group">
+                        <label class="wp-form-label">Hotel Booking Service Fee (AED)</label>
+                        <input type="number" class="wp-input" name="visa_hotel_booking_fee" value="{{ old('visa_hotel_booking_fee', $hotelFee) }}" step="0.01" min="0" required placeholder="e.g. 25.00">
+                        <p class="wp-form-help">Charged when a customer selects hotel booking assistance.</p>
+                    </div>
+                    <div class="wp-form-group">
+                        <label class="wp-form-label">Ticket Booking Service Fee (AED)</label>
+                        <input type="number" class="wp-input" name="visa_ticket_booking_fee" value="{{ old('visa_ticket_booking_fee', $ticketFee) }}" step="0.01" min="0" required placeholder="e.g. 25.00">
+                        <p class="wp-form-help">Charged when a customer selects ticket booking assistance.</p>
+                    </div>
+                    <button type="submit" class="wp-btn wp-btn-primary" style="width:100%;">
+                        <i class="fas fa-save"></i> Save Service Fees
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="wp-card" style="margin-top:16px;">
             <div class="wp-card-body" style="font-size:13px; color: var(--wp-text-secondary);">
                 <i class="fas fa-info-circle" style="color: var(--wp-primary); margin-right:6px;"></i>
                 These prices appear on your public visa page at <code>/uaevisa</code>.

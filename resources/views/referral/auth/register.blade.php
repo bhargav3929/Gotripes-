@@ -916,5 +916,6 @@
                 .catch(() => populate(FALLBACK.slice().sort((a, b) => a.localeCompare(b))));
         })();
     </script>
+@include('partials.intl-tel-init')
 </body>
 </html>

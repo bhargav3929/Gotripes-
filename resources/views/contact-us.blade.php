@@ -512,7 +512,7 @@
                             </div>
                             <div class="col-12 mb-4">
                                 <textarea class="form-control" rows="4" name="booking-address"
-                                    placeholder="Tell us about your travel plans..."></textarea>
+                                    placeholder="Tell us about your travel plans...">@if(!empty($enquiryPackage)){{ 'I would like to enquire about: ' . $enquiryPackage }}@endif</textarea>
                             </div>
                             <div class="col-12">
                                 <button class="btn-gold" type="submit" id="sendButton">

@@ -544,6 +544,15 @@
                 </li>
                 @endfeature
 
+                @feature('esim')
+                <li class="wp-nav-item">
+                    <a href="/esim" target="_blank">
+                        <i class="fas fa-sim-card"></i>
+                        <span>eSIM Store</span>
+                    </a>
+                </li>
+                @endfeature
+
                 {{-- ────────────────  SETTINGS  ──────────────── --}}
                 {{-- Profile & Preferences land in Step D. Same coming-soon
                      pattern as Orders — Route::has() makes them light up
@@ -655,5 +664,6 @@
         });
     </script>
     @stack('scripts')
+    @include('partials.intl-tel-init')
 </body>
 </html>

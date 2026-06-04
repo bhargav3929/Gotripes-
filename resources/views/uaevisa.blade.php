@@ -1,13 +1,14 @@
 @include('header')
 
+<!-- intl-tel-input (phone with country dropdown) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/css/intlTelInput.css">
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/intlTelInput.min.js"></script>
+
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-    * {
-        box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    /* --- VARIABLES --- */
     :root {
         --c-gold: #FFD700;
         --c-gold-dim: #b89c12;
@@ -20,10 +21,7 @@
         --c-text-light: #eee;
     }
 
-    body {
-        margin: 0;
-        background-color: var(--c-dark-bg);
-    }
+    body { margin: 0; background-color: var(--c-dark-bg); }
 
     .visa-page {
         background: linear-gradient(180deg, #000 0%, #0a0a0a 100%);
@@ -42,7 +40,6 @@
         padding: 0 28px;
     }
 
-    /* --- HEADER --- */
     .visa-header {
         display: flex;
         align-items: baseline;
@@ -52,8 +49,8 @@
 
     .visa-title {
         color: var(--c-gold);
-        font-weight: 700;
-        font-size: 22px;
+        font-weight: 800;
+        font-size: 32px;
         text-transform: uppercase;
         letter-spacing: 4px;
         margin: 0;
@@ -62,27 +59,25 @@
 
     .visa-subtitle {
         color: var(--c-text-muted);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 400;
         letter-spacing: 3px;
         text-transform: uppercase;
         margin: 0;
     }
 
-    /* --- GRID LAYOUT --- */
     .visa-main {
         display: grid;
-        grid-template-columns: 1fr 320px;
+        grid-template-columns: 1fr 340px;
         gap: 18px;
         align-items: start;
     }
 
-    /* --- CARDS --- */
     .card {
         background: var(--c-card-bg);
         border: 1px solid rgba(255, 215, 0, 0.1);
         border-radius: 14px;
-        padding: 16px 20px;
+        padding: 20px 24px;
         position: relative;
         box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
     }
@@ -101,11 +96,11 @@
 
     .card-title {
         color: var(--c-gold);
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 3px;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -113,17 +108,16 @@
         opacity: 0.9;
     }
 
-    /* --- FORM ELEMENTS --- */
     .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 8px 16px;
+        gap: 12px 16px;
     }
 
     .form-grid-3 {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
-        gap: 8px 16px;
+        gap: 12px 16px;
     }
 
     .form-field {
@@ -137,10 +131,10 @@
 
     .field-label {
         color: var(--c-text-muted);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 1.6px;
+        letter-spacing: 1.2px;
         margin-bottom: 6px;
     }
 
@@ -170,7 +164,6 @@
         box-shadow: 0 0 15px rgba(255, 215, 0, 0.05);
     }
 
-    /* Custom Select */
     select.field-input {
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='%23FFD700'%3E%3Cpath d='M11.9997 13.1714L16.9495 8.22168L18.3637 9.63589L11.9997 15.9999L5.63574 9.63589L7.04996 8.22168L11.9997 13.1714Z'/%3E%3C/svg%3E");
@@ -179,22 +172,126 @@
         cursor: pointer;
     }
 
+    /* --- Phone with country dropdown (intl-tel-input) --- */
+    .iti {
+        width: 100% !important;
+        display: block !important;
+        position: relative;
+    }
+    .iti, .iti * { box-sizing: border-box; }
+    .iti--separate-dial-code .iti__flag-container,
+    .iti--allow-dropdown .iti__flag-container {
+        height: 48px !important;
+        top: 0 !important;
+        bottom: auto !important;
+        z-index: 2;
+    }
+    .iti__selected-flag {
+        height: 48px !important;
+        padding: 0 10px 0 14px !important;
+        background: #161616 !important;
+        border: 1px solid var(--c-input-border) !important;
+        border-right: none !important;
+        border-radius: 10px 0 0 10px !important;
+        outline: none !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px;
+    }
+    .iti__selected-flag:hover,
+    .iti.iti--allow-dropdown .iti__flag-container:hover .iti__selected-flag,
+    .iti--allow-dropdown .iti__flag-container:focus-within .iti__selected-flag {
+        background: #1c1c1c !important;
+    }
+    .iti--separate-dial-code .iti__selected-dial-code {
+        color: #FFD700 !important;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        margin-left: 6px;
+    }
+    .iti__arrow { border-top-color: #FFD700 !important; margin-left: 6px; }
+    .iti__arrow--up { border-bottom-color: #FFD700 !important; }
+    .iti--separate-dial-code input.field-input[type=tel],
+    .iti--allow-dropdown input.field-input[type=tel],
+    .iti input.field-input[type=tel] {
+        padding-left: 112px !important;
+        border-radius: 0 10px 10px 0 !important;
+        border-left: none !important;
+    }
+    .iti__country-list {
+        background: #0d0d0d !important;
+        border: 1px solid #2a2a2a !important;
+        color: #eee !important;
+        border-radius: 10px !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+        max-height: 260px !important;
+        overflow-y: auto !important;
+        z-index: 9999 !important;
+        padding: 6px 0 !important;
+        margin-top: 4px !important;
+    }
+    .iti__country {
+        padding: 8px 14px !important;
+        color: #ddd !important;
+    }
+    .iti__country.iti__highlight,
+    .iti__country:hover {
+        background: rgba(255, 215, 0, 0.12) !important;
+        color: #fff !important;
+    }
+    .iti__country-name { color: inherit !important; }
+    .iti__dial-code { color: #FFD700 !important; opacity: 0.9; }
+    .iti__divider {
+        border-bottom-color: #2a2a2a !important;
+        background: #2a2a2a !important;
+        margin: 4px 0 !important;
+    }
+    .iti__search-input {
+        background: #0a0a0a !important;
+        color: #fff !important;
+        border: none !important;
+        border-bottom: 1px solid #2a2a2a !important;
+        padding: 10px 14px !important;
+        width: 100% !important;
+    }
+    .iti__search-input::placeholder { color: #777 !important; }
+
+    /* --- SECTION DIVIDERS --- */
+    .section-divider {
+        margin: 18px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .section-label {
+        color: var(--c-gold);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        margin-bottom: 14px;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
     /* --- APPLICANT BOX --- */
     .applicant-box {
         background: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(255, 215, 0, 0.05);
         border-radius: 8px;
-        padding: 8px 14px;
-        margin-bottom: 6px;
+        padding: 12px 16px;
+        margin-bottom: 8px;
     }
 
     .applicant-header {
         color: #eee;
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -208,7 +305,7 @@
     .file-input-wrapper {
         position: relative;
         width: 100%;
-        height: 36px;
+        height: 40px;
     }
 
     .file-input-real {
@@ -274,18 +371,15 @@
     /* --- CHECKBOXES --- */
     .checkbox-group {
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 6px 24px;
+        flex-direction: column;
+        gap: 10px;
         margin-top: 4px;
-        padding-top: 6px;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .custom-checkbox-label {
         display: flex;
-        align-items: center;
-        gap: 15px;
+        align-items: flex-start;
+        gap: 12px;
         cursor: pointer;
         user-select: none;
     }
@@ -295,9 +389,10 @@
     }
 
     .custom-checkbox-box {
-        width: 18px;
-        height: 18px;
-        min-width: 18px;
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        margin-top: 1px;
         border: 1px solid #444;
         border-radius: 4px;
         background: #0f0f0f;
@@ -326,9 +421,78 @@
     }
 
     .checkbox-text {
-        color: #999;
+        color: #bbb;
+        font-size: 13px;
+        letter-spacing: 0.2px;
+        line-height: 1.5;
+    }
+
+    /* --- ADD-ON SERVICES --- */
+    .addon-card {
+        background: rgba(255, 215, 0, 0.03);
+        border: 1px solid rgba(255, 215, 0, 0.08);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+    }
+
+    .addon-card:hover {
+        border-color: rgba(255, 215, 0, 0.15);
+    }
+
+    .addon-card.active {
+        border-color: rgba(255, 215, 0, 0.3);
+        background: rgba(255, 215, 0, 0.06);
+    }
+
+    .addon-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .addon-info {
+        flex: 1;
+    }
+
+    .addon-title {
+        color: #eee;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .addon-desc {
+        color: #777;
         font-size: 12px;
-        letter-spacing: 0.3px;
+        line-height: 1.5;
+    }
+
+    .addon-price {
+        color: var(--c-gold);
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* --- PHOTO GUIDE LINK --- */
+    .photo-guide-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--c-gold);
+        font-size: 11px;
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
+        transition: all 0.2s ease;
+    }
+    .photo-guide-link:hover {
+        color: #fff;
+        text-decoration: none;
     }
 
     /* --- SUMMARY --- */
@@ -340,13 +504,13 @@
     .summary-row {
         display: flex;
         justify-content: space-between;
-        padding: 14px 0;
+        padding: 12px 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .summary-label {
         color: #777;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -400,7 +564,7 @@
         align-items: center;
         justify-content: center;
         gap: 12px;
-        transition: all 0.3s cubic;
+        transition: all 0.3s ease;
         box-shadow: 0 10px 30px -5px rgba(255, 215, 0, 0.15);
     }
 
@@ -432,16 +596,13 @@
         .visa-main {
             grid-template-columns: 1fr;
         }
-
         .summary-card-wrapper {
             position: relative;
             top: 0;
         }
-
         .form-grid-3 {
             grid-template-columns: 1fr 1fr;
         }
-
         .visa-header {
             flex-direction: column;
             gap: 4px;
@@ -452,6 +613,9 @@
 
     @media (max-width: 600px) {
         .form-grid-3 {
+            grid-template-columns: 1fr;
+        }
+        .form-grid {
             grid-template-columns: 1fr;
         }
     }
@@ -474,6 +638,7 @@
                 <form id="visaForm" method="POST" action="{{ route('uaev.submit') }}" enctype="multipart/form-data">
                     @csrf
 
+                    {{-- ROW 1: Nationality, Residence, Duration --}}
                     <div class="form-grid-3">
                         <div class="form-field">
                             <label class="field-label">Nationality</label>
@@ -498,15 +663,18 @@
                                         </option>
                                     @endforeach
                                 @else
-                                    {{-- Sensible defaults if the tenant hasn't configured visa pricing yet --}}
                                     <option value="30 DAYS VISA" data-price="300">30 DAYS VISA — 300 AED</option>
                                     <option value="60 DAYS VISA" data-price="600">60 DAYS VISA — 600 AED</option>
                                 @endif
                             </select>
                             <input type="hidden" name="price" id="hiddenPrice" value="0">
                         </div>
+                    </div>
+
+                    {{-- ROW 2: Adults, Children (2-12), Infants (0-2) --}}
+                    <div class="form-grid-3" style="margin-top: 12px;">
                         <div class="form-field">
-                            <label class="field-label">Number of Persons (Adults)</label>
+                            <label class="field-label">Adults</label>
                             <select class="field-input" id="visaCount" name="visa_count" required>
                                 @for ($i = 1; $i <= 10; $i++)
                                     <option value="{{ $i }}" {{ $i === 1 ? 'selected' : '' }}>{{ $i }} {{ $i === 1 ? 'Adult' : 'Adults' }}</option>
@@ -514,7 +682,7 @@
                             </select>
                         </div>
                         <div class="form-field">
-                            <label class="field-label">Number of Children</label>
+                            <label class="field-label">Children (2–12 yrs)</label>
                             <select class="field-input" id="visaChildren" name="children_count">
                                 @for ($i = 0; $i <= 10; $i++)
                                     <option value="{{ $i }}" {{ $i === 0 ? 'selected' : '' }}>{{ $i }} {{ $i === 1 ? 'Child' : 'Children' }}</option>
@@ -522,50 +690,111 @@
                             </select>
                         </div>
                         <div class="form-field">
-                            <label class="field-label">Arrival Date</label>
-                            <input type="date" class="field-input" name="arrival_date" required>
+                            <label class="field-label">Infants (0–2 yrs)</label>
+                            <select class="field-input" id="visaInfants" name="infants_count">
+                                @for ($i = 0; $i <= 5; $i++)
+                                    <option value="{{ $i }}" {{ $i === 0 ? 'selected' : '' }}>{{ $i }} {{ $i === 1 ? 'Infant' : 'Infants' }}</option>
+                                @endfor
+                            </select>
                         </div>
-                        <div class="form-field">
-                            <label class="field-label">Departure Date</label>
-                            <input type="date" class="field-input" name="departure_date" required>
-                        </div>
+                    </div>
+
+                    {{-- ROW 3: Email, WhatsApp --}}
+                    <div class="form-grid" style="margin-top: 12px;">
                         <div class="form-field">
                             <label class="field-label">Email Address</label>
                             <input type="email" class="field-input" name="email" placeholder="name@example.com" required>
                         </div>
                         <div class="form-field">
-                            <label class="field-label">Phone Number</label>
-                            <input type="tel" class="field-input" name="phone" placeholder="+971 50 000 0000" required>
-                        </div>
-                        <div class="form-field" style="display:flex; align-items:flex-end;">
-                            <div class="checkbox-group" style="border:none; margin:0; padding:0;">
-                                <label class="custom-checkbox-label">
-                                    <input type="checkbox" class="custom-checkbox-input" name="passport_valid" value="1" required>
-                                    <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
-                                    <span class="checkbox-text">Passports valid 6+ months</span>
-                                </label>
-                                <label class="custom-checkbox-label">
-                                    <input type="checkbox" class="custom-checkbox-input" name="not_stay_long" value="1" required>
-                                    <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
-                                    <span class="checkbox-text">Will not overstay</span>
-                                </label>
-                            </div>
+                            <label class="field-label">WhatsApp Number</label>
+                            <input type="tel" id="phoneInput" class="field-input" name="phone" placeholder="50 000 0000" required>
                         </div>
                     </div>
 
-                    <div style="margin: 10px 0; border-top: 1px solid rgba(255,255,255,0.05);"></div>
+                    <div class="section-divider"></div>
+
+                    {{-- AGREEMENTS --}}
+                    <div class="checkbox-group">
+                        <label class="custom-checkbox-label">
+                            <input type="checkbox" class="custom-checkbox-input" name="passport_valid" value="1" required>
+                            <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
+                            <span class="checkbox-text">I confirm that all passports are valid for 6+ months from the date of travel.</span>
+                        </label>
+                        <label class="custom-checkbox-label">
+                            <input type="checkbox" class="custom-checkbox-input" name="overstay_agree" value="1" required>
+                            <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
+                            <span class="checkbox-text">I agree not to overstay. If so, I agree to pay the overstay charges per day and also the absconding fee.</span>
+                        </label>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    {{-- DOCUMENT UPLOADS --}}
+                    <div class="section-label">
+                        <i class="bi bi-cloud-arrow-up-fill"></i> Document Uploads
+                    </div>
 
                     <!-- APPLICANTS CONTAINER -->
                     <div id="applicantsContainer">
-                        <!-- Dynamic fields will be injected here -->
+                        <!-- Dynamic fields injected by JS -->
                     </div>
+
+                    <div class="section-divider"></div>
+
+                    {{-- ADD-ON SERVICES --}}
+                    <div class="section-label">
+                        <i class="bi bi-plus-circle-fill"></i> Optional Services
+                    </div>
+
+                    <div class="addon-card" id="addonHotel">
+                        <div class="addon-header">
+                            <label class="custom-checkbox-label" style="gap: 12px;">
+                                <input type="checkbox" class="custom-checkbox-input" name="hotel_booking" value="1" id="hotelCheckbox">
+                                <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
+                                <div class="addon-info">
+                                    <div class="addon-title">Hotel Booking Required</div>
+                                    <div class="addon-desc">If not available, we can arrange it for you. Additional cost is involved.</div>
+                                </div>
+                            </label>
+                            <div class="addon-price" id="hotelPriceLabel">{{ number_format($hotelFee ?? 25, 0) }} AED</div>
+                        </div>
+                    </div>
+
+                    <div class="addon-card" id="addonTicket">
+                        <div class="addon-header">
+                            <label class="custom-checkbox-label" style="gap: 12px;">
+                                <input type="checkbox" class="custom-checkbox-input" name="ticket_booking" value="1" id="ticketCheckbox">
+                                <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
+                                <div class="addon-info">
+                                    <div class="addon-title">Ticket Booking Assistance</div>
+                                    <div class="addon-desc">If you don't have a ticket booking, we can help you with bookings.</div>
+                                </div>
+                            </label>
+                            <div class="addon-price" id="ticketPriceLabel">{{ number_format($ticketFee ?? 25, 0) }} AED</div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="hotel_booking_fee" value="{{ $hotelFee ?? 25 }}">
+                    <input type="hidden" name="ticket_booking_fee" value="{{ $ticketFee ?? 25 }}">
 
                 </form>
             </div>
 
             <!-- RIGHT: SUMMARY -->
             <div class="summary-card-wrapper">
+                {{-- Photo Guidelines Card — shown first so users see it before uploading --}}
                 <div class="card">
+                    <div class="card-title">
+                        <span><i class="bi bi-camera-fill"></i> Photo Requirements</span>
+                    </div>
+                    <img src="{{ asset('assets/photo-guidelines-quick-ref.jpg') }}" alt="Photo Guidelines" style="width: 100%; border-radius: 8px; margin-bottom: 12px;">
+                    <a href="{{ asset('assets/uae-photo-guide.pdf') }}" target="_blank" class="photo-guide-link" style="font-size: 13px;">
+                        <i class="bi bi-download"></i> Download Full Photo Guidelines (PDF)
+                    </a>
+                </div>
+
+                {{-- Payment Summary --}}
+                <div class="card" style="margin-top: 14px;">
                     <div class="card-title">
                         <i class="bi bi-receipt-cutoff"></i> Payment Summary
                     </div>
@@ -573,6 +802,14 @@
                     <div class="summary-row">
                         <span class="summary-label">Visa Fee (<span id="countDisplay">1</span>x)</span>
                         <span class="summary-value" id="summaryBase">AED 0.00</span>
+                    </div>
+                    <div class="summary-row" id="hotelRow" style="display: none;">
+                        <span class="summary-label">Hotel Booking</span>
+                        <span class="summary-value" id="summaryHotel">AED {{ number_format($hotelFee ?? 25, 2) }}</span>
+                    </div>
+                    <div class="summary-row" id="ticketRow" style="display: none;">
+                        <span class="summary-label">Ticket Booking</span>
+                        <span class="summary-value" id="summaryTicket">AED {{ number_format($ticketFee ?? 25, 2) }}</span>
                     </div>
                     <div class="summary-total">
                         <span class="total-label">Total Payable</span>
@@ -599,17 +836,16 @@
             fileNameSpan.textContent = input.files[0].name;
             fileNameSpan.classList.add('selected');
         } else {
-            // Derive default text from name structure name="passport_copy[]"
             const name = input.getAttribute('name');
-            if (name.includes('passport_copy')) fileNameSpan.textContent = 'Click to upload (PDF/Image)...';
-            else if (name.includes('passport_photo')) fileNameSpan.textContent = 'Click to upload (ID Photo)...';
-            else fileNameSpan.textContent = 'Other documents (if any)...';
+            if (name.includes('passport_copy')) fileNameSpan.textContent = 'Upload passport (PDF/Image)...';
+            else if (name.includes('passport_photo')) fileNameSpan.textContent = 'Upload photo (ID Photo)...';
+            else if (name.includes('airline_ticket')) fileNameSpan.textContent = 'Upload ticket (PDF/Image)...';
+            else fileNameSpan.textContent = 'Upload documents (if any)...';
             fileNameSpan.classList.remove('selected');
         }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        // --- Populate Country Dropdowns ---
         const countrySelects = [document.getElementById('nationality'), document.getElementById('residence')];
         fetch('https://restcountries.com/v3.1/all?fields=name')
             .then(res => res.json())
@@ -624,52 +860,49 @@
 
         const visaCountSelect = document.getElementById('visaCount');
         const childrenCountInput = document.getElementById('visaChildren');
+        const infantsCountInput = document.getElementById('visaInfants');
         const applicantsContainer = document.getElementById('applicantsContainer');
         const durationSelect = document.getElementById('visaDuration');
+        const hotelCheckbox = document.getElementById('hotelCheckbox');
+        const ticketCheckbox = document.getElementById('ticketCheckbox');
 
-        // Numeric-only enforcement (block letters/symbols, allow nav keys)
-        function enforceNumericOnly(input) {
-            input.addEventListener('keydown', function (e) {
-                const allowed = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Home', 'End', 'Enter'];
-                if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
-                if (!/^[0-9]$/.test(e.key)) e.preventDefault();
-            });
-            input.addEventListener('input', function () {
-                this.value = this.value.replace(/[^0-9]/g, '');
-            });
-            input.addEventListener('paste', function (e) {
-                const text = (e.clipboardData || window.clipboardData).getData('text');
-                if (!/^[0-9]+$/.test(text)) e.preventDefault();
-            });
-        }
-        // Numeric enforcement no longer needed for native select dropdowns
-        // (kept enforceNumericOnly defined in case other inputs reuse it)
+        function getAdults() { return parseInt(visaCountSelect.value, 10) || 1; }
+        function getChildren() { return parseInt(childrenCountInput.value, 10) || 0; }
+        function getInfants() { return parseInt(infantsCountInput.value, 10) || 0; }
 
-        function readCount(el, min, max, fallback) {
-            let v = parseInt(el.value, 10);
-            if (isNaN(v)) v = fallback;
-            if (v < min) v = min;
-            if (v > max) v = max;
-            return v;
-        }
-
-        function getAdults() { return readCount(visaCountSelect, 1, 10, 1); }
-        function getChildren() { return readCount(childrenCountInput, 0, 10, 0); }
-
-        // --- Dynamic Form Generation ---
-        function generateApplicants(adults, children) {
-            applicantsContainer.innerHTML = ''; // Clear existing
-            const total = adults + children;
+        function generateApplicants(adults, children, infants) {
+            applicantsContainer.innerHTML = '';
+            const total = adults + children + infants;
             for (let i = 0; i < total; i++) {
-                const isChild = i >= adults;
-                const label = isChild
-                    ? `Child #${i - adults + 1}`
-                    : `Applicant #${i + 1}`;
+                let label, ageField = '';
+                if (i < adults) {
+                    label = `Adult #${i + 1}`;
+                } else if (i < adults + children) {
+                    label = `Child #${i - adults + 1}`;
+                    ageField = `
+                        <div class="form-field">
+                            <label class="field-label">Child Age (2–12)</label>
+                            <select name="child_age[]" class="field-input" required>
+                                ${Array.from({length: 11}, (_, k) => k + 2).map(a => `<option value="${a}">${a} years</option>`).join('')}
+                            </select>
+                        </div>`;
+                } else {
+                    label = `Infant #${i - adults - children + 1}`;
+                    ageField = `
+                        <div class="form-field">
+                            <label class="field-label">Infant Age (0–2)</label>
+                            <select name="infant_age[]" class="field-input" required>
+                                <option value="0">Under 1 year</option>
+                                <option value="1">1 year</option>
+                                <option value="2">2 years</option>
+                            </select>
+                        </div>`;
+                }
+
                 const html = `
                     <div class="applicant-box">
                         <div class="applicant-header">
                             <span><i class="bi bi-person-fill"></i> ${label}</span>
-                            <small class="text-muted" style="font-size:9px;">DOCUMENTS REQUIRED</small>
                         </div>
                         <div class="form-grid-3">
                             <div class="form-field">
@@ -677,82 +910,133 @@
                                 <div class="file-input-wrapper">
                                     <input type="file" name="passport_copy[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
                                     <div class="file-input-custom">
-                                        <span class="file-name">Upload (PDF/Image)...</span>
+                                        <span class="file-name">Upload passport (PDF/Image)...</span>
                                         <i class="bi bi-cloud-arrow-up-fill file-icon"></i>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-field">
-                                <label class="field-label">Passport Photo</label>
+                                <label class="field-label">Photo</label>
                                 <div class="file-input-wrapper">
                                     <input type="file" name="passport_photo[]" class="file-input-real" accept="image/*" required onchange="updateFileName(this)">
                                     <div class="file-input-custom">
-                                        <span class="file-name">Upload (ID Photo)...</span>
+                                        <span class="file-name">Upload photo (ID Photo)...</span>
                                         <i class="bi bi-person-bounding-box file-icon"></i>
                                     </div>
                                 </div>
+                                <a href="{{ asset('assets/uae-photo-guide.pdf') }}" target="_blank" class="photo-guide-link">
+                                    <i class="bi bi-info-circle"></i> View photo requirements
+                                </a>
                             </div>
                             <div class="form-field">
-                                <label class="field-label">Supporting Doc (Optional)</label>
+                                <label class="field-label">Airline Ticket (Return)</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" name="airline_ticket[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
+                                    <div class="file-input-custom">
+                                        <span class="file-name">Upload ticket (PDF/Image)...</span>
+                                        <i class="bi bi-airplane file-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            ${ageField}
+                            <div class="form-field">
+                                <label class="field-label">Additional Documents</label>
                                 <div class="file-input-wrapper">
                                     <input type="file" name="supporting_document[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" onchange="updateFileName(this)">
                                     <div class="file-input-custom">
-                                        <span class="file-name">Other docs (if any)...</span>
+                                        <span class="file-name">Upload documents (if any)...</span>
                                         <i class="bi bi-paperclip file-icon"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                 `;
+                    </div>`;
                 applicantsContainer.insertAdjacentHTML('beforeend', html);
             }
         }
 
+        const HOTEL_FEE = {{ $hotelFee ?? 25 }};
+        const TICKET_FEE = {{ $ticketFee ?? 25 }};
+
+        function updatePrice() {
+            const adults = getAdults();
+            const children = getChildren();
+            const infants = getInfants();
+            const totalPersons = adults + children + infants;
+            const option = durationSelect.options[durationSelect.selectedIndex];
+            const unitPrice = parseFloat(option.getAttribute('data-price')) || 0;
+
+            const visaTotal = unitPrice * totalPersons;
+            const hotelCost = hotelCheckbox.checked ? HOTEL_FEE : 0;
+            const ticketCost = ticketCheckbox.checked ? TICKET_FEE : 0;
+            const grandTotal = visaTotal + hotelCost + ticketCost;
+
+            document.getElementById('hiddenPrice').value = grandTotal.toFixed(2);
+            document.getElementById('countDisplay').textContent = totalPersons;
+            document.getElementById('summaryBase').textContent = 'AED ' + visaTotal.toFixed(2);
+
+            document.getElementById('hotelRow').style.display = hotelCheckbox.checked ? 'flex' : 'none';
+            document.getElementById('ticketRow').style.display = ticketCheckbox.checked ? 'flex' : 'none';
+
+            document.getElementById('summaryTotal').textContent = 'AED ' + grandTotal.toFixed(2);
+        }
+
         function refreshForm() {
-            generateApplicants(getAdults(), getChildren());
+            generateApplicants(getAdults(), getChildren(), getInfants());
             updatePrice();
         }
 
-        // Initialize
         refreshForm();
 
         visaCountSelect.addEventListener('change', refreshForm);
         childrenCountInput.addEventListener('change', refreshForm);
-
-        // --- Pricing Logic ---
-        function updatePrice() {
-            const adults = getAdults();
-            const children = getChildren();
-            const total = adults + children;
-            const option = durationSelect.options[durationSelect.selectedIndex];
-            const unitPrice = parseFloat(option.getAttribute('data-price')) || 0;
-
-            const totalBase = unitPrice * total;
-
-            document.getElementById('hiddenPrice').value = totalBase.toFixed(2);
-            document.getElementById('countDisplay').textContent = total;
-
-            document.getElementById('summaryBase').textContent = 'AED ' + totalBase.toFixed(2);
-            document.getElementById('summaryTotal').textContent = 'AED ' + totalBase.toFixed(2);
-        }
-
+        infantsCountInput.addEventListener('change', refreshForm);
         durationSelect.addEventListener('change', updatePrice);
 
-        // --- Form Submit ---
+        hotelCheckbox.addEventListener('change', function() {
+            document.getElementById('addonHotel').classList.toggle('active', this.checked);
+            updatePrice();
+        });
+        ticketCheckbox.addEventListener('change', function() {
+            document.getElementById('addonTicket').classList.toggle('active', this.checked);
+            updatePrice();
+        });
+
+        // Phone with country dropdown
+        const phoneEl = document.getElementById('phoneInput');
+        const iti = window.intlTelInput(phoneEl, {
+            initialCountry: 'ae',
+            preferredCountries: ['ae', 'sa', 'in', 'pk', 'gb', 'us'],
+            separateDialCode: true,
+            utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js',
+        });
+
+        // Form Submit
         const form = document.getElementById('visaForm');
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const originalText = btn.innerHTML;
 
+            if (iti && typeof iti.getNumber === 'function') {
+                const fullNumber = iti.getNumber();
+                if (fullNumber) {
+                    phoneEl.value = fullNumber;
+                } else {
+                    const dial = iti.getSelectedCountryData().dialCode;
+                    if (dial && phoneEl.value) {
+                        phoneEl.value = '+' + dial + phoneEl.value.replace(/^\+?/, '').replace(/\s+/g, '');
+                    }
+                }
+            }
+
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> PROCESSING...';
 
             const formData = new FormData(this);
-            // Append counts explicitly just in case
             formData.set('visa_count', String(getAdults()));
             formData.set('children_count', String(getChildren()));
+            formData.set('infants_count', String(getInfants()));
 
             fetch(this.action, {
                 method: 'POST',

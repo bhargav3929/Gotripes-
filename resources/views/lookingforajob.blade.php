@@ -60,7 +60,65 @@
 
   /* Cards & Layout */
   .content-section {
-    padding: 40px 0;
+    padding: 18px 0;
+  }
+
+  /* Compact stats strip that sits directly under the intro to kill the empty band */
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    max-width: 1100px;
+    margin: 6px auto 0;
+    padding: 0 16px;
+  }
+  .quick-stat {
+    background: linear-gradient(160deg, #111 0%, #0a0a0a 100%);
+    border: 1px solid rgba(255,215,0,0.10);
+    border-radius: 14px;
+    padding: 16px 18px;
+    text-align: center;
+    transition: all .25s ease;
+  }
+  .quick-stat:hover { border-color: rgba(255,215,0,0.3); transform: translateY(-2px); }
+  .quick-stat .qs-num {
+    color: var(--premium-gold);
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: 0.5px;
+  }
+  .quick-stat .qs-label {
+    color: #999;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    display: block;
+    font-weight: 600;
+  }
+
+  /* Tip ribbon between stats and timeline */
+  .tip-strip {
+    max-width: 1100px;
+    margin: 14px auto 0;
+    padding: 12px 22px;
+    background: linear-gradient(90deg, rgba(255,215,0,0.07), rgba(255,215,0,0.02));
+    border: 1px solid rgba(255,215,0,0.18);
+    border-radius: 999px;
+    color: #ddd;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    text-align: center;
+  }
+  .tip-strip i { color: var(--premium-gold); font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .quick-stats { grid-template-columns: repeat(2, 1fr); }
+    .tip-strip { border-radius: 14px; }
   }
 
   .glass-card {
@@ -98,12 +156,12 @@
 
   /* Form Styles */
   .premium-form .form-label {
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
     font-weight: 600;
     letter-spacing: 0.5px;
     color: #888;
-    margin-bottom: 8px;
+    margin-bottom: 3px;
   }
 
   .premium-form .form-control,
@@ -111,10 +169,10 @@
     background: var(--input-bg);
     border: 1px solid var(--input-border);
     color: #fff;
-    height: 48px;
+    height: 40px;
     border-radius: 8px;
-    padding: 0 15px;
-    font-size: 14px;
+    padding: 0 12px;
+    font-size: 13px;
     transition: all 0.3s ease;
   }
 
@@ -258,41 +316,28 @@
   }
 </style>
 
-<!-- Intro Section -->
-<section class="content-section pb-4">
-  <div class="container text-center">
-    <h1 class="premium-title">Working in the UAE</h1>
-    <p class="mx-auto" style="max-width: 800px; color: rgba(255,255,255,0.7); padding: 0 15px;">
-      Finding a job in the UAE requires strategy, persistence, and the right approach. Whether you are on a visit visa
-      or looking to switch careers, follow our roadmap to success.
-    </p>
-  </div>
-</section>
-
-<!-- Stats/Timeline Section -->
-<section class="container pb-5">
-  <div class="row g-4 justify-content-center">
-    <div class="col-lg-10">
-      <div class="p-4"
-        style="background: linear-gradient(to right, #111, #0a0a0a); border-radius: 16px; border: 1px solid #222;">
-        <h3 class="section-title-sm text-center mb-4"><i class="bi bi-clock-history me-2"></i> Typical Job Hunt Timeline
-          (60-Day Visit Visa)</h3>
-        <div class="row text-center g-4">
+<!-- Job Hunt Timeline (page now starts here — no hero/intro) -->
+<section class="container pt-2 pb-2">
+  <div class="row g-2 justify-content-center">
+    <div class="col-lg-11">
+      <div style="background: linear-gradient(to right, #111, #0a0a0a); border-radius: 14px; border: 1px solid #222; padding: 14px 18px;">
+        <h3 class="section-title-sm text-center mb-2"><i class="bi bi-clock-history me-2"></i> Typical Job Hunt Timeline (60-Day Visit Visa)</h3>
+        <div class="row text-center g-2">
           <div class="col-md-4">
-            <div class="p-3">
-              <h5 style="color: #fff;">Weeks 1-2</h5>
+            <div class="p-2">
+              <h5 style="color: #fff; margin-bottom: 2px; font-size: 16px;">Weeks 1-2</h5>
               <p class="small mb-0">Finalize CV, apply online, attend walk-ins</p>
             </div>
           </div>
           <div class="col-md-4 border-start border-end border-secondary">
-            <div class="p-3">
-              <h5 style="color: #fff;">Weeks 3-4</h5>
+            <div class="p-2">
+              <h5 style="color: #fff; margin-bottom: 2px; font-size: 16px;">Weeks 3-4</h5>
               <p class="small mb-0">Expand search, network, follow up leads</p>
             </div>
           </div>
           <div class="col-md-4">
-            <div class="p-3">
-              <h5 style="color: #fff;">Weeks 5-6</h5>
+            <div class="p-2">
+              <h5 style="color: #fff; margin-bottom: 2px; font-size: 16px;">Weeks 5-6</h5>
               <p class="small mb-0">Interviews, offers, visa processing start</p>
             </div>
           </div>
@@ -304,15 +349,15 @@
 
 <!-- Application Form -->
 <section class="content-section"
-  style="background: url('{{ asset('assets/index_files/I1.jpeg') }}') center center/cover fixed;">
-  <div style="background: rgba(0,0,0,0.85); padding: 80px 0;">
+  style="background: url('{{ asset('assets/index_files/I1.jpeg') }}') center center/cover fixed; padding: 0 !important;">
+  <div style="background: rgba(0,0,0,0.85); padding: 14px 0;">
     <div class="container-fluid px-4"> <!-- Wider container for form -->
       <div class="row justify-content-center">
         <div class="col-xl-11 col-xxl-10">
-          <div class="glass-card">
-            <div class="text-center mb-5">
-              <h2 class="premium-title" style="font-size: 32px;">Submit Your Application</h2>
-              <p>Join our database of professionals. Fill out the form below accurately.</p>
+          <div class="glass-card" style="padding: 22px;">
+            <div class="text-center mb-3">
+              <h2 class="premium-title" style="font-size: 26px; margin-bottom: 4px;">Submit Your Application</h2>
+              <p class="mb-0">Join our database of professionals. Fill out the form below accurately.</p>
             </div>
 
             <form id="jobApplicationForm" method="POST" action="{{ route('job.application.submit') }}"
@@ -320,7 +365,7 @@
               @csrf
 
               <!-- Status Checks -->
-              <div class="row mb-5 justify-content-center">
+              <div class="row mb-3 justify-content-center">
                 <div class="col-md-5 mb-3 mb-md-0">
                   <div class="status-card text-center">
                     <label class="status-card-label"><i class="bi bi-briefcase me-2"></i> Current Status</label>
@@ -358,9 +403,9 @@
               </div>
 
               <!-- Input Grid -->
-              <h5 class="text-white mb-4 border-bottom border-secondary pb-2">Personal & Professional Details</h5>
+              <h5 class="text-white mb-2 border-bottom border-secondary pb-1" style="font-size: 14px;">Personal & Professional Details</h5>
 
-              <div class="row g-3 g-xl-4"> <!-- Dense grid -->
+              <div class="row g-2"> <!-- Dense grid -->
                 <div class="col-lg-3 col-md-4 col-sm-6">
                   <div class="form-group">
                     <label for="name" class="form-label">Full Name</label>
@@ -448,8 +493,8 @@
               </div>
 
               <!-- Documents -->
-              <h5 class="text-white mb-4 mt-5 border-bottom border-secondary pb-2">Documents (PDF/Image)</h5>
-              <div class="row g-4">
+              <h5 class="text-white mb-2 mt-3 border-bottom border-secondary pb-1" style="font-size: 14px;">Documents (PDF/Image)</h5>
+              <div class="row g-2">
                 <div class="col-md-6">
                   <label for="resume" class="form-label">Upload Resume (CV)</label>
                   <input type="file" id="resume" name="resume" class="form-control"
@@ -463,7 +508,7 @@
               </div>
 
               <!-- Submit -->
-              <div class="text-center mt-5">
+              <div class="text-center mt-3">
                 <button type="submit" id="submitBtn" class="btn-gold">
                   <span class="btn-text">SUBMIT APPLICATION</span>
                 </button>
@@ -478,11 +523,11 @@
 </section>
 
 <!-- Detailed Roadmap Info -->
-<section class="content-section">
+<section class="content-section" style="padding: 10px 0;">
   <div class="container">
-    <h2 class="premium-title text-center mb-5 d-block">Your Roadmap to Employment</h2>
+    <h2 class="premium-title text-center mb-3 d-block" style="font-size: 22px;">Your Roadmap to Employment</h2>
 
-    <div class="row g-4">
+    <div class="row g-2">
       <div class="col-md-6 col-lg-4">
         <div class="info-card">
           <span class="step-number">01</span>

@@ -14,15 +14,44 @@ class ManagerActivitiesController extends Controller
 {
     /**
      * Display a listing of activities.
+     *
+     * Shows two tabs:
+     *  1. Partner's own activities (tenant-scoped, full CRUD)
+     *  2. Platform UAE activities (company_id IS NULL, read-only)
      */
     public function index()
     {
+        // Partner's own activities (auto-scoped by BelongsToCompany)
         $activities = UAEActivity::with(['details', 'emirate'])
                                  ->where('isActive', 1)
                                  ->orderBy('createdDate', 'desc')
                                  ->paginate(10);
 
-        return view('manager.activities.index', compact('activities'));
+        // Platform / GoTrips UAE activities (no tenant — company_id IS NULL)
+        $uaeActivities = UAEActivity::withoutCompanyScope()
+                                    ->with(['details', 'emirate'])
+                                    ->where('isActive', 1)
+                                    ->whereNull('company_id')
+                                    ->orderBy('createdDate', 'desc')
+                                    ->paginate(10, ['*'], 'uae_page');
+
+        // Partner's country label — prefer allowed_countries setting, fall back to address
+        $company = current_company();
+        $allowedCountries = $company->getSetting('allowed_countries', []);
+        if (!empty($allowedCountries) && is_array($allowedCountries)) {
+            $partnerCountry = $allowedCountries[0];
+        } else {
+            $partnerCountry = trim($company->address ?? '');
+            if ($partnerCountry === '') {
+                $partnerCountry = 'Your Region';
+            }
+        }
+
+        return view('manager.activities.index', compact(
+            'activities',
+            'uaeActivities',
+            'partnerCountry'
+        ));
     }
 
     /**

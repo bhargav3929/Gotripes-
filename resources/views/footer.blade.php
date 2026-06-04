@@ -77,37 +77,64 @@
     font-size: 28px;
   }
 
-  /* --- Premium Footer Consistency --- */
-  .gt-footer {
-    background: #000 !important;
-    color: #fff !important;
+  /* --- Footer: ONE uniform style for every piece of text inside --- */
+  .gt-footer,
+  .gt-footer *,
+  .gt-footer-link,
+  .gt-footer-contact,
+  .gt-footer-contact li,
+  .gt-footer-contact a,
+  .gt-footer-contact span,
+  .gt-footer-brand,
+  .gt-footer-copyright {
     font-family: 'Outfit', sans-serif !important;
+    font-size: 18px !important;
+    font-weight: 400 !important;
+    line-height: 2 !important;
+    letter-spacing: 0.2px !important;
+    text-transform: none !important;
+    font-style: normal !important;
+    color: rgba(255, 255, 255, 0.85) !important;
   }
 
+  .gt-footer { background: #000 !important; }
+
   .gt-footer-title {
-    color: #FFD23F !important;
-    font-size: 18px !important;
+    font-size: 20px !important;
     font-weight: 700 !important;
+    margin-bottom: 16px !important;
+    color: #FFD23F !important;
     letter-spacing: 1px !important;
-    margin-bottom: 25px !important;
-    text-transform: uppercase !important;
   }
 
   .gt-footer-link {
-    color: rgba(255, 255, 255, 0.8) !important;
-    font-size: 15px !important;
-    font-weight: 400 !important;
     text-decoration: none !important;
-    transition: all 0.3s ease !important;
     display: inline-block !important;
-    padding: 5px 0 !important;
+    padding: 4px 0 !important;
+    transition: all 0.3s ease !important;
   }
-
   .gt-footer-link:hover {
-    color: #FFD23F !important;
     padding-left: 5px !important;
     text-decoration: none !important;
   }
+
+  .gt-footer-contact { padding: 0 !important; margin: 0 !important; list-style: none !important; }
+  .gt-footer-contact li {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 4px 0 !important;
+  }
+  .gt-footer-contact a { text-decoration: none !important; }
+  .gt-footer-contact i {
+    width: 18px !important;
+    text-align: center !important;
+    flex: 0 0 18px !important;
+    /* icons remain visually identical in size with surrounding text */
+  }
+
+  /* Copyright bar — strip the inherited extra border/padding so it visually matches */
+  .gt-footer-copyright { margin: 0 !important; }
 
   .gt-footer-social-link {
     color: #fff !important;
@@ -134,8 +161,6 @@
   }
 
   .gt-footer-copyright {
-    font-size: 14px !important;
-    color: rgba(255, 255, 255, 0.6) !important;
     border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
     padding-top: 20px !important;
   }
@@ -160,7 +185,7 @@
     $footerCompanyName = (isset($company) && $company && $company->name) ? $company->name : 'Go Trips';
     $footerLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
     $footerEmail = (isset($company) && $company && $company->email) ? $company->email : 'info@gotrips.ai';
-    $footerPhone = (isset($company) && $company && $company->phone) ? $company->phone : '+971 50 000 0000';
+    $footerPhone = (isset($company) && $company && $company->phone) ? $company->phone : '+971 54 365 1065';
     $footerAddress = (isset($company) && $company && $company->address) ? $company->address : 'Dubai, United Arab Emirates';
     $footerWebsite = (isset($company) && $company && $company->website) ? $company->website : null;
 @endphp
@@ -171,12 +196,12 @@
       <div class="col-md-3 col-sm-6 mb-4">
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
           <img src="{{ $footerLogo }}" alt="{{ $footerCompanyName }}" style="height:38px; width:38px; object-fit:contain; border-radius:8px; background:#fff; padding:4px;">
-          <span style="color:#fff; font-weight:700; font-size:16px; letter-spacing:-0.01em;">{{ $footerCompanyName }}</span>
+          <span style="color:#fff; font-weight:700; font-size:20px; letter-spacing:-0.01em;">{{ $footerCompanyName }}</span>
         </div>
-        <ul class="list-unstyled" style="font-size:13px; color:rgba(255,255,255,0.7); line-height:1.8;">
-          <li><i class="fa-solid fa-envelope" style="color:#FFD700; width:18px;"></i> <a href="mailto:{{ $footerEmail }}" style="color:inherit; text-decoration:none;">{{ $footerEmail }}</a></li>
-          <li><i class="fa-solid fa-phone" style="color:#FFD700; width:18px;"></i> <a href="tel:{{ preg_replace('/\s+/', '', $footerPhone) }}" style="color:inherit; text-decoration:none;">{{ $footerPhone }}</a></li>
-          <li style="display:flex; gap:8px;"><i class="fa-solid fa-location-dot" style="color:#FFD700; width:18px; padding-top:5px;"></i> <span>{{ $footerAddress }}</span></li>
+        <ul class="gt-footer-contact">
+          <li><i class="fa-solid fa-envelope"></i><a href="mailto:{{ $footerEmail }}">{{ $footerEmail }}</a></li>
+          <li><i class="fa-solid fa-phone"></i><a href="tel:{{ preg_replace('/\s+/', '', $footerPhone) }}">{{ $footerPhone }}</a></li>
+          <li><i class="fa-solid fa-location-dot"></i><span>{{ $footerAddress }}</span></li>
         </ul>
       </div>
       <!-- Column 1 -->
@@ -207,6 +232,7 @@
         <ul class="list-unstyled">
           <li><a href="/ourstory" class="gt-footer-link">Our Story</a></li>
           <li><a href="/contact-us" class="gt-footer-link">Contact Us</a></li>
+          @feature('careers')<li><a href="/lookingforajob" class="gt-footer-link">Careers</a></li>@endfeature
           <li><a href="/caro" class="gt-footer-link">UAE Carousel</a></li>
         </ul>
       </div>
@@ -371,6 +397,8 @@
 <script src="{{ asset('js/main.js') }}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+@include('partials.intl-tel-init')
 </body>
 
 </html>
