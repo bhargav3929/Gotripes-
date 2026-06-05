@@ -248,8 +248,16 @@ class MontyEsimService
 
         $markup = 1 + ($this->markupPercent / 100);
 
-        return array_map(function ($bundle) use ($markup) {
-            $costPrice = (float) ($bundle['bundle_price_final'] ?? $bundle['subscriber_price'] ?? 0);
+        // MontyeSIM returns bundle prices in the requested currency (USD by default),
+        // but customers are always charged in AED. Convert at the fixed AED peg
+        // unless the source data is already AED. Without this, a USD price was being
+        // charged as the same number in AED (selling well below cost).
+        $toAed = strtoupper($currencyCode) === 'AED'
+            ? 1.0
+            : (float) config('montyesim.usd_to_aed', 3.6725);
+
+        return array_map(function ($bundle) use ($markup, $toAed) {
+            $costPrice = (float) ($bundle['bundle_price_final'] ?? $bundle['subscriber_price'] ?? 0) * $toAed;
             $bundle['cost_price'] = round($costPrice, 2);
             $bundle['selling_price'] = round($costPrice * $markup, 2);
             return $bundle;

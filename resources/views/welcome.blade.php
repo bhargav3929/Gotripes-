@@ -43,7 +43,7 @@
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 8px 24px rgba(255, 215, 0, 0.35);
 }
-.home-epcb-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2.2px; color: #FFD700; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.home-epcb-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2.2px; color: #FFD700; text-transform: uppercase; display: block; margin-bottom: 4px; }
 .home-epcb-title { font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 4px 0; line-height: 1.2; letter-spacing: -0.01em; }
 .home-epcb-sub { font-size: 14px; color: rgba(255,255,255,0.65); margin: 0; line-height: 1.5; }
 .home-epcb-btn {
@@ -518,7 +518,7 @@
     }
 
     .services-section-badge span {
-      font-size: 10px;
+      font-size: 11px;
     }
   }
 

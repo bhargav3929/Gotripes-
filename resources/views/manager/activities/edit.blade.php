@@ -26,6 +26,17 @@
                         <input type="text" class="wp-input" name="activityName" value="{{ old('activityName', $activity->activityName) }}" required>
                     </div>
 
+                    @if(($allowedCountries ?? null) && count($allowedCountries) > 1)
+                        <div class="wp-form-group">
+                            <label class="wp-form-label">Country <span class="required">*</span></label>
+                            <select class="wp-select" name="country" required>
+                                @foreach($allowedCountries as $ac)
+                                    <option value="{{ $ac }}" {{ old('country', $activity->country) === $ac ? 'selected' : '' }}>{{ $ac }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="wp-form-group">
