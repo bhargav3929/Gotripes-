@@ -87,8 +87,8 @@
                                                 <span class="tour-card-price-label">From</span>
                                                 <span class="tour-card-price">AED {{ number_format($pkg->price, 0) }}</span>
                                             </div>
-                                            <a class="tour-card-cta" href="{{ route('contact') }}?package={{ urlencode($pkg->title) }}">
-                                                Enquire
+                                            <a class="tour-card-cta" href="{{ route('tour-packages.show', $pkg->id) }}">
+                                                View Details
                                                 <i class="bi bi-arrow-right"></i>
                                             </a>
                                         </div>

@@ -101,6 +101,11 @@ Route::prefix('/')->group(function () {
 
         return view('tour-packages', compact('packages', 'comingSoon'));
     })->middleware('tenant.feature:tours')->name('tour-packages');
+    Route::get('tour-packages/{id}', function ($id) {
+        $package = \App\Models\TravelPackage::where('isActive', 1)->findOrFail($id);
+        $package->load('images');
+        return view('tour-package-detail', compact('package'));
+    })->whereNumber('id')->middleware('tenant.feature:tours')->name('tour-packages.show');
     Route::get('ourstory', fn() => view('ourstory'));
     Route::get('contact-us', fn() => view('contact-us'));
     Route::get('termsandconditions', fn() => view('termsandconditions'));

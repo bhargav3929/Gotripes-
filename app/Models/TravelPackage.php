@@ -16,8 +16,14 @@ class TravelPackage extends Model
         'company_id',
         'title',
         'country',
+        'package_type',
+        'partner_email',
+        'partner_whatsapp',
         'image',
         'price',
+        'price_adult',
+        'price_child',
+        'price_infant',
         'description',
         'duration',
         'isActive',
@@ -30,6 +36,9 @@ class TravelPackage extends Model
     protected $casts = [
         'isActive' => 'boolean',
         'price' => 'decimal:2',
+        'price_adult' => 'decimal:2',
+        'price_child' => 'decimal:2',
+        'price_infant' => 'decimal:2',
         'createdDate' => 'datetime',
         'modifiedDate' => 'datetime',
     ];
@@ -37,5 +46,31 @@ class TravelPackage extends Model
     public function scopeActive($query)
     {
         return $query->where('isActive', 1);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(TravelPackageImage::class, 'package_id')->orderBy('sort_order');
+    }
+
+    /**
+     * All gallery image paths, cover image first. Falls back to the single
+     * `image` column when no gallery images exist (backward compatible).
+     */
+    public function galleryImages(): array
+    {
+        $paths = $this->images->pluck('image_path')->all();
+        if ($this->image && !in_array($this->image, $paths, true)) {
+            array_unshift($paths, $this->image);
+        }
+        return $paths;
+    }
+
+    /**
+     * True when this is a ready-made package the customer can pay for directly.
+     */
+    public function isPurchasable(): bool
+    {
+        return $this->package_type === 'purchase';
     }
 }

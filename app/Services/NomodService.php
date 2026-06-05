@@ -30,7 +30,8 @@ class NomodService
             'items' => $params['items'] ?? [
                 [
                     'item_id' => $params['order_id'],
-                    'name' => $params['description'] ?? 'Payment',
+                    // Nomod limits item name to 100 characters.
+                    'name' => mb_substr((string) ($params['description'] ?? 'Payment'), 0, 100),
                     'quantity' => 1,
                     'unit_amount' => $amount,
                 ],
