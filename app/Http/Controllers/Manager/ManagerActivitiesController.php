@@ -63,7 +63,32 @@ class ManagerActivitiesController extends Controller
                            ->orderBy('emiratesName')
                            ->get();
 
-        return view('manager.activities.create', compact('emirates'));
+        $allowedCountries = $this->companyCountries();
+
+        return view('manager.activities.create', compact('emirates', 'allowedCountries'));
+    }
+
+    /**
+     * Countries this partner may operate in (from the allowed_countries setting),
+     * defaulting to the UAE. Drives the per-activity country selector.
+     */
+    private function companyCountries(): array
+    {
+        $company = current_company();
+        $allowed = $company ? $company->getSetting('allowed_countries', []) : [];
+        $allowed = is_array($allowed) ? array_values(array_filter($allowed)) : [];
+        return $allowed ?: ['United Arab Emirates'];
+    }
+
+    /**
+     * Resolve an activity's country: the submitted value when the partner is
+     * allowed to use it, otherwise the partner's primary country.
+     */
+    private function resolveActivityCountry(Request $request): string
+    {
+        $allowed = $this->companyCountries();
+        $chosen = $request->input('country');
+        return ($chosen && in_array($chosen, $allowed, true)) ? $chosen : $allowed[0];
     }
 
     /**
@@ -113,6 +138,7 @@ class ManagerActivitiesController extends Controller
             'activityName'               => $request->activityName,
             'activityLocation'           => $request->activityLocation,
             'emiratesID'                 => $request->emiratesID,
+            'country'                    => $this->resolveActivityCountry($request),
             'activityPrice'              => $request->activityPrice,
             'activityCategory'           => $request->activityCategory,
             'activityChildPrice'         => $request->activityChildPrice ?? 0,
@@ -177,13 +203,16 @@ class ManagerActivitiesController extends Controller
             }
         }
 
+        $allowedCountries = $this->companyCountries();
+
         return view('manager.activities.edit', compact(
             'activity',
             'details',
             'emirates',
             'detailsIminfo',
             'detailsHighlights',
-            'existingImages'
+            'existingImages',
+            'allowedCountries'
         ));
     }
 
@@ -261,6 +290,7 @@ class ManagerActivitiesController extends Controller
             'activityName'               => $request->activityName,
             'activityLocation'           => $request->activityLocation,
             'emiratesID'                 => $request->emiratesID,
+            'country'                    => $this->resolveActivityCountry($request),
             'activityPrice'              => $request->activityPrice,
             'activityCategory'           => $request->activityCategory,
             'activityChildPrice'         => $request->activityChildPrice ?? 0,

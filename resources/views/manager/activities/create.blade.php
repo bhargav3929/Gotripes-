@@ -25,6 +25,18 @@
                         <input type="text" class="wp-input" name="activityName" value="{{ old('activityName') }}" required placeholder="e.g. Desert Safari Adventure">
                     </div>
 
+                    @if(($allowedCountries ?? null) && count($allowedCountries) > 1)
+                        <div class="wp-form-group">
+                            <label class="wp-form-label">Country <span class="required">*</span></label>
+                            <select class="wp-select" name="country" required>
+                                @foreach($allowedCountries as $ac)
+                                    <option value="{{ $ac }}" {{ old('country') === $ac ? 'selected' : '' }}>{{ $ac }}</option>
+                                @endforeach
+                            </select>
+                            <p class="wp-form-help">Which country is this activity for? Activities are grouped by country on your public site.</p>
+                        </div>
+                    @endif
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="wp-form-group">

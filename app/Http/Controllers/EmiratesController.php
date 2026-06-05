@@ -28,14 +28,38 @@ class EmiratesController extends Controller
             }
 
             abort(404);
-        } else {
-            // Show all emirates selection
-            $emirates = Emirates::getEmiratesWithActivityCount();
-            $emirate = null; // Not needed when showing emirates list
-            $activities = collect(); // Empty collection
-            
-            return view('Emirates', compact('emirates', 'emirate', 'activities'));
         }
+
+        // Country gate: show a country picker first ONLY when activities exist in
+        // more than one country. With a single country (e.g. UAE only) keep the
+        // original behaviour and go straight to the emirates selection.
+        $country   = $request->get('country');
+        $countries = \App\Models\UAEActivity::countriesWithActivities();
+
+        if ($countries->count() > 1) {
+            // Country picker first.
+            if (!$country) {
+                return view('activities-countries', compact('countries'));
+            }
+            // UAE keeps its emirate-based flow; other countries show a flat list
+            // of that country's activities (they have no UAE emirate structure).
+            if ($country !== 'United Arab Emirates') {
+                $activities = \App\Models\UAEActivity::with('emirate')
+                    ->where('isActive', 1)
+                    ->where('country', $country)
+                    ->orderBy('createdDate', 'DESC')
+                    ->get();
+
+                return view('activities-by-country', compact('country', 'activities'));
+            }
+        }
+
+        // Single country (UAE only) OR UAE selected → original emirates selection.
+        $emirates   = Emirates::getEmiratesWithActivityCount();
+        $emirate    = null;
+        $activities = collect();
+
+        return view('Emirates', compact('emirates', 'emirate', 'activities'));
     }
 
     /**
