@@ -2,6 +2,75 @@
 <!-- START HOME -->
 @include('banner')
 
+{{-- ════ FIFA World Cup 2026 promo (gotrips.ai only, seasonal toggle) ════ --}}
+@platformOnly
+@if(current_company()?->getSetting('fifa_promo_enabled', false))
+@php
+    $fifaWa = current_company()?->getSetting('level9_whatsapp', '');
+    $fifaMsg = rawurlencode("Hi LEVEL9 — I'm interested in the FIFA World Cup 2026 luxury experience. Please share package details.");
+    $fifaWaLink = $fifaWa ? "https://wa.me/{$fifaWa}?text={$fifaMsg}" : url('/contact-us');
+@endphp
+<style>
+    .home-fifa {
+        font-family: 'Outfit', system-ui, sans-serif;
+        position: relative; overflow: hidden;
+        padding: 64px 24px;
+        background:
+            radial-gradient(900px 360px at 85% -20%, rgba(255,170,0,0.16), transparent 60%),
+            linear-gradient(135deg, #080808 0%, #141414 100%);
+        border-top: 1px solid #1c1c1c; border-bottom: 1px solid #1c1c1c;
+    }
+    .home-fifa-inner {
+        max-width: 1140px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap;
+    }
+    .home-fifa-copy { flex: 1 1 480px; }
+    .home-fifa-kicker {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+        color: #FFD700; border: 1px solid rgba(255,215,0,0.3); border-radius: 999px; padding: 6px 14px; margin-bottom: 18px;
+    }
+    .home-fifa-kicker .d { width: 7px; height: 7px; border-radius: 50%; background: #FFD700; animation: homeFifaPulse 1.6s infinite; }
+    @keyframes homeFifaPulse { 0%{box-shadow:0 0 0 0 rgba(255,170,0,.6)} 70%{box-shadow:0 0 0 8px rgba(255,170,0,0)} 100%{box-shadow:0 0 0 0 rgba(255,170,0,0)} }
+    .home-fifa h2 {
+        color: #fff; font-size: clamp(1.8rem, 4vw, 2.9rem); font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; margin: 0 0 14px;
+    }
+    .home-fifa h2 .hl { background: linear-gradient(135deg,#FFD700,#FF8A00); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .home-fifa p { color: #9a9a9a; font-weight: 300; font-size: 1.05rem; line-height: 1.6; margin: 0 0 26px; max-width: 560px; }
+    .home-fifa-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .home-fifa-btn { display: inline-flex; align-items: center; gap: 9px; padding: 14px 28px; border-radius: 12px; font-weight: 700; font-size: 0.98rem; text-decoration: none; transition: transform .14s ease, box-shadow .14s ease; }
+    .home-fifa-primary { background: linear-gradient(135deg,#FFD700,#FF8A00); color: #111; box-shadow: 0 10px 30px rgba(255,138,0,.25); }
+    .home-fifa-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,138,0,.35); color:#111; }
+    .home-fifa-ghost { background: transparent; color: #eee; border: 1px solid #2a2a2a; }
+    .home-fifa-ghost:hover { border-color: #FFD700; color: #FFD700; }
+    .home-fifa-badge {
+        flex: 0 0 auto; text-align: center; padding: 28px 34px; border: 1px solid rgba(255,215,0,0.25); border-radius: 18px;
+        background: rgba(255,215,0,0.04);
+    }
+    .home-fifa-badge .yr { font-size: 3rem; font-weight: 800; color: #FFD700; line-height: 1; letter-spacing: -0.03em; }
+    .home-fifa-badge .lb { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #888; margin-top: 8px; }
+    @media (max-width: 640px) { .home-fifa-badge { display: none; } }
+</style>
+<section class="home-fifa">
+    <div class="home-fifa-inner">
+        <div class="home-fifa-copy">
+            <span class="home-fifa-kicker"><span class="d"></span> Trending · Limited availability</span>
+            <h2>FIFA World Cup 2026<br><span class="hl">The Luxury Experience</span></h2>
+            <p>VIP tickets, private jets, penthouse suites, chauffeurs and exclusive after-parties across the US, Mexico &amp; Canada — curated end-to-end by LEVEL9 CONCIERGERIE.</p>
+            <div class="home-fifa-actions">
+                <a href="{{ url('/events') }}" class="home-fifa-btn home-fifa-primary"><i class="bi bi-trophy"></i> Explore packages</a>
+                <a href="{{ $fifaWaLink }}" target="_blank" rel="noopener" class="home-fifa-btn home-fifa-ghost"><i class="bi bi-whatsapp"></i> Enquire on WhatsApp</a>
+            </div>
+        </div>
+        <div class="home-fifa-badge">
+            <div class="yr">2026</div>
+            <div class="lb">US · Mexico · Canada</div>
+        </div>
+    </div>
+</section>
+@endif
+@endplatformOnly
+
 {{-- E-SIM Partner CTA banner (homepage) --}}
 <style>
 .home-epcb {

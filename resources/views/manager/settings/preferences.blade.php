@@ -53,6 +53,39 @@
             <small>Markup added on top of eSIM supplier cost price. E.g. 20% means a $10 cost eSIM will be sold at $12. Set to 0 to use platform default.</small>
         </div>
 
+        @platformOnly
+        <div class="promo-divider">
+            <span>Homepage Promotions</span>
+        </div>
+        <p class="lede" style="margin-top:-6px;">Seasonal campaigns shown on the main gotrips.ai homepage. Turn off out of season.</p>
+
+        <label class="toggle-row">
+            <input type="checkbox" name="fifa_promo_enabled" value="1"
+                   @checked($company->getSetting('fifa_promo_enabled', false))>
+            <span class="toggle-text">
+                <strong>FIFA World Cup 2026 promo</strong>
+                <small>Shows the LEVEL9 CONCIERGERIE World Cup section on the homepage.</small>
+            </span>
+        </label>
+
+        <label class="toggle-row">
+            <input type="checkbox" name="events_trending_enabled" value="1"
+                   @checked($company->getSetting('events_trending_enabled', false))>
+            <span class="toggle-text">
+                <strong>“Trending” badge on Events menu</strong>
+                <small>Adds a flashy animated badge to the Events tab while a campaign is live.</small>
+            </span>
+        </label>
+
+        <div class="form-row" style="margin-top:18px;">
+            <label for="level9_whatsapp">Concierge WhatsApp number</label>
+            <input type="text" id="level9_whatsapp" name="level9_whatsapp"
+                   value="{{ old('level9_whatsapp', $company->getSetting('level9_whatsapp', '')) }}"
+                   placeholder="e.g. 14165551234 (country code, no + or spaces)">
+            <small>Used by the “Enquire on WhatsApp” buttons on the FIFA / Events pages.</small>
+        </div>
+        @endplatformOnly
+
         <div class="form-actions">
             <button type="submit" class="btn-save">
                 <i class="fas fa-check"></i> Save Preferences
@@ -91,5 +124,13 @@
     .settings-alert { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:16px; }
     .settings-alert-ok  { background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.4); color:#4ade80; }
     .settings-alert-err { background:rgba(214,54,56,.15); border:1px solid rgba(214,54,56,.4); color:#f87171; }
+    .promo-divider { display:flex; align-items:center; gap:12px; margin:28px 0 14px; }
+    .promo-divider::before, .promo-divider::after { content:""; flex:1; height:1px; background:rgba(255,215,0,0.18); }
+    .promo-divider span { font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#FFD700; }
+    .toggle-row { display:flex; gap:12px; align-items:flex-start; padding:12px 14px; margin-bottom:10px;
+        background:#222; border:1px solid rgba(255,215,0,0.12); border-radius:8px; cursor:pointer; }
+    .toggle-row input { margin-top:3px; width:16px; height:16px; accent-color:#FFD700; flex:none; }
+    .toggle-text strong { display:block; font-size:13px; color:#f0f0f0; font-weight:600; }
+    .toggle-text small { display:block; font-size:12px; color:#888; margin-top:2px; }
 </style>
 @endsection

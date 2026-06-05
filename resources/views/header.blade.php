@@ -200,6 +200,33 @@
             width: 70%;
         }
 
+        /* Events tab + seasonal "Trending" badge */
+        .gt-nav-events { position: relative; }
+        .gt-trending-badge {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 7px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #FFD700 0%, #FF8A00 100%);
+            border-radius: 999px;
+            vertical-align: middle;
+            line-height: 1.4;
+            box-shadow: 0 0 0 0 rgba(255, 170, 0, 0.6);
+            animation: gtTrendPulse 1.8s ease-in-out infinite;
+        }
+        @keyframes gtTrendPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(255, 170, 0, 0.55); transform: translateY(-0.5px) scale(1); }
+            70%  { box-shadow: 0 0 0 7px rgba(255, 170, 0, 0); transform: translateY(-0.5px) scale(1.04); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 170, 0, 0); transform: translateY(-0.5px) scale(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .gt-trending-badge { animation: none; }
+        }
+
 
         /* =====================================================
            INLINE SEARCH BAR + PARTNER CTA
@@ -999,21 +1026,27 @@
             width: auto;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 1200px) {
-            .gt-nav-link {
-                font-size: 11px;
-                padding: 10px 12px;
-                letter-spacing: 2px;
-            }
+        /* RESPONSIVE — tighten the full nav row (13 top-level items) so it
+           never overflows on smaller laptops. Tiers shrink font/padding/gap as
+           the viewport narrows; below 992px it collapses to the mobile menu. */
+        @media (max-width: 1560px) {
+            .gt-nav-left, .gt-nav-right { gap: 4px; }
+            .gt-nav-link { font-size: 12px; padding: 9px 10px; letter-spacing: 0.3px; }
+            .gt-logo { padding: 0 26px; }
+            .gt-logo img { height: 52px; }
+        }
 
-            .gt-logo {
-                padding: 0 30px;
-            }
+        @media (max-width: 1300px) {
+            .gt-nav-left, .gt-nav-right { gap: 2px; }
+            .gt-nav-link { font-size: 11px; padding: 8px 8px; letter-spacing: 0.2px; }
+            .gt-logo { padding: 0 16px; }
+            .gt-logo img { height: 46px; }
+        }
 
-            .gt-logo img {
-                height: 50px;
-            }
+        @media (max-width: 1100px) {
+            .gt-nav-link { font-size: 10px; padding: 7px 6px; }
+            .gt-logo { padding: 0 10px; }
+            .gt-logo img { height: 42px; }
         }
 
         @media (max-width: 991px) {
@@ -1116,6 +1149,13 @@
 
 <body class="{{ request()->is('/') ? 'has-ticker' : '' }}">
 @include('partials.intl-tel-init')
+@php
+    // Seasonal "Trending" badge for the Events tab (driven by the manager toggle).
+    // Precomputed because Blade won't parse @if when stuck to a word (Events@if...).
+    $gtCo = current_company();
+    $gtEventsBadge = ($gtCo && $gtCo->getSetting('events_trending_enabled', false))
+        ? '<span class="gt-trending-badge">Trending</span>' : '';
+@endphp
     <!-- ==================== PREMIUM HEADER ==================== -->
     <header class="gt-header">
 
@@ -1141,6 +1181,12 @@
                     <a href="/hajj-umrah" class="gt-nav-link {{ Request::is('hajj-umrah') ? 'active' : '' }}">Hajj &
                         Umrah</a>
                     @endfeature
+                    @feature('esim')
+                    <a href="/esim" class="gt-nav-link {{ Request::is('esim') ? 'active' : '' }}">eSIM</a>
+                    @endfeature
+                    @platformOnly
+                    <a href="/lotus-cruise-dubai" class="gt-nav-link {{ Request::is('lotus-cruise-dubai') ? 'active' : '' }}">Cruise</a>
+                    @endplatformOnly
                 </div>
 
                 <!-- Center Logo -->
@@ -1150,6 +1196,9 @@
 
                 <!-- Right Menu -->
                 <div class="gt-nav-right">
+                    @platformOnly
+                    <a href="/events" class="gt-nav-link gt-nav-events {{ Request::is('events') ? 'active' : '' }}">Events{!! $gtEventsBadge !!}</a>
+                    @endplatformOnly
                     <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our Services</a>
                     @feature('shop')
                     <a href="/shopnow" class="gt-nav-link {{ Request::is('shopnow') ? 'active' : '' }}">Shop Online</a>
@@ -1191,6 +1240,9 @@
             @feature('visas')<a href="/uaevisa" class="gt-mobile-nav-link">Visa Services</a>@endfeature
             @feature('tours')<a href="/tour-packages" class="gt-mobile-nav-link">Tour Packages</a>@endfeature
             @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-mobile-nav-link">Hajj & Umrah</a>@endfeature
+            @feature('esim')<a href="/esim" class="gt-mobile-nav-link">eSIM</a>@endfeature
+            @platformOnly<a href="/lotus-cruise-dubai" class="gt-mobile-nav-link">Cruise</a>@endplatformOnly
+            @platformOnly<a href="/events" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtEventsBadge !!}</a>@endplatformOnly
             <a href="/our-services" class="gt-mobile-nav-link">Our Services</a>
             @feature('shop')<a href="/shopnow" class="gt-mobile-nav-link">Shop Online</a>@endfeature
             @feature('pay_online')<a href="/payonline" class="gt-mobile-nav-link">Pay Online</a>@endfeature

@@ -113,6 +113,7 @@ Route::prefix('/')->group(function () {
     Route::get('privacypolicy', fn() => view('privacypolicy'));
     // Route::get('dubai-global-village', fn() => view('dubai-global-village'));
     Route::get('lotus-cruise-dubai', fn() => view('lotus-cruise-dubai'));
+    Route::get('events', fn() => view('events'))->name('events');
     Route::get('shopnow', fn() => view('shopnow'))->middleware('tenant.feature:shop');
     Route::get('payonline', fn() => view('payonline'))->middleware('tenant.feature:pay_online');
     Route::get('lookingforajob', fn() => view('lookingforajob'))->middleware('tenant.feature:careers');
@@ -217,6 +218,14 @@ Route::get('/payment/nomod/cancelled', [NomodController::class, 'cancelled'])->n
 Route::post('/umrah/payment/initiate', [UmrahPaymentController::class, 'initiate'])->name('umrah.payment.initiate');
 
 Route::post('/uaev/submit', [UAEVisaController::class, 'submit'])->name('uaev.submit');
+
+// Fluxir e-visa (Global Travel Compliance) integration
+use App\Http\Controllers\FluxirVisaController;
+Route::get('/uae-evisa', fn() => view('visa.fluxir-apply', ['fee' => 96]))->name('visa.fluxir.form');
+Route::post('/visa/fluxir/apply',          [FluxirVisaController::class, 'apply'])->name('visa.fluxir.apply');
+Route::get('/visa/fluxir/success',         [FluxirVisaController::class, 'success'])->name('visa.fluxir.success');
+Route::get('/visa/fluxir/cancel',          [FluxirVisaController::class, 'cancel'])->name('visa.fluxir.cancel');
+Route::get('/visa/fluxir/status/{orderId}', [FluxirVisaController::class, 'status'])->name('visa.fluxir.status');
 
 
 use App\Http\Controllers\PaymentController;
