@@ -4031,7 +4031,7 @@
                                 </select>
                                 <div class="esim-input-wrapper">
                                     <i class="fa-solid fa-phone"></i>
-                                    <input type="tel" id="esimPhone" class="esim-input" placeholder="50 123 4567" inputmode="tel">
+                                    <input type="tel" id="esimPhone" class="esim-input" placeholder="50 123 4567" inputmode="tel" data-no-intl>
                                 </div>
                             </div>
                             <span class="esim-error" id="esimPhoneError">Please enter a valid phone number</span>
@@ -5074,7 +5074,14 @@
                 var cc = document.getElementById('esimPhoneCC');
                 var num = document.getElementById('esimPhone').value.trim();
                 if (!num) return null;
-                return (cc ? cc.value + ' ' : '') + num;
+                // Build a clean E.164 number (Nomod requires it): de-dupe the
+                // country code if the user typed it into the number field, and
+                // drop any national trunk-prefix zero.
+                var ccDigits = (cc ? cc.value : '').replace(/\D/g, '');
+                var pnDigits = num.replace(/\D/g, '');
+                if (ccDigits && pnDigits.indexOf(ccDigits) === 0) pnDigits = pnDigits.slice(ccDigits.length);
+                pnDigits = pnDigits.replace(/^0+/, '');
+                return '+' + ccDigits + pnDigits;
             })(),
             bundle_code: bundle.bundle_code,
             country_code: country.iso3,

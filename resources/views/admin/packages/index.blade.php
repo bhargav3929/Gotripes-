@@ -63,7 +63,7 @@
                                 </div>
 
                                 <p class="text-muted mb-2" style="font-size: 0.8rem;">
-                                    {{ Str::limit($package->description, 80) }}
+                                    {{ Str::limit(strip_tags($package->description), 80) }}
                                 </p>
 
                                 <div class="mb-3">
@@ -157,7 +157,7 @@
                                         <td>
                                             <span class="text-white fw-semibold">{{ $package->title }}</span>
                                             <div class="text-muted mt-1" style="font-size: 0.75rem;">
-                                                {{ Str::limit($package->description, 50) }}
+                                                {{ Str::limit(strip_tags($package->description), 50) }}
                                             </div>
                                         </td>
                                         <td>
