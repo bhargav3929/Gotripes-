@@ -641,18 +641,36 @@
                     {{-- Scan Passport → auto-fill (Groq vision OCR) --}}
                     <div class="pp-scan">
                         <div class="pp-scan-info">
-                            <i class="bi bi-magic"></i>
+                            <span class="pp-scan-badge"><i class="bi bi-stars"></i></span>
                             <div>
                                 <strong>Scan passport to auto-fill</strong>
-                                <span>Upload the passport's main page — we'll detect the nationality and details.</span>
+                                <span>Upload or photograph the passport's main page — we'll detect the details for you.</span>
                             </div>
                         </div>
-                        <label class="pp-scan-btn" id="ppScanBtnLabel">
-                            <i class="bi bi-cloud-arrow-up"></i> <span id="ppScanLabel">Upload Passport</span>
-                            <input type="file" id="ppScanFile" accept="image/jpeg,image/png,image/jpg,image/webp" hidden>
-                        </label>
+                        <div class="pp-scan-actions">
+                            <label class="pp-scan-btn pp-scan-btn--primary" id="ppScanBtnLabel">
+                                <i class="bi bi-cloud-arrow-up"></i> <span id="ppScanLabel">Upload</span>
+                                <input type="file" id="ppScanFile" accept="image/jpeg,image/png,image/jpg,image/webp" hidden>
+                            </label>
+                            <button type="button" class="pp-scan-btn pp-scan-cam" id="ppCamBtn">
+                                <i class="bi bi-camera"></i> Camera
+                            </button>
+                        </div>
                     </div>
                     <div id="ppScanResult" class="pp-scan-result" style="display:none;"></div>
+                    {{-- Camera capture overlay --}}
+                    <div id="ppCamModal" class="pp-cam-modal" style="display:none;">
+                        <div class="pp-cam-box">
+                            <p class="pp-cam-title"><i class="bi bi-camera"></i> Position the passport in frame</p>
+                            <video id="ppCamVideo" autoplay playsinline muted></video>
+                            <p class="pp-cam-hint">Hold the passport's main page flat and well-lit, then capture.</p>
+                            <div class="pp-cam-actions">
+                                <button type="button" id="ppCamCapture" class="pp-scan-btn pp-scan-btn--primary"><i class="bi bi-camera-fill"></i> Capture</button>
+                                <button type="button" id="ppCamClose" class="pp-cam-close">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="ppCamCanvas" style="display:none;"></canvas>
 
                     {{-- ROW 1: Nationality, Residence, Duration --}}
                     <div class="form-grid-3">
@@ -1080,16 +1098,31 @@
 </script>
 
 <style>
-    .pp-scan { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
-        background:linear-gradient(90deg, rgba(255,215,0,0.10), rgba(255,215,0,0.02));
-        border:1px solid rgba(255,215,0,0.25); border-radius:12px; padding:14px 18px; margin-bottom:16px; }
-    .pp-scan-info { display:flex; align-items:center; gap:12px; }
-    .pp-scan-info i { font-size:24px; color:#FFD23F; }
-    .pp-scan-info strong { display:block; color:#fff; font-size:15px; }
-    .pp-scan-info span { color:#aaa; font-size:13px; }
-    .pp-scan-btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#FFD700,#D4AF37);
-        color:#000; font-weight:700; font-size:14px; padding:10px 18px; border-radius:10px; cursor:pointer; white-space:nowrap; }
-    .pp-scan-btn:hover { filter:brightness(1.05); }
+    .pp-scan { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+        background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
+        border-left:3px solid #FFD23F; border-radius:14px; padding:16px 20px; margin-bottom:14px; }
+    .pp-scan-info { display:flex; align-items:center; gap:14px; }
+    .pp-scan-badge { width:44px; height:44px; flex-shrink:0; border-radius:12px; display:flex; align-items:center; justify-content:center;
+        background:rgba(255,215,0,0.10); border:1px solid rgba(255,215,0,0.28); }
+    .pp-scan-badge i { font-size:20px; color:#FFD23F; }
+    .pp-scan-info strong { display:block; color:#fff; font-size:15px; font-weight:600; letter-spacing:.2px; }
+    .pp-scan-info span { color:#999; font-size:13px; }
+    .pp-scan-actions { display:flex; gap:10px; }
+    .pp-scan-btn { display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:13.5px;
+        padding:10px 16px; border-radius:10px; cursor:pointer; white-space:nowrap; border:1px solid transparent; transition:all .15s ease; }
+    .pp-scan-btn--primary { background:linear-gradient(135deg,#FFD700,#D4AF37); color:#000; }
+    .pp-scan-btn--primary:hover { filter:brightness(1.05); transform:translateY(-1px); box-shadow:0 6px 16px rgba(255,215,0,0.18); }
+    .pp-scan-cam { background:transparent; color:#FFD23F; border-color:rgba(255,215,0,0.4); }
+    .pp-scan-cam:hover { background:rgba(255,215,0,0.08); transform:translateY(-1px); }
+    .pp-cam-modal { position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(4px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px; }
+    .pp-cam-box { background:#0d0d0f; border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:18px; width:560px; max-width:94vw; box-shadow:0 30px 80px rgba(0,0,0,0.6); }
+    .pp-cam-title { display:flex; align-items:center; gap:8px; color:#fff; font-weight:600; font-size:15px; margin:0 0 12px; }
+    .pp-cam-title i { color:#FFD23F; }
+    .pp-cam-box video { width:100%; border-radius:12px; background:#000; max-height:60vh; display:block; border:1px solid rgba(255,255,255,0.08); }
+    .pp-cam-hint { text-align:center; color:#888; font-size:12.5px; margin:10px 0 0; }
+    .pp-cam-actions { display:flex; gap:10px; justify-content:center; margin-top:14px; }
+    .pp-cam-close { background:transparent; border:1px solid #444; color:#ccc; border-radius:10px; padding:11px 20px; cursor:pointer; font-weight:600; }
+    .pp-cam-close:hover { border-color:#888; color:#fff; }
     .pp-scan-result { border:1px solid rgba(255,215,0,0.2); border-radius:10px; padding:12px 16px; margin-bottom:16px;
         background:rgba(255,255,255,0.03); font-size:13.5px; color:#ddd; }
     .pp-scan-result .ok { color:#4CAF50; font-weight:600; }
@@ -1131,8 +1164,7 @@
         return null;
     }
 
-    fileInput.addEventListener('change', function () {
-        const file = fileInput.files[0];
+    function runScan(file) {
         if (!file) return;
         label.textContent = 'Scanning…';
         result.style.display = 'block';
@@ -1148,7 +1180,7 @@
         })
         .then(r => r.json().then(d => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
-            label.textContent = 'Upload Passport';
+            label.textContent = 'Upload';
             if (ok && d.success && d.fields) {
                 const f = d.fields;
                 const picked = selectNationality(f);
@@ -1167,10 +1199,58 @@
             }
         })
         .catch(() => {
-            label.textContent = 'Upload Passport';
+            label.textContent = 'Upload';
             result.innerHTML = '<span class="err">Network error. Please try again.</span>';
         });
-    });
+    }
+
+    fileInput.addEventListener('change', () => runScan(fileInput.files[0]));
+
+    // ── Camera capture (getUserMedia) ──
+    const camBtn = document.getElementById('ppCamBtn');
+    const modal = document.getElementById('ppCamModal');
+    const video = document.getElementById('ppCamVideo');
+    const canvas = document.getElementById('ppCamCanvas');
+    const captureBtn = document.getElementById('ppCamCapture');
+    const closeBtn = document.getElementById('ppCamClose');
+    let stream = null;
+
+    function stopCam() {
+        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        if (modal) modal.style.display = 'none';
+    }
+    if (camBtn) {
+        camBtn.addEventListener('click', function () {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                result.style.display = 'block';
+                result.innerHTML = '<span class="err">Camera not supported on this browser — please use Upload.</span>';
+                return;
+            }
+            // Prefer the rear camera (phones) but fall back to any camera (desktop webcams).
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false })
+                .catch(function () { return navigator.mediaDevices.getUserMedia({ video: true, audio: false }); })
+                .then(function (s) { stream = s; video.srcObject = s; modal.style.display = 'flex'; })
+                .catch(function (err) {
+                    result.style.display = 'block';
+                    const denied = err && (err.name === 'NotAllowedError' || err.name === 'SecurityError');
+                    result.innerHTML = '<span class="err">' +
+                        (denied ? 'Camera permission was blocked. Allow camera access in your browser, or use Upload.'
+                                : 'No camera found — please use Upload instead.') +
+                        '</span>';
+                });
+        });
+        captureBtn.addEventListener('click', function () {
+            const w = video.videoWidth, h = video.videoHeight;
+            if (!w || !h) return;
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(video, 0, 0, w, h);
+            canvas.toBlob(function (blob) {
+                stopCam();
+                if (blob) runScan(new File([blob], 'passport-photo.jpg', { type: 'image/jpeg' }));
+            }, 'image/jpeg', 0.92);
+        });
+        closeBtn.addEventListener('click', stopCam);
+    }
 })();
 </script>
 
