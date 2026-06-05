@@ -182,6 +182,43 @@
         }
         @media (prefers-reduced-motion: reduce) { .gt-flash { animation: none; } }
 
+        /* Golden "highlighted button" treatment for flagged items. Triggered by
+           the presence of the flash icon (only injected when the manager flags
+           the item), so no per-item markup is needed. Old browsers without
+           :has() simply keep the red flashing bolt — graceful fallback. */
+        .gt-nav-link:has(.gt-flash),
+        .gt-nav-sublink:has(.gt-flash),
+        .gt-macc-item:has(.gt-flash) {
+            background: linear-gradient(135deg, #FFD700 0%, #FFB200 100%);
+            color: #1a1a1a !important;
+            border-radius: 999px;
+            box-shadow: 0 0 0 0 rgba(255, 200, 0, 0.55);
+            animation: gtFlashedPulse 1.5s ease-in-out infinite;
+        }
+        .gt-nav-link:has(.gt-flash) { padding: 5px 14px; }
+        .gt-nav-sublink:has(.gt-flash) { padding: 3px 12px; }
+        /* Dark bolt reads cleanly on the gold pill */
+        .gt-nav-link:has(.gt-flash) .gt-flash,
+        .gt-nav-sublink:has(.gt-flash) .gt-flash,
+        .gt-macc-item:has(.gt-flash) .gt-flash { color: #1a1a1a; }
+        .gt-nav-link:has(.gt-flash):hover,
+        .gt-nav-sublink:has(.gt-flash):hover { color: #000 !important; text-shadow: none; }
+        /* Mobile: gold pill sits inline within the row */
+        .gt-macc-item:has(.gt-flash) {
+            align-self: flex-start; margin: 8px 0 8px 46px; padding: 8px 16px;
+            width: auto; border-bottom: none; font-weight: 700;
+        }
+        @keyframes gtFlashedPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(255, 200, 0, 0.55); }
+            70%  { box-shadow: 0 0 0 9px rgba(255, 200, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 200, 0, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .gt-nav-link:has(.gt-flash),
+            .gt-nav-sublink:has(.gt-flash),
+            .gt-macc-item:has(.gt-flash) { animation: none; }
+        }
+
         /* NAV LINKS - Premium Styling */
         .gt-nav-link {
             font-family: 'Outfit', sans-serif;
