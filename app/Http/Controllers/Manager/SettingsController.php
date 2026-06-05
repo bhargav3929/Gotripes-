@@ -11,18 +11,24 @@ class SettingsController extends Controller
 {
     private const CURRENCIES = ['AED', 'USD', 'SAR', 'EUR', 'INR', 'GBP'];
 
-    // Menu items that can show a seasonal flashy "Hot/Trending" badge.
+    // Menu items that can show a seasonal flashing ⚡ icon (manager-controlled).
     // key => label (label shown in the manager Menu Highlights UI).
     public const MENU_FLASH_ITEMS = [
-        'events'         => 'Events',
+        'activities'     => 'Activities',
+        'visa_services'  => 'Visa Services',
+        'tour_packages'  => 'Tour Packages',
+        'hajj_umrah'     => 'Hajj & Umrah',
+        'esim'           => 'eSIM',
         'evisa'          => 'e-Visa (30 countries)',
-        'cruises'        => 'Cruises',
+        'insurance'      => 'Insurance',
+        'cruises'        => 'Cruise',
+        'transport'      => 'Transport',
         'holiday_homes'  => 'Holiday Homes',
+        'mice'           => 'Business Tourism (MICE)',
+        'events'         => 'Events',
         'local_tours'    => 'Local Tours',
         'festival_tours' => 'Festival Tours',
         'medical_tours'  => 'Medical Tours',
-        'hotels'         => 'Hotels',
-        'esim'           => 'eSIM',
     ];
 
     private const TIMEZONES = [
