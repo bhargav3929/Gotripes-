@@ -3,292 +3,347 @@
 @php
     $tenant = current_company();
     $hasPackages = isset($packages) && $packages->count() > 0;
-    $totalCount  = $hasPackages ? collect($packages)->flatten(1)->count() : 0;
     $comingSoon  = $comingSoon ?? collect();
-    $hasComingSoon = $comingSoon->count() > 0;
+    // country name => dedicated page URL (e.g. "Canada" => "/tour-packages/canada")
+    $featuredMap = $hasPackages
+        ? $packages->keys()->mapWithKeys(fn($name) => [$name => route('tour-packages.country', \Illuminate\Support\Str::slug($name))])->toArray()
+        : [];
+    $featuredCountries   = array_keys($featuredMap);
+    $comingSoonCountries = $comingSoon->toArray();
 @endphp
 
-<main style="background:#000; min-height:100vh; color:#fff; font-family:'Outfit',sans-serif;">
-    {{-- Hero --}}
-    <section class="tour-hero" style="position:relative; height:42vh; min-height:300px; background:url('{{ asset('assets/index_files/533419533.jpg') }}') center/cover no-repeat; display:flex; align-items:center; justify-content:center; text-align:center;">
-        <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.8) 100%);"></div>
-        <div class="container" style="position:relative; z-index:2;">
-            <p style="font-family:'Outfit',sans-serif; font-weight:500; font-style:italic; letter-spacing:1px; font-size:clamp(15px,2vw,20px); color:#FFD23F; margin-bottom:8px; text-transform:uppercase;">Curated by {{ $tenant?->name ?? 'us' }}</p>
-            <h1 style="font-size:clamp(32px,7vw,64px); font-weight:800; letter-spacing:3px; background:linear-gradient(135deg,#FFD700 0%, #D4AF37 50%, #B8960C 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-transform:uppercase; margin-bottom:16px;">Tour Packages</h1>
-            <p style="font-size:clamp(14px,2vw,18px); color:#ddd; max-width:720px; margin:0 auto; line-height:1.6;">
-                Handpicked tour experiences across the globe. Pick a destination below to see our packages.
-            </p>
-        </div>
-    </section>
-
-    {{-- Destinations overview: every country stays visible. Completed first, pending = Coming Soon. --}}
-    @if($hasPackages || $hasComingSoon)
-        <section style="padding:28px 0 4px;">
-            <div class="container">
-                <h2 class="tp-section-heading">Our Destinations</h2>
-                <p class="tp-section-sub">Tap a destination to see its packages — more countries are on the way.</p>
-                <div class="tp-dest-grid">
-                    @foreach($packages as $country => $items)
-                        @php $thumb = optional($items->first())->image; @endphp
-                        <a class="tp-dest-card" href="#country-{{ Str::slug($country) }}">
-                            <div class="tp-dest-thumb">
-                                @if($thumb)
-                                    <img src="{{ str_starts_with($thumb, 'http') ? $thumb : asset($thumb) }}" alt="{{ $country }}" loading="lazy">
-                                @else
-                                    <div class="tp-dest-placeholder"><i class="bi bi-geo-alt"></i></div>
-                                @endif
-                            </div>
-                            <span class="tp-dest-name">{{ $country }}</span>
-                            <span class="tp-dest-count">{{ $items->count() }} {{ Str::plural('package', $items->count()) }}</span>
-                        </a>
-                    @endforeach
-                    @foreach($comingSoon as $country)
-                        <div class="tp-dest-card tp-dest-soon">
-                            <div class="tp-dest-thumb">
-                                <div class="tp-dest-placeholder"><i class="bi bi-hourglass-split"></i></div>
-                            </div>
-                            <span class="tp-dest-name">{{ $country }}</span>
-                            <span class="tp-dest-badge">Coming Soon</span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endif
-
-    @if($hasPackages)
-        @foreach($packages as $country => $items)
-            <section id="country-{{ Str::slug($country) }}" style="scroll-margin-top:90px; padding:36px 0; background:{{ $loop->index % 2 === 0 ? '#000' : '#050505' }};">
-                <div class="container">
-                    <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; border-bottom:1px solid rgba(255,215,0,0.15); padding-bottom:12px; margin-bottom:22px;">
-                        <h2 class="tp-country-title">{{ $country }}</h2>
-                        <span style="color:#777; font-size:14px;">{{ $items->count() }} {{ Str::plural('package', $items->count()) }}</span>
-                    </div>
-
-                    <div class="row g-4">
-                        @foreach($items as $pkg)
-                            <div class="col-lg-4 col-md-6">
-                                <article class="tour-card">
-                                    <div class="tour-card-image">
-                                        @if($pkg->image)
-                                            <img src="{{ str_starts_with($pkg->image, 'http') ? $pkg->image : asset($pkg->image) }}" alt="{{ $pkg->title }}" loading="lazy">
-                                        @else
-                                            <div class="tour-card-placeholder"><i class="bi bi-image"></i></div>
-                                        @endif
-                                        <span class="tour-card-duration">
-                                            <i class="bi bi-clock"></i> {{ $pkg->duration }}
-                                        </span>
-                                    </div>
-                                    <div class="tour-card-body">
-                                        <h3 class="tour-card-title">{{ $pkg->title }}</h3>
-                                        <p class="tour-card-desc">{{ Str::limit(strip_tags($pkg->description), 140) }}</p>
-                                        <div class="tour-card-footer">
-                                            <div>
-                                                <span class="tour-card-price-label">From</span>
-                                                <span class="tour-card-price">AED {{ number_format($pkg->price, 0) }}</span>
-                                            </div>
-                                            <a class="tour-card-cta" href="{{ route('tour-packages.show', $pkg->id) }}">
-                                                View Details
-                                                <i class="bi bi-arrow-right"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </article>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </section>
-        @endforeach
-    @endif
-
-    @if(!$hasPackages && !$hasComingSoon)
-        <section style="padding:120px 0; text-align:center;">
-            <div class="container">
-                <i class="bi bi-compass" style="font-size:64px; color:rgba(255,215,0,0.25); margin-bottom:16px; display:block;"></i>
-                <h2 style="font-size:28px; color:#fff;">New tour packages are on the way</h2>
-                <p style="color:#888; max-width:560px; margin:12px auto 0;">
-                    We're putting together our finest destinations. In the meantime, get in touch and we'll tailor a private itinerary just for you.
-                </p>
-                <a href="{{ route('contact') }}" class="tour-card-cta" style="display:inline-flex; margin-top:24px;">
-                    Talk to us <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </section>
-    @endif
-</main>
-
 <style>
-    .tp-country-title {
-        font-size: clamp(24px, 4vw, 36px);
-        font-weight: 700;
-        letter-spacing: 1px;
-        color: #fff;
-        margin: 0;
-    }
-    /* Destinations overview grid */
-    .tp-section-heading {
-        font-size: clamp(22px, 3.5vw, 32px);
-        font-weight: 700;
-        color: #fff;
-        letter-spacing: 1px;
-        margin: 0 0 6px;
-    }
-    .tp-section-sub { color: #888; font-size: 14px; margin: 0 0 18px; }
-    .tp-dest-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 16px;
-    }
-    .tp-dest-card {
-        background: linear-gradient(180deg, #0e0e10 0%, #060607 100%);
-        border: 1px solid rgba(255,215,0,0.12);
-        border-radius: 14px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        text-decoration: none;
-        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-    }
-    a.tp-dest-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(255,215,0,0.45);
-        box-shadow: 0 14px 32px rgba(0,0,0,0.6);
-    }
-    .tp-dest-thumb { aspect-ratio: 16/10; background: #111; overflow: hidden; }
-    .tp-dest-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .tp-dest-placeholder {
-        width: 100%; height: 100%;
-        display: flex; align-items: center; justify-content: center;
-        color: rgba(255,215,0,0.3); font-size: 34px;
-    }
-    .tp-dest-name {
-        color: #fff; font-weight: 600; font-size: 15px;
-        padding: 12px 14px 0;
-        text-transform: uppercase; letter-spacing: .5px;
-    }
-    .tp-dest-count { color: #FFD23F; font-size: 12px; padding: 2px 14px 14px; }
-    .tp-dest-soon { opacity: .6; }
-    .tp-dest-soon .tp-dest-placeholder { color: rgba(255,255,255,0.18); }
-    .tp-dest-badge {
-        align-self: flex-start;
-        margin: 4px 14px 14px;
-        background: rgba(255,255,255,0.08);
-        color: #bbb; font-size: 11px; font-weight: 600;
-        text-transform: uppercase; letter-spacing: 1px;
-        padding: 3px 10px; border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-    }
-    .tour-card {
-        background: linear-gradient(180deg, #0e0e10 0%, #060607 100%);
-        border: 1px solid rgba(255,215,0,0.12);
-        border-radius: 14px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
-    }
-    .tour-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(255,215,0,0.4);
-        box-shadow: 0 18px 40px rgba(0,0,0,0.6);
-    }
-    .tour-card-image {
-        position: relative;
-        aspect-ratio: 16/10;
-        overflow: hidden;
-        background: #111;
-    }
-    .tour-card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        transition: transform .4s ease;
-    }
-    .tour-card:hover .tour-card-image img { transform: scale(1.04); }
-    .tour-card-placeholder {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba(255,215,0,0.25);
-        font-size: 56px;
-    }
-    .tour-card-duration {
-        position: absolute;
-        bottom: 12px;
-        left: 12px;
-        background: rgba(0,0,0,0.7);
-        backdrop-filter: blur(6px);
-        color: #FFD23F;
-        font-size: 12px;
-        font-weight: 500;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(255,215,0,0.3);
-    }
-    .tour-card-body {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        flex: 1;
-    }
-    .tour-card-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #fff;
-        margin: 0;
-        line-height: 1.3;
-    }
-    .tour-card-desc {
-        font-size: 13px;
-        color: #aaa;
-        line-height: 1.55;
-        margin: 0;
-        flex: 1;
-    }
-    .tour-card-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-top: 12px;
-        border-top: 1px dashed rgba(255,215,0,0.15);
-        margin-top: auto;
-    }
-    .tour-card-price-label {
-        display: block;
-        font-size: 11px;
-        color: #888;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
-    .tour-card-price {
-        font-size: 20px;
-        font-weight: 700;
-        color: #FFD23F;
-    }
-    .tour-card-cta {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #000;
-        background: linear-gradient(135deg,#FFD700 0%,#D4AF37 100%);
-        padding: 8px 14px;
-        border-radius: 999px;
-        text-decoration: none;
-        transition: transform .15s ease, box-shadow .15s ease;
-    }
-    .tour-card-cta:hover {
-        transform: translateX(2px);
-        box-shadow: 0 6px 18px rgba(212,175,55,0.35);
-        color: #000;
-        text-decoration: none;
-    }
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&display=swap');
+
+  html, body { background: #000 !important; }
+  .tp * { box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+  /* ── HERO overlay ── */
+  .tp-hero {
+    position: relative;
+    height: 100vh;
+    min-height: 560px;
+    background: url('{{ asset('assets/index_files/533419533.jpg') }}') center/cover no-repeat;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .tp-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.85) 100%);
+  }
+  .tp-hero-inner {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 1400px;
+    padding: 140px 20px 20px;
+  }
+
+  /* ── Title + search row ── */
+  .tp-toprow {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
+  }
+  .tp-hero-title {
+    color: #fff; font-size: clamp(24px, 4vw, 40px); font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase; margin: 0; line-height: 1.1;
+  }
+  .tp-hero-title span { color: #FFD23F; }
+
+  .tp-search-wrap {
+    position: relative; max-width: 380px; width: 100%;
+    background: linear-gradient(135deg, rgba(212,175,55,.22), rgba(0,0,0,.8), rgba(212,175,55,.22));
+    padding: 1px; border-radius: 50px;
+  }
+  .tp-search-input {
+    width: 100%; padding: 11px 22px 11px 50px; background: #0a0a0a;
+    border: none; border-radius: 50px; color: #fff; font-size: 14px;
+    font-family: 'Outfit', sans-serif; outline: none; letter-spacing: .4px;
+    transition: box-shadow .3s;
+  }
+  .tp-search-input::placeholder { color: rgba(255,255,255,.4); font-weight: 300; }
+  .tp-search-input:focus { box-shadow: 0 0 22px rgba(212,175,55,.4); }
+  .tp-search-icon {
+    position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+    color: #FFD700; font-size: 18px; pointer-events: none;
+  }
+
+  /* ── Legend strip ── */
+  .tp-legend {
+    display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 14px;
+    font-size: 12px; color: #aaa; align-items: center;
+  }
+  .tp-legend-dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px;
+  }
+  .tp-legend-dot.feat   { background: #FFD700; }
+  .tp-legend-dot.soon   { background: rgba(255,255,255,.25); }
+  .tp-legend-dot.normal { background: rgba(255,210,63,.15); border: 1px solid rgba(255,210,63,.2); }
+
+  /* ── Country grid ── */
+  .tp-grid-loader {
+    display: flex; justify-content: center; align-items: center; min-height: 200px;
+    color: #FFD23F; font-size: 16px; letter-spacing: 2px; text-transform: uppercase; gap: 12px;
+  }
+  .tp-country-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    max-height: 62vh;
+    overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: #FFD23F #111;
+    display: none;
+  }
+  .tp-country-grid::-webkit-scrollbar { width: 6px; }
+  .tp-country-grid::-webkit-scrollbar-thumb { background: #FFD23F; border-radius: 10px; }
+
+  .tp-country-card {
+    background: rgba(15,15,15,.95);
+    border: 1px solid rgba(255,210,63,.1);
+    border-radius: 12px; padding: 12px;
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    position: relative; z-index: 1; cursor: default;
+  }
+  .tp-country-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(255,215,0,.6);
+    box-shadow: 0 10px 28px rgba(0,0,0,.85);
+    z-index: 10;
+  }
+  .tp-country-card img {
+    width: 100%; height: 110px; object-fit: cover; border-radius: 7px;
+    margin-bottom: 10px; border: 1px solid rgba(255,255,255,.05); pointer-events: none;
+    display: block;
+  }
+  .tp-country-name {
+    color: #FFD23F; font-weight: 700; font-size: 14px; display: block;
+    text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px;
+  }
+
+  /* Featured (has real packages) */
+  .tp-country-card.is-featured {
+    border-color: rgba(255,215,0,.45);
+    background: linear-gradient(160deg, rgba(255,215,0,.07) 0%, rgba(15,15,15,.95) 60%);
+  }
+  .tp-feat-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: #000; background: #FFD700;
+    border-radius: 999px; padding: 3px 9px; margin-bottom: 7px;
+  }
+  .tp-feat-btn {
+    display: block; width: 100%; text-align: center;
+    background: linear-gradient(135deg,#FFD700,#D4AF37); color: #000;
+    font-size: 11px; font-weight: 700; letter-spacing: .5px;
+    border-radius: 8px; padding: 7px 4px; text-decoration: none;
+    transition: transform .14s ease, box-shadow .14s ease;
+    margin-top: 8px;
+  }
+  .tp-feat-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(212,175,55,.35); color: #000; text-decoration: none; }
+
+  /* Coming-soon */
+  .tp-country-card.is-soon { opacity: .6; }
+  .tp-soon-badge {
+    display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: .8px;
+    text-transform: uppercase; color: #aaa; background: rgba(255,255,255,.09);
+    border: 1px solid rgba(255,255,255,.12); border-radius: 999px;
+    padding: 2px 8px; margin-bottom: 4px;
+  }
+
+  /* Dropdown details (normal countries) */
+  .tp-details { cursor: pointer; margin-top: 6px; width: 100%; }
+  .tp-details summary {
+    list-style: none; font-size: 11px; color: #FFD23F; text-transform: uppercase;
+    letter-spacing: 1px; display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 0; border-top: 1px solid rgba(255,210,63,.1); outline: none;
+    transition: opacity .2s;
+  }
+  .tp-details summary::-webkit-details-marker { display: none; }
+  .tp-details summary:hover { opacity: .75; }
+  .tp-details summary::after {
+    content: '\F282'; font-family: 'bootstrap-icons'; font-size: 10px; transition: transform .3s;
+  }
+  .tp-details[open] summary::after { transform: rotate(180deg); }
+  .tp-details-content {
+    margin-top: 8px; font-size: 12px; color: #eee; line-height: 1.6; padding-top: 8px;
+    border-top: 1px solid rgba(255,210,63,.1);
+    animation: tpSlide .25s ease-out;
+  }
+  @keyframes tpSlide { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+  .tp-no-results {
+    color: #888; text-align: center; padding: 40px; grid-column: 1/-1;
+    font-size: 16px; letter-spacing: 1px; display: none;
+  }
+
+
+  /* ── Responsive ── */
+  @media (max-width: 1200px) { .tp-country-grid { grid-template-columns: repeat(5, 1fr); } }
+  @media (max-width: 991px)  { .tp-country-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 768px)  {
+    .tp-hero-inner { padding-top: 110px; }
+    .tp-country-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 54vh; }
+  }
+  @media (max-width: 575px)  {
+    .tp-country-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .tp-country-card img { height: 65px; }
+    .tp-country-name { font-size: 10px; }
+    .tp-search-wrap { max-width: 100%; }
+  }
 </style>
+
+<div class="tp">
+
+  {{-- ══════════════ HERO + 180+ COUNTRY GRID ══════════════ --}}
+  <section class="tp-hero">
+    <div class="tp-hero-overlay"></div>
+    <div class="tp-hero-inner">
+
+      <div class="tp-toprow">
+        <h1 class="tp-hero-title">Explore <span>195+ Countries</span></h1>
+        <div class="tp-search-wrap">
+          <input id="tpSearch" type="text" class="tp-search-input" placeholder="Search for a country…">
+          <i class="bi bi-search tp-search-icon"></i>
+        </div>
+      </div>
+
+      <div class="tp-legend">
+        @if($hasPackages)
+        <span><span class="tp-legend-dot feat"></span> Has packages — tap to view</span>
+        @endif
+        @if($comingSoon->count())
+        <span><span class="tp-legend-dot soon"></span> Coming soon</span>
+        @endif
+        <span><span class="tp-legend-dot normal"></span> Explore destination</span>
+      </div>
+
+      <div id="tpLoader" class="tp-grid-loader">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        Loading destinations…
+      </div>
+      <div id="tpGrid" class="tp-country-grid"></div>
+      <p id="tpNoResults" class="tp-no-results" style="display:none;">No countries found.</p>
+
+    </div>
+  </section>
+
+
+</div><!-- /.tp -->
+
+<script>
+(function () {
+  const FEAT_MAP  = @json($featuredMap);          // { "Canada": "/tour-packages/canada", ... }
+  const FEAT_NAMES = Object.keys(FEAT_MAP);
+  const COMING    = @json($comingSoonCountries);  // e.g. ["Jordan","Turkey"]
+
+  const specialInfo = {
+    "Bahrain":              { best:"Nov–Mar",    dur:"4–5 days",   cost:"$72–$299",    airports:"BAH",           airline:"Gulf Air (GF)" },
+    "Egypt":                { best:"Oct–Apr",    dur:"7–10 days",  cost:"$271",        airports:"CAI,HRG,SSH",   airline:"Egypt Air (MS)" },
+    "Oman":                 { best:"Oct–Apr",    dur:"5–7 days",   cost:"$4,224",      airports:"MCT",           airline:"Oman Air (WY)" },
+    "Saudi Arabia":         { best:"Oct–Mar",    dur:"5–7 days",   cost:"$100–$200",   airports:"JED,RUH",       airline:"Saudia/Flynas" },
+    "United Arab Emirates": { best:"Oct–Apr",    dur:"5–7 days",   cost:"$200–$250",   airports:"DXB,AUH,SHJ",   airline:"Emirates/Etihad" },
+    "South Africa":         { best:"May–Sep",    dur:"10–14 days", cost:"$200–$250",   airports:"JNB,CPT",       airline:"SAA" },
+  };
+
+  fetch('https://restcountries.com/v3.1/all?fields=name,flags,capital,currencies,region')
+    .then(r => r.json())
+    .then(countries => {
+
+      // Sort: featured first (alphabetical within featured), then rest alphabetically
+      countries.sort((a, b) => {
+        const aF = FEAT_NAMES.includes(a.name.common);
+        const bF = FEAT_NAMES.includes(b.name.common);
+        if (aF && !bF) return -1;
+        if (!aF && bF) return 1;
+        return a.name.common.localeCompare(b.name.common);
+      });
+
+      const grid   = document.getElementById('tpGrid');
+      const loader = document.getElementById('tpLoader');
+
+      let html = '';
+      countries.forEach(c => {
+        const name   = c.name.common;
+        const info   = specialInfo[name] || { best:"Year-Round", dur:"5–7 days", cost:"$150–$300", airports:"International", airline:"Multiple" };
+        const ck     = Object.keys(c.currencies || {})[0];
+        const cName  = ck ? c.currencies[ck].name : 'N/A';
+        const cSym   = ck ? (c.currencies[ck].symbol || ck) : '';
+        const cap    = c.capital ? c.capital[0] : 'N/A';
+        const isFeat = FEAT_NAMES.includes(name);
+        const isSoon = COMING.includes(name);
+
+        if (isFeat) {
+          const pageUrl = FEAT_MAP[name];
+          html += `
+            <a class="tp-country-card is-featured" href="${pageUrl}" style="text-decoration:none;">
+              <img src="${c.flags.svg || c.flags.png}" alt="${name}" loading="lazy">
+              <span class="tp-feat-badge"><i class="bi bi-star-fill" style="font-size:9px;"></i> Featured</span>
+              <span class="tp-country-name">${name}</span>
+              <span class="tp-feat-btn">View Packages →</span>
+            </a>`;
+        } else if (isSoon) {
+          html += `
+            <div class="tp-country-card is-soon">
+              <img src="${c.flags.svg || c.flags.png}" alt="${name}" loading="lazy">
+              <span class="tp-soon-badge">Coming Soon</span>
+              <span class="tp-country-name">${name}</span>
+            </div>`;
+        } else {
+          html += `
+            <div class="tp-country-card">
+              <img src="${c.flags.svg || c.flags.png}" alt="${name}" loading="lazy">
+              <span class="tp-country-name">${name}</span>
+              <details class="tp-details">
+                <summary>Details</summary>
+                <div class="tp-details-content">
+                  <strong>Capital:</strong> ${cap}<br>
+                  <strong>Best time:</strong> ${info.best}<br>
+                  <strong>Currency:</strong> ${cName} (${cSym})<br>
+                  <strong>Stay:</strong> ${info.dur}<br>
+                  <strong>Budget/day:</strong> ${info.cost}<br>
+                  <strong>Airports:</strong> ${info.airports}<br>
+                  <strong>Airlines:</strong> ${info.airline}
+                </div>
+              </details>
+            </div>`;
+        }
+      });
+
+      grid.innerHTML = html;
+      loader.style.display = 'none';
+      grid.style.display   = 'grid';
+
+      // Accordion: close other open details when one opens
+      grid.querySelectorAll('.tp-details').forEach(d => {
+        d.addEventListener('toggle', function () {
+          if (this.open) {
+            grid.querySelectorAll('.tp-details').forEach(o => { if (o !== this) o.removeAttribute('open'); });
+          }
+        });
+      });
+    })
+    .catch(() => {
+      document.getElementById('tpLoader').innerHTML = '<i class="bi bi-exclamation-triangle" style="margin-right:8px;"></i>Failed to load. Please refresh.';
+    });
+
+  // Search
+  document.getElementById('tpSearch').addEventListener('input', function () {
+    const term  = this.value.toLowerCase();
+    const grid  = document.getElementById('tpGrid');
+    const cards = grid.querySelectorAll('.tp-country-card');
+    const noRes = document.getElementById('tpNoResults');
+    let found   = false;
+    cards.forEach(card => {
+      const name = card.querySelector('.tp-country-name');
+      const show = !term || (name && name.textContent.toLowerCase().includes(term));
+      card.style.display = show ? '' : 'none';
+      if (show) found = true;
+      const d = card.querySelector('.tp-details');
+      if (d && !show) d.removeAttribute('open');
+    });
+    noRes.style.display = found ? 'none' : 'block';
+  });
+})();
+</script>
 
 @include('footer')

@@ -154,7 +154,7 @@
         .gt-nav-primary .gt-nav-link { color: #FFFFFF; }
         .gt-nav-sublink {
             font-family: 'Outfit', sans-serif;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
@@ -222,16 +222,13 @@
         /* NAV LINKS - Premium Styling */
         .gt-nav-link {
             font-family: 'Outfit', sans-serif;
-            font-size: 13px;
-            /* Slightly reduced font size */
+            font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.5px;
-            /* Reduced spacing */
             text-transform: uppercase;
             color: #FFD700;
             text-decoration: none;
-            padding: 10px 14px;
-            /* Reduced padding */
+            padding: 5px 8px;
             position: relative;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
@@ -1148,32 +1145,34 @@
         /* RESPONSIVE — tighten the two-row nav so it never overflows on smaller
            laptops. Tiers shrink font/gap as the viewport narrows; below 992px it
            collapses to the mobile menu. */
-        @media (max-width: 1560px) {
-            .gt-nav-row { gap: 5px 12px; }
-            .gt-nav-link { font-size: 12px; padding: 6px 6px; letter-spacing: 0.3px; }
-            .gt-nav-sublink { font-size: 10px; letter-spacing: 0.3px; }
-            .gt-logo { padding: 0 20px; }
-            .gt-logo img { height: 56px; }
-        }
-
-        @media (max-width: 1300px) {
+        /* Both rows always share the same font size; they shrink together so the
+           longer second row keeps fitting, then drop to the mobile menu <=1200. */
+        @media (max-width: 1480px) {
             .gt-nav-row { gap: 4px 9px; }
-            .gt-nav-link { font-size: 11px; padding: 5px 5px; letter-spacing: 0.2px; }
-            .gt-nav-sublink { font-size: 9.5px; letter-spacing: 0.2px; }
-            .gt-logo { padding: 0 14px; }
-            .gt-logo img { height: 48px; }
+            .gt-nav-link { font-size: 11px; padding: 4px 7px; letter-spacing: 0.3px; }
+            .gt-nav-sublink { font-size: 11px; letter-spacing: 0.3px; }
+            .gt-logo { padding: 0 16px; }
+            .gt-logo img { height: 54px; }
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1380px) {
             .gt-nav-row { gap: 3px 7px; }
-            .gt-nav-link { font-size: 10px; padding: 4px 4px; }
-            .gt-nav-sublink { font-size: 9px; }
-            .gt-logo { padding: 0 10px; }
-            .gt-logo img { height: 44px; }
+            .gt-nav-link { font-size: 10px; padding: 4px 6px; letter-spacing: 0.2px; }
+            .gt-nav-sublink { font-size: 10px; letter-spacing: 0.2px; }
+            .gt-logo { padding: 0 12px; }
+            .gt-logo img { height: 48px; }
             .gt-flash { margin-left: 3px; }
         }
 
-        @media (max-width: 991px) {
+        @media (max-width: 1260px) {
+            .gt-nav-row { gap: 2px 5px; }
+            .gt-nav-link { font-size: 9px; padding: 3px 5px; }
+            .gt-nav-sublink { font-size: 9px; }
+            .gt-logo { padding: 0 10px; }
+            .gt-logo img { height: 44px; }
+        }
+
+        @media (max-width: 1200px) {
             .gt-desktop-nav {
                 display: none !important;
             }
@@ -1283,16 +1282,11 @@
     $gtBadge = fn ($key) => !empty($gtFlash[$key])
         ? ' <i class="bi bi-lightning-charge-fill gt-flash" aria-hidden="true"></i>' : '';
 
-    // Enquiry link for offerings that don't have a page yet (Holiday Homes,
-    // Local/Festival/Medical Tours, Hotels): WhatsApp if a number is set, else
-    // the Contact page. $service is woven into the prefilled WhatsApp message.
-    $gtEnquiryWa = $gtCo ? $gtCo->getSetting('enquiry_whatsapp', '') : '';
-    $gtEnquire = function ($service) use ($gtEnquiryWa) {
-        if (!$gtEnquiryWa) {
-            return url('/contact-us');
-        }
-        return 'https://wa.me/' . $gtEnquiryWa . '?text=' . rawurlencode("Hi, I'd like to enquire about: {$service}");
-    };
+    // Offerings without a dedicated page (Insurance, Transport, MICE, Holiday
+    // Homes, Local/Festival/Medical Tours, Hotels) send the visitor to the
+    // Contact page so they know to enquire. The service name rides along as a
+    // query param for context.
+    $gtEnquire = fn ($service) => url('/contact-us') . '?enquiry=' . urlencode($service);
 @endphp
     <!-- ==================== PREMIUM HEADER ==================== -->
     <header class="gt-header">

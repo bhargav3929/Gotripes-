@@ -106,6 +106,26 @@ Route::prefix('/')->group(function () {
         $package->load('images');
         return view('tour-package-detail', compact('package'));
     })->whereNumber('id')->middleware('tenant.feature:tours')->name('tour-packages.show');
+
+    // Dedicated country packages page — e.g. /tour-packages/canada
+    // whereNumber on the route above ensures numeric IDs never reach here.
+    Route::get('tour-packages/{country}', function (string $country) {
+        $packages = \App\Models\TravelPackage::where('isActive', 1)
+            ->get()
+            ->filter(fn($p) => \Illuminate\Support\Str::slug($p->country ?? '') === $country)
+            ->values();
+
+        abort_if($packages->isEmpty(), 404);
+
+        $countryName = $packages->first()->country;
+        $flagEntry   = collect(\App\Support\CountryCodes::all())->firstWhere('name', $countryName);
+        $flag        = $flagEntry['flag'] ?? '🌍';
+        $heroImage   = $packages->first(fn($p) => !empty($p->image))?->image;
+        $minPrice    = $packages->min('price');
+        $maxPrice    = $packages->max('price');
+
+        return view('tour-packages-country', compact('packages', 'countryName', 'flag', 'heroImage', 'minPrice', 'maxPrice'));
+    })->middleware('tenant.feature:tours')->name('tour-packages.country');
     Route::get('ourstory', fn() => view('ourstory'));
     Route::get('contact-us', fn() => view('contact-us'));
     Route::get('termsandconditions', fn() => view('termsandconditions'));
