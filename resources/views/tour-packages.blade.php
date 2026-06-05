@@ -13,7 +13,7 @@
     <section class="tour-hero" style="position:relative; height:42vh; min-height:300px; background:url('{{ asset('assets/index_files/533419533.jpg') }}') center/cover no-repeat; display:flex; align-items:center; justify-content:center; text-align:center;">
         <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.8) 100%);"></div>
         <div class="container" style="position:relative; z-index:2;">
-            <p style="font-family:'Satisfy',cursive; font-size:clamp(20px,3vw,32px); color:#FFD23F; margin-bottom:6px;">Curated by {{ $tenant?->name ?? 'us' }}</p>
+            <p style="font-family:'Outfit',sans-serif; font-weight:500; font-style:italic; letter-spacing:1px; font-size:clamp(15px,2vw,20px); color:#FFD23F; margin-bottom:8px; text-transform:uppercase;">Curated by {{ $tenant?->name ?? 'us' }}</p>
             <h1 style="font-size:clamp(32px,7vw,64px); font-weight:800; letter-spacing:3px; background:linear-gradient(135deg,#FFD700 0%, #D4AF37 50%, #B8960C 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-transform:uppercase; margin-bottom:16px;">Tour Packages</h1>
             <p style="font-size:clamp(14px,2vw,18px); color:#ddd; max-width:720px; margin:0 auto; line-height:1.6;">
                 Handpicked tour experiences across the globe. Pick a destination below to see our packages.
