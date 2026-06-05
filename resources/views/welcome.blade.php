@@ -22,9 +22,9 @@
     }
     .home-fifa-inner {
         max-width: 1140px; margin: 0 auto;
-        display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap;
+        display: flex; align-items: stretch; justify-content: space-between; gap: 32px; flex-wrap: wrap;
     }
-    .home-fifa-copy { flex: 1 1 480px; }
+    .home-fifa-copy { flex: 1 1 480px; display: flex; flex-direction: column; justify-content: center; }
     .home-fifa-kicker {
         display: inline-flex; align-items: center; gap: 8px;
         font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
@@ -43,13 +43,17 @@
     .home-fifa-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,138,0,.35); color:#111; }
     .home-fifa-ghost { background: transparent; color: #eee; border: 1px solid #2a2a2a; }
     .home-fifa-ghost:hover { border-color: #FFD700; color: #FFD700; }
-    .home-fifa-badge {
-        flex: 0 0 auto; text-align: center; padding: 28px 34px; border: 1px solid rgba(255,215,0,0.25); border-radius: 18px;
+    .home-fifa-panel {
+        flex: 0 0 320px; display: flex; flex-direction: column; justify-content: space-between;
+        padding: 26px 28px; border: 1px solid rgba(255,215,0,0.25); border-radius: 18px;
         background: rgba(255,215,0,0.04);
     }
-    .home-fifa-badge .yr { font-size: 3rem; font-weight: 800; color: #FFD700; line-height: 1; letter-spacing: -0.03em; }
-    .home-fifa-badge .lb { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #888; margin-top: 8px; }
-    @media (max-width: 640px) { .home-fifa-badge { display: none; } }
+    .home-fifa-panel .yr { font-size: 2.4rem; font-weight: 800; color: #FFD700; line-height: 1; letter-spacing: -0.03em; }
+    .home-fifa-panel .lb { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #8a8a8a; margin-top: 6px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,215,0,0.14); }
+    .home-fifa-list { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; justify-content: space-between; flex: 1; gap: 14px; }
+    .home-fifa-list li { display: flex; align-items: center; gap: 11px; color: #e2e2e2; font-size: 0.94rem; font-weight: 500; }
+    .home-fifa-list li i { color: #FFD700; font-size: 1rem; width: 20px; text-align: center; flex: none; }
+    @media (max-width: 760px) { .home-fifa-panel { flex: 1 1 100%; } }
 </style>
 <section class="home-fifa">
     <div class="home-fifa-inner">
@@ -62,9 +66,18 @@
                 <a href="{{ $fifaWaLink }}" target="_blank" rel="noopener" class="home-fifa-btn home-fifa-ghost"><i class="bi bi-whatsapp"></i> Enquire on WhatsApp</a>
             </div>
         </div>
-        <div class="home-fifa-badge">
-            <div class="yr">2026</div>
-            <div class="lb">US · Mexico · Canada</div>
+        <div class="home-fifa-panel">
+            <div>
+                <div class="yr">2026</div>
+                <div class="lb">USA · Mexico · Canada</div>
+            </div>
+            <ul class="home-fifa-list">
+                <li><i class="bi bi-ticket-perforated"></i> VIP match tickets</li>
+                <li><i class="bi bi-airplane-engines"></i> Private jets</li>
+                <li><i class="bi bi-building"></i> Penthouse suites</li>
+                <li><i class="bi bi-car-front"></i> Chauffeur service</li>
+                <li><i class="bi bi-stars"></i> Exclusive after-parties</li>
+            </ul>
         </div>
     </div>
 </section>
