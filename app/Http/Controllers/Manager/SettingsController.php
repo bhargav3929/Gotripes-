@@ -11,6 +11,20 @@ class SettingsController extends Controller
 {
     private const CURRENCIES = ['AED', 'USD', 'SAR', 'EUR', 'INR', 'GBP'];
 
+    // Menu items that can show a seasonal flashy "Hot/Trending" badge.
+    // key => label (label shown in the manager Menu Highlights UI).
+    public const MENU_FLASH_ITEMS = [
+        'events'         => 'Events',
+        'evisa'          => 'e-Visa (30 countries)',
+        'cruises'        => 'Cruises',
+        'holiday_homes'  => 'Holiday Homes',
+        'local_tours'    => 'Local Tours',
+        'festival_tours' => 'Festival Tours',
+        'medical_tours'  => 'Medical Tours',
+        'hotels'         => 'Hotels',
+        'esim'           => 'eSIM',
+    ];
+
     private const TIMEZONES = [
         'Asia/Dubai',
         'Asia/Riyadh',
@@ -64,9 +78,10 @@ class SettingsController extends Controller
         abort_unless($company, 404);
 
         return view('manager.settings.preferences', [
-            'company'    => $company,
-            'currencies' => self::CURRENCIES,
-            'timezones'  => self::TIMEZONES,
+            'company'        => $company,
+            'currencies'     => self::CURRENCIES,
+            'timezones'      => self::TIMEZONES,
+            'menuFlashItems' => self::MENU_FLASH_ITEMS,
         ]);
     }
 
@@ -80,6 +95,7 @@ class SettingsController extends Controller
             'timezone'          => ['required', Rule::in(self::TIMEZONES)],
             'markup_percentage' => 'required|numeric|min:0|max:100',
             'level9_whatsapp'   => 'nullable|string|max:30',
+            'enquiry_whatsapp'  => 'nullable|string|max:30',
         ]);
 
         $company->update([
@@ -88,11 +104,19 @@ class SettingsController extends Controller
             'markup_percentage' => $validated['markup_percentage'],
         ]);
 
-        // Homepage promotion toggles (GoTrips main site only — drive @platformOnly
-        // content like the FIFA World Cup 2026 / Events trending campaign).
-        $company->setSetting('events_trending_enabled', $request->boolean('events_trending_enabled'));
+        // Per-item flashy "Hot/Trending" menu badges (seasonal on/off).
+        $flash = [];
+        foreach (array_keys(self::MENU_FLASH_ITEMS) as $key) {
+            $flash[$key] = $request->boolean("flash_{$key}");
+        }
+        $company->setSetting('menu_flash', $flash);
+
+        // Homepage FIFA promo section (GoTrips main site only, @platformOnly).
         $company->setSetting('fifa_promo_enabled', $request->boolean('fifa_promo_enabled'));
+
+        // Contact numbers for "Enquire on WhatsApp" CTAs.
         $company->setSetting('level9_whatsapp', preg_replace('/[^0-9]/', '', (string) ($validated['level9_whatsapp'] ?? '')));
+        $company->setSetting('enquiry_whatsapp', preg_replace('/[^0-9]/', '', (string) ($validated['enquiry_whatsapp'] ?? '')));
         $company->save();
 
         return redirect()

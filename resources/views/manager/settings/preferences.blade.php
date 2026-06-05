@@ -53,6 +53,29 @@
             <small>Markup added on top of eSIM supplier cost price. E.g. 20% means a $10 cost eSIM will be sold at $12. Set to 0 to use platform default.</small>
         </div>
 
+        <div class="promo-divider">
+            <span>Menu Highlights</span>
+        </div>
+        <p class="lede" style="margin-top:-6px;">Show a flashy animated <em>Hot / Trending</em> badge on any menu item to attract customers. Turn on per season, off when it's over.</p>
+
+        @php $flash = $company->getSetting('menu_flash', []); @endphp
+        <div class="flash-grid">
+            @foreach($menuFlashItems as $key => $label)
+            <label class="toggle-row">
+                <input type="checkbox" name="flash_{{ $key }}" value="1" @checked($flash[$key] ?? false)>
+                <span class="toggle-text"><strong>{{ $label }}</strong></span>
+            </label>
+            @endforeach
+        </div>
+
+        <div class="form-row" style="margin-top:18px;">
+            <label for="enquiry_whatsapp">Enquiry WhatsApp number</label>
+            <input type="text" id="enquiry_whatsapp" name="enquiry_whatsapp"
+                   value="{{ old('enquiry_whatsapp', $company->getSetting('enquiry_whatsapp', '')) }}"
+                   placeholder="e.g. 971505574373 (country code, no + or spaces)">
+            <small>Used by “Enquire on WhatsApp” for Holiday Homes, Local/Festival/Medical Tours, Hotels. Leave blank to use the Contact page instead.</small>
+        </div>
+
         @platformOnly
         <div class="promo-divider">
             <span>Homepage Promotions</span>
@@ -68,17 +91,8 @@
             </span>
         </label>
 
-        <label class="toggle-row">
-            <input type="checkbox" name="events_trending_enabled" value="1"
-                   @checked($company->getSetting('events_trending_enabled', false))>
-            <span class="toggle-text">
-                <strong>“Trending” badge on Events menu</strong>
-                <small>Adds a flashy animated badge to the Events tab while a campaign is live.</small>
-            </span>
-        </label>
-
         <div class="form-row" style="margin-top:18px;">
-            <label for="level9_whatsapp">Concierge WhatsApp number</label>
+            <label for="level9_whatsapp">Concierge WhatsApp number (FIFA / LEVEL9)</label>
             <input type="text" id="level9_whatsapp" name="level9_whatsapp"
                    value="{{ old('level9_whatsapp', $company->getSetting('level9_whatsapp', '')) }}"
                    placeholder="e.g. 14165551234 (country code, no + or spaces)">
@@ -132,5 +146,7 @@
     .toggle-row input { margin-top:3px; width:16px; height:16px; accent-color:#FFD700; flex:none; }
     .toggle-text strong { display:block; font-size:13px; color:#f0f0f0; font-weight:600; }
     .toggle-text small { display:block; font-size:12px; color:#888; margin-top:2px; }
+    .flash-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px; }
+    .flash-grid .toggle-row { margin-bottom:0; align-items:center; }
 </style>
 @endsection

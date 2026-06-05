@@ -227,6 +227,41 @@
             .gt-trending-badge { animation: none; }
         }
 
+        /* ===== Desktop dropdown menus ===== */
+        .gt-dropdown { position: relative; display: inline-flex; }
+        .gt-dd-toggle {
+            background: transparent; border: none; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .gt-dd-toggle i { font-size: 0.62em; transition: transform 0.2s ease; opacity: 0.8; }
+        .gt-dropdown:hover .gt-dd-toggle i,
+        .gt-dropdown:focus-within .gt-dd-toggle i { transform: rotate(180deg); }
+        .gt-dd-menu {
+            position: absolute; top: 100%; left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            min-width: 220px; padding: 8px;
+            background: #0b0b0b; border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 14px; box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55);
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            z-index: 10002;
+        }
+        .gt-dropdown:hover .gt-dd-menu,
+        .gt-dropdown:focus-within .gt-dd-menu {
+            opacity: 1; visibility: visible; pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+        .gt-dd-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 14px; border-radius: 9px;
+            font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+            color: #e8e8e8; text-decoration: none; white-space: nowrap;
+            text-transform: none; letter-spacing: normal;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .gt-dd-item:hover { background: rgba(255, 215, 0, 0.1); color: #FFD700; }
+        .gt-dd-sub { font-size: 11px; font-weight: 400; color: #8a8a8a; }
+
 
         /* =====================================================
            INLINE SEARCH BAR + PARTNER CTA
@@ -1013,6 +1048,23 @@
             border-bottom: none;
         }
 
+        /* Mobile accordion sub-menus */
+        .gt-macc-toggle {
+            width: 100%; background: transparent; border: none; cursor: pointer; text-align: left;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .gt-macc-toggle i { font-size: 0.7em; opacity: 0.7; transition: transform 0.25s ease; }
+        .gt-macc.open .gt-macc-toggle i { transform: rotate(180deg); }
+        .gt-macc-panel { max-height: 0; overflow: hidden; transition: max-height 0.28s ease; background: rgba(0, 0, 0, 0.25); }
+        .gt-macc.open .gt-macc-panel { max-height: 520px; }
+        .gt-macc-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 13px 30px 13px 46px;
+            font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.5px;
+            color: #cfcfcf; text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .gt-macc-item:hover { color: #FFD700; background: rgba(255, 215, 0, 0.07); }
+
         /* Mobile Logo */
         .gt-mobile-logo {
             position: absolute;
@@ -1150,11 +1202,24 @@
 <body class="{{ request()->is('/') ? 'has-ticker' : '' }}">
 @include('partials.intl-tel-init')
 @php
-    // Seasonal "Trending" badge for the Events tab (driven by the manager toggle).
-    // Precomputed because Blade won't parse @if when stuck to a word (Events@if...).
+    // --- Menu helpers ---
+    // Per-item flashy "Hot" badge, driven by the manager Menu Highlights toggles.
+    // Precomputed strings because Blade won't parse @if stuck to a word (Label@if..).
     $gtCo = current_company();
-    $gtEventsBadge = ($gtCo && $gtCo->getSetting('events_trending_enabled', false))
-        ? '<span class="gt-trending-badge">Trending</span>' : '';
+    $gtFlash = ($gtCo ? $gtCo->getSetting('menu_flash', []) : []) ?: [];
+    $gtBadge = fn ($key) => !empty($gtFlash[$key])
+        ? '<span class="gt-trending-badge">Hot</span>' : '';
+
+    // Enquiry link for offerings that don't have a page yet (Holiday Homes,
+    // Local/Festival/Medical Tours, Hotels): WhatsApp if a number is set, else
+    // the Contact page. $service is woven into the prefilled WhatsApp message.
+    $gtEnquiryWa = $gtCo ? $gtCo->getSetting('enquiry_whatsapp', '') : '';
+    $gtEnquire = function ($service) use ($gtEnquiryWa) {
+        if (!$gtEnquiryWa) {
+            return url('/contact-us');
+        }
+        return 'https://wa.me/' . $gtEnquiryWa . '?text=' . rawurlencode("Hi, I'd like to enquire about: {$service}");
+    };
 @endphp
     <!-- ==================== PREMIUM HEADER ==================== -->
     <header class="gt-header">
@@ -1165,27 +1230,43 @@
                 <!-- Left Menu -->
                 <div class="gt-nav-left">
                     <a href="/" class="gt-nav-link {{ Request::is('/') ? 'active' : '' }}">Home</a>
-                    @feature('activities')
-                    <a href="/activities"
-                        class="gt-nav-link {{ Request::is('activities') ? 'active' : '' }}">Activities</a>
-                    @endfeature
-                    @feature('visas')
-                    <a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">Visa
-                        Services</a>
-                    @endfeature
-                    @feature('tours')
-                    <a href="/tour-packages" class="gt-nav-link {{ Request::is('tour-packages') ? 'active' : '' }}">Tour
-                        Packages</a>
-                    @endfeature
-                    @feature('hajj_umrah')
-                    <a href="/hajj-umrah" class="gt-nav-link {{ Request::is('hajj-umrah') ? 'active' : '' }}">Hajj &
-                        Umrah</a>
-                    @endfeature
-                    @feature('esim')
-                    <a href="/esim" class="gt-nav-link {{ Request::is('esim') ? 'active' : '' }}">eSIM</a>
-                    @endfeature
+
+                    {{-- Visas --}}
+                    <div class="gt-dropdown">
+                        <button type="button" class="gt-nav-link gt-dd-toggle {{ Request::is('uaevisa','uae-evisa','visaservice') ? 'active' : '' }}">Visas <i class="bi bi-chevron-down"></i></button>
+                        <div class="gt-dd-menu">
+                            @feature('visas')
+                            <a href="/uaevisa" class="gt-dd-item">UAE Visa</a>
+                            <a href="/uae-evisa" class="gt-dd-item">Apply e-Visa <span class="gt-dd-sub">30 countries</span>{!! $gtBadge('evisa') !!}</a>
+                            @endfeature
+                        </div>
+                    </div>
+
+                    {{-- Tours --}}
+                    <div class="gt-dropdown">
+                        <button type="button" class="gt-nav-link gt-dd-toggle {{ Request::is('tour-packages','activities','hajj-umrah') ? 'active' : '' }}">Tours <i class="bi bi-chevron-down"></i></button>
+                        <div class="gt-dd-menu">
+                            @feature('tours')<a href="/tour-packages" class="gt-dd-item">Tour Packages</a>@endfeature
+                            <a href="{{ $gtEnquire('Local Tours') }}" class="gt-dd-item">Local Tours{!! $gtBadge('local_tours') !!}</a>
+                            <a href="{{ $gtEnquire('Festival Tours') }}" class="gt-dd-item">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
+                            <a href="{{ $gtEnquire('Medical Tours') }}" class="gt-dd-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
+                            @feature('activities')<a href="/activities" class="gt-dd-item">Activities</a>@endfeature
+                            @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-dd-item">Hajj &amp; Umrah</a>@endfeature
+                        </div>
+                    </div>
+
+                    {{-- Stays --}}
+                    <div class="gt-dropdown">
+                        <button type="button" class="gt-nav-link gt-dd-toggle {{ Request::is('lotus-cruise-dubai') ? 'active' : '' }}">Stays <i class="bi bi-chevron-down"></i></button>
+                        <div class="gt-dd-menu">
+                            <a href="{{ $gtEnquire('Holiday Homes') }}" class="gt-dd-item">Holiday Homes{!! $gtBadge('holiday_homes') !!}</a>
+                            @platformOnly<a href="/lotus-cruise-dubai" class="gt-dd-item">Cruises{!! $gtBadge('cruises') !!}</a>@endplatformOnly
+                            <a href="{{ $gtEnquire('Hotels') }}" class="gt-dd-item">Hotels{!! $gtBadge('hotels') !!}</a>
+                        </div>
+                    </div>
+
                     @platformOnly
-                    <a href="/lotus-cruise-dubai" class="gt-nav-link {{ Request::is('lotus-cruise-dubai') ? 'active' : '' }}">Cruise</a>
+                    <a href="/events" class="gt-nav-link gt-nav-events {{ Request::is('events') ? 'active' : '' }}">Events{!! $gtBadge('events') !!}</a>
                     @endplatformOnly
                 </div>
 
@@ -1196,23 +1277,18 @@
 
                 <!-- Right Menu -->
                 <div class="gt-nav-right">
-                    @platformOnly
-                    <a href="/events" class="gt-nav-link gt-nav-events {{ Request::is('events') ? 'active' : '' }}">Events{!! $gtEventsBadge !!}</a>
-                    @endplatformOnly
-                    <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our Services</a>
-                    @feature('shop')
-                    <a href="/shopnow" class="gt-nav-link {{ Request::is('shopnow') ? 'active' : '' }}">Shop Online</a>
-                    @endfeature
-                    @feature('pay_online')
-                    <a href="/payonline" class="gt-nav-link {{ Request::is('payonline') ? 'active' : '' }}">Pay
-                        Online</a>
-                    @endfeature
-                    @feature('careers')
-                    <a href="/lookingforajob"
-                        class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>
-                    @endfeature
-                    <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact
-                        Us</a>
+                    {{-- More --}}
+                    <div class="gt-dropdown">
+                        <button type="button" class="gt-nav-link gt-dd-toggle {{ Request::is('esim','our-services','shopnow','payonline','lookingforajob') ? 'active' : '' }}">More <i class="bi bi-chevron-down"></i></button>
+                        <div class="gt-dd-menu">
+                            @feature('esim')<a href="/esim" class="gt-dd-item">eSIM{!! $gtBadge('esim') !!}</a>@endfeature
+                            <a href="/our-services" class="gt-dd-item">Our Services</a>
+                            @feature('shop')<a href="/shopnow" class="gt-dd-item">Shop Online</a>@endfeature
+                            @feature('pay_online')<a href="/payonline" class="gt-dd-item">Pay Online</a>@endfeature
+                            @feature('careers')<a href="/lookingforajob" class="gt-dd-item">Careers</a>@endfeature
+                        </div>
+                    </div>
+                    <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact Us</a>
                 </div>
             </div>
         </nav>
@@ -1236,17 +1312,55 @@
         <!-- Mobile Menu Dropdown -->
         <nav class="gt-mobile-nav" id="mobileNav">
             <a href="/" class="gt-mobile-nav-link">Home</a>
-            @feature('activities')<a href="/activities" class="gt-mobile-nav-link">Activities</a>@endfeature
-            @feature('visas')<a href="/uaevisa" class="gt-mobile-nav-link">Visa Services</a>@endfeature
-            @feature('tours')<a href="/tour-packages" class="gt-mobile-nav-link">Tour Packages</a>@endfeature
-            @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-mobile-nav-link">Hajj & Umrah</a>@endfeature
-            @feature('esim')<a href="/esim" class="gt-mobile-nav-link">eSIM</a>@endfeature
-            @platformOnly<a href="/lotus-cruise-dubai" class="gt-mobile-nav-link">Cruise</a>@endplatformOnly
-            @platformOnly<a href="/events" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtEventsBadge !!}</a>@endplatformOnly
-            <a href="/our-services" class="gt-mobile-nav-link">Our Services</a>
-            @feature('shop')<a href="/shopnow" class="gt-mobile-nav-link">Shop Online</a>@endfeature
-            @feature('pay_online')<a href="/payonline" class="gt-mobile-nav-link">Pay Online</a>@endfeature
-            @feature('careers')<a href="/lookingforajob" class="gt-mobile-nav-link">Careers</a>@endfeature
+
+            {{-- Visas --}}
+            <div class="gt-macc">
+                <button type="button" class="gt-mobile-nav-link gt-macc-toggle">Visas <i class="bi bi-chevron-down"></i></button>
+                <div class="gt-macc-panel">
+                    @feature('visas')
+                    <a href="/uaevisa" class="gt-macc-item">UAE Visa</a>
+                    <a href="/uae-evisa" class="gt-macc-item">Apply e-Visa (30 countries){!! $gtBadge('evisa') !!}</a>
+                    @endfeature
+                </div>
+            </div>
+
+            {{-- Tours --}}
+            <div class="gt-macc">
+                <button type="button" class="gt-mobile-nav-link gt-macc-toggle">Tours <i class="bi bi-chevron-down"></i></button>
+                <div class="gt-macc-panel">
+                    @feature('tours')<a href="/tour-packages" class="gt-macc-item">Tour Packages</a>@endfeature
+                    <a href="{{ $gtEnquire('Local Tours') }}" class="gt-macc-item">Local Tours{!! $gtBadge('local_tours') !!}</a>
+                    <a href="{{ $gtEnquire('Festival Tours') }}" class="gt-macc-item">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
+                    <a href="{{ $gtEnquire('Medical Tours') }}" class="gt-macc-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
+                    @feature('activities')<a href="/activities" class="gt-macc-item">Activities</a>@endfeature
+                    @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-macc-item">Hajj &amp; Umrah</a>@endfeature
+                </div>
+            </div>
+
+            {{-- Stays --}}
+            <div class="gt-macc">
+                <button type="button" class="gt-mobile-nav-link gt-macc-toggle">Stays <i class="bi bi-chevron-down"></i></button>
+                <div class="gt-macc-panel">
+                    <a href="{{ $gtEnquire('Holiday Homes') }}" class="gt-macc-item">Holiday Homes{!! $gtBadge('holiday_homes') !!}</a>
+                    @platformOnly<a href="/lotus-cruise-dubai" class="gt-macc-item">Cruises{!! $gtBadge('cruises') !!}</a>@endplatformOnly
+                    <a href="{{ $gtEnquire('Hotels') }}" class="gt-macc-item">Hotels{!! $gtBadge('hotels') !!}</a>
+                </div>
+            </div>
+
+            @platformOnly<a href="/events" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
+
+            {{-- More --}}
+            <div class="gt-macc">
+                <button type="button" class="gt-mobile-nav-link gt-macc-toggle">More <i class="bi bi-chevron-down"></i></button>
+                <div class="gt-macc-panel">
+                    @feature('esim')<a href="/esim" class="gt-macc-item">eSIM{!! $gtBadge('esim') !!}</a>@endfeature
+                    <a href="/our-services" class="gt-macc-item">Our Services</a>
+                    @feature('shop')<a href="/shopnow" class="gt-macc-item">Shop Online</a>@endfeature
+                    @feature('pay_online')<a href="/payonline" class="gt-macc-item">Pay Online</a>@endfeature
+                    @feature('careers')<a href="/lookingforajob" class="gt-macc-item">Careers</a>@endfeature
+                </div>
+            </div>
+
             <a href="/contact-us" class="gt-mobile-nav-link">Contact Us</a>
         </nav>
 
@@ -1367,8 +1481,16 @@
                     }
                 });
 
-                // Close menu when clicking a link
-                document.querySelectorAll('.gt-mobile-nav-link').forEach(link => {
+                // Accordion sub-menus: expand/collapse (don't close the menu)
+                document.querySelectorAll('.gt-macc-toggle').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        btn.closest('.gt-macc').classList.toggle('open');
+                    });
+                });
+
+                // Close menu when clicking an actual link (not the accordion toggles)
+                document.querySelectorAll('a.gt-mobile-nav-link, .gt-macc-item').forEach(link => {
                     link.addEventListener('click', () => {
                         mobileNav.classList.remove('active');
                         menuIcon.classList.remove('bi-x');

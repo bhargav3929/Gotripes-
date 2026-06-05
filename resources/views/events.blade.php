@@ -2,7 +2,7 @@
 
 @php
     $level9Wa = current_company()?->getSetting('level9_whatsapp', '');
-    $trending = current_company()?->getSetting('events_trending_enabled', false);
+    $trending = (current_company()?->getSetting('menu_flash', [])['events'] ?? false);
     $waMsg = rawurlencode("Hi LEVEL9 — I'm interested in the FIFA World Cup 2026 luxury experience. Please share package details.");
     $waLink = $level9Wa ? "https://wa.me/{$level9Wa}?text={$waMsg}" : url('/contact-us');
 @endphp
