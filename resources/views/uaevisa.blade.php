@@ -638,6 +638,22 @@
                 <form id="visaForm" method="POST" action="{{ route('uaev.submit') }}" enctype="multipart/form-data">
                     @csrf
 
+                    {{-- Scan Passport → auto-fill (Groq vision OCR) --}}
+                    <div class="pp-scan">
+                        <div class="pp-scan-info">
+                            <i class="bi bi-magic"></i>
+                            <div>
+                                <strong>Scan passport to auto-fill</strong>
+                                <span>Upload the passport's main page — we'll detect the nationality and details.</span>
+                            </div>
+                        </div>
+                        <label class="pp-scan-btn" id="ppScanBtnLabel">
+                            <i class="bi bi-cloud-arrow-up"></i> <span id="ppScanLabel">Upload Passport</span>
+                            <input type="file" id="ppScanFile" accept="image/jpeg,image/png,image/jpg,image/webp" hidden>
+                        </label>
+                    </div>
+                    <div id="ppScanResult" class="pp-scan-result" style="display:none;"></div>
+
                     {{-- ROW 1: Nationality, Residence, Duration --}}
                     <div class="form-grid-3">
                         <div class="form-field">
@@ -1061,6 +1077,101 @@
                 });
         });
     });
+</script>
+
+<style>
+    .pp-scan { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+        background:linear-gradient(90deg, rgba(255,215,0,0.10), rgba(255,215,0,0.02));
+        border:1px solid rgba(255,215,0,0.25); border-radius:12px; padding:14px 18px; margin-bottom:16px; }
+    .pp-scan-info { display:flex; align-items:center; gap:12px; }
+    .pp-scan-info i { font-size:24px; color:#FFD23F; }
+    .pp-scan-info strong { display:block; color:#fff; font-size:15px; }
+    .pp-scan-info span { color:#aaa; font-size:13px; }
+    .pp-scan-btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#FFD700,#D4AF37);
+        color:#000; font-weight:700; font-size:14px; padding:10px 18px; border-radius:10px; cursor:pointer; white-space:nowrap; }
+    .pp-scan-btn:hover { filter:brightness(1.05); }
+    .pp-scan-result { border:1px solid rgba(255,215,0,0.2); border-radius:10px; padding:12px 16px; margin-bottom:16px;
+        background:rgba(255,255,255,0.03); font-size:13.5px; color:#ddd; }
+    .pp-scan-result .ok { color:#4CAF50; font-weight:600; }
+    .pp-scan-result .warn { color:#e0a100; font-weight:600; }
+    .pp-scan-result .err { color:#dc3545; font-weight:600; }
+    .pp-scan-result .det { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:6px 18px; margin-top:8px; }
+    .pp-scan-result .det b { color:#fff; }
+</style>
+<script>
+(function () {
+    const fileInput = document.getElementById('ppScanFile');
+    const label = document.getElementById('ppScanLabel');
+    const result = document.getElementById('ppScanResult');
+    if (!fileInput) return;
+
+    // Common nationality adjectives → country names used in the dropdown.
+    const NAT_MAP = {
+        'british':'United Kingdom','english':'United Kingdom','indian':'India','american':'United States',
+        'pakistani':'Pakistan','emirati':'United Arab Emirates','filipino':'Philippines','egyptian':'Egypt',
+        'saudi':'Saudi Arabia','bangladeshi':'Bangladesh','sri lankan':'Sri Lanka','nepalese':'Nepal',
+        'chinese':'China','german':'Germany','french':'France','italian':'Italy','spanish':'Spain',
+        'russian':'Russia','canadian':'Canada','australian':'Australia','nigerian':'Nigeria','kenyan':'Kenya',
+        'jordanian':'Jordan','lebanese':'Lebanon','syrian':'Syria','iraqi':'Iraq','iranian':'Iran',
+        'turkish':'Turkey','south african':'South Africa','indonesian':'Indonesia','malaysian':'Malaysia'
+    };
+
+    function selectNationality(fields) {
+        const sel = document.getElementById('nationality');
+        if (!sel) return null;
+        const cands = [fields.issuing_country, fields.nationality].filter(Boolean);
+        const opts = Array.from(sel.options);
+        for (let raw of cands) {
+            let c = String(raw).trim().toLowerCase();
+            if (NAT_MAP[c]) c = NAT_MAP[c].toLowerCase();
+            let opt = opts.find(o => o.value.toLowerCase() === c);
+            if (!opt) opt = opts.find(o => o.value.toLowerCase().includes(c) || (c.length > 3 && c.includes(o.value.toLowerCase())));
+            if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change')); return opt.value; }
+        }
+        return null;
+    }
+
+    fileInput.addEventListener('change', function () {
+        const file = fileInput.files[0];
+        if (!file) return;
+        label.textContent = 'Scanning…';
+        result.style.display = 'block';
+        result.innerHTML = '<span class="warn"><i class="bi bi-hourglass-split"></i> Reading passport…</span>';
+
+        const token = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+        const fd = new FormData();
+        fd.append('passport', file);
+        fd.append('_token', token);
+
+        fetch("{{ route('passport.extract') }}", {
+            method: 'POST', headers: { 'Accept':'application/json', 'X-CSRF-TOKEN': token }, body: fd
+        })
+        .then(r => r.json().then(d => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+            label.textContent = 'Upload Passport';
+            if (ok && d.success && d.fields) {
+                const f = d.fields;
+                const picked = selectNationality(f);
+                const det = [
+                    ['Name', f.full_name || [f.given_names, f.surname].filter(Boolean).join(' ')],
+                    ['Passport No', f.passport_number], ['Nationality', f.nationality],
+                    ['Date of Birth', f.date_of_birth], ['Expiry', f.date_of_expiry]
+                ].filter(x => x[1]).map(x => `<div><b>${x[0]}:</b> ${x[1]}</div>`).join('');
+                result.innerHTML =
+                    `<span class="ok"><i class="bi bi-check-circle"></i> Passport read.</span> ` +
+                    (picked ? `Nationality set to <b>${picked}</b>.` : `Couldn't match nationality — please select it manually.`) +
+                    (det ? `<div class="det">${det}</div>` : '') +
+                    `<div style="margin-top:6px;color:#888;">Please verify the details before submitting.</div>`;
+            } else {
+                result.innerHTML = `<span class="err"><i class="bi bi-x-circle"></i> ${d.message || 'Could not read the passport. Try a clearer photo.'}</span>`;
+            }
+        })
+        .catch(() => {
+            label.textContent = 'Upload Passport';
+            result.innerHTML = '<span class="err">Network error. Please try again.</span>';
+        });
+    });
+})();
 </script>
 
 @include('footer')

@@ -293,6 +293,10 @@ Route::get('/api/esim/countries', [EsimController::class, 'getCountries'])->name
 Route::post('/esim/bundles', [EsimController::class, 'getBundles'])->name('esim.bundles');
 Route::post('/esim/purchase', [EsimController::class, 'purchase'])->name('esim.purchase');
 
+// ─── Passport OCR (Groq vision) ─────────────────────────────────────
+Route::get('/passport-scan', [\App\Http\Controllers\PassportOcrController::class, 'show'])->name('passport.scan');
+Route::post('/passport-scan/extract', [\App\Http\Controllers\PassportOcrController::class, 'extract'])->name('passport.extract');
+
 Auth::routes(['register' => false]);
 
 // ─── Manager Dashboard Routes ───────────────────────────────────────
