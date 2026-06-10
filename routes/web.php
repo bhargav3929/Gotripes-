@@ -341,6 +341,12 @@ use App\Http\Controllers\Manager\ManagerSettingsController;
 use App\Http\Controllers\Manager\ManagerFinanceController;
 use App\Http\Controllers\Manager\OrdersController;
 use App\Http\Controllers\Manager\SettingsController;
+use App\Http\Controllers\Manager\ManagerAgentsController;
+use App\Http\Controllers\Agent\AgentAuthController;
+use App\Http\Controllers\Agent\AgentDashboardController;
+use App\Http\Controllers\Agent\AgentTravelPackagesController;
+use App\Http\Controllers\Agent\AgentActivitiesController;
+use App\Http\Controllers\Agent\AgentEsimController;
 
 Route::get('/manager/login', [ManagerAuthController::class, 'showLogin'])->name('manager.login');
 Route::post('/manager/login', [ManagerAuthController::class, 'login'])->name('manager.login.submit');
@@ -356,6 +362,10 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     // BelongsToCompany trait auto-scopes queries; CRUD is per-tenant.
     Route::resource('packages', ManagerTravelPackagesController::class)->except(['show']);
     Route::resource('umrah-packages', ManagerUmrahPackagesController::class)->except(['show']);
+
+    // "Add Agent": managers create agent accounts and pick which services
+    // (tours / activities / esim) each agent may manage in the /agent portal.
+    Route::resource('agents', ManagerAgentsController::class)->except(['show']);
     // Visa pricing is a flat list of duration+price rows; CRUD is inline on the index page.
     Route::get('visa-pricing',                [ManagerVisaPricingController::class, 'index'])->name('visa-pricing.index');
     Route::post('visa-pricing',               [ManagerVisaPricingController::class, 'store'])->name('visa-pricing.store');
@@ -392,6 +402,30 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::get('/visa',                        [OrdersController::class, 'visa'])->name('visa');
         Route::get('/visa/{application}',          [OrdersController::class, 'visaDetail'])->name('visa.show');
         Route::get('/flights-hotels',              [OrdersController::class, 'flightsHotels'])->name('flights-hotels');
+    });
+});
+
+// ─── Agent Portal ───────────────────────────────────────────────────
+// Dedicated login for tenant agent accounts (role company_agent) created by
+// managers via /manager/agents. Each section is gated on the per-agent
+// service grant (which itself requires the tenant feature to be enabled).
+Route::get('/agent/login', [AgentAuthController::class, 'showLogin'])->name('agent.login');
+Route::post('/agent/login', [AgentAuthController::class, 'login'])->name('agent.login.submit');
+Route::post('/agent/logout', [AgentAuthController::class, 'logout'])->name('agent.logout');
+
+Route::middleware(['agent.auth'])->prefix('agent')->name('agent.')->group(function () {
+    Route::get('/', [AgentDashboardController::class, 'index'])->name('dashboard');
+
+    Route::middleware('agent.service:tours')->group(function () {
+        Route::resource('packages', AgentTravelPackagesController::class)->except(['show']);
+    });
+
+    Route::middleware('agent.service:activities')->group(function () {
+        Route::resource('activities', AgentActivitiesController::class)->except(['show']);
+    });
+
+    Route::middleware('agent.service:esim')->group(function () {
+        Route::get('esim-orders', [AgentEsimController::class, 'index'])->name('esim.index');
     });
 });
 

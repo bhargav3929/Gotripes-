@@ -14,6 +14,7 @@ class TravelPackage extends Model
 
     protected $fillable = [
         'company_id',
+        'agent_id',
         'title',
         'country',
         'package_type',

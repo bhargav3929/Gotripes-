@@ -21,13 +21,28 @@ class User extends Authenticatable
         'partner_document_path',
         'company_id',
         'role',
+        'agent_services',
+        'is_active',
         'is_super_admin',
         'last_login_at',
     ];
 
     protected $casts = [
         'is_super_admin' => 'boolean',
+        'is_active' => 'boolean',
+        'agent_services' => 'array',
         'last_login_at' => 'datetime',
+    ];
+
+    /**
+     * Services a manager can grant to an agent account. Keys deliberately
+     * match Company::AVAILABLE_FEATURES so a grant is only effective while
+     * the tenant itself has the feature enabled.
+     */
+    public const AGENT_SERVICES = [
+        'tours'      => 'Tour Packages',
+        'activities' => 'Activities',
+        'esim'       => 'eSIM',
     ];
 
     protected $hidden = [
@@ -73,6 +88,41 @@ class User extends Authenticatable
     public function isCompanyAdmin()
     {
         return in_array($this->role, ['company_owner', 'company_admin']);
+    }
+
+    /**
+     * Check if user is a tenant agent (created by a manager via Add Agent)
+     */
+    public function isAgent()
+    {
+        return $this->role === 'company_agent';
+    }
+
+    /**
+     * Check if this agent was granted a service (tours / activities / esim).
+     * The grant only counts while the tenant itself has the matching feature.
+     */
+    public function hasService(string $service): bool
+    {
+        if (!$this->isAgent()) {
+            return false;
+        }
+
+        $services = $this->agent_services ?? [];
+        if (!is_array($services) || !in_array($service, $services, true)) {
+            return false;
+        }
+
+        return !$this->company || $this->company->hasFeature($service);
+    }
+
+    /**
+     * Human-readable labels for this agent's granted services.
+     */
+    public function agentServiceLabels(): array
+    {
+        $services = is_array($this->agent_services) ? $this->agent_services : [];
+        return array_values(array_intersect_key(self::AGENT_SERVICES, array_flip($services)));
     }
 
 

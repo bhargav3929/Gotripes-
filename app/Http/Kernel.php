@@ -75,6 +75,8 @@ class Kernel extends HttpKernel
         'isActivitiesManager' => \App\Http\Middleware\ActivitiesManagerMiddleware::class,
         'partner.access' => \App\Http\Middleware\PartnerAccessMiddleware::class,
         'manager.auth' => \App\Http\Middleware\ManagerAuthMiddleware::class,
+        'agent.auth' => \App\Http\Middleware\AgentAuthMiddleware::class,
+        'agent.service' => \App\Http\Middleware\EnsureAgentService::class,
         'referral.agent' => \App\Http\Middleware\ReferralAgentMiddleware::class,
         'referral.tracking' => \App\Http\Middleware\ReferralTrackingMiddleware::class,
         'tenant' => \App\Http\Middleware\IdentifyTenant::class,

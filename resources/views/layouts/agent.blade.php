@@ -8,12 +8,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
         $headTenant = current_company();
-        $headTenantName = $headTenant?->name ?? 'Manager Portal';
+        $headTenantName = $headTenant?->name ?? 'Agent Portal';
         $headTenantFavicon = $headTenant?->favicon_url ?? asset('assets/index_files/logo.png');
     @endphp
     <link rel="icon" type="image/png" href="{{ $headTenantFavicon }}">
 
-    <title>@yield('title', 'Manager Panel') - {{ $headTenantName }}</title>
+    <title>@yield('title', 'Agent Panel') - {{ $headTenantName }}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -400,10 +400,11 @@
         <nav class="wp-sidebar" id="managerSidebar">
             @php
                 $tenant = current_company();
-                $brandName = $tenant?->name ?? 'Manager Portal';
+                $brandName = $tenant?->name ?? 'Agent Portal';
                 $brandLogo = $tenant?->logo_url ?? asset('assets/index_files/logo.png');
+                $agentUser = auth()->user();
             @endphp
-            <a class="sidebar-brand" href="{{ route('manager.dashboard') }}">
+            <a class="sidebar-brand" href="{{ route('agent.dashboard') }}">
                 <img src="{{ $brandLogo }}" alt="{{ $brandName }}" class="sidebar-brand-logo">
                 <span class="sidebar-brand-text">{{ $brandName }}</span>
             </a>
@@ -411,192 +412,51 @@
             <ul class="wp-nav">
                 {{-- ────────────────  HOME  ──────────────── --}}
                 <li class="wp-nav-item">
-                    <a href="{{ route('manager.dashboard') }}" class="{{ request()->routeIs('manager.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('agent.dashboard') }}" class="{{ request()->routeIs('agent.dashboard') ? 'active' : '' }}">
                         <i class="fas fa-th-large"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
 
-                {{-- ────────────────  ORDERS  ──────────────── --}}
-                {{-- Order list pages land in Step C. Until those routes exist,
-                     items render as muted "coming soon" placeholders. Each item
-                     is also gated by @feature so a tenant without (e.g.) eSIM
-                     never sees that link, even after Step C ships. --}}
+                {{-- ────────────────  MY SERVICES  ──────────────── --}}
+                {{-- Each section appears only when the manager granted the
+                     agent that service (and the tenant feature is enabled —
+                     hasService() checks both). --}}
                 <div class="wp-nav-separator"></div>
-                <li class="wp-nav-label">Orders</li>
+                <li class="wp-nav-label">My Services</li>
 
-                @feature('activities')
+                @if($agentUser?->hasService('tours'))
                 <li class="wp-nav-item">
-                    <a href="{{ Route::has('manager.orders.activities') ? route('manager.orders.activities') : '#' }}"
-                       class="{{ request()->routeIs('manager.orders.activities*') ? 'active' : '' }} {{ Route::has('manager.orders.activities') ? '' : 'wp-nav-coming' }}">
-                        <i class="fas fa-hiking"></i>
-                        <span>Activity Bookings</span>
-                    </a>
-                </li>
-                @endfeature
-
-                @feature('esim')
-                <li class="wp-nav-item">
-                    <a href="{{ Route::has('manager.orders.esim') ? route('manager.orders.esim') : '#' }}"
-                       class="{{ request()->routeIs('manager.orders.esim*') ? 'active' : '' }} {{ Route::has('manager.orders.esim') ? '' : 'wp-nav-coming' }}">
-                        <i class="fas fa-sim-card"></i>
-                        <span>eSIM Orders</span>
-                    </a>
-                </li>
-                @endfeature
-
-                @feature('visas')
-                <li class="wp-nav-item">
-                    <a href="{{ Route::has('manager.orders.visa') ? route('manager.orders.visa') : '#' }}"
-                       class="{{ request()->routeIs('manager.orders.visa*') ? 'active' : '' }} {{ Route::has('manager.orders.visa') ? '' : 'wp-nav-coming' }}">
-                        <i class="fas fa-passport"></i>
-                        <span>Visa Applications</span>
-                    </a>
-                </li>
-                @endfeature
-
-                <li class="wp-nav-item">
-                    <a href="{{ Route::has('manager.orders.flights-hotels') ? route('manager.orders.flights-hotels') : '#' }}"
-                       class="{{ request()->routeIs('manager.orders.flights-hotels*') ? 'active' : '' }} {{ Route::has('manager.orders.flights-hotels') ? '' : 'wp-nav-coming' }}">
-                        <i class="fas fa-plane"></i>
-                        <span>Flight &amp; Hotel Bookings</span>
-                    </a>
-                </li>
-
-                {{-- ────────────────  FINANCE  ──────────────── --}}
-                <div class="wp-nav-separator"></div>
-                <li class="wp-nav-label">Finance</li>
-
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.finance.index') }}" class="{{ request()->routeIs('manager.finance.index') ? 'active' : '' }}">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Earnings</span>
-                    </a>
-                </li>
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.finance.bookings') }}" class="{{ request()->routeIs('manager.finance.bookings') ? 'active' : '' }}">
-                        <i class="fas fa-receipt"></i>
-                        <span>Commissions</span>
-                    </a>
-                </li>
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.finance.bank-accounts') }}" class="{{ request()->routeIs('manager.finance.bank-accounts') ? 'active' : '' }}">
-                        <i class="fas fa-university"></i>
-                        <span>Bank Accounts</span>
-                    </a>
-                </li>
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.finance.withdrawals') }}" class="{{ request()->routeIs('manager.finance.withdrawals') ? 'active' : '' }}">
-                        <i class="fas fa-money-bill-transfer"></i>
-                        <span>Withdrawals</span>
-                    </a>
-                </li>
-
-                {{-- ────────────────  CONTENT  ──────────────── --}}
-                <div class="wp-nav-separator"></div>
-                <li class="wp-nav-label">Content</li>
-
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.adslots.index') }}" class="{{ request()->routeIs('manager.adslots.*') ? 'active' : '' }}">
-                        <i class="fas fa-photo-video"></i>
-                        <span>Hero Ad Slots</span>
-                    </a>
-                </li>
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.announcements.index') }}" class="{{ request()->routeIs('manager.announcements.*') ? 'active' : '' }}">
-                        <i class="fas fa-rss"></i>
-                        <span>News Ticker</span>
-                    </a>
-                </li>
-                @feature('activities')
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.activities.index') }}" class="{{ request()->routeIs('manager.activities.*') ? 'active' : '' }}">
-                        <i class="fas fa-hiking"></i>
-                        <span>Activities</span>
-                    </a>
-                </li>
-                @endfeature
-
-                @feature('tours')
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.packages.index') }}" class="{{ request()->routeIs('manager.packages.*') ? 'active' : '' }}">
+                    <a href="{{ route('agent.packages.index') }}" class="{{ request()->routeIs('agent.packages.*') ? 'active' : '' }}">
                         <i class="fas fa-suitcase-rolling"></i>
                         <span>Tour Packages</span>
                     </a>
                 </li>
-                @endfeature
+                @endif
 
-                @feature('hajj_umrah')
+                @if($agentUser?->hasService('activities'))
                 <li class="wp-nav-item">
-                    <a href="{{ route('manager.umrah-packages.index') }}" class="{{ request()->routeIs('manager.umrah-packages.*') ? 'active' : '' }}">
-                        <i class="fas fa-kaaba"></i>
-                        <span>Hajj &amp; Umrah</span>
+                    <a href="{{ route('agent.activities.index') }}" class="{{ request()->routeIs('agent.activities.*') ? 'active' : '' }}">
+                        <i class="fas fa-hiking"></i>
+                        <span>Activities</span>
                     </a>
                 </li>
-                @endfeature
+                @endif
 
-                @feature('visas')
+                @if($agentUser?->hasService('esim'))
                 <li class="wp-nav-item">
-                    <a href="{{ route('manager.visa-pricing.index') }}" class="{{ request()->routeIs('manager.visa-pricing.*') ? 'active' : '' }}">
-                        <i class="fas fa-passport"></i>
-                        <span>Visa Pricing</span>
-                    </a>
-                </li>
-                @endfeature
-
-                @feature('esim')
-                <li class="wp-nav-item">
-                    <a href="/esim" target="_blank">
+                    <a href="{{ route('agent.esim.index') }}" class="{{ request()->routeIs('agent.esim.*') ? 'active' : '' }}">
                         <i class="fas fa-sim-card"></i>
-                        <span>eSIM Store</span>
+                        <span>eSIM Orders</span>
                     </a>
                 </li>
-                @endfeature
-
-                {{-- ────────────────  TEAM  ──────────────── --}}
-                <div class="wp-nav-separator"></div>
-                <li class="wp-nav-label">Team</li>
-
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.agents.index') }}" class="{{ request()->routeIs('manager.agents.*') ? 'active' : '' }}">
-                        <i class="fas fa-user-tie"></i>
-                        <span>Agents</span>
-                    </a>
-                </li>
-
-                {{-- ────────────────  SETTINGS  ──────────────── --}}
-                {{-- Profile & Preferences land in Step D. Same coming-soon
-                     pattern as Orders — Route::has() makes them light up
-                     automatically when the routes exist. --}}
-                <div class="wp-nav-separator"></div>
-                <li class="wp-nav-label">Settings</li>
-
-                <li class="wp-nav-item">
-                    <a href="{{ Route::has('manager.settings.profile') ? route('manager.settings.profile') : '#' }}"
-                       class="{{ request()->routeIs('manager.settings.profile*') ? 'active' : '' }} {{ Route::has('manager.settings.profile') ? '' : 'wp-nav-coming' }}">
-                        <i class="fas fa-id-card"></i>
-                        <span>Profile &amp; Branding</span>
-                    </a>
-                </li>
-                <li class="wp-nav-item">
-                    <a href="{{ Route::has('manager.settings.preferences') ? route('manager.settings.preferences') : '#' }}"
-                       class="{{ request()->routeIs('manager.settings.preferences*') ? 'active' : '' }} {{ Route::has('manager.settings.preferences') ? '' : 'wp-nav-coming' }}">
-                        <i class="fas fa-sliders-h"></i>
-                        <span>Preferences</span>
-                    </a>
-                </li>
-                <li class="wp-nav-item">
-                    <a href="{{ route('manager.settings.features') }}" class="{{ request()->routeIs('manager.settings.features*') ? 'active' : '' }}">
-                        <i class="fas fa-toggle-on"></i>
-                        <span>Features</span>
-                    </a>
-                </li>
+                @endif
 
                 {{-- ────────────────  LOG OUT  ──────────────── --}}
                 <div class="wp-nav-separator"></div>
 
                 <li class="wp-nav-item">
-                    <form action="{{ route('manager.logout') }}" method="POST" style="margin:0;">
+                    <form action="{{ route('agent.logout') }}" method="POST" style="margin:0;">
                         @csrf
                         <button type="submit">
                             <i class="fas fa-sign-out-alt"></i>
@@ -616,7 +476,7 @@
                 </button>
                 <div class="topbar-title">@yield('page-title', 'Dashboard')</div>
                 <div class="topbar-user">
-                    <span class="d-none d-sm-inline">{{ auth()->user()?->name ?? 'Manager' }}</span>
+                    <span class="d-none d-sm-inline">{{ auth()->user()?->name ?? 'Agent' }}</span>
                     <div class="topbar-user-avatar">
                         {{ strtoupper(substr(auth()->user()?->name ?? 'M', 0, 1)) }}
                     </div>
@@ -649,7 +509,7 @@
 
             <!-- Footer -->
             <footer class="wp-footer">
-                Go Trips Manager Panel
+                Go Trips Agent Panel
             </footer>
         </div>
     </div>

@@ -43,6 +43,7 @@ class UAEActivity extends Model
         'country',
         'activityCategory',
         'company_id',
+        'agent_id',
     ];
 
     /**
