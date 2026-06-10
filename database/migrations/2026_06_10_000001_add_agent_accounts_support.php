@@ -30,8 +30,10 @@ return new class extends Migration
             }
         });
 
-        Schema::table('tbl_uaeactivities', function (Blueprint $table) {
-            if (!Schema::hasColumn('tbl_uaeactivities', 'agent_id')) {
+        // Production uses mixed-case table name; local SQLite is case-insensitive.
+        $activitiesTable = Schema::hasTable('tbl_UAEActivities') ? 'tbl_UAEActivities' : 'tbl_uaeactivities';
+        Schema::table($activitiesTable, function (Blueprint $table) use ($activitiesTable) {
+            if (!Schema::hasColumn($activitiesTable, 'agent_id')) {
                 $table->unsignedBigInteger('agent_id')->nullable()->index()->after('company_id');
             }
         });
@@ -54,8 +56,9 @@ return new class extends Migration
             }
         });
 
-        Schema::table('tbl_uaeactivities', function (Blueprint $table) {
-            if (Schema::hasColumn('tbl_uaeactivities', 'agent_id')) {
+        $activitiesTable = Schema::hasTable('tbl_UAEActivities') ? 'tbl_UAEActivities' : 'tbl_uaeactivities';
+        Schema::table($activitiesTable, function (Blueprint $table) use ($activitiesTable) {
+            if (Schema::hasColumn($activitiesTable, 'agent_id')) {
                 $table->dropColumn('agent_id');
             }
         });
