@@ -489,10 +489,84 @@
 
         @else
             {{-- ─── EMIRATES SELECTION VIEW ─── --}}
+
+            {{-- 2-country mode: flag tabs above the UAE grid --}}
+            @if($otherCountry ?? null)
+            @php
+                $flagMap      = config('countries');
+                $otherFlag    = $flagMap[$otherCountry]['flag'] ?? '🌍';
+                $otherCurrency = fn($a) => $a->activityCurrency ?: ($flagMap[$otherCountry]['currency'] ?? 'USD');
+            @endphp
+            <div style="text-align:center; margin-bottom:40px;">
+                <div style="display:inline-flex; border:1px solid rgba(255,215,0,0.25); border-radius:12px; overflow:hidden;">
+                    <button id="tab-btn-uae" class="ctab-btn active" onclick="switchEmirateTab('uae', this)"
+                        style="background:rgba(255,215,0,0.12); border:none; color:#FFD700; padding:14px 36px; font-size:17px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:10px; border-right:1px solid rgba(255,215,0,0.25); transition:all 0.2s;">
+                        🇦🇪 United Arab Emirates
+                    </button>
+                    <button id="tab-btn-other" class="ctab-btn" onclick="switchEmirateTab('other', this)"
+                        style="background:transparent; border:none; color:rgba(255,255,255,0.55); padding:14px 36px; font-size:17px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:10px; transition:all 0.2s;"
+                        onmouseover="if(!this.classList.contains('active'))this.style.background='rgba(255,255,255,0.04)'"
+                        onmouseout="if(!this.classList.contains('active'))this.style.background='transparent'">
+                        {{ $otherFlag }} {{ $otherCountry }}
+                    </button>
+                </div>
+            </div>
+
+            <div id="tab-panel-other" style="display:none;">
+                <div class="hero-header" style="margin-bottom:32px;">
+                    <h1>{{ $otherFlag }} {{ $otherCountry }} <span style="color:rgba(255,255,255,0.4);">Experiences</span></h1>
+                </div>
+                @if($otherActivities->count())
+                <div class="activities-grid-luxury">
+                    @foreach($otherActivities as $activity)
+                    <div class="activity-v2-card">
+                        <div class="activity-v2-img-container">
+                            <span class="activity-v2-tag">{{ $otherFlag }} {{ $otherCountry }}</span>
+                            <img src="{{ !empty($activity->activityImage) ? (str_starts_with($activity->activityImage,'http') ? $activity->activityImage : asset($activity->activityImage)) : 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800' }}"
+                                 alt="{{ $activity->activityName }}" class="activity-v2-img" loading="lazy"
+                                 onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src='https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=800';}">
+                        </div>
+                        <div class="activity-v2-info">
+                            <div>
+                                <h3 class="activity-v2-title">{{ $activity->activityName }}</h3>
+                                @if($activity->activityLocation)
+                                <div class="text-white-50" style="font-size:13px;">
+                                    <i class="bi bi-geo-alt-fill text-warning me-1"></i> {{ $activity->activityLocation }}
+                                </div>
+                                @endif
+                            </div>
+                            <div class="activity-v2-footer">
+                                <div class="activity-v2-price">
+                                    <span class="price-small">Starting From</span>
+                                    <span class="price-big">{{ $otherCurrency($activity) }} {{ number_format($activity->activityPrice, 2) }}</span>
+                                </div>
+                                <button type="button" class="book-btn-v2 open-booking-modal"
+                                    data-id="{{ $activity->activityID }}"
+                                    data-name="{{ $activity->activityName }}"
+                                    data-price="{{ $activity->activityPrice }}"
+                                    data-currency="{{ $otherCurrency($activity) }}">
+                                    Book Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div style="text-align:center; padding:80px 0; color:#888;">
+                    <i class="bi bi-compass" style="font-size:48px; color:rgba(255,215,0,0.2);"></i>
+                    <p style="margin-top:14px;">New experiences in {{ $otherCountry }} are coming soon.</p>
+                </div>
+                @endif
+            </div>
+
+            <div id="tab-panel-uae">
+            @endif {{-- end 2-country mode header --}}
+
             <div class="hero-header">
                 <h1><span class="white">EXPLORE</span> <span class="green">UNITED</span> <span class="white">ARAB</span> <span class="red">EMIRATES</span></h1>
                 <p>
-                    From Abu Dhabi's majestic heritage to Dubai's futuristic skyline, 
+                    From Abu Dhabi's majestic heritage to Dubai's futuristic skyline,
                     discover the heart and soul of the UAE through our handpicked regional adventures.
                 </p>
             </div>
@@ -542,6 +616,11 @@
                     </div>
                 @endforelse
             </div>
+
+            @if($otherCountry ?? null)
+            </div> {{-- close #tab-panel-uae --}}
+            @endif
+
         @endif
     </div>
 </div>
@@ -552,16 +631,39 @@
 @include('partials.activity_booking_modal')
 
 <script type="text/javascript">
-    // Tawk.to and other script initializations
-    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-    (function () {
-        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = 'https://embed.tawk.to/67a073313a8427326078f27b/1ij5c3v7a';
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin', '*');
-        s0.parentNode.insertBefore(s1, s0);
-    })();
+function switchEmirateTab(tab, btn) {
+    var uaePanel   = document.getElementById('tab-panel-uae');
+    var otherPanel = document.getElementById('tab-panel-other');
+    var uaeBtn     = document.getElementById('tab-btn-uae');
+    var otherBtn   = document.getElementById('tab-btn-other');
+    if (!uaePanel) return;
+
+    if (tab === 'uae') {
+        uaePanel.style.display   = '';
+        otherPanel.style.display = 'none';
+        uaeBtn.style.background  = 'rgba(255,215,0,0.12)';
+        uaeBtn.style.color       = '#FFD700';
+        otherBtn.style.background = 'transparent';
+        otherBtn.style.color      = 'rgba(255,255,255,0.55)';
+    } else {
+        uaePanel.style.display   = 'none';
+        otherPanel.style.display = '';
+        otherBtn.style.background = 'rgba(255,215,0,0.12)';
+        otherBtn.style.color      = '#FFD700';
+        uaeBtn.style.background  = 'transparent';
+        uaeBtn.style.color       = 'rgba(255,255,255,0.55)';
+    }
+}
+
+var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+(function () {
+    var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+    s1.async = true;
+    s1.src = 'https://embed.tawk.to/67a073313a8427326078f27b/1ij5c3v7a';
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    s0.parentNode.insertBefore(s1, s0);
+})();
 </script>
 
 @include('footer')

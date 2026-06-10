@@ -2,9 +2,9 @@
 
 @php
     use Illuminate\Support\Str;
-    // Map country name -> ISO2 so we can show a real flag image (renders everywhere,
-    // unlike emoji flags which show as letters on Windows).
-    $isoMap = collect(\App\Support\CountryCodes::all())->keyBy('name');
+    use App\Support\CountryCodes;
+    $flagMap = config('countries');
+    $isoMap  = collect(CountryCodes::all())->keyBy('name');
 @endphp
 
 <main style="background:#000; min-height:100vh; color:#fff; font-family:'Outfit',sans-serif; padding-bottom:60px;">
@@ -21,18 +21,22 @@
             <div class="ac-grid">
                 @foreach($countries as $c)
                     @php
-                        $iso = strtolower($isoMap[$c['country']]['iso'] ?? '');
-                        $flag = $iso ? "https://flagcdn.com/{$iso}.svg" : null;
+                        $cName    = $c['country'];
+                        $emoji    = $flagMap[$cName]['flag'] ?? null;
+                        $iso      = strtolower($isoMap[$cName]['iso'] ?? '');
+                        $flagSrc  = $iso ? "https://flagcdn.com/{$iso}.svg" : null;
                     @endphp
-                    <a class="ac-card" href="{{ route('emirates.index') }}?country={{ urlencode($c['country']) }}">
-                        <div class="ac-flag">
-                            @if($flag)
-                                <img src="{{ $flag }}" alt="{{ $c['country'] }} flag" loading="lazy">
-                            @else
-                                <div class="ac-flag-fallback"><i class="bi bi-geo-alt"></i></div>
-                            @endif
-                        </div>
-                        <span class="ac-name">{{ $c['country'] }}</span>
+                    <a class="ac-card" href="{{ route('emirates.index') }}?country={{ urlencode($cName) }}">
+                        @if($emoji)
+                            <div class="ac-flag ac-flag-emoji">{{ $emoji }}</div>
+                        @elseif($flagSrc)
+                            <div class="ac-flag">
+                                <img src="{{ $flagSrc }}" alt="{{ $cName }} flag" loading="lazy">
+                            </div>
+                        @else
+                            <div class="ac-flag"><div class="ac-flag-fallback"><i class="bi bi-geo-alt"></i></div></div>
+                        @endif
+                        <span class="ac-name">{{ $cName }}</span>
                         <span class="ac-count">{{ $c['activity_count'] }} {{ Str::plural('activity', $c['activity_count']) }}</span>
                     </a>
                 @endforeach
@@ -53,6 +57,7 @@
     .ac-card:hover { transform:translateY(-4px); border-color:rgba(255,215,0,0.5); box-shadow:0 16px 36px rgba(0,0,0,0.6); }
     .ac-flag { aspect-ratio:3/2; background:#111; overflow:hidden; }
     .ac-flag img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ac-flag-emoji { display:flex; align-items:center; justify-content:center; font-size:52px; line-height:1; }
     .ac-flag-fallback { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:rgba(255,215,0,0.3); font-size:38px; }
     .ac-name { color:#fff; font-weight:700; font-size:16px; padding:14px 16px 0; }
     .ac-count { color:#FFD23F; font-size:13px; padding:3px 16px 16px; }

@@ -5,70 +5,67 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Emirates;
 use App\Models\UAEActivity;
+use Illuminate\Support\Str;
 
 class EmiratesController extends Controller
 {
-    /**
-     * Display Emirates selection page or activities for specific emirate
-     */
     public function index(Request $request)
     {
         $emiratesID = $request->get('emiratesID');
 
         if ($emiratesID) {
-            // Redirect old ?emiratesID= URLs to clean /activities/slug URLs
-            $emirate = Emirates::where('emiratesID', $emiratesID)
-                              ->where('isActive', 1)
-                              ->first();
-
+            $emirate = Emirates::where('emiratesID', $emiratesID)->where('isActive', 1)->first();
             if ($emirate) {
-                return redirect()->route('emirates.show', [
-                    'slug' => \Illuminate\Support\Str::slug($emirate->emiratesName)
-                ], 301);
+                return redirect()->route('emirates.show', ['slug' => Str::slug($emirate->emiratesName)], 301);
             }
-
             abort(404);
         }
 
-        // Country gate: show a country picker first ONLY when activities exist in
-        // more than one country. With a single country (e.g. UAE only) keep the
-        // original behaviour and go straight to the emirates selection.
-        $country   = $request->get('country');
-        $countries = \App\Models\UAEActivity::countriesWithActivities();
+        $country      = $request->get('country');
+        $countries    = UAEActivity::countriesWithActivities();
+        $countryCount = $countries->count();
 
-        if ($countries->count() > 1) {
-            // Country picker first.
+        // ─── 3+ countries: dedicated country-grid picker ───────────────────
+        if ($countryCount > 2) {
             if (!$country) {
                 return view('activities-countries', compact('countries'));
             }
-            // UAE keeps its emirate-based flow; other countries show a flat list
-            // of that country's activities (they have no UAE emirate structure).
             if ($country !== 'United Arab Emirates') {
-                $activities = \App\Models\UAEActivity::with('emirate')
+                $activities = UAEActivity::with('emirate')
                     ->where('isActive', 1)
                     ->where('country', $country)
                     ->orderBy('createdDate', 'DESC')
                     ->get();
-
-                return view('activities-by-country', compact('country', 'activities'));
+                return view('activities-by-country', compact('country', 'activities', 'countries'));
             }
+            // UAE selected → fall through to Emirates grid
         }
 
-        // Single country (UAE only) OR UAE selected → original emirates selection.
         $emirates   = Emirates::getEmiratesWithActivityCount();
         $emirate    = null;
         $activities = collect();
 
-        return view('Emirates', compact('emirates', 'emirate', 'activities'));
+        // ─── 2 countries: inline tabs ───────────────────────────────────────
+        $otherCountry    = null;
+        $otherActivities = collect();
+
+        if ($countryCount === 2) {
+            $otherData = $countries->first(fn($c) => $c['country'] !== 'United Arab Emirates');
+            if ($otherData) {
+                $otherCountry    = $otherData['country'];
+                $otherActivities = UAEActivity::with('emirate')
+                    ->where('isActive', 1)
+                    ->where('country', $otherCountry)
+                    ->orderBy('createdDate', 'DESC')
+                    ->get();
+            }
+        }
+
+        return view('Emirates', compact('emirates', 'emirate', 'activities', 'otherCountry', 'otherActivities'));
     }
 
-    /**
-     * Display activities for a specific emirate using URL slug
-     * e.g. /activities/abu-dhabi, /activities/dubai
-     */
     public function showBySlug($slug)
     {
-        // Convert slug back to name: "abu-dhabi" → "Abu Dhabi"
         $name = str_replace('-', ' ', $slug);
 
         $emirate = Emirates::where('isActive', 1)
@@ -81,21 +78,20 @@ class EmiratesController extends Controller
                                 ->orderBy('createdDate', 'DESC')
                                 ->get();
 
-        $emirates = null;
+        $emirates        = null;
+        $otherCountry    = null;
+        $otherActivities = collect();
 
-        return view('Emirates', compact('emirate', 'activities', 'emirates'));
+        return view('Emirates', compact('emirate', 'activities', 'emirates', 'otherCountry', 'otherActivities'));
     }
 
-    /**
-     * API endpoint to get emirates for select dropdown
-     */
     public function getEmiratesJson()
     {
         $emirates = Emirates::where('isActive', 1)
                            ->select('emiratesID', 'emiratesName')
                            ->orderBy('emiratesName')
                            ->get();
-        
+
         return response()->json($emirates);
     }
 }

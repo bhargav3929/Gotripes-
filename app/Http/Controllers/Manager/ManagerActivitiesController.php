@@ -59,36 +59,21 @@ class ManagerActivitiesController extends Controller
      */
     public function create()
     {
-        $emirates = Emirates::where('isActive', 1)
-                           ->orderBy('emiratesName')
-                           ->get();
+        $emirates  = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
+        $countries = config('countries');
 
-        $allowedCountries = $this->companyCountries();
-
-        return view('manager.activities.create', compact('emirates', 'allowedCountries'));
+        return view('manager.activities.create', compact('emirates', 'countries'));
     }
 
-    /**
-     * Countries this partner may operate in (from the allowed_countries setting),
-     * defaulting to the UAE. Drives the per-activity country selector.
-     */
-    private function companyCountries(): array
-    {
-        $company = current_company();
-        $allowed = $company ? $company->getSetting('allowed_countries', []) : [];
-        $allowed = is_array($allowed) ? array_values(array_filter($allowed)) : [];
-        return $allowed ?: ['United Arab Emirates'];
-    }
-
-    /**
-     * Resolve an activity's country: the submitted value when the partner is
-     * allowed to use it, otherwise the partner's primary country.
-     */
     private function resolveActivityCountry(Request $request): string
     {
-        $allowed = $this->companyCountries();
-        $chosen = $request->input('country');
-        return ($chosen && in_array($chosen, $allowed, true)) ? $chosen : $allowed[0];
+        $chosen = trim($request->input('country', ''));
+        return $chosen ?: 'United Arab Emirates';
+    }
+
+    private function isUAE(string $country): bool
+    {
+        return strtolower(trim($country)) === 'united arab emirates';
     }
 
     /**
@@ -96,11 +81,16 @@ class ManagerActivitiesController extends Controller
      */
     public function store(Request $request)
     {
+        $country = $this->resolveActivityCountry($request);
         $request->validate([
             'activityName'               => 'required|string|max:255',
             'activityLocation'           => 'required|string|max:255',
-            'emiratesID'                 => 'required|exists:tbl_emirates,emiratesID',
+            'country'                    => 'required|string|max:100',
+            'emiratesID'                 => $this->isUAE($country)
+                                            ? 'required|exists:tbl_emirates,emiratesID'
+                                            : 'nullable|exists:tbl_emirates,emiratesID',
             'activityPrice'              => 'required|numeric|min:0',
+            'activityCurrency'           => 'nullable|string|max:3',
             'activityCategory'           => 'nullable|string|max:100',
             'activityChildPrice'         => 'nullable|numeric|min:0',
             'activityTransactionCharges' => 'nullable|numeric|min:0',
@@ -115,7 +105,6 @@ class ManagerActivitiesController extends Controller
             'detailsHighlights.*'        => 'required|string',
         ]);
 
-        // Ensure tenant-namespaced upload directory exists so two tenants can't collide on filenames.
         $companyId = current_company()?->id ?? 0;
         $relativeDir = "assets/activities/{$companyId}";
         $destinationPath = public_path($relativeDir);
@@ -133,12 +122,12 @@ class ManagerActivitiesController extends Controller
 
         $firstImage = count($imagePaths) > 0 ? $imagePaths[0] : '';
 
-        // Create main activity record
         $activity = UAEActivity::create([
             'activityName'               => $request->activityName,
             'activityLocation'           => $request->activityLocation,
-            'emiratesID'                 => $request->emiratesID,
-            'country'                    => $this->resolveActivityCountry($request),
+            'emiratesID'                 => $this->isUAE($country) ? $request->emiratesID : null,
+            'country'                    => $country,
+            'activityCurrency'           => strtoupper($request->activityCurrency ?: ($this->isUAE($country) ? 'AED' : 'USD')),
             'activityPrice'              => $request->activityPrice,
             'activityCategory'           => $request->activityCategory,
             'activityChildPrice'         => $request->activityChildPrice ?? 0,
@@ -203,7 +192,7 @@ class ManagerActivitiesController extends Controller
             }
         }
 
-        $allowedCountries = $this->companyCountries();
+        $countries = config('countries');
 
         return view('manager.activities.edit', compact(
             'activity',
@@ -212,7 +201,7 @@ class ManagerActivitiesController extends Controller
             'detailsIminfo',
             'detailsHighlights',
             'existingImages',
-            'allowedCountries'
+            'countries'
         ));
     }
 
@@ -225,11 +214,16 @@ class ManagerActivitiesController extends Controller
                                ->where('isActive', 1)
                                ->firstOrFail();
 
+        $country = $this->resolveActivityCountry($request);
         $request->validate([
             'activityName'               => 'required|string|max:255',
             'activityLocation'           => 'required|string|max:255',
-            'emiratesID'                 => 'required|exists:tbl_emirates,emiratesID',
+            'country'                    => 'required|string|max:100',
+            'emiratesID'                 => $this->isUAE($country)
+                                            ? 'required|exists:tbl_emirates,emiratesID'
+                                            : 'nullable|exists:tbl_emirates,emiratesID',
             'activityPrice'              => 'required|numeric|min:0',
+            'activityCurrency'           => 'nullable|string|max:3',
             'activityCategory'           => 'nullable|string|max:100',
             'activityChildPrice'         => 'nullable|numeric|min:0',
             'activityTransactionCharges' => 'nullable|numeric|min:0',
@@ -285,12 +279,12 @@ class ManagerActivitiesController extends Controller
             }
         }
 
-        // Update main activity record
         $activity->update([
             'activityName'               => $request->activityName,
             'activityLocation'           => $request->activityLocation,
-            'emiratesID'                 => $request->emiratesID,
-            'country'                    => $this->resolveActivityCountry($request),
+            'emiratesID'                 => $this->isUAE($country) ? $request->emiratesID : null,
+            'country'                    => $country,
+            'activityCurrency'           => strtoupper($request->activityCurrency ?: ($this->isUAE($country) ? 'AED' : 'USD')),
             'activityPrice'              => $request->activityPrice,
             'activityCategory'           => $request->activityCategory,
             'activityChildPrice'         => $request->activityChildPrice ?? 0,

@@ -25,41 +25,13 @@
                         <input type="text" class="wp-input" name="activityName" value="{{ old('activityName') }}" required placeholder="e.g. Desert Safari Adventure">
                     </div>
 
-                    @if(($allowedCountries ?? null) && count($allowedCountries) > 1)
-                        <div class="wp-form-group">
-                            <label class="wp-form-label">Country <span class="required">*</span></label>
-                            <select class="wp-select" name="country" required>
-                                @foreach($allowedCountries as $ac)
-                                    <option value="{{ $ac }}" {{ old('country') === $ac ? 'selected' : '' }}>{{ $ac }}</option>
-                                @endforeach
-                            </select>
-                            <p class="wp-form-help">Which country is this activity for? Activities are grouped by country on your public site.</p>
-                        </div>
-                    @endif
+                    @include('partials.activity_location_fields')
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Emirate <span class="required">*</span></label>
-                                <select class="wp-select" name="emiratesID" required>
-                                    <option value="">Select Emirate</option>
-                                    @foreach($emirates as $emirate)
-                                        <option value="{{ $emirate->emiratesID }}" {{ old('emiratesID') == $emirate->emiratesID ? 'selected' : '' }}>
-                                            {{ $emirate->emiratesName }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Location <span class="required">*</span></label>
-                                <input type="text" class="wp-input" name="activityLocation" value="{{ old('activityLocation') }}" required placeholder="e.g. Dubai Marina">
-                            </div>
-                        </div>
                     <div class="wp-form-group">
                         <label class="wp-form-label">Activity Category / Type</label>
-                        <input type="text" class="wp-input" name="activityCategory" value="{{ old('activityCategory') }}" placeholder="e.g. Adventure, Water Sports, Desert Safari">
+                        <input type="text" class="wp-input" name="activityCategory"
+                               value="{{ old('activityCategory') }}"
+                               placeholder="e.g. Adventure, Water Sports, Desert Safari">
                         <p class="wp-form-help">Optional — used for future filtering</p>
                     </div>
                 </div>
@@ -70,23 +42,36 @@
                 <div class="wp-card-header"><i class="fas fa-dollar-sign text-secondary-wp"></i> Pricing</div>
                 <div class="wp-card-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="wp-form-group">
-                                <label class="wp-form-label">Adult Price ($) <span class="required">*</span></label>
-                                <input type="number" class="wp-input" name="activityPrice" step="0.01" min="0" value="{{ old('activityPrice') }}" required placeholder="0.00">
+                                <label class="wp-form-label">Currency <span class="required">*</span></label>
+                                <input type="text" class="wp-input" name="activityCurrency" id="activityCurrency"
+                                       value="{{ old('activityCurrency', 'AED') }}" required maxlength="3"
+                                       placeholder="AED" style="text-transform:uppercase"
+                                       oninput="this.dataset.manuallyChanged='1';this.value=this.value.toUpperCase()">
+                                <p class="wp-form-help">ISO code (auto-fills)</p>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="wp-form-group">
-                                <label class="wp-form-label">Child Price ($)</label>
-                                <input type="number" class="wp-input" name="activityChildPrice" step="0.01" min="0" value="{{ old('activityChildPrice') }}" placeholder="0.00">
-                                <p class="wp-form-help">Leave empty to use adult price</p>
+                                <label class="wp-form-label">Adult Price <span class="required">*</span></label>
+                                <input type="number" class="wp-input" name="activityPrice"
+                                       step="0.01" min="0" value="{{ old('activityPrice') }}" required placeholder="0.00">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="wp-form-group">
-                                <label class="wp-form-label">Transaction Charges ($)</label>
-                                <input type="number" class="wp-input" name="activityTransactionCharges" step="0.01" min="0" value="{{ old('activityTransactionCharges') }}" placeholder="0.00">
+                                <label class="wp-form-label">Child Price</label>
+                                <input type="number" class="wp-input" name="activityChildPrice"
+                                       step="0.01" min="0" value="{{ old('activityChildPrice') }}" placeholder="0.00">
+                                <p class="wp-form-help">Leave empty for adult price</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Transaction Charges</label>
+                                <input type="number" class="wp-input" name="activityTransactionCharges"
+                                       step="0.01" min="0" value="{{ old('activityTransactionCharges') }}" placeholder="0.00">
                             </div>
                         </div>
                     </div>

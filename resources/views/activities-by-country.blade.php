@@ -37,7 +37,7 @@
                                 <p class="abc-loc"><i class="bi bi-geo-alt"></i> {{ $activity->activityLocation }}</p>
                             @endif
                             <div class="abc-foot">
-                                <span class="abc-price">AED {{ number_format((float) $activity->activityPrice, 0) }}</span>
+                                <span class="abc-price">{{ $activity->activityCurrency ?: 'AED' }} {{ number_format((float) $activity->activityPrice, 0) }}</span>
                                 <span class="abc-cta">View <i class="bi bi-arrow-right"></i></span>
                             </div>
                         </div>
