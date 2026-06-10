@@ -38,14 +38,14 @@ class AgentAuthController extends Controller
         $user = Auth::user();
 
         if ($user->role !== 'company_agent') {
-            $this->logoutAndInvalidate($request);
+            $this->rejectLogin($request);
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['credentials' => 'This account does not have agent access.']);
         }
 
         if (!$user->is_active) {
-            $this->logoutAndInvalidate($request);
+            $this->rejectLogin($request);
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['credentials' => 'Your agent account has been deactivated. Contact your manager.']);
@@ -53,7 +53,7 @@ class AgentAuthController extends Controller
 
         $tenant = app()->bound('current_company') ? app('current_company') : null;
         if ($tenant instanceof Company && (int) $user->company_id !== (int) $tenant->id) {
-            $this->logoutAndInvalidate($request);
+            $this->rejectLogin($request);
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['credentials' => 'This account does not belong to ' . ($tenant->subdomain ?? 'this site') . '.']);
@@ -74,6 +74,14 @@ class AgentAuthController extends Controller
     private function canAccessAgentPortal($user): bool
     {
         return $user && $user->role === 'company_agent' && $user->is_active;
+    }
+
+    // Soft logout for login rejections — does NOT invalidate the session so
+    // flash error data survives the redirect back to the login form.
+    private function rejectLogin(Request $request): void
+    {
+        Auth::logout();
+        $request->session()->regenerateToken();
     }
 
     private function logoutAndInvalidate(Request $request): void

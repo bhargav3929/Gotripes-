@@ -13,7 +13,10 @@ return new class extends Migration
     {
         // Only rebuild for SQLite; MySQL/PostgreSQL use a different path.
         if (DB::getDriverName() !== 'sqlite') {
-            DB::statement("ALTER TABLE users MODIFY COLUMN role VARCHAR NOT NULL DEFAULT 'customer' CHECK (role IN ('super_admin','company_owner','company_admin','company_staff','customer','company_agent'))");
+            // MySQL doesn't enforce CHECK constraints before 8.0.16; the MODIFY
+            // here just ensures the column definition is consistent. The real
+            // enforcement is at the application layer via model validation.
+            DB::statement("ALTER TABLE users MODIFY COLUMN role VARCHAR(50) NOT NULL DEFAULT 'customer'");
             return;
         }
 
