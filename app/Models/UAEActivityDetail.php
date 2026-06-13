@@ -11,7 +11,11 @@ class UAEActivityDetail extends Model
 
     protected $table = 'tbl_UAEActivityDetails';
     protected $primaryKey = 'id';
-    public $timestamps = true;
+    // This table uses the project's manual audit columns (createdBy/createdDate/
+    // modifiedBy/modifiedDate) like every other model here, and has no
+    // created_at/updated_at columns on production. Leaving timestamps on caused
+    // "Unknown column 'updated_at'" on insert/update.
+    public $timestamps = false;
     protected $fillable = [
         'company_id',
         'detailsOverview',
