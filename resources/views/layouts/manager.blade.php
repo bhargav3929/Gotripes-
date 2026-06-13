@@ -553,6 +553,14 @@
                 </li>
                 @endfeature
 
+                {{-- FIFA World Cup 2026 — shared across all companies (not feature-gated) --}}
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.fifa-tickets.index') }}" class="{{ request()->routeIs('manager.fifa-tickets.*') ? 'active' : '' }}">
+                        <i class="fas fa-futbol"></i>
+                        <span>FIFA Tickets</span>
+                    </a>
+                </li>
+
                 {{-- ────────────────  TEAM  ──────────────── --}}
                 <div class="wp-nav-separator"></div>
                 <li class="wp-nav-label">Team</li>

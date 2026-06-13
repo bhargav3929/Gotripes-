@@ -67,7 +67,6 @@
             <tr><td>Gender:</td><td>{{ $data['UAEV_gender'] ?? '' }}</td></tr>
             <tr><td>Date of Birth:</td><td>{{ $data['UAEV_dob'] ?? '' }}</td></tr>
             <tr><td>Nationality:</td><td>{{ $data['UAEV_nationality'] ?? '' }}</td></tr>
-            <tr><td>Current Residence:</td><td>{{ $data['UAEV_residence'] ?? '' }}</td></tr>
             <tr><td>Profession:</td><td>{{ $data['UAEV_profession'] ?? '' }}</td></tr>
             <tr><td>Marital Status:</td><td>{{ $data['UAEV_marital_status'] ?? '' }}</td></tr>
 

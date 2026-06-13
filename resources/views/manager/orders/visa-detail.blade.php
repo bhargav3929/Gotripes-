@@ -29,7 +29,6 @@
             <li><span class="label">Email</span>       <span class="value">{{ $application->UAEV_email ?: '—' }}</span></li>
             <li><span class="label">Phone</span>       <span class="value">{{ $application->UAEV_phone ?: '—' }}</span></li>
             <li><span class="label">Nationality</span> <span class="value">{{ $application->UAEV_nationality ?: '—' }}</span></li>
-            <li><span class="label">Residence</span>   <span class="value">{{ $application->UAEV_residence ?: '—' }}</span></li>
         </ul>
     </div>
 

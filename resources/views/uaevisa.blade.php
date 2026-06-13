@@ -672,18 +672,12 @@
                     </div>
                     <canvas id="ppCamCanvas" style="display:none;"></canvas>
 
-                    {{-- ROW 1: Nationality, Residence, Duration --}}
-                    <div class="form-grid-3">
+                    {{-- ROW 1: Nationality, Duration --}}
+                    <div class="form-grid-3" style="grid-template-columns: 1fr 1fr;">
                         <div class="form-field">
                             <label class="field-label">Nationality</label>
                             <select id="nationality" name="nationality" class="field-input" required>
                                 <option value="">Select Nationality</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="field-label">Current Residence</label>
-                            <select id="residence" name="residence" class="field-input" required>
-                                <option value="">Select Country</option>
                             </select>
                         </div>
                         <div class="form-field">
@@ -880,7 +874,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        const countrySelects = [document.getElementById('nationality'), document.getElementById('residence')];
+        const countrySelects = [document.getElementById('nationality')].filter(Boolean);
         fetch('https://restcountries.com/v3.1/all?fields=name')
             .then(res => res.json())
             .then(data => {

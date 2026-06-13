@@ -74,6 +74,33 @@ return [
     // set it here to bypass discovery. Null = discover at runtime.
     'service_intent_key' => env('FLUXIR_SERVICE_INTENT_KEY'),
 
+    // --- Payment model -------------------------------------------------------
+    // Two ways to settle a visa application with Fluxir:
+    //
+    //   false (default) = PAY-NOW. The traveller is sent to Fluxir's hosted
+    //                     Stripe checkout (ReadyForPayment -> checkout ->
+    //                     finalize-checkout).
+    //
+    //   true            = CREDIT / INVOICING. We collect payment from the
+    //                     customer on OUR own gateway (with our margin) and
+    //                     submit the application to Fluxir on credit. Confirmed
+    //                     by Fluxir (Kirill Gandyl, 11 Jun 2026): once the
+    //                     invoicing model is enabled on the tenant, no checkout
+    //                     call is needed — we just PATCH the travel-service to
+    //                     state=ReadyForReview and "the rest is handled
+    //                     automatically". Fluxir invoices us on the 1st of each
+    //                     month for the prior month's activity (settled via
+    //                     Stripe). REQUIRES Fluxir to have flipped the tenant to
+    //                     the invoicing model (prohibitDeferredPayment=false,
+    //                     creditLimit>0) — keep this false until they confirm,
+    //                     or every submission will be rejected.
+    'deferred_payment' => (bool) env('FLUXIR_DEFERRED_PAYMENT', false),
+
+    // Our net cost per UAE 30-day tourist eVisa (confirmed by Fluxir: $96).
+    // Informational/fallback only — the live per-application fee comes from the
+    // resolved service intent. Other eVisa types are priced differently.
+    'net_cost' => (float) env('FLUXIR_NET_COST', 96),
+
     // HTTP request timeout (seconds).
     'timeout' => (int) env('FLUXIR_TIMEOUT', 45),
 

@@ -161,7 +161,33 @@ class FluxirVisaController extends Controller
             }
             $record->update(['attachments' => $attachments]);
 
-            // --- Step 6: advance to ReadyForPayment (files already attached) ---
+            // --- Step 6: submit — two models, chosen by config ---
+            if (config('fluxir.deferred_payment')) {
+                // CREDIT / invoicing model. Payment was (or will be) collected
+                // from the customer on OUR gateway; we submit to Fluxir on credit
+                // with a single PATCH to ReadyForReview — no Fluxir Stripe
+                // checkout, no finalize. Fluxir invoices us monthly thereafter.
+                $review = $this->fluxir->submitForReview($serviceAppId, []);
+                if (!$review['success']) {
+                    return $this->fail($record, 'submitForReview', $review);
+                }
+                $record->update([
+                    'state'         => $review['data']['state'] ?? 'ReadyForReview',
+                    'status'        => 'submitted',
+                    'last_response' => $review['data'] ?? null,
+                ]);
+
+                return response()->json([
+                    'success'   => true,
+                    'order_id'  => $orderId,
+                    'on_credit' => true,
+                    'amount'    => $record->amount,
+                    'currency'  => $record->currency,
+                    'redirect'  => route('visa.fluxir.success', ['order_id' => $orderId]),
+                ]);
+            }
+
+            // PAY-NOW model — advance to ReadyForPayment then hosted checkout.
             $update = $this->fluxir->updateServiceApplication($serviceAppId, [], 'ReadyForPayment');
             if (!$update['success']) {
                 return $this->fail($record, 'updateServiceApplication', $update);
@@ -210,7 +236,11 @@ class FluxirVisaController extends Controller
     {
         $record = FluxirVisaApplication::where('order_id', $request->query('order_id'))->first();
 
-        if ($record && $record->fluxir_trip_id) {
+        // Credit/invoicing submissions are already 'submitted' (no Stripe step),
+        // so skip finalize-checkout for them — only the pay-now flow finalizes.
+        $isCredit = $record && $record->status === 'submitted';
+
+        if ($record && !$isCredit && $record->fluxir_trip_id) {
             $final = $this->fluxir->finalizeCheckout($record->fluxir_trip_id);
             $record->update([
                 'is_paid'       => (bool) ($final['success'] ?? false),
@@ -220,7 +250,9 @@ class FluxirVisaController extends Controller
             ]);
         }
 
-        return redirect('/uaevisa')->with('status', 'Your visa application and payment were received. We will email you updates.');
+        return redirect('/uaevisa')->with('status', $isCredit
+            ? 'Your visa application has been submitted for processing. We will email you updates.'
+            : 'Your visa application and payment were received. We will email you updates.');
     }
 
     /**

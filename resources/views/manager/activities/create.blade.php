@@ -113,7 +113,8 @@
                             <p style="margin: 0; font-size: 12px; color: var(--wp-text-muted);">JPEG, PNG, GIF, WebP — Max 5MB each — Multiple files allowed</p>
                         </div>
                     </div>
-                    <input type="file" id="activityImageFiles" name="activityImageFiles[]" multiple accept="image/*" style="display: none;" required>
+                    <input type="file" id="activityImageFiles" name="activityImageFiles[]" multiple accept="image/*" style="display: none;">
+                    <p id="imageError" style="display:none; margin: 10px 0 0; font-size: 13px; color: var(--wp-danger, #e53e3e);"><i class="fas fa-exclamation-circle"></i> Please upload at least one image.</p>
                     <div id="imagePreviewGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 12px;"></div>
                 </div>
             </div>
@@ -232,6 +233,17 @@ $(function() {
         });
         if (this.files.length > 0) {
             $('#imageDropContent').html('<i class="fas fa-check-circle" style="font-size: 24px; color: var(--wp-success); margin-bottom: 8px; display: block;"></i><p style="margin:0; font-size: 13px; color: var(--wp-text);">' + this.files.length + ' image(s) selected. Click to change.</p>');
+            $('#imageError').hide();
+        }
+    });
+
+    // Enforce the image requirement visibly (the input is hidden, so HTML5 `required`
+    // would abort the submit silently — validate on submit instead).
+    $('#activityForm').on('submit', function(e) {
+        if (!fileInput[0].files || fileInput[0].files.length === 0) {
+            e.preventDefault();
+            $('#imageError').show();
+            $('html, body').animate({ scrollTop: dropZone.offset().top - 100 }, 300);
         }
     });
 });
