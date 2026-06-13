@@ -17,13 +17,6 @@
         </span>
     </div>
     <div class="d-flex gap-2">
-        <form action="{{ route('superadmin.companies.provision-subdomain', $company) }}" method="POST"
-              onsubmit="return confirm('Provision {{ $company->subdomain }}.gotrips.ai on Hostinger and link to the main Laravel app?');">
-            @csrf
-            <button type="submit" class="btn btn-outline-success btn-sm">
-                <i class="fas fa-globe me-1"></i>Provision Subdomain
-            </button>
-        </form>
         <form action="{{ route('superadmin.companies.impersonate', $company) }}" method="POST">
             @csrf
             <button type="submit" class="btn btn-outline-primary btn-sm">
@@ -187,6 +180,22 @@
 <div class="card mt-4 border-danger">
     <div class="card-header text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Danger Zone</div>
     <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <strong>Provision Subdomain</strong>
+                <p class="text-muted mb-0 small">Re-run Hostinger subdomain creation and symlink for <code>{{ $company->subdomain }}.gotrips.ai</code>. Safe to run again if provisioning failed.</p>
+            </div>
+            <form action="{{ route('superadmin.companies.provision-subdomain', $company) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-globe me-1"></i>Provision Subdomain
+                </button>
+            </form>
+        </div>
+
+        <hr>
+
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <strong>{{ $company->is_active ? 'Deactivate' : 'Activate' }} Company</strong>
