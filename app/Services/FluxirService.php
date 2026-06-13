@@ -376,7 +376,23 @@ class FluxirService
     }
 
     /**
-     * Step 6 — Get the hosted checkout (Stripe) session for a trip.
+     * Step 6 (CREDIT / invoicing model) — submit the application straight for
+     * review, bypassing the Stripe checkout entirely.
+     *
+     * Per Fluxir (Kirill Gandyl, 11 Jun 2026): once the tenant is on the
+     * invoicing model, "no additional API calls are required — you simply call
+     * PATCH /api/app/travel-services/{id} with the status set to ReadyForReview
+     * and the rest is handled automatically." Fluxir then bills us monthly.
+     *
+     * Files must already be attached (see uploadDocumentItem); items may be empty.
+     */
+    public function submitForReview(int|string $serviceApplicationId, array $items = []): array
+    {
+        return $this->updateServiceApplication($serviceApplicationId, $items, 'ReadyForReview');
+    }
+
+    /**
+     * Step 6 (PAY-NOW model) — Get the hosted checkout (Stripe) session for a trip.
      * GET /api/app/trip/{tripId}/checkout?serviceApplicationIds=..&successUrl=..&cancelUrl=..
      *
      * VERIFIED live: responds { "result": "cs_test_..." } — a Stripe Checkout
@@ -417,12 +433,220 @@ class FluxirService
     }
 
     /**
+     * Flat [['code'=>alpha3,'name'=>title], ...] list of all countries, A→Z,
+     * for nationality/origin pickers. Cached — reference data changes rarely.
+     */
+    public function getCountryOptions(int $ttl = 86400): array
+    {
+        return Cache::remember('fluxir.country_options.v1', $ttl, function () {
+            $res = $this->getTripCountries();
+            $out = [];
+            foreach (($res['data'] ?? []) as $c) {
+                if (!empty($c['codeAlpha3'])) {
+                    $out[] = ['code' => $c['codeAlpha3'], 'name' => $c['title'] ?? $c['codeAlpha3']];
+                }
+            }
+            usort($out, fn ($a, $b) => strcmp($a['name'], $b['name']));
+            return $out;
+        });
+    }
+
+    /**
+     * Normalize a raw documents-scheme payload into a flat, view-friendly tree:
+     * sections -> fields. Maps Fluxir item types to form input types and pulls
+     * English labels + enum option lists. Drives the dynamic e-visa form.
+     *
+     * @param array $schemeData  The `data` array from getDocumentsScheme().
+     * @return array<int,array{title:string,fields:array}>
+     */
+    public function normalizeScheme(array $schemeData): array
+    {
+        $label = function ($node): string {
+            foreach ((($node['title']['values'] ?? [])) as $v) {
+                if (($v['language'] ?? '') === 'English') {
+                    return trim($v['value'] ?? '');
+                }
+            }
+            return trim((($node['title']['values'][0]['value'] ?? '')) ?: ($node['nameId'] ?? ''));
+        };
+
+        // Fluxir itemType -> [html input kind, isFile]
+        $map = [
+            'String'         => ['text', false],
+            'StringMultiLine'=> ['textarea', false],
+            'Number'         => ['number', false],
+            'Date'           => ['date', false],
+            'PhoneNumber'    => ['tel', false],
+            'Address'        => ['text', false],
+            'Enum'           => ['select', false],
+            'EnumSet'        => ['multiselect', false],
+            'File'           => ['file', true],
+            'FilePassport'   => ['file', true],
+        ];
+
+        $sections = [];
+        foreach ($schemeData as $section) {
+            if (!is_array($section)) {
+                continue;
+            }
+            $fields = [];
+            foreach (($section['items'] ?? []) as $item) {
+                $type = $item['itemType'] ?? 'String';
+                [$kind, $isFile] = $map[$type] ?? ['text', false];
+
+                $options = [];
+                if (in_array($kind, ['select', 'multiselect'], true)) {
+                    foreach (($item['enumValue']['enumValues'] ?? []) as $opt) {
+                        $options[] = [
+                            'value' => $opt['nameId'] ?? '',
+                            'label' => $label($opt) ?: ($opt['nameId'] ?? ''),
+                        ];
+                    }
+                }
+
+                $fields[] = [
+                    'name_id'   => $item['nameId'] ?? '',
+                    'label'     => $label($item) ?: ($item['nameId'] ?? ''),
+                    'kind'      => $kind,
+                    'is_file'   => $isFile,
+                    'required'  => (bool) ($item['validationIsRequired'] ?? !($item['isOptional'] ?? false)),
+                    'maxlength' => $item['validationMaxLength'] ?? null,
+                    'options'   => $options,
+                ];
+            }
+            if ($fields) {
+                $sections[] = ['title' => $label($section) ?: 'Details', 'fields' => $fields];
+            }
+        }
+
+        return $sections;
+    }
+
+    /**
+     * Resolve the service intent for a SPECIFIC visa type within a destination.
+     * serviceIntentKey format is `Visa-{provider}-{dest}-{visaTypeId}`, so we
+     * match the chosen visa type by that trailing id. Falls back to the generic
+     * destination resolver when no id is given or no exact match is found.
+     */
+    public function resolveServiceIntentForType(array $trip, ?int $visaTypeId): ?array
+    {
+        if (!$visaTypeId) {
+            return $this->resolveServiceIntent($trip);
+        }
+
+        $intents = $this->getServiceIntents($trip, ['Visa']);
+        if (!($intents['success'] ?? false)) {
+            return null;
+        }
+        $items = array_values(array_filter(
+            $intents['data']['items'] ?? [],
+            fn ($i) => ($i['serviceType'] ?? null) === 'Visa'
+        ));
+        foreach ($items as $i) {
+            $key = $i['serviceIntentKey'] ?? '';
+            if (preg_match('/-' . $visaTypeId . '$/', $key)) {
+                return $i;
+            }
+        }
+        return $this->resolveServiceIntent($trip);
+    }
+
+    /**
      * Visa types. GET /api/app/visas/types (live-verified).
      * Optional query: Filter, Origination, Destination, WithVersions, SkipCount, MaxResultCount.
      */
     public function getVisaTypes(array $query = []): array
     {
         return $this->request('GET', 'api/app/visas/types', [], $query);
+    }
+
+    /**
+     * Online (web-bookable) eVisa catalog grouped by destination country.
+     *
+     * Filters the full visa-type list to applicationMethod=Online (the only ones
+     * we can sell through the on-site flow) and groups by destination, attaching
+     * each type's net fee, durations and active document-scheme version. Country
+     * names + alpha-2 (for flags) come from the trip-country reference list.
+     *
+     * Cached — Fluxir's catalog changes rarely. Returns [] on API failure so the
+     * caller can degrade gracefully.
+     *
+     * @return array<string,array> keyed by destination alpha-3 code, each:
+     *   ['code','alpha2','name','types'=>[['id','name','category','entry',
+     *    'validity','validity_unit','stay','stay_unit','net_fee','processing',
+     *    'version_id'], ...]]
+     */
+    public function getOnlineVisaCatalog(int $ttl = 86400): array
+    {
+        return Cache::remember('fluxir.online_catalog.v1', $ttl, function () {
+            $res = $this->getVisaTypes(['WithVersions' => 'true', 'MaxResultCount' => 1000]);
+            if (!($res['success'] ?? false)) {
+                return [];
+            }
+
+            // alpha-3 => ['title','alpha2'] for labels + flags.
+            $names = [];
+            $ref = $this->getTripCountries();
+            foreach (($ref['data'] ?? []) as $c) {
+                if (!empty($c['codeAlpha3'])) {
+                    $names[$c['codeAlpha3']] = [
+                        'title'  => $c['title'] ?? $c['codeAlpha3'],
+                        'alpha2' => $c['codeAlpha2'] ?? '',
+                    ];
+                }
+            }
+
+            $countries = [];
+            foreach (($res['data']['items'] ?? []) as $it) {
+                $t = $it['type'] ?? [];
+                if (($t['applicationMethod'] ?? '') !== 'Online') {
+                    continue;
+                }
+                $dest = $t['destinationCountry'] ?? null;
+                $fee  = $it['billing']['fee'] ?? null;
+                // Only sellable types: a real numeric net fee > 0.
+                if (!$dest || !is_numeric($fee) || (float) $fee <= 0) {
+                    continue;
+                }
+
+                $versionId = null;
+                foreach (($t['versions'] ?? []) as $v) {
+                    if (($v['state'] ?? '') === 'Published') {
+                        $versionId = $v['id'] ?? null;
+                        break;
+                    }
+                }
+
+                $countries[$dest] ??= [
+                    'code'   => $dest,
+                    'alpha2' => $names[$dest]['alpha2'] ?? '',
+                    'name'   => $names[$dest]['title'] ?? $dest,
+                    'types'  => [],
+                ];
+                $countries[$dest]['types'][] = [
+                    'id'           => $t['id'] ?? null,
+                    'name'         => trim($t['name'] ?? 'eVisa'),
+                    'category'     => $t['categoryName'] ?? null,
+                    'entry'        => $t['entryLimitation'] ?? null,
+                    'validity'     => $t['validityPeriod'] ?? null,
+                    'validity_unit'=> $t['validityPeriodUnit'] ?? null,
+                    'stay'         => $t['stayDuration'] ?? null,
+                    'stay_unit'    => $t['stayDurationUnit'] ?? null,
+                    'net_fee'      => (float) $fee,
+                    'processing'   => $it['billing']['expectedProcessingTime'] ?? null,
+                    'version_id'   => $versionId,
+                ];
+            }
+
+            // Cheapest type first within each country; countries A→Z by name.
+            foreach ($countries as &$c) {
+                usort($c['types'], fn ($a, $b) => $a['net_fee'] <=> $b['net_fee']);
+            }
+            unset($c);
+            uasort($countries, fn ($a, $b) => strcmp($a['name'], $b['name']));
+
+            return $countries;
+        });
     }
 
     /**

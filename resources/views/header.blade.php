@@ -1308,7 +1308,7 @@
                     </div>
                     <div class="gt-nav-row gt-nav-secondary">
                         @feature('esim')<a href="/esim" class="gt-nav-sublink {{ Request::is('esim') ? 'active' : '' }}">eSIM{!! $gtBadge('esim') !!}</a>@endfeature
-                        @feature('visas')<a href="/uae-evisa" class="gt-nav-sublink {{ Request::is('uae-evisa') ? 'active' : '' }}">E-Visa 30 Countries{!! $gtBadge('evisa') !!}</a>@endfeature
+                        @feature('visas')<a href="/e-visa" class="gt-nav-sublink {{ Request::is('e-visa') || Request::is('uae-evisa') ? 'active' : '' }}">e-Visa (80+ Countries){!! $gtBadge('evisa') !!}</a>@endfeature
                         <a href="{{ $gtEnquire('Insurance') }}" class="gt-nav-sublink">Insurance{!! $gtBadge('insurance') !!}</a>
                         @platformOnly<a href="/lotus-cruise-dubai" class="gt-nav-sublink {{ Request::is('lotus-cruise-dubai') ? 'active' : '' }}">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
                         <a href="{{ $gtEnquire('Transport') }}" class="gt-nav-sublink">Transport{!! $gtBadge('transport') !!}</a>
@@ -1369,7 +1369,7 @@
                 <div class="gt-macc-panel">
                     @feature('visas')
                     <a href="/uaevisa" class="gt-macc-item">UAE Visa</a>
-                    <a href="/uae-evisa" class="gt-macc-item">E-Visa 30 Countries{!! $gtBadge('evisa') !!}</a>
+                    <a href="/e-visa" class="gt-macc-item">e-Visa (80+ Countries){!! $gtBadge('evisa') !!}</a>
                     @endfeature
                     <a href="{{ $gtEnquire('Insurance') }}" class="gt-macc-item">Insurance{!! $gtBadge('insurance') !!}</a>
                 </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
+use App\Models\EvisaSetting;
 use App\Models\UAEVisaMaster;
 use Illuminate\Http\Request;
 
@@ -18,7 +19,22 @@ class ManagerVisaPricingController extends Controller
         $hotelFee  = $company?->getSetting('visa_hotel_booking_fee', 25) ?? 25;
         $ticketFee = $company?->getSetting('visa_ticket_booking_fee', 25) ?? 25;
 
-        return view('manager.visa-pricing.index', compact('visas', 'hotelFee', 'ticketFee'));
+        // Global markup applied to every Fluxir e-Visa (the /e-visa storefront).
+        $evisaMarkup = EvisaSetting::markupPercent();
+
+        return view('manager.visa-pricing.index', compact('visas', 'hotelFee', 'ticketFee', 'evisaMarkup'));
+    }
+
+    /** Update the global e-Visa (Fluxir) markup percentage. */
+    public function updateEvisaMarkup(Request $request)
+    {
+        $validated = $request->validate([
+            'markup_percent' => 'required|numeric|min:0|max:1000',
+        ]);
+
+        EvisaSetting::current()->update(['markup_percent' => $validated['markup_percent']]);
+
+        return back()->with('success', 'e-Visa markup updated to ' . rtrim(rtrim(number_format($validated['markup_percent'], 2), '0'), '.') . '%.');
     }
 
     public function updateServiceFees(Request $request)

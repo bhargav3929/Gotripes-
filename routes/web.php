@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\AnnouncementAdminController;
 use App\Http\Controllers\Admin\CarouselAdminController;
 use App\Http\Controllers\Admin\UAEActivityAdminController;
 use App\Http\Controllers\EmiratesController;
+use App\Http\Controllers\FifaTicketsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UAEDetailsController;
@@ -154,6 +155,10 @@ Route::get('/uaeactivities', fn() => redirect()->route('emirates.index'));
 Route::get('/uaeactivities/{any}', fn() => redirect()->route('emirates.index'))->where('any', '.*');
 Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->name('api.emirates');
 
+// FIFA World Cup 2026 tickets — public listing + customer request form (shared, not tenant-gated).
+Route::get('/fifa-world-cup-2026', [FifaTicketsController::class, 'index'])->name('fifa.index');
+Route::post('/fifa-world-cup-2026/request', [FifaTicketsController::class, 'submitRequest'])->name('fifa.request');
+
 //backend
 // Admin routes restricted to full Admin only
 Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
@@ -241,7 +246,15 @@ Route::post('/uaev/submit', [UAEVisaController::class, 'submit'])->name('uaev.su
 
 // Fluxir e-visa (Global Travel Compliance) integration
 use App\Http\Controllers\FluxirVisaController;
-Route::get('/uae-evisa', fn() => view('visa.fluxir-apply', ['fee' => 96]))->name('visa.fluxir.form');
+use App\Http\Controllers\FluxirEvisaController;
+
+// Multi-country e-Visa storefront (picker + dynamic, scheme-driven form).
+Route::get('/e-visa',        [FluxirEvisaController::class, 'form'])->name('visa.evisa.form');
+Route::get('/e-visa/types',  [FluxirEvisaController::class, 'types'])->name('visa.evisa.types');
+Route::post('/e-visa/scheme',[FluxirEvisaController::class, 'scheme'])->name('visa.evisa.scheme');
+Route::post('/e-visa/apply', [FluxirEvisaController::class, 'apply'])->name('visa.evisa.apply');
+// Old UAE-only slug now redirects into the multi-country storefront.
+Route::get('/uae-evisa', fn() => redirect()->route('visa.evisa.form'))->name('visa.fluxir.form');
 Route::post('/visa/fluxir/apply',          [FluxirVisaController::class, 'apply'])->name('visa.fluxir.apply');
 Route::get('/visa/fluxir/success',         [FluxirVisaController::class, 'success'])->name('visa.fluxir.success');
 Route::get('/visa/fluxir/cancel',          [FluxirVisaController::class, 'cancel'])->name('visa.fluxir.cancel');
@@ -342,6 +355,7 @@ use App\Http\Controllers\Manager\ManagerFinanceController;
 use App\Http\Controllers\Manager\OrdersController;
 use App\Http\Controllers\Manager\SettingsController;
 use App\Http\Controllers\Manager\ManagerAgentsController;
+use App\Http\Controllers\Manager\ManagerFifaTicketsController;
 use App\Http\Controllers\Agent\AgentAuthController;
 use App\Http\Controllers\Agent\AgentDashboardController;
 use App\Http\Controllers\Agent\AgentTravelPackagesController;
@@ -372,6 +386,22 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::put('visa-pricing/{id}',           [ManagerVisaPricingController::class, 'update'])->name('visa-pricing.update');
     Route::delete('visa-pricing/{id}',        [ManagerVisaPricingController::class, 'destroy'])->name('visa-pricing.destroy');
     Route::put('visa-pricing-service-fees',   [ManagerVisaPricingController::class, 'updateServiceFees'])->name('visa-pricing.service-fees.update');
+    Route::put('visa-pricing-evisa-markup',   [ManagerVisaPricingController::class, 'updateEvisaMarkup'])->name('visa-pricing.evisa-markup.update');
+
+    // FIFA World Cup 2026 tickets — SHARED across all companies (not tenant-scoped).
+    // Global markup, match + ticket inventory, and the customer request inbox.
+    Route::prefix('fifa-tickets')->name('fifa-tickets.')->group(function () {
+        Route::get('/',                    [ManagerFifaTicketsController::class, 'index'])->name('index');
+        Route::post('/markup',             [ManagerFifaTicketsController::class, 'updateMarkup'])->name('markup');
+        Route::post('/matches',            [ManagerFifaTicketsController::class, 'storeMatch'])->name('matches.store');
+        Route::put('/matches/{id}',        [ManagerFifaTicketsController::class, 'updateMatch'])->name('matches.update');
+        Route::delete('/matches/{id}',     [ManagerFifaTicketsController::class, 'destroyMatch'])->name('matches.destroy');
+        Route::post('/listings',           [ManagerFifaTicketsController::class, 'storeTicket'])->name('listings.store');
+        Route::put('/listings/{id}',       [ManagerFifaTicketsController::class, 'updateTicket'])->name('listings.update');
+        Route::delete('/listings/{id}',    [ManagerFifaTicketsController::class, 'destroyTicket'])->name('listings.destroy');
+        Route::get('/requests',            [ManagerFifaTicketsController::class, 'requests'])->name('requests');
+        Route::post('/requests/{id}/status', [ManagerFifaTicketsController::class, 'updateRequestStatus'])->name('requests.status');
+    });
 
     // Features are managed by super-admin via /superadmin/companies/{c}/edit.
     // Tenants get a read-only view here (no POST endpoint — see audit finding #13).
