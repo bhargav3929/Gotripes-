@@ -25,43 +25,41 @@ class EmiratesController extends Controller
         $countries    = UAEActivity::countriesWithActivities();
         $countryCount = $countries->count();
 
-        // ─── 3+ countries: dedicated country-grid picker ───────────────────
-        if ($countryCount > 2) {
-            if (!$country) {
-                return view('activities-countries', compact('countries'));
-            }
-            if ($country !== 'United Arab Emirates') {
-                $activities = UAEActivity::with('emirate')
-                    ->where('isActive', 1)
-                    ->where('country', $country)
-                    ->orderBy('createdDate', 'DESC')
-                    ->get();
-                return view('activities-by-country', compact('country', 'activities', 'countries'));
-            }
-            // UAE selected → fall through to Emirates grid
+        $isUae = fn($c) => strtolower(trim((string) $c)) === 'united arab emirates';
+
+        // ─── 2+ countries, none chosen yet → flag-card picker ───────────────
+        // Visitor clicks a flag, which opens that country's dedicated page.
+        if ($countryCount >= 2 && !$country) {
+            return view('activities-countries', compact('countries'));
         }
 
+        // ─── A specific non-UAE country chosen → its dedicated by-country page
+        if ($country && !$isUae($country)) {
+            $activities = UAEActivity::with('emirate')
+                ->where('isActive', 1)
+                ->where('country', $country)
+                ->orderBy('createdDate', 'DESC')
+                ->get();
+            return view('activities-by-country', compact('country', 'activities', 'countries'));
+        }
+
+        // ─── Exactly one country and it is NOT the UAE → straight to its page
+        if (!$country && $countryCount === 1 && !$isUae($countries->first()['country'])) {
+            $only       = $countries->first()['country'];
+            $activities = UAEActivity::with('emirate')
+                ->where('isActive', 1)
+                ->where('country', $only)
+                ->orderBy('createdDate', 'DESC')
+                ->get();
+            return view('activities-by-country', ['country' => $only, 'activities' => $activities, 'countries' => $countries]);
+        }
+
+        // ─── UAE (default, explicitly chosen, or the only country) → emirates grid
         $emirates   = Emirates::getEmiratesWithActivityCount();
         $emirate    = null;
         $activities = collect();
 
-        // ─── 2 countries: inline tabs ───────────────────────────────────────
-        $otherCountry    = null;
-        $otherActivities = collect();
-
-        if ($countryCount === 2) {
-            $otherData = $countries->first(fn($c) => $c['country'] !== 'United Arab Emirates');
-            if ($otherData) {
-                $otherCountry    = $otherData['country'];
-                $otherActivities = UAEActivity::with('emirate')
-                    ->where('isActive', 1)
-                    ->where('country', $otherCountry)
-                    ->orderBy('createdDate', 'DESC')
-                    ->get();
-            }
-        }
-
-        return view('Emirates', compact('emirates', 'emirate', 'activities', 'otherCountry', 'otherActivities'));
+        return view('Emirates', compact('emirates', 'emirate', 'activities'));
     }
 
     public function showBySlug($slug)

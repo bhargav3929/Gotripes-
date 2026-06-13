@@ -4,7 +4,7 @@
   Optional: $activity (for edit mode — pre-fills current values)
 --}}
 @php
-$currentCountry  = old('country', $activity->country ?? 'United Arab Emirates');
+$currentCountry  = old('country', $activity->country ?? ($defaultCountry ?? 'United Arab Emirates'));
 $currentEmirate  = old('emiratesID', $activity->emiratesID ?? '');
 $currentLocation = old('activityLocation', $activity->activityLocation ?? '');
 $currentCurrency = old('activityCurrency', $activity->activityCurrency ?? '');

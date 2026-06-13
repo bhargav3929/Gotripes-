@@ -135,7 +135,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 28px;
+            padding: 0 48px;
             flex-shrink: 0;
         }
 
@@ -193,14 +193,17 @@
             color: #1a1a1a !important;
             border-radius: 999px;
             box-shadow: 0 0 0 0 rgba(255, 200, 0, 0.55);
-            animation: gtFlashedPulse 1.5s ease-in-out infinite;
+            /* The WHOLE gold button blinks (opacity + glow), not just the bolt. */
+            animation: gtFlashedPulse 1s ease-in-out infinite;
         }
         .gt-nav-link:has(.gt-flash) { padding: 5px 14px; }
         .gt-nav-sublink:has(.gt-flash) { padding: 3px 12px; }
-        /* Dark bolt reads cleanly on the gold pill */
+        /* Dark bolt reads cleanly on the gold pill — and blinks in unison with
+           the pill (its own icon animation is disabled so the whole thing
+           flashes as a single unit). */
         .gt-nav-link:has(.gt-flash) .gt-flash,
         .gt-nav-sublink:has(.gt-flash) .gt-flash,
-        .gt-macc-item:has(.gt-flash) .gt-flash { color: #1a1a1a; }
+        .gt-macc-item:has(.gt-flash) .gt-flash { color: #1a1a1a; animation: none; }
         .gt-nav-link:has(.gt-flash):hover,
         .gt-nav-sublink:has(.gt-flash):hover { color: #000 !important; text-shadow: none; }
         /* Mobile: gold pill sits inline within the row */
@@ -209,9 +212,8 @@
             width: auto; border-bottom: none; font-weight: 700;
         }
         @keyframes gtFlashedPulse {
-            0%   { box-shadow: 0 0 0 0 rgba(255, 200, 0, 0.55); }
-            70%  { box-shadow: 0 0 0 9px rgba(255, 200, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 200, 0, 0); }
+            0%, 100% { opacity: 1;    box-shadow: 0 0 0 0 rgba(255, 200, 0, 0.55); }
+            50%      { opacity: 0.3;  box-shadow: 0 0 16px 3px rgba(255, 200, 0, 0.35); }
         }
         @media (prefers-reduced-motion: reduce) {
             .gt-nav-link:has(.gt-flash),
@@ -1151,7 +1153,7 @@
             .gt-nav-row { gap: 4px 9px; }
             .gt-nav-link { font-size: 11px; padding: 4px 7px; letter-spacing: 0.3px; }
             .gt-nav-sublink { font-size: 11px; letter-spacing: 0.3px; }
-            .gt-logo { padding: 0 16px; }
+            .gt-logo { padding: 0 30px; }
             .gt-logo img { height: 54px; }
         }
 
@@ -1159,7 +1161,7 @@
             .gt-nav-row { gap: 3px 7px; }
             .gt-nav-link { font-size: 10px; padding: 4px 6px; letter-spacing: 0.2px; }
             .gt-nav-sublink { font-size: 10px; letter-spacing: 0.2px; }
-            .gt-logo { padding: 0 12px; }
+            .gt-logo { padding: 0 22px; }
             .gt-logo img { height: 48px; }
             .gt-flash { margin-left: 3px; }
         }
@@ -1168,7 +1170,7 @@
             .gt-nav-row { gap: 2px 5px; }
             .gt-nav-link { font-size: 9px; padding: 3px 5px; }
             .gt-nav-sublink { font-size: 9px; }
-            .gt-logo { padding: 0 10px; }
+            .gt-logo { padding: 0 16px; }
             .gt-logo img { height: 44px; }
         }
 
@@ -1323,6 +1325,7 @@
                 <div class="gt-nav-side gt-nav-side-right">
                     <div class="gt-nav-row gt-nav-primary">
                         <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our Services</a>
+                        @platformOnly<a href="/fifa-world-cup-2026" class="gt-nav-link {{ Request::is('fifa-world-cup-2026') ? 'active' : '' }}">FIFA WC 2026 <i class="bi bi-lightning-charge-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
                         @feature('shop')<a href="/shopnow" class="gt-nav-link {{ Request::is('shopnow') ? 'active' : '' }}">Shop Online</a>@endfeature
                         @feature('pay_online')<a href="/payonline" class="gt-nav-link {{ Request::is('payonline') ? 'active' : '' }}">Pay Online</a>@endfeature
                         @feature('careers')<a href="/lookingforajob" class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>@endfeature
@@ -1396,6 +1399,8 @@
             </div>
 
             @platformOnly<a href="/events" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
+
+            @platformOnly<a href="/fifa-world-cup-2026" class="gt-mobile-nav-link">FIFA WC 2026 <i class="bi bi-lightning-charge-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
 
             {{-- More --}}
             <div class="gt-macc">

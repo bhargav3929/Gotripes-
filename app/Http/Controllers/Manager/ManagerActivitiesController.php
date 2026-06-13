@@ -13,56 +13,65 @@ use Illuminate\Support\Facades\File;
 class ManagerActivitiesController extends Controller
 {
     /**
-     * Display a listing of activities.
+     * Display a listing of the manager's own activities, split into two tabs:
+     *  1. Activities in the UAE      (country = UAE; legacy rows with no
+     *                                 country are treated as UAE)
+     *  2. Activities outside the UAE (any other country)
      *
-     * Shows two tabs:
-     *  1. Partner's own activities (tenant-scoped, full CRUD)
-     *  2. Platform UAE activities (company_id IS NULL, read-only)
+     * Both lists are tenant-scoped (BelongsToCompany) and fully editable.
      */
     public function index()
     {
-        // Partner's own activities (auto-scoped by BelongsToCompany)
-        $activities = UAEActivity::with(['details', 'emirate'])
-                                 ->where('isActive', 1)
-                                 ->orderBy('createdDate', 'desc')
-                                 ->paginate(10);
+        // Activities located in the UAE — legacy rows with a null/blank country
+        // predate the multi-country feature and are treated as UAE.
+        $uaeActivities = UAEActivity::with(['details', 'emirate'])
+            ->where('isActive', 1)
+            ->where(function ($q) {
+                $q->whereNull('country')
+                  ->orWhere('country', '')
+                  ->orWhereRaw('LOWER(TRIM(country)) = ?', ['united arab emirates']);
+            })
+            ->orderBy('createdDate', 'desc')
+            ->paginate(10, ['*'], 'uae_page');
 
-        // Platform / GoTrips UAE activities (no tenant — company_id IS NULL)
-        $uaeActivities = UAEActivity::withoutCompanyScope()
-                                    ->with(['details', 'emirate'])
-                                    ->where('isActive', 1)
-                                    ->whereNull('company_id')
-                                    ->orderBy('createdDate', 'desc')
-                                    ->paginate(10, ['*'], 'uae_page');
-
-        // Partner's country label — prefer allowed_countries setting, fall back to address
-        $company = current_company();
-        $allowedCountries = $company->getSetting('allowed_countries', []);
-        if (!empty($allowedCountries) && is_array($allowedCountries)) {
-            $partnerCountry = $allowedCountries[0];
-        } else {
-            $partnerCountry = trim($company->address ?? '');
-            if ($partnerCountry === '') {
-                $partnerCountry = 'Your Region';
-            }
-        }
+        // Activities anywhere outside the UAE.
+        $outsideActivities = UAEActivity::with(['details', 'emirate'])
+            ->where('isActive', 1)
+            ->whereNotNull('country')
+            ->where('country', '!=', '')
+            ->whereRaw('LOWER(TRIM(country)) != ?', ['united arab emirates'])
+            ->orderBy('createdDate', 'desc')
+            ->paginate(10, ['*'], 'outside_page');
 
         return view('manager.activities.index', compact(
-            'activities',
             'uaeActivities',
-            'partnerCountry'
+            'outsideActivities'
         ));
     }
 
     /**
      * Show the form for creating a new activity.
+     *
+     * `?scope=outside` (used by the "Activities outside the UAE" tab) defaults
+     * the country to a non-UAE one so the Emirate dropdown stays hidden.
      */
-    public function create()
+    public function create(Request $request)
     {
         $emirates  = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
         $countries = config('countries');
 
-        return view('manager.activities.create', compact('emirates', 'countries'));
+        $defaultCountry = 'United Arab Emirates';
+        if ($request->query('scope') === 'outside') {
+            $allowed = current_company()?->getSetting('allowed_countries', []);
+            if (!empty($allowed) && is_array($allowed) && !$this->isUAE($allowed[0])) {
+                $defaultCountry = $allowed[0];
+            } else {
+                $defaultCountry = collect(array_keys($countries))
+                    ->first(fn ($c) => !$this->isUAE($c)) ?? 'United Arab Emirates';
+            }
+        }
+
+        return view('manager.activities.create', compact('emirates', 'countries', 'defaultCountry'));
     }
 
     private function resolveActivityCountry(Request $request): string

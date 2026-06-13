@@ -53,18 +53,6 @@
     .wp-tab-pane.active {
         display: block;
     }
-
-    /* Read-only badge for UAE tab */
-    .wp-badge-readonly {
-        background: rgba(114, 174, 230, 0.12);
-        color: var(--wp-info);
-        font-size: 10px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-        padding: 2px 8px;
-        border-radius: 3px;
-    }
 </style>
 @endpush
 
@@ -78,23 +66,22 @@
 
 {{-- ── Tab Navigation ──────────────────────── --}}
 <div class="wp-tabs">
-    <button class="wp-tab-btn active" data-tab="partner-activities">
-        <i class="fas fa-map-marker-alt"></i>
-        Activities in {{ $partnerCountry }}
-        <span class="tab-count">{{ $activities->total() }}</span>
-    </button>
-    <button class="wp-tab-btn" data-tab="uae-activities">
+    <button class="wp-tab-btn active" data-tab="uae-activities">
         <i class="fas fa-landmark"></i>
-        Activities in UAE
+        Activities in the UAE
         <span class="tab-count">{{ $uaeActivities->total() }}</span>
-        <span class="wp-badge-readonly">read-only</span>
+    </button>
+    <button class="wp-tab-btn" data-tab="outside-activities">
+        <i class="fas fa-globe"></i>
+        Activities outside the UAE
+        <span class="tab-count">{{ $outsideActivities->total() }}</span>
     </button>
 </div>
 
 {{-- ══════════════════════════════════════════════
-     TAB 1 — Partner's Own Activities (full CRUD)
+     TAB 1 — Activities in the UAE (full CRUD)
      ══════════════════════════════════════════════ --}}
-<div class="wp-tab-pane active" id="tab-partner-activities">
+<div class="wp-tab-pane active" id="tab-uae-activities">
     <div class="wp-card">
         <div class="table-responsive">
             <table class="wp-table">
@@ -110,9 +97,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($activities as $index => $activity)
+                    @forelse($uaeActivities as $index => $activity)
                     <tr>
-                        <td style="color: var(--wp-text-muted);">{{ $activities->firstItem() + $index }}</td>
+                        <td style="color: var(--wp-text-muted);">{{ $uaeActivities->firstItem() + $index }}</td>
                         <td>
                             @if($activity->activityImage)
                                 <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" alt="{{ $activity->activityName }}"
@@ -162,9 +149,9 @@
                     <tr class="empty-row">
                         <td colspan="7">
                             <div style="padding: 20px 0;">
-                                <i class="fas fa-hiking" style="font-size: 28px; color: var(--wp-border); margin-bottom: 8px; display: block;"></i>
-                                No activities yet.
-                                <a href="{{ route('manager.activities.create') }}" style="color: var(--wp-primary);">Create your first one.</a>
+                                <i class="fas fa-landmark" style="font-size: 28px; color: var(--wp-border); margin-bottom: 8px; display: block;"></i>
+                                No UAE activities yet.
+                                <a href="{{ route('manager.activities.create') }}" style="color: var(--wp-primary);">Add one.</a>
                             </div>
                         </td>
                     </tr>
@@ -172,20 +159,22 @@
                 </tbody>
             </table>
         </div>
-        @if($activities->hasPages())
+        @if($uaeActivities->hasPages())
             <div class="wp-pagination">
-                {{ $activities->appends(request()->only('uae_page'))->links() }}
+                {{ $uaeActivities->appends(request()->only('outside_page'))->links() }}
             </div>
         @endif
     </div>
 </div>
 
 {{-- ══════════════════════════════════════════════
-     TAB 2 — Platform UAE Activities (read-only)
+     TAB 2 — Activities outside the UAE (full CRUD)
      ══════════════════════════════════════════════ --}}
-<div class="wp-tab-pane" id="tab-uae-activities">
-    <div class="wp-notice wp-notice-info" style="margin-bottom: 16px;">
-        <span><i class="fas fa-info-circle me-2"></i>These are GoTrips platform activities in the UAE. They are available on your storefront automatically. This list is read-only.</span>
+<div class="wp-tab-pane" id="tab-outside-activities">
+    <div style="display:flex; justify-content:flex-end; margin-bottom: 16px;">
+        <a href="{{ route('manager.activities.create', ['scope' => 'outside']) }}" class="wp-btn wp-btn-primary wp-btn-sm">
+            <i class="fas fa-plus"></i> Add Activity Outside the UAE
+        </a>
     </div>
 
     <div class="wp-card">
@@ -196,19 +185,19 @@
                         <th style="width: 50px;">#</th>
                         <th style="width: 80px;">Image</th>
                         <th>Activity Name</th>
-                        <th style="width: 140px;">Emirate</th>
+                        <th style="width: 160px;">Country</th>
                         <th style="width: 120px;">Location</th>
                         <th style="width: 100px;">Price</th>
-                        <th style="width: 100px;">Category</th>
+                        <th style="width: 140px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($uaeActivities as $index => $uaeActivity)
+                    @forelse($outsideActivities as $index => $activity)
                     <tr>
-                        <td style="color: var(--wp-text-muted);">{{ $uaeActivities->firstItem() + $index }}</td>
+                        <td style="color: var(--wp-text-muted);">{{ $outsideActivities->firstItem() + $index }}</td>
                         <td>
-                            @if($uaeActivity->activityImage)
-                                <img src="{{ str_starts_with($uaeActivity->activityImage, 'http') ? $uaeActivity->activityImage : asset($uaeActivity->activityImage) }}" alt="{{ $uaeActivity->activityName }}"
+                            @if($activity->activityImage)
+                                <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" alt="{{ $activity->activityName }}"
                                      style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--wp-border-light);"
                                      onerror="this.style.display='none';">
                             @else
@@ -218,39 +207,42 @@
                             @endif
                         </td>
                         <td>
-                            <strong style="color: var(--wp-text);">{{ Str::limit($uaeActivity->activityName, 40) }}</strong>
+                            <strong style="color: var(--wp-text);">{{ Str::limit($activity->activityName, 40) }}</strong>
                         </td>
                         <td>
-                            @if($uaeActivity->emirate)
-                                <span class="wp-badge wp-badge-amber">{{ $uaeActivity->emirate->emiratesName }}</span>
-                            @else
-                                <span class="text-muted-wp" style="font-size: 12px;">Unassigned</span>
-                            @endif
+                            <span class="wp-badge wp-badge-blue">{{ $activity->country }}</span>
                         </td>
                         <td style="font-size: 12px; color: var(--wp-text-secondary);">
                             <i class="fas fa-map-marker-alt" style="color: var(--wp-primary); margin-right: 4px;"></i>
-                            {{ Str::limit($uaeActivity->activityLocation, 20) }}
+                            {{ Str::limit($activity->activityLocation, 20) }}
                         </td>
                         <td>
-                            <strong style="color: var(--wp-primary);">${{ number_format($uaeActivity->activityPrice, 2) }}</strong>
-                            @if($uaeActivity->activityChildPrice && $uaeActivity->activityChildPrice > 0)
-                                <br><span style="font-size: 11px; color: var(--wp-text-muted);">Child: ${{ number_format($uaeActivity->activityChildPrice, 2) }}</span>
+                            <strong style="color: var(--wp-primary);">${{ number_format($activity->activityPrice, 2) }}</strong>
+                            @if($activity->activityChildPrice && $activity->activityChildPrice > 0)
+                                <br><span style="font-size: 11px; color: var(--wp-text-muted);">Child: ${{ number_format($activity->activityChildPrice, 2) }}</span>
                             @endif
                         </td>
                         <td>
-                            @if($uaeActivity->activityCategory)
-                                <span class="wp-badge wp-badge-blue">{{ $uaeActivity->activityCategory }}</span>
-                            @else
-                                <span class="text-muted-wp" style="font-size: 12px;">--</span>
-                            @endif
+                            <div style="display: flex; gap: 6px;">
+                                <a href="{{ route('manager.activities.edit', $activity->activityID) }}" class="wp-btn wp-btn-secondary wp-btn-sm">
+                                    <i class="fas fa-pen"></i> Edit
+                                </a>
+                                <form action="{{ route('manager.activities.destroy', $activity->activityID) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this activity?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="wp-btn wp-btn-danger wp-btn-sm">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr class="empty-row">
                         <td colspan="7">
                             <div style="padding: 20px 0;">
-                                <i class="fas fa-landmark" style="font-size: 28px; color: var(--wp-border); margin-bottom: 8px; display: block;"></i>
-                                No platform UAE activities available yet.
+                                <i class="fas fa-globe" style="font-size: 28px; color: var(--wp-border); margin-bottom: 8px; display: block;"></i>
+                                No activities outside the UAE yet.
+                                <a href="{{ route('manager.activities.create', ['scope' => 'outside']) }}" style="color: var(--wp-primary);">Add one.</a>
                             </div>
                         </td>
                     </tr>
@@ -258,9 +250,9 @@
                 </tbody>
             </table>
         </div>
-        @if($uaeActivities->hasPages())
+        @if($outsideActivities->hasPages())
             <div class="wp-pagination">
-                {{ $uaeActivities->appends(request()->only('page'))->links() }}
+                {{ $outsideActivities->appends(request()->only('uae_page'))->links() }}
             </div>
         @endif
     </div>
@@ -274,19 +266,17 @@ $(function () {
     $('.wp-tab-btn').on('click', function () {
         var target = $(this).data('tab');
 
-        // Update tab buttons
         $('.wp-tab-btn').removeClass('active');
         $(this).addClass('active');
 
-        // Update tab panes
         $('.wp-tab-pane').removeClass('active');
         $('#tab-' + target).addClass('active');
     });
 
-    // If URL has uae_page param, auto-switch to UAE tab
+    // If URL has outside_page param, auto-switch to the "outside UAE" tab
     var params = new URLSearchParams(window.location.search);
-    if (params.has('uae_page')) {
-        $('.wp-tab-btn[data-tab="uae-activities"]').trigger('click');
+    if (params.has('outside_page')) {
+        $('.wp-tab-btn[data-tab="outside-activities"]').trigger('click');
     }
 });
 </script>
