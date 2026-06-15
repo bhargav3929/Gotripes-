@@ -11,6 +11,7 @@
         gap: 0;
         margin-bottom: 20px;
         border-bottom: 2px solid var(--wp-border-light);
+        flex-wrap: wrap;
     }
     .wp-tab-btn {
         padding: 10px 20px;
@@ -26,6 +27,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        white-space: nowrap;
     }
     .wp-tab-btn:hover {
         color: var(--wp-text-secondary);
@@ -53,74 +55,12 @@
     .wp-tab-pane.active {
         display: block;
     }
-
-    /* ── Countries Grid ──────────────────────── */
-    .country-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 18px;
-    }
-    .country-card {
-        background: var(--wp-card-bg, #1a1a1a);
-        border: 1px solid var(--wp-border-light, rgba(255,255,255,0.08));
-        border-radius: 12px;
-        overflow: hidden;
-        text-decoration: none;
-        display: flex;
-        flex-direction: column;
-        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-    }
-    .country-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(255, 215, 0, 0.5);
-        box-shadow: 0 12px 28px rgba(0,0,0,0.5);
-    }
-    .country-flag {
-        width: 100%;
-        aspect-ratio: 3/2;
-        background: #111;
-        overflow: hidden;
-        position: relative;
-    }
-    .country-flag img {
-        width: 100%;
-        height: 100%;
+    .country-tab-flag {
+        width: 20px;
+        height: 14px;
         object-fit: cover;
-        display: block;
-        transition: transform .3s ease;
-    }
-    .country-card:hover .country-flag img {
-        transform: scale(1.04);
-    }
-    .country-flag-fallback {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba(255,215,0,0.25);
-        font-size: 40px;
-    }
-    .country-info {
-        padding: 12px 14px 14px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .country-name {
-        color: var(--wp-text, #fff);
-        font-weight: 700;
-        font-size: 14px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .country-count {
-        color: var(--wp-primary, #FFD700);
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
+        border-radius: 2px;
+        vertical-align: middle;
     }
 </style>
 @endpush
@@ -129,27 +69,31 @@
 <div class="wp-page-header">
     <h1 class="wp-page-title">Activities</h1>
     <a href="{{ route('manager.activities.create') }}" class="wp-btn wp-btn-primary">
-        <i class="fas fa-plus"></i> Add New Activity
+        <i class="fas fa-plus"></i> Add UAE Activity
     </a>
 </div>
 
 {{-- ── Tab Navigation ──────────────────────── --}}
 <div class="wp-tabs">
+    {{-- Tab 1: UAE (always present) --}}
     <button class="wp-tab-btn active" data-tab="uae-activities">
-        <i class="fas fa-landmark"></i>
+        <img src="https://flagcdn.com/w40/ae.png" class="country-tab-flag" alt="UAE">
         Activities in the UAE
         <span class="tab-count">{{ $uaeActivities->total() }}</span>
     </button>
-    <button class="wp-tab-btn" data-tab="outside-activities">
-        <i class="fas fa-globe"></i>
-        Activities outside the UAE
-        <span class="tab-count">{{ $outsideActivities->total() }}</span>
+
+    {{-- Dynamic tabs: one per allowed non-UAE country --}}
+    @foreach($countryTabs as $ct)
+    <button class="wp-tab-btn" data-tab="{{ $ct['tabKey'] }}">
+        @if($ct['flagSrc'])
+            <img src="{{ $ct['flagSrc'] }}" class="country-tab-flag" alt="{{ $ct['name'] }}">
+        @else
+            {{ $ct['flag'] }}
+        @endif
+        {{ $ct['name'] }}
+        <span class="tab-count">{{ $ct['activities']->total() }}</span>
     </button>
-    <button class="wp-tab-btn" data-tab="countries">
-        <i class="fas fa-flag"></i>
-        Countries
-        <span class="tab-count">{{ $countriesOverview->count() }}</span>
-    </button>
+    @endforeach
 </div>
 
 {{-- ══════════════════════════════════════════════
@@ -176,7 +120,8 @@
                         <td style="color: var(--wp-text-muted);">{{ $uaeActivities->firstItem() + $index }}</td>
                         <td>
                             @if($activity->activityImage)
-                                <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" alt="{{ $activity->activityName }}"
+                                <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}"
+                                     alt="{{ $activity->activityName }}"
                                      style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--wp-border-light);"
                                      onerror="this.style.display='none';">
                             @else
@@ -210,7 +155,8 @@
                                 <a href="{{ route('manager.activities.edit', $activity->activityID) }}" class="wp-btn wp-btn-secondary wp-btn-sm">
                                     <i class="fas fa-pen"></i> Edit
                                 </a>
-                                <form action="{{ route('manager.activities.destroy', $activity->activityID) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this activity?');">
+                                <form action="{{ route('manager.activities.destroy', $activity->activityID) }}" method="POST"
+                                      onsubmit="return confirm('Delete this activity?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="wp-btn wp-btn-danger wp-btn-sm">
                                         <i class="fas fa-trash-alt"></i>
@@ -235,19 +181,22 @@
         </div>
         @if($uaeActivities->hasPages())
             <div class="wp-pagination">
-                {{ $uaeActivities->appends(request()->only('outside_page'))->links() }}
+                {{ $uaeActivities->links() }}
             </div>
         @endif
     </div>
 </div>
 
 {{-- ══════════════════════════════════════════════
-     TAB 2 — Activities outside the UAE (full CRUD)
+     DYNAMIC COUNTRY TABS — one per allowed country
      ══════════════════════════════════════════════ --}}
-<div class="wp-tab-pane" id="tab-outside-activities">
+@foreach($countryTabs as $ct)
+<div class="wp-tab-pane" id="tab-{{ $ct['tabKey'] }}">
+    {{-- Add button scoped to this country --}}
     <div style="display:flex; justify-content:flex-end; margin-bottom: 16px;">
-        <a href="{{ route('manager.activities.create', ['scope' => 'outside']) }}" class="wp-btn wp-btn-primary wp-btn-sm">
-            <i class="fas fa-plus"></i> Add Activity Outside the UAE
+        <a href="{{ route('manager.activities.create', ['scope' => 'outside', 'country' => $ct['name']]) }}"
+           class="wp-btn wp-btn-primary wp-btn-sm">
+            <i class="fas fa-plus"></i> Add {{ $ct['name'] }} Activity
         </a>
     </div>
 
@@ -259,19 +208,19 @@
                         <th style="width: 50px;">#</th>
                         <th style="width: 80px;">Image</th>
                         <th>Activity Name</th>
-                        <th style="width: 160px;">Country</th>
                         <th style="width: 120px;">Location</th>
                         <th style="width: 100px;">Price</th>
                         <th style="width: 140px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($outsideActivities as $index => $activity)
+                    @forelse($ct['activities'] as $index => $activity)
                     <tr>
-                        <td style="color: var(--wp-text-muted);">{{ $outsideActivities->firstItem() + $index }}</td>
+                        <td style="color: var(--wp-text-muted);">{{ $ct['activities']->firstItem() + $index }}</td>
                         <td>
                             @if($activity->activityImage)
-                                <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}" alt="{{ $activity->activityName }}"
+                                <img src="{{ str_starts_with($activity->activityImage, 'http') ? $activity->activityImage : asset($activity->activityImage) }}"
+                                     alt="{{ $activity->activityName }}"
                                      style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--wp-border-light);"
                                      onerror="this.style.display='none';">
                             @else
@@ -282,9 +231,6 @@
                         </td>
                         <td>
                             <strong style="color: var(--wp-text);">{{ Str::limit($activity->activityName, 40) }}</strong>
-                        </td>
-                        <td>
-                            <span class="wp-badge wp-badge-blue">{{ $activity->country }}</span>
                         </td>
                         <td style="font-size: 12px; color: var(--wp-text-secondary);">
                             <i class="fas fa-map-marker-alt" style="color: var(--wp-primary); margin-right: 4px;"></i>
@@ -301,7 +247,8 @@
                                 <a href="{{ route('manager.activities.edit', $activity->activityID) }}" class="wp-btn wp-btn-secondary wp-btn-sm">
                                     <i class="fas fa-pen"></i> Edit
                                 </a>
-                                <form action="{{ route('manager.activities.destroy', $activity->activityID) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this activity?');">
+                                <form action="{{ route('manager.activities.destroy', $activity->activityID) }}" method="POST"
+                                      onsubmit="return confirm('Delete this activity?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="wp-btn wp-btn-danger wp-btn-sm">
                                         <i class="fas fa-trash-alt"></i>
@@ -312,11 +259,14 @@
                     </tr>
                     @empty
                     <tr class="empty-row">
-                        <td colspan="7">
+                        <td colspan="6">
                             <div style="padding: 20px 0;">
-                                <i class="fas fa-globe" style="font-size: 28px; color: var(--wp-border); margin-bottom: 8px; display: block;"></i>
-                                No activities outside the UAE yet.
-                                <a href="{{ route('manager.activities.create', ['scope' => 'outside']) }}" style="color: var(--wp-primary);">Add one.</a>
+                                @if($ct['flagSrc'])
+                                    <img src="{{ $ct['flagSrc'] }}" style="width:32px; height:22px; object-fit:cover; border-radius:3px; margin-bottom:8px; display:block; margin-left:auto; margin-right:auto; opacity:0.4;">
+                                @endif
+                                No {{ $ct['name'] }} activities yet.
+                                <a href="{{ route('manager.activities.create', ['scope' => 'outside', 'country' => $ct['name']]) }}"
+                                   style="color: var(--wp-primary);">Add one.</a>
                             </div>
                         </td>
                     </tr>
@@ -324,76 +274,54 @@
                 </tbody>
             </table>
         </div>
-        @if($outsideActivities->hasPages())
+        @if($ct['activities']->hasPages())
             <div class="wp-pagination">
-                {{ $outsideActivities->appends(request()->only('uae_page'))->links() }}
+                {{ $ct['activities']->links() }}
             </div>
         @endif
     </div>
 </div>
-{{-- ══════════════════════════════════════════════
-     TAB 3 — Countries Overview
-     ══════════════════════════════════════════════ --}}
-<div class="wp-tab-pane" id="tab-countries">
-    @if($countriesOverview->isEmpty())
-        <div class="wp-card" style="text-align:center; padding:48px 24px; color:var(--wp-text-muted);">
-            <i class="fas fa-globe" style="font-size:36px; margin-bottom:12px; display:block; color:var(--wp-border);"></i>
-            No countries with activities yet.
-        </div>
-    @else
-        <div class="country-grid">
-            @foreach($countriesOverview as $c)
-                <a href="{{ route('emirates.index') }}?country={{ urlencode($c['country']) }}"
-                   target="_blank"
-                   class="country-card"
-                   title="View {{ $c['country'] }} activities on site">
-                    <div class="country-flag">
-                        @if($c['flagSrc'])
-                            <img src="{{ $c['flagSrc'] }}"
-                                 srcset="https://flagcdn.com/w320/{{ $c['iso'] }}.png 320w, https://flagcdn.com/w640/{{ $c['iso'] }}.png 640w"
-                                 sizes="320px"
-                                 alt="{{ $c['country'] }} flag"
-                                 loading="lazy">
-                        @else
-                            <div class="country-flag-fallback">
-                                <i class="fas fa-flag"></i>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="country-info">
-                        <span class="country-name">{{ $c['country'] }}</span>
-                        <span class="country-count">
-                            <i class="fas fa-ticket-alt"></i>
-                            {{ $c['activity_count'] }} {{ Str::plural('activity', $c['activity_count']) }}
-                        </span>
-                    </div>
-                </a>
-            @endforeach
-        </div>
-    @endif
-</div>
+@endforeach
+
 @endsection
 
 @push('scripts')
 <script>
 $(function () {
-    // Tab switching
-    $('.wp-tab-btn').on('click', function () {
-        var target = $(this).data('tab');
+    // Build a map of page-params → tab keys so we can auto-activate the right tab.
+    var paramTabMap = {};
+    @foreach($countryTabs as $ct)
+    paramTabMap['{{ $ct['pageParam'] }}'] = '{{ $ct['tabKey'] }}';
+    @endforeach
 
+    function activateTab(tabKey) {
         $('.wp-tab-btn').removeClass('active');
-        $(this).addClass('active');
-
         $('.wp-tab-pane').removeClass('active');
-        $('#tab-' + target).addClass('active');
+        $('.wp-tab-btn[data-tab="' + tabKey + '"]').addClass('active');
+        $('#tab-' + tabKey).addClass('active');
+    }
+
+    // Tab click
+    $('.wp-tab-btn').on('click', function () {
+        activateTab($(this).data('tab'));
     });
 
+    // Auto-activate from URL params (pagination links).
     var params = new URLSearchParams(window.location.search);
-    if (params.has('outside_page')) {
-        $('.wp-tab-btn[data-tab="outside-activities"]').trigger('click');
+    if (params.has('uae_page')) {
+        activateTab('uae-activities');
+    } else {
+        var matched = false;
+        Object.keys(paramTabMap).forEach(function (param) {
+            if (!matched && params.has(param)) {
+                activateTab(paramTabMap[param]);
+                matched = true;
+            }
+        });
     }
-    if (params.has('tab') && params.get('tab') === 'countries') {
-        $('.wp-tab-btn[data-tab="countries"]').trigger('click');
+    // Explicit ?tab= override.
+    if (params.has('tab')) {
+        activateTab(params.get('tab'));
     }
 });
 </script>

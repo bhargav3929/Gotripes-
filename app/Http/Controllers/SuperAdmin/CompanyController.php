@@ -81,6 +81,8 @@ class CompanyController extends Controller
             'features' => 'nullable|array',
             'features.*' => 'string|in:'.implode(',', $allowedFeatures),
             'auto_provision' => 'nullable|boolean',
+            'allowed_countries' => 'nullable|array',
+            'allowed_countries.*' => 'string|max:100',
             // Admin user
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email',
@@ -115,6 +117,13 @@ class CompanyController extends Controller
         }
 
         $company = Company::create($companyData);
+
+        // Save allowed_countries into settings JSON.
+        $allowedCountries = array_values(array_filter($request->input('allowed_countries', [])));
+        if (!empty($allowedCountries)) {
+            $company->setSetting('allowed_countries', $allowedCountries);
+            $company->save();
+        }
 
         // Create admin user
         $admin = User::create([

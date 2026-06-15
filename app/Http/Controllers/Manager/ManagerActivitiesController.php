@@ -23,8 +23,9 @@ class ManagerActivitiesController extends Controller
      */
     public function index()
     {
-        // Activities located in the UAE — legacy rows with a null/blank country
-        // predate the multi-country feature and are treated as UAE.
+        $isoMap = collect(CountryCodes::all())->keyBy('name');
+
+        // UAE activities (includes legacy rows with null/blank country).
         $uaeActivities = UAEActivity::with(['details', 'emirate'])
             ->where('isActive', 1)
             ->where(function ($q) {
@@ -35,30 +36,36 @@ class ManagerActivitiesController extends Controller
             ->orderBy('createdDate', 'desc')
             ->paginate(10, ['*'], 'uae_page');
 
-        // Activities anywhere outside the UAE.
-        $outsideActivities = UAEActivity::with(['details', 'emirate'])
-            ->where('isActive', 1)
-            ->whereNotNull('country')
-            ->where('country', '!=', '')
-            ->whereRaw('LOWER(TRIM(country)) != ?', ['united arab emirates'])
-            ->orderBy('createdDate', 'desc')
-            ->paginate(10, ['*'], 'outside_page');
+        // Build per-country tabs from the company's allowed_countries setting,
+        // excluding UAE (which always has its own tab).
+        $allowedCountries = collect(current_company()?->getSetting('allowed_countries', []) ?? [])
+            ->filter(fn ($c) => !$this->isUAE($c))
+            ->values();
 
-        $isoMap           = collect(CountryCodes::all())->keyBy('name');
-        $countriesOverview = UAEActivity::countriesWithActivities()
-            ->map(function ($c) use ($isoMap) {
-                $iso = strtolower($isoMap[$c['country']]['iso'] ?? '');
-                return array_merge($c, [
-                    'iso'     => $iso,
-                    'flagSrc' => $iso ? "https://flagcdn.com/w320/{$iso}.png" : null,
-                ]);
-            });
+        $countryTabs = $allowedCountries->map(function ($countryName) use ($isoMap) {
+            $pageParam  = 'pg_' . Str::slug($countryName);
+            $activities = UAEActivity::with(['details'])
+                ->where('isActive', 1)
+                ->whereRaw('LOWER(TRIM(country)) = ?', [strtolower(trim($countryName))])
+                ->orderBy('createdDate', 'desc')
+                ->paginate(10, ['*'], $pageParam);
 
-        return view('manager.activities.index', compact(
-            'uaeActivities',
-            'outsideActivities',
-            'countriesOverview'
-        ));
+            $entry   = $isoMap[$countryName] ?? null;
+            $iso     = strtolower($entry['iso'] ?? '');
+            $flag    = $entry['flag'] ?? '🌍';
+
+            return [
+                'name'       => $countryName,
+                'iso'        => $iso,
+                'flag'       => $flag,
+                'flagSrc'    => $iso ? "https://flagcdn.com/w320/{$iso}.png" : null,
+                'activities' => $activities,
+                'tabKey'     => 'country-' . Str::slug($countryName),
+                'pageParam'  => $pageParam,
+            ];
+        });
+
+        return view('manager.activities.index', compact('uaeActivities', 'countryTabs'));
     }
 
     /**
@@ -69,21 +76,44 @@ class ManagerActivitiesController extends Controller
      */
     public function create(Request $request)
     {
-        $emirates  = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
-        $countries = config('countries');
+        $emirates = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
+        $countries = $this->allowedCountriesConfig();
 
+        // Pre-select a non-UAE country if a specific one is requested.
         $defaultCountry = 'United Arab Emirates';
-        if ($request->query('scope') === 'outside') {
-            $allowed = current_company()?->getSetting('allowed_countries', []);
-            if (!empty($allowed) && is_array($allowed) && !$this->isUAE($allowed[0])) {
-                $defaultCountry = $allowed[0];
-            } else {
-                $defaultCountry = collect(array_keys($countries))
-                    ->first(fn ($c) => !$this->isUAE($c)) ?? 'United Arab Emirates';
-            }
+        if ($request->filled('country') && !$this->isUAE($request->query('country'))) {
+            $defaultCountry = $request->query('country');
+        } elseif ($request->query('scope') === 'outside') {
+            $nonUAE = collect(array_keys($countries))->first(fn ($c) => !$this->isUAE($c));
+            $defaultCountry = $nonUAE ?? 'United Arab Emirates';
         }
 
         return view('manager.activities.create', compact('emirates', 'countries', 'defaultCountry'));
+    }
+
+    /**
+     * Build the restricted country list for create/edit forms.
+     * Always includes UAE; adds any extra countries the super admin granted.
+     * Falls back to the full config list only if no restriction is set.
+     */
+    private function allowedCountriesConfig(): array
+    {
+        $all     = config('countries');
+        $allowed = collect(current_company()?->getSetting('allowed_countries', []) ?? []);
+
+        if ($allowed->isEmpty()) {
+            // No restriction configured — show full list.
+            return $all;
+        }
+
+        // Always include UAE, then the explicitly allowed countries in order.
+        $keys = collect(['United Arab Emirates'])
+            ->merge($allowed->filter(fn ($c) => !$this->isUAE($c)))
+            ->unique();
+
+        return $keys->filter(fn ($k) => isset($all[$k]))
+                    ->mapWithKeys(fn ($k) => [$k => $all[$k]])
+                    ->toArray();
     }
 
     private function resolveActivityCountry(Request $request): string
@@ -213,7 +243,7 @@ class ManagerActivitiesController extends Controller
             }
         }
 
-        $countries = config('countries');
+        $countries = $this->allowedCountriesConfig();
 
         return view('manager.activities.edit', compact(
             'activity',
