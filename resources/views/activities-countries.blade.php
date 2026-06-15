@@ -3,8 +3,7 @@
 @php
     use Illuminate\Support\Str;
     use App\Support\CountryCodes;
-    $flagMap = config('countries');
-    $isoMap  = collect(CountryCodes::all())->keyBy('name');
+    $isoMap = collect(CountryCodes::all())->keyBy('name');
 @endphp
 
 <main style="background:#000; min-height:100vh; color:#fff; font-family:'Outfit',sans-serif; padding-bottom:60px;">
@@ -21,23 +20,28 @@
             <div class="ac-grid">
                 @foreach($countries as $c)
                     @php
-                        $cName    = $c['country'];
-                        $emoji    = $flagMap[$cName]['flag'] ?? null;
-                        $iso      = strtolower($isoMap[$cName]['iso'] ?? '');
-                        $flagSrc  = $iso ? "https://flagcdn.com/{$iso}.svg" : null;
+                        $cName   = $c['country'];
+                        $iso     = strtolower($isoMap[$cName]['iso'] ?? '');
+                        $flagSrc = $iso ? "https://flagcdn.com/w640/{$iso}.png" : null;
+                        $emoji   = collect(CountryCodes::all())->firstWhere('name', $cName)['flag'] ?? null;
                     @endphp
                     <a class="ac-card" href="{{ route('emirates.index') }}?country={{ urlencode($cName) }}">
-                        @if($emoji)
-                            <div class="ac-flag ac-flag-emoji">{{ $emoji }}</div>
-                        @elseif($flagSrc)
-                            <div class="ac-flag">
-                                <img src="{{ $flagSrc }}" alt="{{ $cName }} flag" loading="lazy">
-                            </div>
-                        @else
-                            <div class="ac-flag"><div class="ac-flag-fallback"><i class="bi bi-geo-alt"></i></div></div>
-                        @endif
-                        <span class="ac-name">{{ $cName }}</span>
-                        <span class="ac-count">{{ $c['activity_count'] }} {{ Str::plural('activity', $c['activity_count']) }}</span>
+                        <div class="ac-flag">
+                            @if($flagSrc)
+                                <img src="{{ $flagSrc }}"
+                                     srcset="https://flagcdn.com/w320/{{ $iso }}.png 320w, https://flagcdn.com/w640/{{ $iso }}.png 640w"
+                                     sizes="(max-width:480px) 320px, 640px"
+                                     alt="{{ $cName }} flag" loading="lazy">
+                            @elseif($emoji)
+                                <div class="ac-flag-emoji">{{ $emoji }}</div>
+                            @else
+                                <div class="ac-flag-fallback"><i class="bi bi-geo-alt"></i></div>
+                            @endif
+                        </div>
+                        <div class="ac-info">
+                            <span class="ac-name">{{ $cName }}</span>
+                            <span class="ac-count">{{ $c['activity_count'] }} {{ Str::plural('activity', $c['activity_count']) }}</span>
+                        </div>
                     </a>
                 @endforeach
             </div>
@@ -46,21 +50,78 @@
 </main>
 
 <style>
-    .ac-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:18px; max-width:1100px; margin:0 auto; }
-    .ac-card {
-        background:linear-gradient(180deg,#0e0e10 0%,#070708 100%);
-        border:1px solid rgba(255,215,0,0.14);
-        border-radius:16px; overflow:hidden; text-decoration:none;
-        display:flex; flex-direction:column;
-        transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    .ac-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+        max-width: 1100px;
+        margin: 0 auto;
     }
-    .ac-card:hover { transform:translateY(-4px); border-color:rgba(255,215,0,0.5); box-shadow:0 16px 36px rgba(0,0,0,0.6); }
-    .ac-flag { aspect-ratio:3/2; background:#111; overflow:hidden; }
-    .ac-flag img { width:100%; height:100%; object-fit:cover; display:block; }
-    .ac-flag-emoji { display:flex; align-items:center; justify-content:center; font-size:52px; line-height:1; }
-    .ac-flag-fallback { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:rgba(255,215,0,0.3); font-size:38px; }
-    .ac-name { color:#fff; font-weight:700; font-size:16px; padding:14px 16px 0; }
-    .ac-count { color:#FFD23F; font-size:13px; padding:3px 16px 16px; }
+    .ac-card {
+        background: linear-gradient(180deg, #0e0e10 0%, #070708 100%);
+        border: 1px solid rgba(255,215,0,0.14);
+        border-radius: 16px;
+        overflow: hidden;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .ac-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255,215,0,0.55);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+    }
+    .ac-flag {
+        width: 100%;
+        aspect-ratio: 3/2;
+        background: #111;
+        overflow: hidden;
+        position: relative;
+    }
+    .ac-flag img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform .3s ease;
+    }
+    .ac-card:hover .ac-flag img {
+        transform: scale(1.04);
+    }
+    .ac-flag-emoji {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        line-height: 1;
+    }
+    .ac-flag-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,215,0,0.3);
+        font-size: 48px;
+    }
+    .ac-info {
+        padding: 14px 16px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .ac-name {
+        color: #fff;
+        font-weight: 700;
+        font-size: 16px;
+    }
+    .ac-count {
+        color: #FFD23F;
+        font-size: 13px;
+    }
 </style>
 
 @include('footer')

@@ -53,6 +53,75 @@
     .wp-tab-pane.active {
         display: block;
     }
+
+    /* ── Countries Grid ──────────────────────── */
+    .country-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 18px;
+    }
+    .country-card {
+        background: var(--wp-card-bg, #1a1a1a);
+        border: 1px solid var(--wp-border-light, rgba(255,255,255,0.08));
+        border-radius: 12px;
+        overflow: hidden;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .country-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 215, 0, 0.5);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+    }
+    .country-flag {
+        width: 100%;
+        aspect-ratio: 3/2;
+        background: #111;
+        overflow: hidden;
+        position: relative;
+    }
+    .country-flag img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform .3s ease;
+    }
+    .country-card:hover .country-flag img {
+        transform: scale(1.04);
+    }
+    .country-flag-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,215,0,0.25);
+        font-size: 40px;
+    }
+    .country-info {
+        padding: 12px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .country-name {
+        color: var(--wp-text, #fff);
+        font-weight: 700;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .country-count {
+        color: var(--wp-primary, #FFD700);
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
 </style>
 @endpush
 
@@ -75,6 +144,11 @@
         <i class="fas fa-globe"></i>
         Activities outside the UAE
         <span class="tab-count">{{ $outsideActivities->total() }}</span>
+    </button>
+    <button class="wp-tab-btn" data-tab="countries">
+        <i class="fas fa-flag"></i>
+        Countries
+        <span class="tab-count">{{ $countriesOverview->count() }}</span>
     </button>
 </div>
 
@@ -257,6 +331,47 @@
         @endif
     </div>
 </div>
+{{-- ══════════════════════════════════════════════
+     TAB 3 — Countries Overview
+     ══════════════════════════════════════════════ --}}
+<div class="wp-tab-pane" id="tab-countries">
+    @if($countriesOverview->isEmpty())
+        <div class="wp-card" style="text-align:center; padding:48px 24px; color:var(--wp-text-muted);">
+            <i class="fas fa-globe" style="font-size:36px; margin-bottom:12px; display:block; color:var(--wp-border);"></i>
+            No countries with activities yet.
+        </div>
+    @else
+        <div class="country-grid">
+            @foreach($countriesOverview as $c)
+                <a href="{{ route('emirates.index') }}?country={{ urlencode($c['country']) }}"
+                   target="_blank"
+                   class="country-card"
+                   title="View {{ $c['country'] }} activities on site">
+                    <div class="country-flag">
+                        @if($c['flagSrc'])
+                            <img src="{{ $c['flagSrc'] }}"
+                                 srcset="https://flagcdn.com/w320/{{ $c['iso'] }}.png 320w, https://flagcdn.com/w640/{{ $c['iso'] }}.png 640w"
+                                 sizes="320px"
+                                 alt="{{ $c['country'] }} flag"
+                                 loading="lazy">
+                        @else
+                            <div class="country-flag-fallback">
+                                <i class="fas fa-flag"></i>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="country-info">
+                        <span class="country-name">{{ $c['country'] }}</span>
+                        <span class="country-count">
+                            <i class="fas fa-ticket-alt"></i>
+                            {{ $c['activity_count'] }} {{ Str::plural('activity', $c['activity_count']) }}
+                        </span>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    @endif
+</div>
 @endsection
 
 @push('scripts')
@@ -273,10 +388,12 @@ $(function () {
         $('#tab-' + target).addClass('active');
     });
 
-    // If URL has outside_page param, auto-switch to the "outside UAE" tab
     var params = new URLSearchParams(window.location.search);
     if (params.has('outside_page')) {
         $('.wp-tab-btn[data-tab="outside-activities"]').trigger('click');
+    }
+    if (params.has('tab') && params.get('tab') === 'countries') {
+        $('.wp-tab-btn[data-tab="countries"]').trigger('click');
     }
 });
 </script>

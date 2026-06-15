@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\UAEActivity;
 use App\Models\UAEActivityDetail;
 use App\Models\Emirates;
+use App\Support\CountryCodes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -43,9 +44,20 @@ class ManagerActivitiesController extends Controller
             ->orderBy('createdDate', 'desc')
             ->paginate(10, ['*'], 'outside_page');
 
+        $isoMap           = collect(CountryCodes::all())->keyBy('name');
+        $countriesOverview = UAEActivity::countriesWithActivities()
+            ->map(function ($c) use ($isoMap) {
+                $iso = strtolower($isoMap[$c['country']]['iso'] ?? '');
+                return array_merge($c, [
+                    'iso'     => $iso,
+                    'flagSrc' => $iso ? "https://flagcdn.com/w320/{$iso}.png" : null,
+                ]);
+            });
+
         return view('manager.activities.index', compact(
             'uaeActivities',
-            'outsideActivities'
+            'outsideActivities',
+            'countriesOverview'
         ));
     }
 
