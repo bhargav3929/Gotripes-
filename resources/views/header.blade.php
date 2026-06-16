@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    {{-- Apply saved theme before first paint to avoid a flash of the wrong theme. Default is dark. --}}
+    <script>(function(){try{var t=localStorage.getItem('gt-theme');if(t==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();</script>
     @php
         $tenantLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
         $tenantName = (isset($company) && $company && $company->name) ? $company->name : 'Go Trips';
@@ -1268,11 +1270,39 @@
                 margin-top: 140px;
             }
             body.has-ticker {
-                margin-top: 240px; 
+                margin-top: 240px;
             }
         }
 
+        /* ---- Theme toggle button (base styling; works in dark, light overrides in gt-theme.css) ---- */
+        .gt-theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            background: rgba(255, 215, 0, 0.06);
+            color: #FFD700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background .2s ease, color .2s ease, transform .2s ease, border-color .2s ease;
+            flex-shrink: 0;
+        }
+        .gt-theme-toggle:hover { transform: translateY(-1px); background: rgba(255, 215, 0, 0.16); }
+        /* Show only the icon for the theme you can switch TO. Default (dark active) → show sun. */
+        .gt-theme-toggle .bi-sun-fill { display: inline; }
+        .gt-theme-toggle .bi-moon-stars-fill { display: none; }
+        html[data-theme="light"] .gt-theme-toggle .bi-sun-fill { display: none; }
+        html[data-theme="light"] .gt-theme-toggle .bi-moon-stars-fill { display: inline; }
+        .gt-theme-toggle-mobile { margin-right: 6px; }
+
     </style>
+
+    {{-- Light theme overrides (activated by <html data-theme="light">). Loaded last so it wins over template + page styles. --}}
+    <link rel="stylesheet" href="{{ asset('css/gt-theme.css') }}?v={{ @filemtime(public_path('css/gt-theme.css')) ?: time() }}">
 </head>
 
 <body class="{{ request()->is('/') ? 'has-ticker' : '' }}">
@@ -1337,6 +1367,9 @@
                         @feature('pay_online')<a href="/payonline" class="gt-nav-link {{ Request::is('payonline') ? 'active' : '' }}">Pay Online</a>@endfeature
                         @feature('careers')<a href="/lookingforajob" class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>@endfeature
                         <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact Us</a>
+                        <button type="button" class="gt-theme-toggle" id="gtThemeToggle" aria-label="Toggle light / dark mode" title="Toggle light / dark mode">
+                            <i class="bi bi-sun-fill"></i><i class="bi bi-moon-stars-fill"></i>
+                        </button>
                     </div>
                     <div class="gt-nav-row gt-nav-secondary">
                         <a href="{{ $gtSoon('business-tourism') }}" class="gt-nav-sublink">Business Tourism (MICE){!! $gtBadge('mice') !!}</a>
@@ -1362,8 +1395,10 @@
                 <img src="{{ $tenantLogo }}" alt="{{ $tenantName }}">
             </a>
 
-            <!-- Empty div for flexbox spacing -->
-            <div style="width: 48px;"></div>
+            <!-- Theme toggle (also balances the flex layout opposite the menu button) -->
+            <button type="button" class="gt-theme-toggle gt-theme-toggle-mobile" id="gtThemeToggleMobile" aria-label="Toggle light / dark mode" title="Toggle light / dark mode">
+                <i class="bi bi-sun-fill"></i><i class="bi bi-moon-stars-fill"></i>
+            </button>
         </div>
 
         <!-- Mobile Menu Dropdown -->
@@ -1520,6 +1555,25 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---- Light / dark theme toggle (no reload; persisted in localStorage; default dark) ----
+        (function () {
+            function apply(theme) {
+                if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+                else document.documentElement.removeAttribute('data-theme');
+                try { localStorage.setItem('gt-theme', theme); } catch (e) {}
+            }
+            function toggle() {
+                var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                apply(isLight ? 'dark' : 'light');
+            }
+            ['gtThemeToggle', 'gtThemeToggleMobile'].forEach(function (id) {
+                var btn = document.getElementById(id);
+                if (btn) btn.addEventListener('click', toggle);
+            });
+        })();
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
