@@ -7,6 +7,8 @@ use App\Models\FifaSetting;
 use App\Models\FifaTicket;
 use App\Models\FifaTicketRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -136,5 +138,119 @@ class FifaTicketsController extends Controller
             . '</td></tr>'
             . '<tr><td style="padding:20px 32px 28px;color:#9ca3af;font-size:12px;">' . $ref . 'Received ' . e($received) . '</td></tr>'
             . '</table></td></tr></table></body></html>';
+    }
+
+    /**
+     * Live FIFA World Cup scores (JSON), polled by the FIFA page.
+     * Uses API-Football (api-sports.io) free tier; results are cached so we
+     * stay well within the free 100-requests/day cap. Degrades gracefully when
+     * no API key is configured or the provider is unreachable.
+     */
+    public function liveScores(Request $request)
+    {
+        // ?demo=1 returns sample fixtures so the UI can be previewed before a
+        // real API key is added. Never used for real visitors.
+        if ($request->boolean('demo')) {
+            return response()->json($this->demoScores());
+        }
+
+        $key = config('services.football.key');
+
+        if (empty($key)) {
+            return response()->json([
+                'configured' => false,
+                'live'       => false,
+                'matches'    => [],
+            ]);
+        }
+
+        // Cache 30s for live data — frequent enough to feel live, light on the quota.
+        $data = Cache::remember('fifa_live_scores', 30, fn () => $this->fetchScores($key));
+
+        return response()->json($data);
+    }
+
+    /** Fetch live World Cup fixtures, falling back to the next upcoming ones. */
+    private function fetchScores(string $key): array
+    {
+        $base    = rtrim(config('services.football.base'), '/');
+        $league  = config('services.football.wc_league');
+        $headers = ['x-apisports-key' => $key];
+
+        try {
+            // 1) Live World Cup matches right now (not season-gated, works on free tier).
+            $wc = Http::withHeaders($headers)->timeout(12)
+                ->get("$base/fixtures", ['live' => 'all', 'league' => $league]);
+            $matches = $this->mapFixtures($wc->json('response') ?? []);
+
+            if (count($matches) > 0) {
+                return [
+                    'configured' => true,
+                    'live'       => true,
+                    'scope'      => 'world_cup',
+                    'matches'    => $matches,
+                    'updated_at' => now()->toIso8601String(),
+                ];
+            }
+
+            // 2) No World Cup match live → show other live football so the board isn't
+            //    empty. (The free plan can't list the 2026 WC schedule, so we can't show
+            //    upcoming fixtures.) During WC match hours, step 1 takes over automatically.
+            $all = Http::withHeaders($headers)->timeout(12)->get("$base/fixtures", ['live' => 'all']);
+            $matches = array_slice($this->mapFixtures($all->json('response') ?? []), 0, 12);
+
+            return [
+                'configured' => true,
+                'live'       => count($matches) > 0,
+                'scope'      => 'all_live',
+                'matches'    => $matches,
+                'updated_at' => now()->toIso8601String(),
+            ];
+        } catch (\Throwable $e) {
+            Log::warning('FIFA live scores fetch failed.', ['error' => $e->getMessage()]);
+            return ['configured' => true, 'live' => false, 'matches' => [], 'error' => true];
+        }
+    }
+
+    /** Sample fixtures for previewing the live-scores UI (?demo=1). */
+    private function demoScores(): array
+    {
+        $flag = fn ($code) => "https://flagcdn.com/w80/{$code}.png";
+
+        return [
+            'configured' => true,
+            'live'       => true,
+            'demo'       => true,
+            'scope'      => 'world_cup',
+            'updated_at' => now()->toIso8601String(),
+            'matches'    => [
+                ['id' => 1, 'status' => '2H', 'status_long' => 'Second Half', 'elapsed' => 67, 'round' => 'Group A',
+                 'home' => 'Argentina', 'home_logo' => $flag('ar'), 'away' => 'Brazil',   'away_logo' => $flag('br'), 'home_goals' => 2, 'away_goals' => 1],
+                ['id' => 2, 'status' => '1H', 'status_long' => 'First Half', 'elapsed' => 23, 'round' => 'Group C',
+                 'home' => 'France',    'home_logo' => $flag('fr'), 'away' => 'Spain',    'away_logo' => $flag('es'), 'home_goals' => 0, 'away_goals' => 0],
+                ['id' => 3, 'status' => 'HT', 'status_long' => 'Halftime', 'elapsed' => 45, 'round' => 'Group D',
+                 'home' => 'England',   'home_logo' => $flag('gb-eng'), 'away' => 'Portugal', 'away_logo' => $flag('pt'), 'home_goals' => 1, 'away_goals' => 1],
+            ],
+        ];
+    }
+
+    /** Normalise API-Football fixture objects into a compact shape for the UI. */
+    private function mapFixtures(array $response): array
+    {
+        return collect($response)->map(fn ($f) => [
+            'id'          => data_get($f, 'fixture.id'),
+            'status'      => data_get($f, 'fixture.status.short'),
+            'status_long' => data_get($f, 'fixture.status.long'),
+            'elapsed'     => data_get($f, 'fixture.status.elapsed'),
+            'date'        => data_get($f, 'fixture.date'),
+            'league'      => data_get($f, 'league.name'),
+            'round'       => data_get($f, 'league.round'),
+            'home'        => data_get($f, 'teams.home.name'),
+            'home_logo'   => data_get($f, 'teams.home.logo'),
+            'away'        => data_get($f, 'teams.away.name'),
+            'away_logo'   => data_get($f, 'teams.away.logo'),
+            'home_goals'  => data_get($f, 'goals.home'),
+            'away_goals'  => data_get($f, 'goals.away'),
+        ])->values()->all();
     }
 }

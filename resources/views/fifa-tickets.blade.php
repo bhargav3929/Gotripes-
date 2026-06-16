@@ -35,6 +35,26 @@
     .fifa-hero-meta .num { font-size:30px; font-weight:800; color:#FFD23F; }
     .fifa-hero-meta .lbl { font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,.45); margin-top:4px; }
 
+    /* ---- Live scores ---- */
+    .fifa-live { margin:6px 0 54px; }
+    .fifa-live-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:8px; }
+    .fifa-live-badge { display:inline-flex; align-items:center; gap:10px; font-size:14px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#fff; }
+    .fifa-live-badge .dot { width:11px; height:11px; border-radius:50%; background:#ff3b3b; animation:fifaPulse 1.4s infinite; }
+    .fifa-live-badge.is-upcoming .dot { background:#FFD23F; animation:none; }
+    @keyframes fifaPulse { 0%{box-shadow:0 0 0 0 rgba(255,59,59,.55);} 70%{box-shadow:0 0 0 11px rgba(255,59,59,0);} 100%{box-shadow:0 0 0 0 rgba(255,59,59,0);} }
+    .fifa-live-updated { font-size:12px; color:rgba(255,255,255,.4); }
+    .fifa-live-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+    .fifa-live-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:18px 20px; transition:border-color .25s ease; }
+    .fifa-live-card:hover { border-color:rgba(255,210,63,.45); }
+    .fifa-live-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .fifa-live-row + .fifa-live-row { margin-top:10px; }
+    .fifa-live-team { display:flex; align-items:center; gap:11px; min-width:0; }
+    .fifa-live-team img { width:28px; height:28px; object-fit:contain; border-radius:4px; flex-shrink:0; }
+    .fifa-live-team span { color:#fff; font-weight:600; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .fifa-live-score { font-size:22px; font-weight:800; color:#FFD23F; min-width:24px; text-align:right; }
+    .fifa-live-meta { text-align:center; margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.07); font-size:12px; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,.5); }
+    .fifa-live-meta .min { color:#ff5b5b; font-weight:700; }
+
     /* ── Stage section ────────────────────── */
     .fifa-stage { margin-top:56px; }
     .fifa-stage-title { font-size:14px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.5); display:flex; align-items:center; gap:14px; margin-bottom:22px; }
@@ -121,6 +141,15 @@
                 <div class="item"><div class="num">{{ $ticketCount }}</div><div class="lbl">Listings</div></div>
                 <div class="item"><div class="num">16</div><div class="lbl">Host Cities</div></div>
             </div>
+        </div>
+
+        {{-- Live scores (API-Football, polled). Hidden until there is data. --}}
+        <div class="fifa-live" id="fifaLive" style="display:none;">
+            <div class="fifa-live-head">
+                <span class="fifa-live-badge" id="fifaLiveBadge"><span class="dot"></span> <span id="fifaLiveLabel">Live Scores</span></span>
+                <span class="fifa-live-updated" id="fifaLiveUpdated"></span>
+            </div>
+            <div class="fifa-live-grid" id="fifaLiveGrid"></div>
         </div>
 
         @if(session('fifa_success'))
@@ -253,6 +282,59 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('.fifa-alert')?.scrollIntoView({behavior:'smooth', block:'center'});
     @endif
 });
+</script>
+
+<script>
+(function () {
+    var box     = document.getElementById('fifaLive');
+    var grid    = document.getElementById('fifaLiveGrid');
+    var badge   = document.getElementById('fifaLiveBadge');
+    var label   = document.getElementById('fifaLiveLabel');
+    var updated = document.getElementById('fifaLiveUpdated');
+    if (!box) return;
+
+    // Append ?demo=1 to this page's URL to preview the UI without an API key.
+    var demo = /[?&]demo=1/.test(window.location.search);
+    var url  = "{{ route('fifa.live-scores') }}" + (demo ? '?demo=1' : '');
+
+    function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+    function card(m) {
+        var liveStatuses = ['1H','2H','ET','BT','P','LIVE','HT'];
+        var isLive = m.elapsed != null && liveStatuses.indexOf(m.status) !== -1;
+        var hs = (m.home_goals == null) ? '–' : m.home_goals;
+        var as = (m.away_goals == null) ? '–' : m.away_goals;
+        var meta;
+        if (m.status === 'HT') meta = 'Half Time';
+        else if (isLive) meta = '<span class="min">' + esc(m.elapsed) + "&rsquo; LIVE</span>";
+        else if (m.status === 'FT') meta = 'Full Time';
+        else if (m.date) { var d = new Date(m.date); meta = d.toLocaleDateString([], {month:'short', day:'numeric'}) + ' &middot; ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+        else meta = '';
+        var comp = m.league || m.round;
+        if (comp) meta += (meta ? ' &middot; ' : '') + esc(comp);
+        var logo = function (u) { return u ? '<img src="' + esc(u) + '" alt="">' : ''; };
+        return '<div class="fifa-live-card">'
+            + '<div class="fifa-live-row"><div class="fifa-live-team">' + logo(m.home_logo) + '<span>' + esc(m.home) + '</span></div><div class="fifa-live-score">' + esc(hs) + '</div></div>'
+            + '<div class="fifa-live-row"><div class="fifa-live-team">' + logo(m.away_logo) + '<span>' + esc(m.away) + '</span></div><div class="fifa-live-score">' + esc(as) + '</div></div>'
+            + '<div class="fifa-live-meta">' + meta + '</div></div>';
+    }
+
+    function load() {
+        fetch(url, { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (!d.configured || !d.matches || !d.matches.length) { box.style.display = 'none'; return; }
+                label.textContent = (d.scope === 'world_cup') ? 'Live Scores' : 'Live Football Scores';
+                updated.textContent = 'Auto-updating every 30s';
+                grid.innerHTML = d.matches.map(card).join('');
+                box.style.display = 'block';
+            })
+            .catch(function () { box.style.display = 'none'; });
+    }
+
+    load();
+    setInterval(load, 30000);
+})();
 </script>
 
 @include('footer')
