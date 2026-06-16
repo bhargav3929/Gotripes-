@@ -1149,7 +1149,8 @@
            collapses to the mobile menu. */
         /* Both rows always share the same font size; they shrink together so the
            longer second row keeps fitting, then drop to the mobile menu <=1200. */
-        @media (max-width: 1480px) {
+        @media (max-width: 1600px) {
+            .gt-nav-wrapper { padding: 8px 24px; }
             .gt-nav-row { gap: 4px 9px; }
             .gt-nav-link { font-size: 11px; padding: 4px 7px; letter-spacing: 0.3px; }
             .gt-nav-sublink { font-size: 11px; letter-spacing: 0.3px; }
@@ -1157,7 +1158,8 @@
             .gt-logo img { height: 54px; }
         }
 
-        @media (max-width: 1380px) {
+        @media (max-width: 1460px) {
+            .gt-nav-wrapper { padding: 8px 18px; }
             .gt-nav-row { gap: 3px 7px; }
             .gt-nav-link { font-size: 10px; padding: 4px 6px; letter-spacing: 0.2px; }
             .gt-nav-sublink { font-size: 10px; letter-spacing: 0.2px; }
@@ -1166,11 +1168,12 @@
             .gt-flash { margin-left: 3px; }
         }
 
-        @media (max-width: 1260px) {
+        @media (max-width: 1340px) {
+            .gt-nav-wrapper { padding: 8px 12px; }
             .gt-nav-row { gap: 2px 5px; }
             .gt-nav-link { font-size: 9px; padding: 3px 5px; }
             .gt-nav-sublink { font-size: 9px; }
-            .gt-logo { padding: 0 16px; }
+            .gt-logo { padding: 0 14px; }
             .gt-logo img { height: 44px; }
         }
 
@@ -1289,6 +1292,10 @@
     // Contact page so they know to enquire. The service name rides along as a
     // query param for context.
     $gtEnquire = fn ($service) => url('/contact-us') . '?enquiry=' . urlencode($service);
+
+    // Newly-introduced services (after e-Visa) that don't have a full page yet
+    // point to a "Coming Soon" placeholder page with a related picture.
+    $gtSoon = fn ($slug) => url('/coming-soon/' . $slug);
 @endphp
     <!-- ==================== PREMIUM HEADER ==================== -->
     <header class="gt-header">
@@ -1309,10 +1316,10 @@
                     <div class="gt-nav-row gt-nav-secondary">
                         @feature('esim')<a href="/esim" class="gt-nav-sublink {{ Request::is('esim') ? 'active' : '' }}">eSIM{!! $gtBadge('esim') !!}</a>@endfeature
                         @feature('visas')<a href="/e-visa" class="gt-nav-sublink {{ Request::is('e-visa') || Request::is('uae-evisa') ? 'active' : '' }}">e-Visa (80+ Countries){!! $gtBadge('evisa') !!}</a>@endfeature
-                        <a href="{{ $gtEnquire('Insurance') }}" class="gt-nav-sublink">Insurance{!! $gtBadge('insurance') !!}</a>
-                        @platformOnly<a href="/lotus-cruise-dubai" class="gt-nav-sublink {{ Request::is('lotus-cruise-dubai') ? 'active' : '' }}">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
-                        <a href="{{ $gtEnquire('Transport') }}" class="gt-nav-sublink">Transport{!! $gtBadge('transport') !!}</a>
-                        <a href="{{ $gtEnquire('Holiday Homes') }}" class="gt-nav-sublink">Holiday Homes{!! $gtBadge('holiday_homes') !!}</a>
+                        <a href="{{ $gtSoon('insurance') }}" class="gt-nav-sublink">Insurance{!! $gtBadge('insurance') !!}</a>
+                        @platformOnly<a href="{{ $gtSoon('cruise') }}" class="gt-nav-sublink">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
+                        <a href="{{ $gtSoon('transport') }}" class="gt-nav-sublink">Transport{!! $gtBadge('transport') !!}</a>
+                        <a href="{{ $gtSoon('holiday-homes') }}" class="gt-nav-sublink">Holiday Homes{!! $gtBadge('holiday_homes') !!}</a>
                     </div>
                 </div>
 
@@ -1332,11 +1339,11 @@
                         <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact Us</a>
                     </div>
                     <div class="gt-nav-row gt-nav-secondary">
-                        <a href="{{ $gtEnquire('Business Tourism (MICE)') }}" class="gt-nav-sublink">Business Tourism (MICE){!! $gtBadge('mice') !!}</a>
-                        @platformOnly<a href="/events" class="gt-nav-sublink {{ Request::is('events') ? 'active' : '' }}">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
-                        <a href="{{ $gtEnquire('Local Tours') }}" class="gt-nav-sublink">Local Tours{!! $gtBadge('local_tours') !!}</a>
-                        <a href="{{ $gtEnquire('Festival Tours') }}" class="gt-nav-sublink">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
-                        <a href="{{ $gtEnquire('Medical Tours') }}" class="gt-nav-sublink">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
+                        <a href="{{ $gtSoon('business-tourism') }}" class="gt-nav-sublink">Business Tourism (MICE){!! $gtBadge('mice') !!}</a>
+                        @platformOnly<a href="{{ $gtSoon('events') }}" class="gt-nav-sublink">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
+                        <a href="{{ $gtSoon('local-tours') }}" class="gt-nav-sublink">Local Tours{!! $gtBadge('local_tours') !!}</a>
+                        <a href="{{ $gtSoon('festival-tours') }}" class="gt-nav-sublink">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
+                        <a href="{{ $gtSoon('medical-tours') }}" class="gt-nav-sublink">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
                     </div>
                 </div>
 
@@ -1371,7 +1378,7 @@
                     <a href="/uaevisa" class="gt-macc-item">UAE Visa</a>
                     <a href="/e-visa" class="gt-macc-item">e-Visa (80+ Countries){!! $gtBadge('evisa') !!}</a>
                     @endfeature
-                    <a href="{{ $gtEnquire('Insurance') }}" class="gt-macc-item">Insurance{!! $gtBadge('insurance') !!}</a>
+                    <a href="{{ $gtSoon('insurance') }}" class="gt-macc-item">Insurance{!! $gtBadge('insurance') !!}</a>
                 </div>
             </div>
 
@@ -1380,9 +1387,9 @@
                 <button type="button" class="gt-mobile-nav-link gt-macc-toggle">Tours <i class="bi bi-chevron-down"></i></button>
                 <div class="gt-macc-panel">
                     @feature('tours')<a href="/tour-packages" class="gt-macc-item">Tour Packages</a>@endfeature
-                    <a href="{{ $gtEnquire('Local Tours') }}" class="gt-macc-item">Local Tours{!! $gtBadge('local_tours') !!}</a>
-                    <a href="{{ $gtEnquire('Festival Tours') }}" class="gt-macc-item">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
-                    <a href="{{ $gtEnquire('Medical Tours') }}" class="gt-macc-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
+                    <a href="{{ $gtSoon('local-tours') }}" class="gt-macc-item">Local Tours{!! $gtBadge('local_tours') !!}</a>
+                    <a href="{{ $gtSoon('festival-tours') }}" class="gt-macc-item">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
+                    <a href="{{ $gtSoon('medical-tours') }}" class="gt-macc-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
                     @feature('activities')<a href="/activities" class="gt-macc-item">Activities</a>@endfeature
                     @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-macc-item">Hajj &amp; Umrah</a>@endfeature
                 </div>
@@ -1392,13 +1399,13 @@
             <div class="gt-macc">
                 <button type="button" class="gt-mobile-nav-link gt-macc-toggle">Stays <i class="bi bi-chevron-down"></i></button>
                 <div class="gt-macc-panel">
-                    <a href="{{ $gtEnquire('Holiday Homes') }}" class="gt-macc-item">Holiday Homes{!! $gtBadge('holiday_homes') !!}</a>
-                    @platformOnly<a href="/lotus-cruise-dubai" class="gt-macc-item">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
-                    <a href="{{ $gtEnquire('Transport') }}" class="gt-macc-item">Transport{!! $gtBadge('transport') !!}</a>
+                    <a href="{{ $gtSoon('holiday-homes') }}" class="gt-macc-item">Holiday Homes{!! $gtBadge('holiday_homes') !!}</a>
+                    @platformOnly<a href="{{ $gtSoon('cruise') }}" class="gt-macc-item">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
+                    <a href="{{ $gtSoon('transport') }}" class="gt-macc-item">Transport{!! $gtBadge('transport') !!}</a>
                 </div>
             </div>
 
-            @platformOnly<a href="/events" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
+            @platformOnly<a href="{{ $gtSoon('events') }}" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
 
             @platformOnly<a href="/fifa-world-cup-2026" class="gt-mobile-nav-link">FIFA WC 2026 <i class="bi bi-lightning-charge-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
 
@@ -1408,7 +1415,7 @@
                 <div class="gt-macc-panel">
                     @feature('esim')<a href="/esim" class="gt-macc-item">eSIM{!! $gtBadge('esim') !!}</a>@endfeature
                     <a href="/our-services" class="gt-macc-item">Our Services</a>
-                    <a href="{{ $gtEnquire('Business Tourism (MICE)') }}" class="gt-macc-item">Business Tourism (MICE){!! $gtBadge('mice') !!}</a>
+                    <a href="{{ $gtSoon('business-tourism') }}" class="gt-macc-item">Business Tourism (MICE){!! $gtBadge('mice') !!}</a>
                     @feature('shop')<a href="/shopnow" class="gt-macc-item">Shop Online</a>@endfeature
                     @feature('pay_online')<a href="/payonline" class="gt-macc-item">Pay Online</a>@endfeature
                     @feature('careers')<a href="/lookingforajob" class="gt-macc-item">Careers</a>@endfeature

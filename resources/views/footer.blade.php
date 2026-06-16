@@ -195,7 +195,7 @@
       <!-- Column 0: Brand + Contact -->
       <div class="col-md-3 col-sm-6 mb-4">
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
-          <img src="{{ $footerLogo }}" alt="{{ $footerCompanyName }}" style="height:38px; width:38px; object-fit:contain; border-radius:8px; background:#fff; padding:4px;">
+          <img src="{{ $footerLogo }}" alt="{{ $footerCompanyName }}" style="height:42px; width:42px; object-fit:contain; border-radius:8px; background:transparent; padding:0;">
           <span style="color:#fff; font-weight:700; font-size:20px; letter-spacing:-0.01em;">{{ $footerCompanyName }}</span>
         </div>
         <ul class="gt-footer-contact">

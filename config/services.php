@@ -31,6 +31,15 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     
+    // API-Football (api-sports.io) — free tier covers live scores + FIFA World Cup.
+    // Get a free key at https://dashboard.api-football.com and set FOOTBALL_API_KEY.
+    'football' => [
+        'key'       => env('FOOTBALL_API_KEY'),
+        'base'      => env('FOOTBALL_API_BASE', 'https://v3.football.api-sports.io'),
+        'wc_league' => env('FOOTBALL_WC_LEAGUE_ID', 1),   // World Cup league id
+        'season'    => env('FOOTBALL_WC_SEASON', 2026),
+    ],
+
     // CCAvenue (deprecated — replaced by Nomod Hosted Checkout)
     // 'ccavenue' => [
     //     'merchant_id' => env('CCAVENUE_MERCHANT_ID'),

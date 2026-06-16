@@ -142,6 +142,25 @@ Route::prefix('/')->group(function () {
     Route::get('uaevisa', fn() => view('uaevisa'))->middleware('tenant.feature:visas');
     Route::get('caro', fn() => view('uaecarousel'));
 
+    // Coming Soon placeholders for newly-introduced menu items (services listed
+    // after e-Visa that don't have a full page yet). Each shows a related picture.
+    Route::get('coming-soon/{slug}', function ($slug) {
+        $services = [
+            'insurance'         => ['title' => 'Travel Insurance',        'icon' => 'bi-shield-check',  'tagline' => 'Comprehensive travel protection for every journey — launching soon.',          'img' => asset('assets/coming-soon/insurance.jpg')],
+            'cruise'            => ['title' => 'Cruise',                  'icon' => 'bi-water',         'tagline' => 'Luxury cruise getaways and Dubai marina sailings — coming soon.',                'img' => asset('assets/coming-soon/cruise.jpg')],
+            'events'            => ['title' => 'Events',                  'icon' => 'bi-calendar-event','tagline' => 'Concerts, shows and unforgettable live events — coming soon.',                   'img' => asset('assets/coming-soon/events.jpg')],
+            'transport'         => ['title' => 'Transport',               'icon' => 'bi-car-front',     'tagline' => 'Premium chauffeur, transfers and car rentals — arriving shortly.',              'img' => asset('assets/coming-soon/transport.jpg')],
+            'holiday-homes'     => ['title' => 'Holiday Homes',           'icon' => 'bi-house-heart',   'tagline' => 'Handpicked holiday homes and luxury stays — coming soon.',                       'img' => asset('assets/coming-soon/holiday-homes.jpg')],
+            'business-tourism'  => ['title' => 'Business Tourism (MICE)',  'icon' => 'bi-briefcase',     'tagline' => 'Meetings, incentives, conferences and exhibitions — on the way.',                'img' => asset('assets/coming-soon/business-tourism.jpg')],
+            'local-tours'       => ['title' => 'Local Tours',             'icon' => 'bi-geo-alt',       'tagline' => 'Curated local experiences and city tours — coming soon.',                        'img' => asset('assets/coming-soon/local-tours.jpg')],
+            'festival-tours'    => ['title' => 'Festival Tours',          'icon' => 'bi-stars',         'tagline' => 'Travel built around the world\'s best festivals — launching soon.',              'img' => asset('assets/coming-soon/festival-tours.jpg')],
+            'medical-tours'     => ['title' => 'Medical Tours',           'icon' => 'bi-heart-pulse',   'tagline' => 'Trusted medical travel and wellness journeys — arriving shortly.',               'img' => asset('assets/coming-soon/medical-tours.jpg')],
+        ];
+
+        abort_unless(isset($services[$slug]), 404);
+
+        return view('coming-soon', ['service' => $services[$slug]]);
+    })->name('coming-soon');
 
 });
 
@@ -158,6 +177,8 @@ Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->nam
 // FIFA World Cup 2026 tickets — public listing + customer request form (shared, not tenant-gated).
 Route::get('/fifa-world-cup-2026', [FifaTicketsController::class, 'index'])->name('fifa.index');
 Route::post('/fifa-world-cup-2026/request', [FifaTicketsController::class, 'submitRequest'])->name('fifa.request');
+// Live World Cup scores (JSON) — polled by the FIFA page.
+Route::get('/fifa-world-cup-2026/live-scores', [FifaTicketsController::class, 'liveScores'])->name('fifa.live-scores');
 
 //backend
 // Admin routes restricted to full Admin only
