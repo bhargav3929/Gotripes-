@@ -515,7 +515,7 @@
                                 <span>+971</span>
                             </div>
                             <input type="tel" name="lead_phone" class="gotrips-lead-form-input"
-                                placeholder="50 000 0000" required>
+                                placeholder="50 000 0000" data-no-intl required>
                         </div>
                     </div>
 
