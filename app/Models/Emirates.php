@@ -43,10 +43,18 @@ class Emirates extends Model
     // Get emirates with activity count, optionally limited to one country.
     public static function getEmiratesWithActivityCount($country = null)
     {
+        $companyId = current_company_id();
         return self::where('isActive', 1)
             ->when($country, fn($q) => $q->where('country', $country))
-            ->withCount(['activities' => function($query) {
-                $query->where('isActive', 1);
+            ->withCount(['activities' => function ($query) use ($companyId) {
+                // Bypass tenant scope so platform/shared activities (company_id = NULL)
+                // are counted alongside the tenant's own activities.
+                $query->withoutGlobalScope(\App\Scopes\CompanyScope::class)
+                      ->where('isActive', 1)
+                      ->where(function ($q) use ($companyId) {
+                          $q->where('company_id', $companyId)
+                            ->orWhereNull('company_id');
+                      });
             }])
             ->orderBy('emiratesName')
             ->get();
@@ -59,8 +67,15 @@ class Emirates extends Model
      */
     public static function getCountriesWithActivities()
     {
+        $companyId = current_company_id();
         return self::where('isActive', 1)
-            ->withCount(['activities' => fn($q) => $q->where('isActive', 1)])
+            ->withCount(['activities' => function ($q) use ($companyId) {
+                $q->withoutGlobalScope(\App\Scopes\CompanyScope::class)
+                  ->where('isActive', 1)
+                  ->where(function ($q2) use ($companyId) {
+                      $q2->where('company_id', $companyId)->orWhereNull('company_id');
+                  });
+            }])
             ->get()
             ->filter(fn($e) => $e->activities_count > 0)
             ->groupBy('country')

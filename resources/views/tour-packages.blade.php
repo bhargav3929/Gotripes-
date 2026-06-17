@@ -4,12 +4,20 @@
     $tenant = current_company();
     $hasPackages = isset($packages) && $packages->count() > 0;
     $comingSoon  = $comingSoon ?? collect();
-    // country name => dedicated page URL (e.g. "Canada" => "/tour-packages/canada")
     $featuredMap = $hasPackages
         ? $packages->keys()->mapWithKeys(fn($name) => [$name => route('tour-packages.country', \Illuminate\Support\Str::slug($name))])->toArray()
         : [];
     $featuredCountries   = array_keys($featuredMap);
     $comingSoonCountries = $comingSoon->toArray();
+
+    // Build country list locally — no external API needed
+    $localCountries = collect(\App\Support\CountryCodes::all())
+        ->map(fn($c) => [
+            'name'    => $c['name'],
+            'flagUrl' => 'https://flagcdn.com/w320/' . strtolower($c['iso']) . '.png',
+        ])
+        ->values()
+        ->toArray();
 @endphp
 
 <style>
@@ -245,86 +253,74 @@
     "South Africa":         { best:"May–Sep",    dur:"10–14 days", cost:"$200–$250",   airports:"JNB,CPT",       airline:"SAA" },
   };
 
-  fetch('https://restcountries.com/v3.1/all?fields=name,flags,capital,currencies,region')
-    .then(r => r.json())
-    .then(countries => {
+  // Local country data — no external API dependency
+  const countries = @json($localCountries);
 
-      // Sort: featured first (alphabetical within featured), then rest alphabetically
-      countries.sort((a, b) => {
-        const aF = FEAT_NAMES.includes(a.name.common);
-        const bF = FEAT_NAMES.includes(b.name.common);
-        if (aF && !bF) return -1;
-        if (!aF && bF) return 1;
-        return a.name.common.localeCompare(b.name.common);
-      });
+  countries.sort((a, b) => {
+    const aF = FEAT_NAMES.includes(a.name);
+    const bF = FEAT_NAMES.includes(b.name);
+    if (aF && !bF) return -1;
+    if (!aF && bF) return 1;
+    return a.name.localeCompare(b.name);
+  });
 
-      const grid   = document.getElementById('tpGrid');
-      const loader = document.getElementById('tpLoader');
+  const grid   = document.getElementById('tpGrid');
+  const loader = document.getElementById('tpLoader');
 
-      let html = '';
-      countries.forEach(c => {
-        const name   = c.name.common;
-        const info   = specialInfo[name] || { best:"Year-Round", dur:"5–7 days", cost:"$150–$300", airports:"International", airline:"Multiple" };
-        const ck     = Object.keys(c.currencies || {})[0];
-        const cName  = ck ? c.currencies[ck].name : 'N/A';
-        const cSym   = ck ? (c.currencies[ck].symbol || ck) : '';
-        const cap    = c.capital ? c.capital[0] : 'N/A';
-        const isFeat = FEAT_NAMES.includes(name);
-        const isSoon = COMING.includes(name);
+  let html = '';
+  countries.forEach(c => {
+    const name   = c.name;
+    const info   = specialInfo[name] || { best:"Year-Round", dur:"5–7 days", cost:"$150–$300", airports:"International", airline:"Multiple" };
+    const isFeat = FEAT_NAMES.includes(name);
+    const isSoon = COMING.includes(name);
 
-        if (isFeat) {
-          const pageUrl = FEAT_MAP[name];
-          html += `
-            <a class="tp-country-card is-featured" href="${pageUrl}" style="text-decoration:none;">
-              <img src="${c.flags.svg || c.flags.png}" alt="${name}" loading="lazy">
-              <span class="tp-feat-badge"><i class="bi bi-star-fill" style="font-size:9px;"></i> Featured</span>
-              <span class="tp-country-name">${name}</span>
-              <span class="tp-feat-btn">View Packages →</span>
-            </a>`;
-        } else if (isSoon) {
-          html += `
-            <div class="tp-country-card is-soon">
-              <img src="${c.flags.svg || c.flags.png}" alt="${name}" loading="lazy">
-              <span class="tp-soon-badge">Coming Soon</span>
-              <span class="tp-country-name">${name}</span>
-            </div>`;
-        } else {
-          html += `
-            <div class="tp-country-card">
-              <img src="${c.flags.svg || c.flags.png}" alt="${name}" loading="lazy">
-              <span class="tp-country-name">${name}</span>
-              <details class="tp-details">
-                <summary>Details</summary>
-                <div class="tp-details-content">
-                  <strong>Capital:</strong> ${cap}<br>
-                  <strong>Best time:</strong> ${info.best}<br>
-                  <strong>Currency:</strong> ${cName} (${cSym})<br>
-                  <strong>Stay:</strong> ${info.dur}<br>
-                  <strong>Budget/day:</strong> ${info.cost}<br>
-                  <strong>Airports:</strong> ${info.airports}<br>
-                  <strong>Airlines:</strong> ${info.airline}
-                </div>
-              </details>
-            </div>`;
-        }
-      });
+    if (isFeat) {
+      const pageUrl = FEAT_MAP[name];
+      html += `
+        <a class="tp-country-card is-featured" href="${pageUrl}" style="text-decoration:none;">
+          <img src="${c.flagUrl}" alt="${name}" loading="lazy">
+          <span class="tp-feat-badge"><i class="bi bi-star-fill" style="font-size:9px;"></i> Featured</span>
+          <span class="tp-country-name">${name}</span>
+          <span class="tp-feat-btn">View Packages →</span>
+        </a>`;
+    } else if (isSoon) {
+      html += `
+        <div class="tp-country-card is-soon">
+          <img src="${c.flagUrl}" alt="${name}" loading="lazy">
+          <span class="tp-soon-badge">Coming Soon</span>
+          <span class="tp-country-name">${name}</span>
+        </div>`;
+    } else {
+      html += `
+        <div class="tp-country-card">
+          <img src="${c.flagUrl}" alt="${name}" loading="lazy">
+          <span class="tp-country-name">${name}</span>
+          <details class="tp-details">
+            <summary>Details</summary>
+            <div class="tp-details-content">
+              <strong>Best time:</strong> ${info.best}<br>
+              <strong>Stay:</strong> ${info.dur}<br>
+              <strong>Budget/day:</strong> ${info.cost}<br>
+              <strong>Airports:</strong> ${info.airports}<br>
+              <strong>Airlines:</strong> ${info.airline}
+            </div>
+          </details>
+        </div>`;
+    }
+  });
 
-      grid.innerHTML = html;
-      loader.style.display = 'none';
-      grid.style.display   = 'grid';
+  grid.innerHTML = html;
+  loader.style.display = 'none';
+  grid.style.display   = 'grid';
 
-      // Accordion: close other open details when one opens
-      grid.querySelectorAll('.tp-details').forEach(d => {
-        d.addEventListener('toggle', function () {
-          if (this.open) {
-            grid.querySelectorAll('.tp-details').forEach(o => { if (o !== this) o.removeAttribute('open'); });
-          }
-        });
-      });
-    })
-    .catch(() => {
-      document.getElementById('tpLoader').innerHTML = '<i class="bi bi-exclamation-triangle" style="margin-right:8px;"></i>Failed to load. Please refresh.';
+  // Accordion: close other open details when one opens
+  grid.querySelectorAll('.tp-details').forEach(d => {
+    d.addEventListener('toggle', function () {
+      if (this.open) {
+        grid.querySelectorAll('.tp-details').forEach(o => { if (o !== this) o.removeAttribute('open'); });
+      }
     });
+  });
 
   // Search
   document.getElementById('tpSearch').addEventListener('input', function () {

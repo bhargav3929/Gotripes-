@@ -47,16 +47,33 @@ class UAEActivity extends Model
     ];
 
     /**
-     * Distinct countries that have at least one active activity (within the
-     * current company scope). Used to decide whether the public Activities page
-     * shows a country picker first (more than one country) or goes straight to
-     * the emirates (one country, e.g. UAE only).
+     * Public-facing scope: includes the current tenant's activities AND
+     * platform/shared activities (company_id = NULL, pre-multi-tenancy rows).
+     * Use this for all visitor-facing pages instead of the default global scope
+     * which strictly filters to company_id = X and hides shared activities.
+     */
+    public function scopePublicVisible($query)
+    {
+        $companyId = current_company_id();
+        return $query->withoutGlobalScope(\App\Scopes\CompanyScope::class)
+                     ->where(function ($q) use ($companyId) {
+                         $q->where('company_id', $companyId)
+                           ->orWhereNull('company_id');
+                     });
+    }
+
+    /**
+     * Distinct countries that have at least one active activity visible to
+     * the current tenant (own + platform/shared). Used to decide whether the
+     * public Activities page shows a country picker or goes straight to the
+     * UAE emirates grid.
      */
     public static function countriesWithActivities()
     {
-        return self::where('isActive', 1)
+        return self::publicVisible()
+            ->where('isActive', 1)
             ->get(['country'])
-            ->groupBy(fn($a) => $a->country ?: 'United Arab Emirates')
+            ->groupBy(fn($a) => ($a->country && trim($a->country) !== '') ? trim($a->country) : 'United Arab Emirates')
             ->map(fn($group, $country) => ['country' => $country, 'activity_count' => $group->count()])
             ->values();
     }

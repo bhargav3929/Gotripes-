@@ -11,27 +11,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
       - name: Deploy files via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4
-        with:
-          server: 145.79.212.28
-          username: u705168859.gotrips
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          server-dir: /
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/vendor/**
-            **/.env
-            **/.env.*
-            **/storage/logs/**
-            **/storage/framework/cache/**
-            **/storage/framework/sessions/**
-            **/storage/framework/testing/**
-            **/database/database.sqlite
-            **/public/gt-deploy-run.php
+        env:
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "u705168859.gotrips,$FTP_PASS" ftp://145.79.212.28 << 'EOF'
+          set ftp:ssl-allow no
+          set net:timeout 30
+          set net:max-retries 3
+          mirror -R \
+            --exclude-glob=.git/ \
+            --exclude-glob=.github/ \
+            --exclude-glob=vendor/ \
+            --exclude-glob=node_modules/ \
+            --exclude=.env \
+            --exclude=.env.* \
+            --exclude-glob=storage/logs/ \
+            --exclude-glob=storage/framework/cache/ \
+            --exclude-glob=storage/framework/sessions/ \
+            --exclude-glob=storage/framework/testing/ \
+            --exclude=database/database.sqlite \
+            --exclude=public/gt-deploy-run.php \
+            --exclude=deploy-*.zip \
+            --exclude=gotrips-deploy.zip \
+            --parallel=5 \
+            . /
+          bye
+          EOF
 
       - name: Clear Laravel caches
         env:
@@ -63,7 +72,7 @@ jobs:
             "https://gotrips.ai/gt-deploy-run.php?token=gt-2026-deploy")
           echo "Artisan result: $RESULT"
 
-          echo '<?php http_response_code(404); exit;' > /tmp/gt-neutralize.php
+          printf '<?php http_response_code(404); exit;\n' > /tmp/gt-neutralize.php
           curl -s -u "u705168859.gotrips:${FTP_PASS}" \
             -T /tmp/gt-neutralize.php \
             "ftp://145.79.212.28/%2Fpublic/gt-deploy-run.php"
