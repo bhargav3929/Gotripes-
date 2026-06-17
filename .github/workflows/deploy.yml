@@ -1,0 +1,71 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: 145.79.212.28
+          username: u705168859.gotrips
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          server-dir: /
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/vendor/**
+            **/.env
+            **/.env.*
+            **/storage/logs/**
+            **/storage/framework/cache/**
+            **/storage/framework/sessions/**
+            **/storage/framework/testing/**
+            **/database/database.sqlite
+            **/public/gt-deploy-run.php
+
+      - name: Clear Laravel caches
+        env:
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          cat > /tmp/gt-deploy-run.php << 'PHP'
+          <?php
+          if (($_GET['token'] ?? '') !== 'gt-2026-deploy') { http_response_code(404); exit; }
+          define('LARAVEL_START', microtime(true));
+          require __DIR__.'/../vendor/autoload.php';
+          $app = require_once __DIR__.'/../bootstrap/app.php';
+          $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+          $out = [];
+          foreach (['view:clear', 'config:cache', 'route:cache'] as $cmd) {
+              ob_start();
+              $kernel->call($cmd);
+              $out[$cmd] = trim(ob_get_clean()) ?: 'ok';
+          }
+          echo json_encode($out, JSON_PRETTY_PRINT);
+          PHP
+
+          curl -s -u "u705168859.gotrips:${FTP_PASS}" \
+            -T /tmp/gt-deploy-run.php \
+            "ftp://145.79.212.28/%2Fpublic/gt-deploy-run.php"
+
+          sleep 3
+
+          RESULT=$(curl -s -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36" \
+            "https://gotrips.ai/gt-deploy-run.php?token=gt-2026-deploy")
+          echo "Artisan result: $RESULT"
+
+          echo '<?php http_response_code(404); exit;' > /tmp/gt-neutralize.php
+          curl -s -u "u705168859.gotrips:${FTP_PASS}" \
+            -T /tmp/gt-neutralize.php \
+            "ftp://145.79.212.28/%2Fpublic/gt-deploy-run.php"
+
+          echo "Deploy complete."
