@@ -702,7 +702,7 @@
                             </div>
                             <input type="hidden" name="lead_country_code" id="leadCountryCode" value="+971">
                             <input type="tel" name="lead_phone" class="gotrips-lead-form-input"
-                                placeholder="50 000 0000" required>
+                                placeholder="50 000 0000" data-no-intl required>
                         </div>
                     </div>
 
