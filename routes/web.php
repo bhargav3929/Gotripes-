@@ -108,6 +108,10 @@ Route::prefix('/')->group(function () {
         return view('tour-package-detail', compact('package'));
     })->whereNumber('id')->middleware('tenant.feature:tours')->name('tour-packages.show');
 
+    // Customer enquiry for a tour package -> notifies the package's recipient emails.
+    Route::post('tour-packages/{id}/enquire', [\App\Http\Controllers\PackageEnquiryController::class, 'submit'])
+        ->whereNumber('id')->middleware('tenant.feature:tours')->name('tour-packages.enquire');
+
     // Dedicated country packages page — e.g. /tour-packages/canada
     // whereNumber on the route above ensures numeric IDs never reach here.
     Route::get('tour-packages/{country}', function (string $country) {

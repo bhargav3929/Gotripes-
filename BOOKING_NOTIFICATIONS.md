@@ -20,7 +20,7 @@ product and explains how it works so any new feature follows the same recipe.
 | **FIFA tickets**  | ✅ per-service              | Manager → Booking Notifications | ✅       | ✅ feature test |
 | **e-Visa (Fluxir)**| ✅ per-service             | Manager → Booking Notifications | ✅       | ✅ feature test (credit flow + dedupe) |
 | **eSIM (Monty)**  | ✅ per-service              | Manager → Booking Notifications | ✅ (Nomod paid callback) | ✅ recipient-resolution test¹ |
-| Tour packages     | — n/a                       | —                             | — no customer booking/enquiry endpoint exists | — |
+| **Tour packages** | ✅ per-package column       | each package's create/edit (admin/mgr/agent) | ✅ on-site enquiry form | ✅ feature test |
 | Umrah packages    | — n/a                       | —                             | — payment flow captures no customer email | — |
 
 Legend: ✅ done · — not applicable.
@@ -29,10 +29,14 @@ Legend: ✅ done · — not applicable.
 API — so the automated test asserts the recipient resolution + Mailable (not the live
 webhook). The send line is identical to the e-Visa path, which is covered end-to-end.
 
-**Two booking types have no hook yet** (nothing was wired because there's nothing to send):
-- **Tour packages** are inventory-only — no customer booking/enquiry submit endpoint exists.
+**Tour packages** previously had no customer action to notify on — so an on-site
+**enquiry form** was added to the package page (`PackageEnquiryController`, route
+`tour-packages.enquire`, stored in `package_enquiries`). Submitting it emails the
+package's per-package recipients.
+
+**Still no hook** (nothing to send yet):
 - **Umrah** payments capture only `package_name` + `amount` (no customer email is stored).
-Both need a customer booking flow built first; once it exists, follow the recipe below.
+Needs a customer booking/enquiry flow built first; once it exists, follow the recipe below.
 
 A row is **Verified** when its automated test passes. For production, also do one real
 send to `bookings@gotrips.ai` after the Hostinger `.env` is set (see below).

@@ -128,6 +128,18 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Booking notifications (internal — not shown to customers) --}}
+            <div class="wp-card">
+                <div class="wp-card-header"><i class="fas fa-bell text-secondary-wp"></i> Booking Notifications <span style="font-weight:400;color:#888;">(your team)</span></div>
+                <div class="wp-card-body">
+                    <div class="wp-form-group">
+                        <label class="wp-form-label">Notification Emails</label>
+                        <textarea class="wp-input" name="notification_emails" rows="2" placeholder="ops@yourbusiness.com, owner@yourbusiness.com">{{ old('notification_emails', $package->notification_emails) }}</textarea>
+                        <p class="wp-form-help">Comma-separated. Emailed when a customer sends an enquiry for this package. Leave blank to use your company email. Not shown to customers.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="col-lg-4">
