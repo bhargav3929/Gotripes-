@@ -55,6 +55,17 @@ jobs:
           $app = require_once __DIR__.'/../bootstrap/app.php';
           $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
           $out = [];
+          // Run only the booking-notification migrations explicitly (idempotent —
+          // migrate skips any already recorded in the migrations table).
+          $migrations = [
+              'database/migrations/2026_06_18_000001_add_notification_emails_to_tbl_uaeactivities.php',
+              'database/migrations/2026_06_18_000002_add_notified_at_to_fluxir_visa_applications.php',
+          ];
+          foreach ($migrations as $m) {
+              ob_start();
+              $kernel->call('migrate', ['--force' => true, '--path' => $m]);
+              $out['migrate ' . basename($m)] = trim(ob_get_clean()) ?: 'ok';
+          }
           foreach (['view:clear', 'config:cache', 'route:cache'] as $cmd) {
               ob_start();
               $kernel->call($cmd);

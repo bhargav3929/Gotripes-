@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BookingNotificationMail;
 use App\Models\FluxirVisaApplication;
 use App\Services\FluxirService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Orchestrates an e-visa application through the Fluxir API.
@@ -250,6 +252,13 @@ class FluxirVisaController extends Controller
             ]);
         }
 
+        // Notify the business team once, when the application is submitted
+        // (credit flow) or payment finalized (pay-now). notified_at guards against
+        // re-sending if the customer refreshes this Stripe return page.
+        if ($record && $record->status === 'submitted' && !$record->notified_at) {
+            $this->sendVisaNotification($record);
+        }
+
         return redirect('/uaevisa')->with('status', $isCredit
             ? 'Your visa application has been submitted for processing. We will email you updates.'
             : 'Your visa application and payment were received. We will email you updates.');
@@ -264,6 +273,48 @@ class FluxirVisaController extends Controller
             ->update(['status' => 'cancelled']);
 
         return redirect('/uaevisa')->with('status', 'Payment was cancelled. You can resume your application any time.');
+    }
+
+    /**
+     * Email the business team that a visa application was submitted/paid.
+     * Recipients come from Manager → Booking Notifications (service 'visa'),
+     * resolved against the application's tenant. Failures are logged, not thrown.
+     */
+    private function sendVisaNotification(FluxirVisaApplication $record): void
+    {
+        try {
+            $recipients = booking_recipients(
+                service_notification_emails('visa', $record->company)
+            );
+            if (empty($recipients)) {
+                return;
+            }
+
+            Mail::to($recipients)->send(new BookingNotificationMail(
+                heading: 'New e-Visa application',
+                intro: 'A visa application has been submitted for processing.',
+                rows: [
+                    'Applicant'   => trim(($record->first_name ?? '') . ' ' . ($record->last_name ?? '')),
+                    'Email'       => $record->email,
+                    'Phone'       => $record->phone,
+                    'Nationality' => $record->nationality,
+                    'Passport'    => $record->passport_number,
+                    'Destination' => $record->destination_code,
+                    'Arrival'     => optional($record->arrival_date)->format('d M Y'),
+                    'Amount'      => trim(($record->currency ?? '') . ' ' . $record->amount),
+                    'Paid'        => $record->is_paid ? 'Yes' : 'On credit / pending',
+                ],
+                reference: $record->order_id,
+                replyToAddress: $record->email,
+            ));
+
+            $record->forceFill(['notified_at' => now()])->save();
+        } catch (\Throwable $e) {
+            Log::error('Visa booking notification failed', [
+                'order_id' => $record->order_id,
+                'error'    => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

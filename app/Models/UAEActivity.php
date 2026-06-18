@@ -38,6 +38,7 @@ class UAEActivity extends Model
         'emirates',
         'supplierName',
         'supplierEmail',
+        'notification_emails',
         'activityRoute',
         'emiratesID',
         'country',
@@ -76,6 +77,17 @@ class UAEActivity extends Model
             ->groupBy(fn($a) => ($a->country && trim($a->country) !== '') ? trim($a->country) : 'United Arab Emirates')
             ->map(fn($group, $country) => ['country' => $country, 'activity_count' => $group->count()])
             ->values();
+    }
+
+    /**
+     * Parsed list of business-side recipients to notify when this activity is
+     * booked. Empty array if none configured (caller falls back to company email).
+     *
+     * @return array<int, string>
+     */
+    public function getNotificationEmailListAttribute(): array
+    {
+        return parse_emails($this->notification_emails);
     }
 
     // Relationship with Emirates

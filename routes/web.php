@@ -433,6 +433,9 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::post('/settings/profile',     [SettingsController::class, 'updateProfile'])->name('settings.profile.update');
     Route::get('/settings/preferences',  [SettingsController::class, 'preferences'])->name('settings.preferences');
     Route::post('/settings/preferences', [SettingsController::class, 'updatePreferences'])->name('settings.preferences.update');
+    Route::get('/settings/notifications',  [SettingsController::class, 'notifications'])->name('settings.notifications');
+    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
+    Route::post('/settings/notifications/test', [SettingsController::class, 'sendTestNotification'])->name('settings.notifications.test');
 
     // Finance: earnings, bookings, bank accounts, withdrawals
     Route::get('/finance', [ManagerFinanceController::class, 'index'])->name('finance.index');

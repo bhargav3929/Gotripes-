@@ -13,6 +13,7 @@ use App\Mail\PaymentStatusMail;
 use App\Mail\SupplierBookingMail;
 use App\Mail\CustomerPaymentConfirmationMail;
 use App\Mail\AdminPaymentNotificationMail;
+use App\Mail\BookingNotificationMail;
 use App\Services\NomodService;
 use App\Services\MontyEsimService;
 use App\Services\ReferralService;
@@ -476,6 +477,37 @@ class NomodController extends Controller
             if ($esimOrder) {
                 if ($paymentStatus === 'Success') {
                     $esimOrder->update(['payment_status' => 'paid']);
+
+                    // Notify the business team that an eSIM order was paid. Resolve
+                    // recipients from the ORDER's tenant (this runs in a payment
+                    // callback where current_company() may be the apex host).
+                    try {
+                        $recipients = booking_recipients(
+                            service_notification_emails('esim', $esimOrder->company)
+                        );
+                        if (!empty($recipients)) {
+                            Mail::to($recipients)->send(new BookingNotificationMail(
+                                heading: 'New eSIM order',
+                                intro: 'An eSIM order has been paid and is being provisioned.',
+                                rows: [
+                                    'Customer'  => $esimOrder->customer_name,
+                                    'Email'     => $esimOrder->customer_email,
+                                    'Phone'     => $esimOrder->customer_phone,
+                                    'Bundle'    => $esimOrder->bundle_name,
+                                    'Country'   => $esimOrder->country_name,
+                                    'Validity'  => $esimOrder->validity_days ? $esimOrder->validity_days . ' days' : null,
+                                    'Price'     => trim(($esimOrder->currency ?? '') . ' ' . $esimOrder->selling_price),
+                                ],
+                                reference: $esimOrder->order_reference,
+                                replyToAddress: $esimOrder->customer_email,
+                            ));
+                        }
+                    } catch (\Throwable $e) {
+                        Log::error('eSIM booking notification failed', [
+                            'esim_order_id' => $esimOrder->id,
+                            'error'         => $e->getMessage(),
+                        ]);
+                    }
 
                     // Reserve + Complete with MontyeSIM
                     try {

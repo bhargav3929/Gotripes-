@@ -246,13 +246,13 @@ class ActivityBookingController extends Controller
             $mailData['supplierName'] = $activityModel->supplierName ?? '';
             $mailData['supplierEmail'] = $activityModel->supplierEmail ?? '';
             
-            // Recipients: Always send to user + admins for BOTH payment options
-            // Tenant inbox + customer's confirmation email
-            $tenantInbox = current_company()?->email ?: config('mail.from.address');
-            $recipients = array_filter([
-                $tenantInbox,
-                $mailData['email'], // User's email
-            ]);
+            // Recipients: per-activity notification emails (configured on the
+            // activity) + the customer's own confirmation email. Falls back to
+            // the tenant/company email when no per-activity recipients are set.
+            $recipients = booking_recipients(
+                $activityModel?->notification_email_list ?? [],
+                $mailData['email']
+            );
 
             // Log::info('About to send activity booking email', [
             //     'recipients' => $recipients,

@@ -440,6 +440,23 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="notification_emails" class="form-label form-label-gold">
+                                            <i class="fas fa-bell me-1"></i>Booking Notification Emails
+                                        </label>
+                                        <textarea
+                                            class="form-control form-control-dark @error('notification_emails') is-invalid @enderror"
+                                            id="notification_emails"
+                                            name="notification_emails"
+                                            rows="2"
+                                            placeholder="ops@yourbusiness.com, owner@yourbusiness.com">{{ old('notification_emails', $activity->notification_emails) }}</textarea>
+                                        <small class="text-muted">Optional — comma-separated. These inboxes are notified when this activity is booked. Leave blank to use your company email.</small>
+                                        @error('notification_emails')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

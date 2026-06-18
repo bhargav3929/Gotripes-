@@ -66,7 +66,9 @@ class FifaTicketsController extends Controller
         // customer's confirmation, so it is logged, not thrown.
         try {
             $fromEmail = config('mail.from.address');
-            $toEmail   = current_company()?->email ?: $fromEmail;
+            // Per-service recipients configured in Manager → Booking Notifications,
+            // falling back to the tenant's account email when none are set.
+            $toEmail   = booking_recipients(service_notification_emails('fifa'));
             $currency  = FifaSetting::currency();
             $html      = $this->buildEnquiryEmailHtml($ticketRequest, $currency);
 

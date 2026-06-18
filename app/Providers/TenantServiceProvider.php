@@ -14,6 +14,9 @@ class TenantServiceProvider extends ServiceProvider
         // Load global tenant helpers (current_company, current_company_id, has_tenant)
         require_once app_path('Helpers/tenant.php');
 
+        // Load booking-notification helpers (parse_emails, booking_recipients)
+        require_once app_path('Helpers/notifications.php');
+
         // Register a singleton for current company (default null until IdentifyTenant binds the real one)
         $this->app->singleton('current_company', function () {
             return null;

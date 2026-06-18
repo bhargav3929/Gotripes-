@@ -149,6 +149,7 @@ class UAEActivityAdminController extends Controller
         'emirates' => 'nullable|numeric|min:0',
         'supplierName' => 'nullable|string|max:255',
         'supplierEmail' => 'nullable|email|max:255',
+        'notification_emails' => ['nullable', new \App\Rules\EmailList],
         'activityCategory' => 'nullable|string|max:255',
         'activityImageFiles' => 'required|array',
         'activityImageFiles.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -198,6 +199,7 @@ class UAEActivityAdminController extends Controller
         'activityRoute' => $activityRoute,
         'supplierName' => $request->supplierName ?? '',
         'supplierEmail' => $request->supplierEmail ?? '',
+        'notification_emails' => $request->notification_emails,
         'activityCategory' => $request->activityCategory ?? '',
         'createdBy' => $user->name,
         'isActive' => 1,
@@ -353,6 +355,7 @@ class UAEActivityAdminController extends Controller
             'emirates' => 'nullable|numeric|min:0',
             'supplierName' => 'nullable|string|max:255',
             'supplierEmail' => 'nullable|email|max:255',
+            'notification_emails' => ['nullable', new \App\Rules\EmailList],
             'activityImageFiles' => 'nullable|array',
             'activityImageFiles.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'detailsOverview' => 'nullable|string',
@@ -421,7 +424,7 @@ class UAEActivityAdminController extends Controller
             'activityChildPrice', 'activityTransactionCharges',
             'dubaiPrice', 'abuDhabiPrice',
             'fromAbuDhabiToDubai', 'emirates',
-            'supplierName', 'supplierEmail', 'activityCategory',
+            'supplierName', 'supplierEmail', 'notification_emails', 'activityCategory',
         ];
 
         foreach ($fieldsToCheck as $field) {

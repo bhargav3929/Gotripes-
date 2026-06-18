@@ -97,6 +97,15 @@
                                 <p class="wp-form-help">Optional — booking confirmations will be sent here</p>
                             </div>
                         </div>
+                        <div class="col-12">
+                            <div class="wp-form-group">
+                                <label class="wp-form-label"><i class="fas fa-bell"></i> Booking Notification Emails</label>
+                                <textarea class="wp-input @error('notification_emails') is-invalid @enderror" name="notification_emails"
+                                          rows="2" placeholder="ops@yourbusiness.com, owner@yourbusiness.com">{{ old('notification_emails') }}</textarea>
+                                <p class="wp-form-help">Optional — comma-separated. Notified when this activity is booked. Leave blank to use your company email.</p>
+                                @error('notification_emails')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
