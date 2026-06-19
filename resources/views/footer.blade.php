@@ -186,7 +186,10 @@
     $footerLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
     $footerEmail = (isset($company) && $company && $company->email) ? $company->email : 'info@gotrips.ai';
     $footerPhone = (isset($company) && $company && $company->phone) ? $company->phone : '+971 54 365 1065';
-    $footerAddress = (isset($company) && $company && $company->address) ? $company->address : 'Dubai, United Arab Emirates';
+    $footerAddress = (isset($company) && $company && $company->address) ? $company->address : 'Abu Dhabi, United Arab Emirates';
+    // Show the address over two lines (city on the first, the rest on the second)
+    // so the contact column reads as 4 tidy lines.
+    $footerAddressParts = array_map('trim', explode(',', $footerAddress, 2));
     $footerWebsite = (isset($company) && $company && $company->website) ? $company->website : null;
 @endphp
 <footer class="gt-footer footer-light pb-0">
@@ -201,7 +204,7 @@
         <ul class="gt-footer-contact">
           <li><i class="fa-solid fa-envelope"></i><a href="mailto:{{ $footerEmail }}">{{ $footerEmail }}</a></li>
           <li><i class="fa-solid fa-phone"></i><a href="tel:{{ preg_replace('/\s+/', '', $footerPhone) }}">{{ $footerPhone }}</a></li>
-          <li><i class="fa-solid fa-location-dot"></i><span>{{ $footerAddress }}</span></li>
+          <li><i class="fa-solid fa-location-dot"></i><span>{{ $footerAddressParts[0] }}@if(!empty($footerAddressParts[1]))<br>{{ $footerAddressParts[1] }}@endif</span></li>
         </ul>
       </div>
       <!-- Column 1 -->
