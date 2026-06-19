@@ -6,6 +6,8 @@ use App\Models\FifaMatch;
 use App\Models\FifaSetting;
 use App\Models\FifaTicket;
 use App\Models\FifaTicketRequest;
+use App\Models\NomodTransaction;
+use App\Services\NomodService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -89,6 +91,115 @@ class FifaTicketsController extends Controller
         }
 
         return back()->with('fifa_success', 'Thank you! Your ticket request has been received — our concierge team will contact you shortly.');
+    }
+
+    /**
+     * Start an online payment (Nomod) for a FIFA ticket. Creates a paid booking
+     * record + Nomod checkout and returns the checkout URL. On payment success
+     * the Nomod callback (NomodController) confirms it, emails the customer, and
+     * notifies the configured FIFA recipients.
+     */
+    public function checkout(Request $request)
+    {
+        $data = $request->validate([
+            'name'      => 'required|string|max:160',
+            'email'     => 'required|email|max:160',
+            'phone'     => 'nullable|string|max:40',
+            'country'   => 'nullable|string|max:120',
+            'ticket_id' => 'required|exists:fifa_tickets,id',
+            'quantity'  => 'required|integer|min:1|max:50',
+            'message'   => 'nullable|string|max:2000',
+        ]);
+
+        $ticket = FifaTicket::with('match')->findOrFail($data['ticket_id']);
+        $unit   = (float) $ticket->customer_price;
+        $qty    = (int) $data['quantity'];
+        $amount = round($unit * $qty, 2);
+        $currency = FifaSetting::currency();
+
+        if ($amount <= 0) {
+            return response()->json(['success' => false, 'error' => 'This ticket is not available for online payment.'], 422);
+        }
+
+        $matchLabel = $ticket->match
+            ? trim(($ticket->match->team_a ?? '') . ' vs ' . ($ticket->match->team_b ?? ''), ' vs ')
+            : null;
+
+        $booking = FifaTicketRequest::create([
+            'company_id'     => current_company_id(),
+            'name'           => $data['name'],
+            'email'          => $data['email'],
+            'phone'          => $data['phone'] ?? null,
+            'country'        => $data['country'] ?? null,
+            'match_id'       => $ticket->match_id,
+            'ticket_id'      => $ticket->id,
+            'match_label'    => $matchLabel,
+            'category'       => $ticket->category,
+            'quoted_price'   => $unit,
+            'unit_price'     => $unit,
+            'amount'         => $amount,
+            'currency'       => $currency,
+            'quantity'       => $qty,
+            'message'        => $data['message'] ?? null,
+            'status'         => 'new',
+            'payment_status' => 'awaiting_payment',
+        ]);
+
+        $orderId = 'ORDFIFA' . $booking->id;
+        $booking->update(['order_id' => $orderId]);
+
+        $label = ($matchLabel ?: 'FIFA World Cup 2026') . ' — ' . $ticket->category;
+
+        $nomod = new NomodService();
+        $checkout = $nomod->createCheckout([
+            'amount'      => $amount,
+            'currency'    => $currency,
+            'order_id'    => $orderId,
+            'description' => "FIFA WC 2026: {$label} x{$qty}",
+            'customer'    => array_filter([
+                'name'  => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+            ]),
+            'items' => [[
+                'item_id'     => (string) $ticket->id,
+                'name'        => $label,
+                'quantity'    => $qty,
+                'unit_amount' => number_format($unit, 2, '.', ''),
+            ]],
+            'metadata' => [
+                'type'            => 'fifa',
+                'fifa_request_id' => (string) $booking->id,
+                'match'           => $matchLabel,
+            ],
+        ]);
+
+        if (!($checkout['success'] ?? false)) {
+            Log::error('FIFA Nomod checkout failed', ['request_id' => $booking->id, 'error' => $checkout['error'] ?? 'Unknown']);
+            $booking->update(['payment_status' => 'failed']);
+            return response()->json(['success' => false, 'error' => 'Payment could not be started. Please try again.'], 500);
+        }
+
+        NomodTransaction::create([
+            'checkout_id'  => $checkout['checkout_id'],
+            'order_id'     => $orderId,
+            'status'       => 'created',
+            'amount'       => $amount,
+            'currency'     => $currency,
+            'booking_type' => 'fifa',
+            'checkout_url' => $checkout['checkout_url'],
+            'items'        => [[
+                'item_id' => $ticket->id, 'name' => $label, 'quantity' => $qty, 'unit_amount' => $unit,
+            ]],
+            'customer'     => ['name' => $data['name'], 'email' => $data['email'], 'phone' => $data['phone'] ?? null],
+            'metadata'     => ['type' => 'fifa', 'fifa_request_id' => $booking->id],
+        ]);
+
+        return response()->json([
+            'success'      => true,
+            'checkout_url' => $checkout['checkout_url'],
+            'order_id'     => $orderId,
+        ]);
     }
 
     /** Build the HTML body for the enquiry-copy email sent to the business inbox. */

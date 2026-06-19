@@ -181,6 +181,7 @@ Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->nam
 // FIFA World Cup 2026 tickets — public listing + customer request form (shared, not tenant-gated).
 Route::get('/fifa-world-cup-2026', [FifaTicketsController::class, 'index'])->name('fifa.index');
 Route::post('/fifa-world-cup-2026/request', [FifaTicketsController::class, 'submitRequest'])->name('fifa.request');
+Route::post('/fifa-world-cup-2026/checkout', [FifaTicketsController::class, 'checkout'])->name('fifa.checkout');
 // Live World Cup scores (JSON) — polled by the FIFA page.
 Route::get('/fifa-world-cup-2026/live-scores', [FifaTicketsController::class, 'liveScores'])->name('fifa.live-scores');
 

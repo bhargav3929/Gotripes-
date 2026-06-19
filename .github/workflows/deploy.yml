@@ -62,6 +62,7 @@ jobs:
               'database/migrations/2026_06_18_000002_add_notified_at_to_fluxir_visa_applications.php',
               'database/migrations/2026_06_18_000003_add_notification_emails_to_tbl_travel_packages.php',
               'database/migrations/2026_06_18_000004_create_package_enquiries_table.php',
+              'database/migrations/2026_06_19_000001_add_payment_fields_to_fifa_ticket_requests.php',
           ];
           foreach ($migrations as $m) {
               ob_start();

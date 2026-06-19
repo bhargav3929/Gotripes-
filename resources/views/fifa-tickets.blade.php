@@ -243,10 +243,16 @@
           <div class="col-md-8"><label>Message</label><input name="message" class="form-control" placeholder="Any preferences…"></div>
         </div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer" style="gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn btn-link text-secondary" data-bs-dismiss="modal" style="text-decoration:none;">Cancel</button>
+        <button type="button" id="fr_pay_btn" class="fifa-btn-submit" style="display:none; background:#16a34a;">
+          <i class="fas fa-credit-card"></i> Book &amp; Pay Online
+        </button>
         <button type="submit" class="fifa-btn-submit"><i class="fas fa-paper-plane"></i> Submit Request</button>
       </div>
+      <p id="fr_pay_note" class="text-secondary" style="display:none; font-size:12px; margin:0 16px 14px; opacity:.75;">
+        Pay securely now to confirm your tickets, or submit a request and our team will contact you.
+      </p>
     </form>
   </div>
 </div>
@@ -273,9 +279,51 @@ document.addEventListener('DOMContentLoaded', function () {
                 summary = '<b>General enquiry</b><br>Tell us which match and category you are after.';
             }
             document.getElementById('fr_summary').innerHTML = summary;
+
+            // Online payment is only available for a specific priced ticket.
+            var canPay = !!(d.ticket && d.price);
+            var payBtn = document.getElementById('fr_pay_btn');
+            var payNote = document.getElementById('fr_pay_note');
+            if (payBtn)  payBtn.style.display  = canPay ? '' : 'none';
+            if (payNote) payNote.style.display = canPay ? '' : 'none';
+
             modal.show();
         });
     });
+
+    // Book & Pay Online — start a Nomod checkout, then redirect to the payment page.
+    var fifaForm = document.querySelector('#fifaRequestModal form');
+    var payBtn = document.getElementById('fr_pay_btn');
+    if (payBtn && fifaForm) {
+        payBtn.addEventListener('click', function () {
+            var get = function (n) { var el = fifaForm.querySelector('[name="' + n + '"]'); return el ? el.value.trim() : ''; };
+            var ticketId = document.getElementById('fr_ticket').value;
+            if (!ticketId) { alert('Please choose a specific ticket to pay online.'); return; }
+            if (!get('name') || !get('email')) { alert('Please enter your name and email.'); return; }
+
+            var orig = payBtn.innerHTML;
+            payBtn.disabled = true; payBtn.innerHTML = 'Starting payment…';
+
+            var fd = new FormData();
+            ['name', 'email', 'phone', 'country', 'quantity', 'message'].forEach(function (n) { fd.set(n, get(n)); });
+            fd.set('ticket_id', ticketId);
+
+            fetch("{{ route('fifa.checkout') }}", {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': fifaForm.querySelector('input[name="_token"]').value },
+                body: fd
+            })
+            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+            .then(function (res) {
+                if (res.ok && res.j.success && res.j.checkout_url) { window.location.href = res.j.checkout_url; }
+                else { throw new Error(res.j.error || 'Could not start payment.'); }
+            })
+            .catch(function (err) {
+                alert(err.message || 'Could not start payment. Please try again.');
+                payBtn.disabled = false; payBtn.innerHTML = orig;
+            });
+        });
+    }
 
     @if(session('fifa_success'))
         // scroll to confirmation
