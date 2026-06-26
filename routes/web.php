@@ -108,6 +108,10 @@ Route::prefix('/')->group(function () {
         return view('tour-package-detail', compact('package'));
     })->whereNumber('id')->middleware('tenant.feature:tours')->name('tour-packages.show');
 
+    // Customer enquiry for a tour package -> notifies the package's recipient emails.
+    Route::post('tour-packages/{id}/enquire', [\App\Http\Controllers\PackageEnquiryController::class, 'submit'])
+        ->whereNumber('id')->middleware('tenant.feature:tours')->name('tour-packages.enquire');
+
     // Dedicated country packages page — e.g. /tour-packages/canada
     // whereNumber on the route above ensures numeric IDs never reach here.
     Route::get('tour-packages/{country}', function (string $country) {
@@ -177,6 +181,7 @@ Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->nam
 // FIFA World Cup 2026 tickets — public listing + customer request form (shared, not tenant-gated).
 Route::get('/fifa-world-cup-2026', [FifaTicketsController::class, 'index'])->name('fifa.index');
 Route::post('/fifa-world-cup-2026/request', [FifaTicketsController::class, 'submitRequest'])->name('fifa.request');
+Route::post('/fifa-world-cup-2026/checkout', [FifaTicketsController::class, 'checkout'])->name('fifa.checkout');
 // Live World Cup scores (JSON) — polled by the FIFA page.
 Route::get('/fifa-world-cup-2026/live-scores', [FifaTicketsController::class, 'liveScores'])->name('fifa.live-scores');
 
@@ -433,6 +438,9 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::post('/settings/profile',     [SettingsController::class, 'updateProfile'])->name('settings.profile.update');
     Route::get('/settings/preferences',  [SettingsController::class, 'preferences'])->name('settings.preferences');
     Route::post('/settings/preferences', [SettingsController::class, 'updatePreferences'])->name('settings.preferences.update');
+    Route::get('/settings/notifications',  [SettingsController::class, 'notifications'])->name('settings.notifications');
+    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
+    Route::post('/settings/notifications/test', [SettingsController::class, 'sendTestNotification'])->name('settings.notifications.test');
 
     // Finance: earnings, bookings, bank accounts, withdrawals
     Route::get('/finance', [ManagerFinanceController::class, 'index'])->name('finance.index');

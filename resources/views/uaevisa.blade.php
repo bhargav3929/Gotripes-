@@ -983,8 +983,18 @@
             }
         }
 
-        const HOTEL_FEE = {{ $hotelFee ?? 25 }};
-        const TICKET_FEE = {{ $ticketFee ?? 25 }};
+        const HOTEL_BASE = {{ $hotelFee ?? 25 }};   // hotel fee for 1–2 visas
+        const TICKET_RATE = {{ $ticketFee ?? 25 }}; // air-ticket assistance fee PER visa
+
+        // Hotel fee steps up with the number of visas (all applicants):
+        // 1–2 → base (25), 3–4 → 50, 5–6 → 60, then +10 per extra pair of visas.
+        function hotelFeeForVisas(n) {
+            if (n <= 0) return 0;
+            const tier = Math.ceil(n / 2);
+            if (tier <= 1) return HOTEL_BASE;
+            if (tier === 2) return 50;
+            return 60 + (tier - 3) * 10;
+        }
 
         function updatePrice() {
             const adults = getAdults();
@@ -995,13 +1005,25 @@
             const unitPrice = parseFloat(option.getAttribute('data-price')) || 0;
 
             const visaTotal = unitPrice * totalPersons;
-            const hotelCost = hotelCheckbox.checked ? HOTEL_FEE : 0;
-            const ticketCost = ticketCheckbox.checked ? TICKET_FEE : 0;
+            // Air-ticket assistance is charged PER visa; hotel uses the tiered fee.
+            const ticketUnit = TICKET_RATE * totalPersons;
+            const hotelUnit  = hotelFeeForVisas(totalPersons);
+            const ticketCost = ticketCheckbox.checked ? ticketUnit : 0;
+            const hotelCost  = hotelCheckbox.checked ? hotelUnit : 0;
             const grandTotal = visaTotal + hotelCost + ticketCost;
 
             document.getElementById('hiddenPrice').value = grandTotal.toFixed(2);
             document.getElementById('countDisplay').textContent = totalPersons;
             document.getElementById('summaryBase').textContent = 'AED ' + visaTotal.toFixed(2);
+
+            // Reflect the live amounts on the add-on cards + summary rows.
+            document.getElementById('hotelPriceLabel').textContent = hotelUnit.toFixed(0) + ' AED';
+            document.getElementById('ticketPriceLabel').textContent = ticketUnit.toFixed(0) + ' AED';
+            document.getElementById('summaryHotel').textContent = 'AED ' + hotelCost.toFixed(2);
+            document.getElementById('summaryTicket').textContent = 'AED ' + ticketCost.toFixed(2);
+
+            const hf = document.querySelector('input[name="hotel_booking_fee"]'); if (hf) hf.value = hotelUnit.toFixed(2);
+            const tf = document.querySelector('input[name="ticket_booking_fee"]'); if (tf) tf.value = ticketUnit.toFixed(2);
 
             document.getElementById('hotelRow').style.display = hotelCheckbox.checked ? 'flex' : 'none';
             document.getElementById('ticketRow').style.display = ticketCheckbox.checked ? 'flex' : 'none';

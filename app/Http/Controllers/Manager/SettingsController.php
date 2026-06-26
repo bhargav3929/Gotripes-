@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
+use App\Mail\BookingNotificationMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -128,5 +130,89 @@ class SettingsController extends Controller
         return redirect()
             ->route('manager.settings.preferences')
             ->with('success', 'Preferences saved.');
+    }
+
+    // Booking products that notify a configurable recipient list when booked.
+    // key => label shown on the Booking Notifications settings page.
+    public const NOTIFY_SERVICES = [
+        'esim' => 'eSIM orders',
+        'visa' => 'e-Visa applications',
+        'fifa' => 'FIFA ticket enquiries',
+    ];
+
+    public function notifications()
+    {
+        $company = current_company();
+        abort_unless($company, 404);
+
+        return view('manager.settings.notifications', [
+            'company'  => $company,
+            'services' => self::NOTIFY_SERVICES,
+            'emails'   => $company->getSetting('booking_notification_emails', []),
+        ]);
+    }
+
+    public function updateNotifications(Request $request)
+    {
+        $company = current_company();
+        abort_unless($company, 404);
+
+        $rules = [];
+        foreach (array_keys(self::NOTIFY_SERVICES) as $key) {
+            $rules["emails.$key"] = ['nullable', new \App\Rules\EmailList];
+        }
+        $request->validate($rules);
+
+        // Store the raw text per service; resolution/parsing happens at send time
+        // via service_notification_emails(). Keep only the known service keys.
+        $clean = [];
+        foreach (array_keys(self::NOTIFY_SERVICES) as $key) {
+            $clean[$key] = trim((string) $request->input("emails.$key", ''));
+        }
+        $company->setSetting('booking_notification_emails', $clean);
+
+        return redirect()
+            ->route('manager.settings.notifications')
+            ->with('success', 'Booking notification recipients saved.');
+    }
+
+    /**
+     * Send a sample notification to the currently-saved recipients so the owner
+     * can confirm delivery without placing a real booking or payment.
+     */
+    public function sendTestNotification()
+    {
+        $company = current_company();
+        abort_unless($company, 404);
+
+        // Union of all configured service recipients; falls back to the company
+        // email if nothing is configured yet (so the test still proves delivery).
+        $configured = [];
+        foreach (array_keys(self::NOTIFY_SERVICES) as $key) {
+            $configured = array_merge($configured, service_notification_emails($key));
+        }
+        $recipients = booking_recipients($configured);
+
+        if (empty($recipients)) {
+            return back()->with('error', 'No recipients found. Add at least one email above, click Save, then try again.');
+        }
+
+        try {
+            Mail::to($recipients)->send(new BookingNotificationMail(
+                heading: 'Test booking notification',
+                intro: 'This is a test from your Booking Notifications settings. If you can read this, your booking notification emails are working — no real booking or payment was involved.',
+                rows: [
+                    'Account'   => $company->name,
+                    'Sent at'   => now()->format('d M Y, H:i'),
+                    'Recipients'=> implode(', ', $recipients),
+                    'Status'    => 'TEST — delivery check only',
+                ],
+                reference: 'TEST-' . now()->format('Hi'),
+            ));
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Could not send the test email: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Test email sent to: ' . implode(', ', $recipients) . '. Check the inbox (and the spam folder).');
     }
 }

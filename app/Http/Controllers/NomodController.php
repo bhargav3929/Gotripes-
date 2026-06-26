@@ -8,11 +8,13 @@ use App\Models\UAEVApplication;
 use App\Models\ActivityBooking;
 use App\Models\AgentBooking;
 use App\Models\EsimOrder;
+use App\Models\FifaTicketRequest;
 use App\Models\UAEActivity;
 use App\Mail\PaymentStatusMail;
 use App\Mail\SupplierBookingMail;
 use App\Mail\CustomerPaymentConfirmationMail;
 use App\Mail\AdminPaymentNotificationMail;
+use App\Mail\BookingNotificationMail;
 use App\Services\NomodService;
 use App\Services\MontyEsimService;
 use App\Services\ReferralService;
@@ -324,7 +326,14 @@ class NomodController extends Controller
 
     private function getBookingData($orderId)
     {
-        if (stripos($orderId, 'ORDUM') !== false) {
+        if (stripos($orderId, 'ORDFIFA') !== false) {
+            $booking = FifaTicketRequest::find(str_replace('ORDFIFA', '', $orderId));
+            if ($booking) {
+                $data = $booking->toArray();
+                $data['booking_title'] = trim(($booking->match_label ?: 'FIFA World Cup 2026') . ' — ' . $booking->category);
+                return ['type' => 'fifa', 'data' => $data];
+            }
+        } elseif (stripos($orderId, 'ORDUM') !== false) {
             $transaction = NomodTransaction::where('order_id', $orderId)->first();
             if ($transaction) {
                 return [
@@ -445,6 +454,8 @@ class NomodController extends Controller
         if ($bookingType === 'umrah' && stripos($orderId, 'ORDUM') !== false) {
             // Umrah payments are tracked in nomod_transactions only; status already updated in handleCallback
             return;
+        } elseif ($bookingType === 'fifa' && stripos($orderId, 'ORDFIFA') !== false) {
+            $this->finalizeFifaBooking($orderId, $paymentStatus);
         } elseif ($bookingType === 1 && stripos($orderId, 'UAEV') !== false) {
             $applicationId = str_replace('ORDUAEV', '', $orderId);
             $application = UAEVApplication::find($applicationId);
@@ -476,6 +487,37 @@ class NomodController extends Controller
             if ($esimOrder) {
                 if ($paymentStatus === 'Success') {
                     $esimOrder->update(['payment_status' => 'paid']);
+
+                    // Notify the business team that an eSIM order was paid. Resolve
+                    // recipients from the ORDER's tenant (this runs in a payment
+                    // callback where current_company() may be the apex host).
+                    try {
+                        $recipients = booking_recipients(
+                            service_notification_emails('esim', $esimOrder->company)
+                        );
+                        if (!empty($recipients)) {
+                            Mail::to($recipients)->send(new BookingNotificationMail(
+                                heading: 'New eSIM order',
+                                intro: 'An eSIM order has been paid and is being provisioned.',
+                                rows: [
+                                    'Customer'  => $esimOrder->customer_name,
+                                    'Email'     => $esimOrder->customer_email,
+                                    'Phone'     => $esimOrder->customer_phone,
+                                    'Bundle'    => $esimOrder->bundle_name,
+                                    'Country'   => $esimOrder->country_name,
+                                    'Validity'  => $esimOrder->validity_days ? $esimOrder->validity_days . ' days' : null,
+                                    'Price'     => trim(($esimOrder->currency ?? '') . ' ' . $esimOrder->selling_price),
+                                ],
+                                reference: $esimOrder->order_reference,
+                                replyToAddress: $esimOrder->customer_email,
+                            ));
+                        }
+                    } catch (\Throwable $e) {
+                        Log::error('eSIM booking notification failed', [
+                            'esim_order_id' => $esimOrder->id,
+                            'error'         => $e->getMessage(),
+                        ]);
+                    }
 
                     // Reserve + Complete with MontyeSIM
                     try {
@@ -541,9 +583,66 @@ class NomodController extends Controller
         }
     }
 
+    /**
+     * Mark a FIFA ticket booking paid/failed and notify the configured FIFA
+     * recipients (the agents). The customer confirmation is sent separately by
+     * sendPaymentStatusEmail. notified_at dedupes a duplicate payment callback.
+     */
+    private function finalizeFifaBooking(string $orderId, string $paymentStatus): void
+    {
+        $booking = FifaTicketRequest::find(str_replace('ORDFIFA', '', $orderId));
+        if (!$booking) {
+            return;
+        }
+
+        if ($paymentStatus !== 'Success') {
+            $booking->update(['payment_status' => 'failed']);
+            return;
+        }
+
+        $booking->update([
+            'payment_status' => 'paid',
+            'status'         => 'paid',
+            'paid_at'        => now(),
+        ]);
+
+        if ($booking->notified_at) {
+            return; // already notified on an earlier callback
+        }
+
+        try {
+            $recipients = booking_recipients(service_notification_emails('fifa', $booking->company));
+            if (!empty($recipients)) {
+                Mail::to($recipients)->send(new BookingNotificationMail(
+                    heading: 'FIFA ticket booking — PAID',
+                    intro: 'A customer paid for FIFA World Cup 2026 tickets online.',
+                    rows: [
+                        'Match'    => $booking->match_label,
+                        'Category' => $booking->category,
+                        'Quantity' => $booking->quantity,
+                        'Amount'   => trim(($booking->currency ?? '') . ' ' . $booking->amount),
+                        'Customer' => $booking->name,
+                        'Email'    => $booking->email,
+                        'Phone'    => $booking->phone,
+                    ],
+                    reference: $orderId,
+                    replyToAddress: $booking->email,
+                ));
+            }
+            $booking->forceFill(['notified_at' => now()])->save();
+        } catch (\Throwable $e) {
+            Log::error('FIFA booking notification failed', ['order_id' => $orderId, 'error' => $e->getMessage()]);
+        }
+    }
+
     private function getCustomerData($orderId, $bookingType)
     {
-        if ($bookingType == 1 || stripos($orderId, 'UAEV') !== false) {
+        if ($bookingType === 'fifa' || stripos($orderId, 'ORDFIFA') !== false) {
+            $booking = FifaTicketRequest::find(str_replace('ORDFIFA', '', $orderId));
+            if ($booking) {
+                return ['name' => $booking->name, 'email' => $booking->email, 'phone' => $booking->phone];
+            }
+        } elseif ($bookingType == 1 || stripos($orderId, 'UAEV') !== false) {
             $applicationId = str_replace('ORDUAEV', '', $orderId);
             $application = UAEVApplication::find($applicationId);
 
@@ -594,7 +693,9 @@ class NomodController extends Controller
 
     private function determineBookingType($orderId)
     {
-        if (stripos($orderId, 'ORDUM') !== false) {
+        if (stripos($orderId, 'ORDFIFA') !== false) {
+            return 'fifa';
+        } elseif (stripos($orderId, 'ORDUM') !== false) {
             return 'umrah';
         } elseif (stripos($orderId, 'ORDESIM') !== false) {
             return 4;

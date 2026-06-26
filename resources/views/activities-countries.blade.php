@@ -52,15 +52,15 @@
 <style>
     .ac-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 20px;
-        max-width: 1100px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+        max-width: 1200px;
         margin: 0 auto;
     }
     .ac-card {
         background: linear-gradient(180deg, #0e0e10 0%, #070708 100%);
         border: 1px solid rgba(255,215,0,0.14);
-        border-radius: 16px;
+        border-radius: 18px;
         overflow: hidden;
         text-decoration: none;
         display: flex;
@@ -70,11 +70,11 @@
     .ac-card:hover {
         transform: translateY(-5px);
         border-color: rgba(255,215,0,0.55);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        box-shadow: 0 20px 48px rgba(0,0,0,0.75);
     }
     .ac-flag {
         width: 100%;
-        aspect-ratio: 3/2;
+        aspect-ratio: 16/9;
         background: #111;
         overflow: hidden;
         position: relative;
@@ -84,10 +84,10 @@
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform .3s ease;
+        transition: transform .35s ease;
     }
     .ac-card:hover .ac-flag img {
-        transform: scale(1.04);
+        transform: scale(1.06);
     }
     .ac-flag-emoji {
         width: 100%;
@@ -95,7 +95,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 80px;
+        font-size: 100px;
         line-height: 1;
     }
     .ac-flag-fallback {
@@ -105,18 +105,18 @@
         align-items: center;
         justify-content: center;
         color: rgba(255,215,0,0.3);
-        font-size: 48px;
+        font-size: 56px;
     }
     .ac-info {
-        padding: 14px 16px 16px;
+        padding: 16px 18px 18px;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 4px;
     }
     .ac-name {
         color: #fff;
         font-weight: 700;
-        font-size: 16px;
+        font-size: 17px;
     }
     .ac-count {
         color: #FFD23F;

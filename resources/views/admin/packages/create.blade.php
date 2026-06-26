@@ -109,6 +109,11 @@
                                                 <label class="form-label">Partner WhatsApp</label>
                                                 <input type="text" class="form-control" name="partner_whatsapp" value="{{ old('partner_whatsapp') }}" maxlength="30" placeholder="+971501234567">
                                             </div>
+                                            <div class="col-12">
+                                                <label class="form-label"><i class="fas fa-bell me-1"></i>Booking Notification Emails <small class="text-muted">(your team)</small></label>
+                                                <textarea class="form-control" name="notification_emails" rows="2" placeholder="ops@yourbusiness.com, owner@yourbusiness.com">{{ old('notification_emails') }}</textarea>
+                                                <small class="text-muted">Comma-separated. Emailed when a customer enquires about this package. Blank = your company email. Not shown to customers.</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -219,7 +219,7 @@
                 </div>
             </div>
 
-            <!-- Allowed Countries for Tour Packages -->
+            <!-- Allowed Activity Countries -->
             @php
                 $allCountries = \App\Support\CountryCodes::all();
                 $allowedCountries = old('allowed_countries', $company->getSetting('allowed_countries', []));
@@ -227,7 +227,7 @@
             @endphp
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-globe me-2"></i>Allowed Countries (Tour Packages)</span>
+                    <span><i class="fas fa-globe me-2"></i>Allowed Activity Countries</span>
                     <small class="text-muted">{{ count($allowedCountries) }} selected</small>
                 </div>
                 <div class="card-body">
@@ -248,7 +248,7 @@
                             </div>
                         @endforeach
                     </div>
-                    <small class="text-muted d-block mt-2">Partners can only create tour packages for these countries. Leave empty to allow all countries.</small>
+                    <small class="text-muted d-block mt-2">Manager can only add activities for these countries (UAE is always included). Leave empty for no restrictions.</small>
                 </div>
             </div>
 

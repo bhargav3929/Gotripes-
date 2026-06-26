@@ -351,11 +351,9 @@
             var d = res.d;
             if (!res.ok || !d.success) { throw new Error(d.message || 'We could not submit your application.'); }
             if (d.on_credit || d.redirect) { window.location.assign(d.redirect || '/uaevisa'); return; }
-            if (!d.checkout_session_id) { throw new Error('Application submitted, but payment could not be started. Please contact support.'); }
-            if (!stripePk) { throw new Error('Payment is not configured yet. Please contact support.'); }
-            return Stripe(stripePk).redirectToCheckout({ sessionId: d.checkout_session_id }).then(function (r2) {
-                if (r2 && r2.error) { throw new Error(r2.error.message); }
-            });
+            if (!d.checkout_session_id) { throw new Error('Application submitted but payment could not be started. Please contact support.'); }
+            // Redirect directly to the Stripe-hosted checkout URL — no publishable key needed.
+            window.location.href = 'https://checkout.stripe.com/pay/' + d.checkout_session_id;
         })
         .catch(function (e3) { err(e3.message || 'Something went wrong.'); btn.disabled = false; btn.innerHTML = original; });
     });

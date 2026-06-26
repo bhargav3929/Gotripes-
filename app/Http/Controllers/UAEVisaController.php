@@ -22,6 +22,9 @@ class UAEVisaController extends Controller
             'price' => 'required',
             'visa_count' => 'required|integer|min:1|max:10',
             'children_count' => 'nullable|integer|min:0|max:10',
+            'infants_count' => 'nullable|integer|min:0|max:5',
+            'hotel_booking' => 'nullable|boolean',
+            'ticket_booking' => 'nullable|boolean',
             'arrival_date' => 'required|date',
             'departure_date' => 'required|date|after_or_equal:arrival_date',
             'email' => 'required|email',
@@ -121,8 +124,22 @@ class UAEVisaController extends Controller
             }
         }
 
+        // Authoritative price — never trust the posted total. Air-ticket
+        // assistance is charged PER visa; hotel uses a tiered fee. Both scale
+        // with the total number of applicants (adults + children + infants).
+        $infantsCount = (int) $request->input('infants_count', 0);
+        $persons = $adultCount + $childrenCount + $infantsCount;
+
+        $company    = current_company();
+        $ticketRate = (float) ($company?->getSetting('visa_ticket_booking_fee', 25) ?? 25);
+        $hotelBase  = (float) ($company?->getSetting('visa_hotel_booking_fee', 25) ?? 25);
+
+        $baseVisaTotal = (float) $master->UAEVPrice * $persons;
+        $ticketCost = $request->boolean('ticket_booking') ? $ticketRate * $persons : 0.0;
+        $hotelCost  = $request->boolean('hotel_booking')  ? $this->hotelFeeForVisas($persons, $hotelBase) : 0.0;
+
         // Nomod Payment
-        $totalAmount = round((float) $validated['price'], 2);
+        $totalAmount = round($baseVisaTotal + $ticketCost + $hotelCost, 2);
         $orderId = 'ORDUAEV-GRP-' . $firstId . '-' . time();
 
         $nomodService = new NomodService();
@@ -162,5 +179,25 @@ class UAEVisaController extends Controller
             'checkout_url' => $checkout['checkout_url'],
             'orderId' => $orderId,
         ]);
+    }
+
+    /**
+     * Hotel-booking add-on fee, stepping up with the number of visas (applicants):
+     *   1–2 visas → base (default 25), 3–4 → 50, 5–6 → 60,
+     *   then +10 AED for every additional pair of visas (7–8 → 70, 9–10 → 80, …).
+     */
+    private function hotelFeeForVisas(int $visas, float $base = 25.0): float
+    {
+        if ($visas <= 0) {
+            return 0.0;
+        }
+        $tier = (int) ceil($visas / 2);
+        if ($tier <= 1) {
+            return $base;            // 1–2 visas
+        }
+        if ($tier === 2) {
+            return 50.0;             // 3–4 visas
+        }
+        return 60.0 + ($tier - 3) * 10.0; // 5–6 → 60, 7–8 → 70, …
     }
 }

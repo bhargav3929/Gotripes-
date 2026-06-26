@@ -251,6 +251,53 @@
                 </div>
             </div>
 
+            <!-- Allowed Activity Countries -->
+            @php
+                $allCountriesForCreate = \App\Support\CountryCodes::all();
+                $oldAllowedCreate = old('allowed_countries', []);
+            @endphp
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-globe me-2"></i>Allowed Activity Countries</span>
+                    <small class="text-muted">0 selected</small>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-2" style="font-size:12px;">Select which countries this manager can add activities for. UAE is always available. Leave empty to allow no restrictions.</p>
+                    <div class="mb-2 d-flex align-items-center gap-2">
+                        <input type="text" id="createCountrySearch" class="form-control form-control-sm" placeholder="Search countries..." style="max-width: 200px;">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="createDeselectAll">Clear</button>
+                    </div>
+                    <div id="createCountryList" style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px;">
+                        @foreach($allCountriesForCreate as $c)
+                            @if(strtolower($c['name']) !== 'united arab emirates')
+                            <div class="form-check mb-1 create-country-item" data-name="{{ strtolower($c['name']) }}">
+                                <input class="form-check-input create-country-cb" type="checkbox" name="allowed_countries[]"
+                                       value="{{ $c['name'] }}" id="cac-{{ $c['iso'] }}"
+                                       {{ in_array($c['name'], (array) $oldAllowedCreate, true) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="cac-{{ $c['iso'] }}" style="font-size: 13px;">
+                                    {{ $c['flag'] }} {{ $c['name'] }}
+                                </label>
+                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                    <small class="text-muted d-block mt-2">UAE is always included. Managers only see tabs and country options for selected countries.</small>
+                </div>
+            </div>
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('createCountrySearch').addEventListener('input', function() {
+                    const q = this.value.toLowerCase();
+                    document.querySelectorAll('.create-country-item').forEach(item => {
+                        item.style.display = item.dataset.name.includes(q) ? '' : 'none';
+                    });
+                });
+                document.getElementById('createDeselectAll').addEventListener('click', function() {
+                    document.querySelectorAll('.create-country-cb').forEach(cb => cb.checked = false);
+                });
+            });
+            </script>
+
             <!-- Settings -->
             <div class="card mb-4">
                 <div class="card-header">

@@ -370,7 +370,7 @@ class FluxirService
     public function updateServiceApplication(int|string $serviceApplicationId, array $items, string $state = 'Draft'): array
     {
         return $this->request('PATCH', "api/app/travel-services/{$serviceApplicationId}", [
-            'items' => $items,
+            'items' => (object) $items,  // must be {} not [] when empty
             'state' => $state,
         ]);
     }

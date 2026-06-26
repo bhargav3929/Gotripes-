@@ -594,6 +594,13 @@
                     </a>
                 </li>
                 <li class="wp-nav-item">
+                    <a href="{{ Route::has('manager.settings.notifications') ? route('manager.settings.notifications') : '#' }}"
+                       class="{{ request()->routeIs('manager.settings.notifications*') ? 'active' : '' }} {{ Route::has('manager.settings.notifications') ? '' : 'wp-nav-coming' }}">
+                        <i class="fas fa-bell"></i>
+                        <span>Booking Notifications</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
                     <a href="{{ route('manager.settings.features') }}" class="{{ request()->routeIs('manager.settings.features*') ? 'active' : '' }}">
                         <i class="fas fa-toggle-on"></i>
                         <span>Features</span>

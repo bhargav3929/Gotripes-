@@ -116,12 +116,33 @@
                                 <i class="bi bi-whatsapp"></i> Enquire on WhatsApp
                             </a>
                         @endif
-                        <a class="tpd-btn tpd-btn-enq" href="{{ route('contact') }}?package={{ urlencode($package->title) }}">
-                            <i class="bi bi-envelope"></i> Send an Enquiry
-                        </a>
-                        @if($package->partner_email)
-                            <p class="tpd-partner"><i class="bi bi-person-badge"></i> Direct: <a href="mailto:{{ $package->partner_email }}">{{ $package->partner_email }}</a></p>
-                        @endif
+                    @endif
+
+                    {{-- On-site enquiry form (both purchase & enquire packages).
+                         Submitting notifies the package's configured recipient emails. --}}
+                    @if(session('package_enquiry_success'))
+                        <div class="tpd-enq-ok">{{ session('package_enquiry_success') }}</div>
+                    @endif
+                    @if($errors->any())
+                        <div class="tpd-enq-err">
+                            @foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach
+                        </div>
+                    @endif
+
+                    <form class="tpd-form tpd-enq-form" method="POST" action="{{ route('tour-packages.enquire', $package->id) }}">
+                        @csrf
+                        <div class="tpd-enq-heading">{{ $isPurchase ? 'Have a question? Send an enquiry' : 'Send an enquiry' }}</div>
+                        <input class="tpd-input" type="text"  name="name"        value="{{ old('name') }}"        placeholder="Full name" required>
+                        <input class="tpd-input" type="email" name="email"       value="{{ old('email') }}"       placeholder="Email address" required>
+                        <input class="tpd-input" type="tel"   name="phone"       value="{{ old('phone') }}"       placeholder="Phone (with country code)" data-no-intl>
+                        <input class="tpd-input" type="text"  name="travel_date" value="{{ old('travel_date') }}" placeholder="Preferred travel date (e.g. Aug 2026)">
+                        <input class="tpd-input" type="number" name="travellers" value="{{ old('travellers') }}"  placeholder="No. of travellers" min="1" max="99">
+                        <textarea class="tpd-input" name="message" rows="3" placeholder="Anything we should know?">{{ old('message') }}</textarea>
+                        <button type="submit" class="tpd-btn tpd-btn-enq"><i class="bi bi-envelope"></i> Send Enquiry</button>
+                    </form>
+
+                    @if(!$isPurchase && $package->partner_email)
+                        <p class="tpd-partner"><i class="bi bi-person-badge"></i> Direct: <a href="mailto:{{ $package->partner_email }}">{{ $package->partner_email }}</a></p>
                     @endif
                 </div>
             </div>
@@ -174,6 +195,13 @@
     .tpd-enquire-note { color:#aaa; font-size:14px; line-height:1.6; }
     .tpd-partner { margin-top:14px; font-size:13px; color:#999; }
     .tpd-partner a { color:#FFD23F; }
+    .tpd-enq-form { margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,215,0,0.12); }
+    .tpd-enq-heading { font-size:14px; font-weight:600; color:#fff; margin-bottom:10px; }
+    .tpd-enq-form textarea.tpd-input { resize:vertical; min-height:64px; }
+    .tpd-enq-ok  { margin-top:14px; padding:11px 14px; border-radius:10px; font-size:13.5px;
+                   background:rgba(34,197,94,.14); border:1px solid rgba(34,197,94,.4); color:#7ee2a8; }
+    .tpd-enq-err { margin-top:14px; padding:11px 14px; border-radius:10px; font-size:13px;
+                   background:rgba(214,54,56,.14); border:1px solid rgba(214,54,56,.4); color:#f3a3a4; }
 </style>
 
 <script>

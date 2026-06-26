@@ -209,9 +209,12 @@
     .fifa-btn-submit i { font-size:14px; }
     .fifa-btn-submit:hover { opacity:.92; color:#06060a; transform:translateY(-1px); box-shadow:0 6px 16px rgba(255,210,63,.3); }
     #fifaRequestModal .frm-footer {
-        display:flex; align-items:center; justify-content:space-between; gap:12px;
+        display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
         padding:12px 18px 16px; border-top:1px solid rgba(255,255,255,.07);
     }
+    #fifaRequestModal .frm-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    #fifaRequestModal .frm-pay { background:#16a34a; color:#fff; }
+    #fifaRequestModal .frm-pay:hover { background:#15803d; color:#fff; box-shadow:0 6px 16px rgba(22,163,74,.3); }
     #fifaRequestModal .frm-cancel {
         background:transparent; border:none; color:rgba(255,255,255,.6); font-size:14px; font-weight:500;
         cursor:pointer; padding:6px 4px; transition:color .15s ease;
@@ -392,8 +395,16 @@
 
       <div class="modal-footer frm-footer">
         <button type="button" class="frm-cancel" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="fifa-btn-submit frm-submit">Submit Request <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+        <div class="frm-actions">
+          <button type="button" id="fr_pay_btn" class="fifa-btn-submit frm-pay" style="display:none;">
+            <i class="fas fa-credit-card"></i> Book &amp; Pay Online
+          </button>
+          <button type="submit" class="fifa-btn-submit frm-submit">Submit Request <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+        </div>
       </div>
+      <p id="fr_pay_note" class="text-secondary" style="display:none; font-size:12px; margin:0 16px 14px; opacity:.75;">
+        Pay securely now to confirm your tickets, or submit a request and our team will contact you.
+      </p>
     </form>
   </div>
 </div>
@@ -450,6 +461,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             summaryEl.innerHTML = html;
             clearErrors();
+
+            // Online payment is only offered for a specific priced ticket.
+            var canPay = !!(d.ticket && d.price);
+            var rowPayBtn  = document.getElementById('fr_pay_btn');
+            var rowPayNote = document.getElementById('fr_pay_note');
+            if (rowPayBtn)  rowPayBtn.style.display  = canPay ? '' : 'none';
+            if (rowPayNote) rowPayNote.style.display = canPay ? '' : 'none';
+
             modal.show();
         });
     });
@@ -463,6 +482,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // Fold the optional "Preferred Seating" hint into the existing `message` field.
+    function mergeSeating(){
+        var seating = document.getElementById('fr_seating');
+        var msg = document.getElementById('fr_message');
+        var s = seating ? seating.value.trim() : '';
+        if (s && msg) { msg.value = 'Preferred seating: ' + s + (msg.value.trim() ? '\n' + msg.value : ''); seating.value = ''; }
+    }
 
     form.addEventListener('submit', function (e) {
         var firstInvalid = null;
@@ -478,14 +505,43 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         if (firstInvalid) { e.preventDefault(); firstInvalid.focus(); return; }
-
-        // Fold the optional "Preferred Seating" hint into the existing `message`
-        // field so the backend captures it without any change to request handling.
-        var seating = document.getElementById('fr_seating');
-        var msg = document.getElementById('fr_message');
-        var s = seating ? seating.value.trim() : '';
-        if (s) { msg.value = 'Preferred seating: ' + s + (msg.value.trim() ? '\n' + msg.value : ''); }
+        mergeSeating();
     });
+
+    // Book & Pay Online — start a Nomod checkout, then redirect to the payment page.
+    var fifaForm = document.querySelector('#fifaRequestModal form');
+    var payBtn = document.getElementById('fr_pay_btn');
+    if (payBtn && fifaForm) {
+        payBtn.addEventListener('click', function () {
+            mergeSeating();
+            var get = function (n) { var el = fifaForm.querySelector('[name="' + n + '"]'); return el ? el.value.trim() : ''; };
+            var ticketId = document.getElementById('fr_ticket').value;
+            if (!ticketId) { alert('Please choose a specific ticket to pay online.'); return; }
+            if (!get('name') || !get('email')) { alert('Please enter your name and email.'); return; }
+
+            var orig = payBtn.innerHTML;
+            payBtn.disabled = true; payBtn.innerHTML = 'Starting payment…';
+
+            var fd = new FormData();
+            ['name', 'email', 'phone', 'country', 'quantity', 'message'].forEach(function (n) { fd.set(n, get(n)); });
+            fd.set('ticket_id', ticketId);
+
+            fetch("{{ route('fifa.checkout') }}", {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': fifaForm.querySelector('input[name="_token"]').value },
+                body: fd
+            })
+            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+            .then(function (res) {
+                if (res.ok && res.j.success && res.j.checkout_url) { window.location.href = res.j.checkout_url; }
+                else { throw new Error(res.j.error || 'Could not start payment.'); }
+            })
+            .catch(function (err) {
+                alert(err.message || 'Could not start payment. Please try again.');
+                payBtn.disabled = false; payBtn.innerHTML = orig;
+            });
+        });
+    }
 
     @if(session('fifa_success'))
         document.querySelector('.fifa-alert')?.scrollIntoView({behavior:'smooth', block:'center'});

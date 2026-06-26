@@ -35,7 +35,8 @@ class EmiratesController extends Controller
 
         // ─── A specific non-UAE country chosen → its dedicated by-country page
         if ($country && !$isUae($country)) {
-            $activities = UAEActivity::with('emirate')
+            $activities = UAEActivity::publicVisible()
+                ->with('emirate')
                 ->where('isActive', 1)
                 ->where('country', $country)
                 ->orderBy('createdDate', 'DESC')
@@ -46,7 +47,8 @@ class EmiratesController extends Controller
         // ─── Exactly one country and it is NOT the UAE → straight to its page
         if (!$country && $countryCount === 1 && !$isUae($countries->first()['country'])) {
             $only       = $countries->first()['country'];
-            $activities = UAEActivity::with('emirate')
+            $activities = UAEActivity::publicVisible()
+                ->with('emirate')
                 ->where('isActive', 1)
                 ->where('country', $only)
                 ->orderBy('createdDate', 'DESC')
@@ -70,7 +72,8 @@ class EmiratesController extends Controller
                           ->whereRaw('LOWER(emiratesName) = ?', [strtolower($name)])
                           ->firstOrFail();
 
-        $activities = UAEActivity::with('emirate')
+        $activities = UAEActivity::publicVisible()
+                                ->with('emirate')
                                 ->where('emiratesID', $emirate->emiratesID)
                                 ->where('isActive', 1)
                                 ->orderBy('createdDate', 'DESC')

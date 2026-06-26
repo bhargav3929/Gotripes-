@@ -20,6 +20,7 @@ class TravelPackage extends Model
         'package_type',
         'partner_email',
         'partner_whatsapp',
+        'notification_emails',
         'image',
         'price',
         'price_adult',
@@ -47,6 +48,16 @@ class TravelPackage extends Model
     public function scopeActive($query)
     {
         return $query->where('isActive', 1);
+    }
+
+    /**
+     * Parsed recipients to notify when a customer enquires about this package.
+     *
+     * @return array<int, string>
+     */
+    public function getNotificationEmailListAttribute(): array
+    {
+        return parse_emails($this->notification_emails);
     }
 
     public function images()
