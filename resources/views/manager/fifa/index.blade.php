@@ -75,7 +75,8 @@
                 </button>
                 <button class="wp-btn wp-btn-secondary wp-btn-sm js-edit-match"
                         data-id="{{ $match->id }}" data-a="{{ $match->team_a }}" data-b="{{ $match->team_b }}"
-                        data-stage="{{ $match->stage }}" data-active="{{ $match->is_active ? 1 : 0 }}">
+                        data-stage="{{ $match->stage }}" data-active="{{ $match->is_active ? 1 : 0 }}"
+                        data-date="{{ $match->match_date?->format('Y-m-d\TH:i') }}">
                     <i class="fas fa-pen"></i>
                 </button>
                 <form action="{{ route('manager.fifa-tickets.matches.destroy', $match->id) }}" method="POST"
@@ -153,8 +154,11 @@
         <div class="wp-form-group"><label class="wp-form-label">Match Code</label><input name="match_code" class="wp-input" placeholder="e.g. M45" required></div>
         <div class="wp-form-group"><label class="wp-form-label">Team A</label><input name="team_a" class="wp-input" required></div>
         <div class="wp-form-group"><label class="wp-form-label">Team B</label><input name="team_b" class="wp-input" required></div>
-        <div class="wp-form-group" style="margin-bottom:0;"><label class="wp-form-label">Stage</label>
+        <div class="wp-form-group"><label class="wp-form-label">Stage</label>
           @include('manager.fifa._stage_options')
+        </div>
+        <div class="wp-form-group" style="margin-bottom:0;"><label class="wp-form-label">Match Date &amp; Time <span style="color:var(--wp-text-muted); font-weight:400;">(optional — leave blank to hide)</span></label>
+          <input type="datetime-local" name="match_date" class="wp-input">
         </div>
       </div>
       <div class="modal-footer"><button type="button" class="wp-btn wp-btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="wp-btn wp-btn-primary">Add Match</button></div>
@@ -172,6 +176,9 @@
         <div class="wp-form-group"><label class="wp-form-label">Team A</label><input name="team_a" id="em_a" class="wp-input" required></div>
         <div class="wp-form-group"><label class="wp-form-label">Team B</label><input name="team_b" id="em_b" class="wp-input" required></div>
         <div class="wp-form-group"><label class="wp-form-label">Stage</label>@include('manager.fifa._stage_options', ['selectId' => 'em_stage'])</div>
+        <div class="wp-form-group"><label class="wp-form-label">Match Date &amp; Time <span style="color:var(--wp-text-muted); font-weight:400;">(optional — leave blank to hide)</span></label>
+          <input type="datetime-local" name="match_date" id="em_date" class="wp-input">
+        </div>
         <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--wp-text-secondary);">
           <input type="checkbox" name="is_active" id="em_active" value="1"> Visible on website
         </label>
@@ -246,6 +253,7 @@ $(function () {
         var d = $(this).data();
         $('#editMatchForm').attr('action', matchBase + '/' + d.id);
         $('#em_a').val(d.a); $('#em_b').val(d.b); $('#em_stage').val(d.stage);
+        $('#em_date').val(d.date || '');
         $('#em_active').prop('checked', d.active == 1);
         new bootstrap.Modal('#editMatchModal').show();
     });

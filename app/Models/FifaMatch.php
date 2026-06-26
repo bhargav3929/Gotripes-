@@ -15,7 +15,7 @@ class FifaMatch extends Model
     ];
 
     protected $casts = [
-        'match_date' => 'date',
+        'match_date' => 'datetime',
         'is_active'  => 'boolean',
     ];
 

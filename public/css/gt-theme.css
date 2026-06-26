@@ -18,32 +18,36 @@
    ========================================================================= */
 
 html[data-theme="light"] {
-    /* Surfaces */
-    --gt-bg:            #f4f6f9;   /* page background (was near-black) */
-    --gt-bg-alt:        #eaeef3;   /* alternating / sunken sections */
+    /* Surfaces — clean warm-neutral canvas, pure-white cards. The canvas is a
+       hair off-white (#f8f9fa) so white cards/sections read as raised. */
+    --gt-bg:            #f8f9fa;   /* page canvas (was near-black) */
+    --gt-bg-alt:        #eef1f5;   /* alternating / sunken sections */
     --gt-surface:       #ffffff;   /* cards, panels (was #111 / #1a1a1a) */
-    --gt-surface-2:     #f0f2f6;   /* subtle raised chips, inputs */
-    --gt-surface-3:     #e7ebf1;   /* hover / active fills */
+    --gt-surface-2:     #f5f7f9;   /* subtle raised chips, inputs */
+    --gt-surface-3:     #e9edf2;   /* hover / active fills */
 
-    /* Borders & shadows */
-    --gt-border:        #e3e7ee;
-    --gt-border-strong: #d3d9e2;
-    --gt-shadow:        0 6px 24px rgba(20, 30, 50, 0.08);
-    --gt-shadow-sm:     0 2px 10px rgba(20, 30, 50, 0.06);
-    --gt-shadow-lg:     0 18px 50px rgba(20, 30, 50, 0.14);
+    /* Borders & shadows — hairline borders + soft, LAYERED shadows (a tight
+       contact shadow + a wider ambient one) for a modern, premium depth. */
+    --gt-border:        #edf0f4;
+    --gt-border-strong: #dce1e8;
+    --gt-shadow-sm:     0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.05);
+    --gt-shadow:        0 4px 14px rgba(16, 24, 40, 0.07), 0 2px 6px rgba(16, 24, 40, 0.04);
+    --gt-shadow-lg:     0 18px 48px rgba(16, 24, 40, 0.12), 0 6px 16px rgba(16, 24, 40, 0.06);
 
-    /* Text */
-    --gt-text:          #161a21;   /* headings / strong (was #fff) */
-    --gt-text-body:     #3a4150;   /* body copy (was #ddd / #ccc) */
-    --gt-text-muted:    #6b7280;   /* muted (was #9a9a9a / #888) */
-    --gt-text-faint:    #94a0ae;   /* faintest (was #555 / #666) */
+    /* Text — stronger heading contrast (near-black slate) + modern slate body
+       tones for clean, readable, WCAG-friendly hierarchy. */
+    --gt-text:          #0f1729;   /* headings / strong (was #fff) */
+    --gt-text-body:     #475467;   /* body copy (was #ddd / #ccc) */
+    --gt-text-muted:    #667085;   /* muted (was #9a9a9a / #888) */
+    --gt-text-faint:    #98a2b3;   /* faintest (was #555 / #666) */
 
-    /* Gold accent system */
-    --gt-gold:          #b8860b;   /* accent text / icons / links on light */
+    /* Gold accent system — deepened slightly so gold TEXT/icons clear WCAG on
+       white, while gold BUTTONS keep the rich #d4af37 gradient. */
+    --gt-gold:          #a97b0a;   /* accent text / icons / links on light */
     --gt-gold-2:        #d4af37;
-    --gt-gold-deep:     #946c08;   /* hover */
-    --gt-gold-soft:     #fff6da;   /* gold-tinted fill */
-    --gt-gold-border:   #e6cf86;
+    --gt-gold-deep:     #876008;   /* hover */
+    --gt-gold-soft:     #fdf6e3;   /* gold-tinted fill */
+    --gt-gold-border:   #ecd99a;
 
     color-scheme: light;
 }
@@ -52,8 +56,15 @@ html[data-theme="light"] {
    1. GLOBAL — page canvas, default typography, links
    ========================================================================= */
 
+/* The base template sets `html`/`body { background:#000 !important }` inline in
+   the <head>. That !important rule can only be beaten by an !important rule of
+   equal-or-higher specificity, so the light canvas must use !important too —
+   otherwise sections with transparent backgrounds (e.g. eSIM) bleed black. */
+html[data-theme="light"],
 html[data-theme="light"] body {
-    background-color: var(--gt-bg);
+    background-color: var(--gt-bg) !important;
+}
+html[data-theme="light"] body {
     color: var(--gt-text-body);
 }
 
@@ -998,7 +1009,12 @@ html[data-theme="light"] .premium-subtitle { color: var(--gt-text-body); }
 html[data-theme="light"] .about-section .premium-subtitle strong.text-white { color: var(--gt-text) !important; }
 html[data-theme="light"] .premium-image-wrapper { border: 1px solid var(--gt-border); }
 html[data-theme="light"] .contact-overlay { background: rgba(0, 0, 0, 0.78); }
-html[data-theme="light"] .map-frame { border: 2px solid var(--gt-border-strong); }
+html[data-theme="light"] .map-frame {
+    border: 2px solid var(--gt-border-strong);
+    /* The map iframe is darkened via filter:invert()+hue-rotate() for dark mode.
+       In light mode show the real, light Google map. */
+    filter: none !important;
+}
 html[data-theme="light"] .qr-card { background: var(--gt-surface); border: 1px solid var(--gt-border); box-shadow: var(--gt-shadow-sm); }
 html[data-theme="light"] .qr-card:hover { border-color: var(--gt-gold); }
 html[data-theme="light"] .qr-img { border: 3px solid var(--gt-gold); background: var(--gt-surface-2); }
@@ -1094,6 +1110,8 @@ html[data-theme="light"] .fifa-card { background: var(--gt-surface); border: 1px
 html[data-theme="light"] .fifa-card:hover { border-color: var(--gt-gold-border); }
 html[data-theme="light"] .fifa-card-head { border-bottom: 1px solid var(--gt-border); }
 html[data-theme="light"] .fifa-code { color: var(--gt-gold-deep); }
+html[data-theme="light"] .fifa-date { color: var(--gt-text-muted); }
+html[data-theme="light"] .fifa-date i { color: var(--gt-gold); }
 html[data-theme="light"] .fifa-teams { color: var(--gt-text); }
 html[data-theme="light"] .fifa-teams .vs { color: var(--gt-text-faint); }
 html[data-theme="light"] .fifa-flag { box-shadow: 0 0 0 1px var(--gt-border-strong); background: var(--gt-surface-2); }
@@ -1105,23 +1123,42 @@ html[data-theme="light"] .fifa-tk-seat { color: var(--gt-text-body); }
 html[data-theme="light"] .fifa-tk-sub { color: var(--gt-text-muted); }
 html[data-theme="light"] .fifa-tk-price { color: var(--gt-text); }
 html[data-theme="light"] .fifa-tk-price small { color: var(--gt-text-muted); }
-html[data-theme="light"] .fifa-req-btn { background: var(--gt-gold); color: #161a21; }
+html[data-theme="light"] .fifa-req-btn { background: linear-gradient(135deg, var(--gt-gold-2) 0%, var(--gt-gold) 100%); color: #161a21; }
 html[data-theme="light"] .fifa-note { color: var(--gt-text-muted); }
 html[data-theme="light"] .fifa-note a { color: var(--gt-gold); }
 html[data-theme="light"] .fifa-empty { color: var(--gt-text-muted); }
-html[data-theme="light"] #fifaRequestModal .modal-content { background: var(--gt-surface); border: 1px solid var(--gt-gold-border); color: var(--gt-text); }
-html[data-theme="light"] #fifaRequestModal .modal-header,
-html[data-theme="light"] #fifaRequestModal .modal-footer { border-color: var(--gt-border); }
-html[data-theme="light"] #fifaRequestModal label { color: var(--gt-text-body); }
-html[data-theme="light"] #fifaRequestModal .form-control,
-html[data-theme="light"] #fifaRequestModal .form-select { background: var(--gt-surface-2); border: 1px solid var(--gt-border-strong); color: var(--gt-text); }
-html[data-theme="light"] #fifaRequestModal .form-control:focus,
-html[data-theme="light"] #fifaRequestModal .form-select:focus { border-color: var(--gt-gold); background: var(--gt-surface); }
-html[data-theme="light"] #fifaRequestModal .form-control::placeholder { color: var(--gt-text-faint); }
-html[data-theme="light"] #fifaRequestModal .form-select option { background: var(--gt-surface); color: var(--gt-text); }
-html[data-theme="light"] .fifa-summary { background: var(--gt-gold-soft); border: 1px solid var(--gt-gold-border); color: var(--gt-text-body); }
-html[data-theme="light"] .fifa-summary b { color: var(--gt-gold-deep); }
-html[data-theme="light"] .fifa-btn-submit { background: var(--gt-gold); color: #161a21; }
+/* ===== Request Tickets modal (redesigned, .frm-* classes) — light theme ===== */
+html[data-theme="light"] #fifaRequestModal .frm-content { background: var(--gt-surface); border: 1px solid var(--gt-border); color: var(--gt-text); box-shadow: var(--gt-shadow-lg); }
+html[data-theme="light"] #fifaRequestModal .frm-header,
+html[data-theme="light"] #fifaRequestModal .frm-footer { border-color: var(--gt-border); }
+html[data-theme="light"] #fifaRequestModal .frm-title { color: var(--gt-text); }
+html[data-theme="light"] #fifaRequestModal .frm-title i { color: var(--gt-gold); }
+html[data-theme="light"] #fifaRequestModal .frm-close { background: var(--gt-surface-2); border-color: var(--gt-border-strong); color: var(--gt-text-muted); }
+html[data-theme="light"] #fifaRequestModal .frm-close:hover { background: var(--gt-surface-3); color: var(--gt-text); }
+html[data-theme="light"] #fifaRequestModal .frm-summary { background: linear-gradient(135deg, var(--gt-gold-soft), var(--gt-surface-2)); border: 1px solid var(--gt-gold-border); }
+html[data-theme="light"] #fifaRequestModal .frm-sum-match { color: var(--gt-text); }
+html[data-theme="light"] #fifaRequestModal .frm-sum-row { color: var(--gt-text-muted); }
+html[data-theme="light"] #fifaRequestModal .frm-sum-row i,
+html[data-theme="light"] #fifaRequestModal .frm-sum-row b { color: var(--gt-gold-deep); }
+html[data-theme="light"] #fifaRequestModal .frm-field label { color: var(--gt-text-muted); }
+html[data-theme="light"] #fifaRequestModal .frm-req { color: var(--gt-gold-deep); }
+html[data-theme="light"] #fifaRequestModal .frm-opt { color: var(--gt-text-faint); }
+html[data-theme="light"] #fifaRequestModal .frm-input { background: var(--gt-surface-2); border: 1px solid var(--gt-border-strong); color: var(--gt-text); }
+html[data-theme="light"] #fifaRequestModal .frm-input::placeholder { color: var(--gt-text-faint); }
+html[data-theme="light"] #fifaRequestModal .frm-input:focus { border-color: var(--gt-gold); background: var(--gt-surface); box-shadow: 0 0 0 3px var(--gt-gold-soft); }
+html[data-theme="light"] #fifaRequestModal .frm-select option { background: var(--gt-surface); color: var(--gt-text); }
+html[data-theme="light"] #fifaRequestModal .frm-stepper { background: var(--gt-surface-2); border: 1px solid var(--gt-border-strong); }
+html[data-theme="light"] #fifaRequestModal .frm-stepper:focus-within { border-color: var(--gt-gold); box-shadow: 0 0 0 3px var(--gt-gold-soft); }
+html[data-theme="light"] #fifaRequestModal .frm-step { color: var(--gt-gold-deep); }
+html[data-theme="light"] #fifaRequestModal .frm-step:hover { background: var(--gt-gold-soft); }
+html[data-theme="light"] #fifaRequestModal .frm-step:disabled { color: var(--gt-text-faint); background: transparent; }
+html[data-theme="light"] #fifaRequestModal .frm-step-input { color: var(--gt-text); }
+html[data-theme="light"] #fifaRequestModal .frm-input-invalid,
+html[data-theme="light"] #fifaRequestModal .frm-input-invalid:focus { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12); }
+html[data-theme="light"] #fifaRequestModal .frm-error { color: #b91c1c; }
+html[data-theme="light"] #fifaRequestModal .frm-cancel { color: var(--gt-text-muted); }
+html[data-theme="light"] #fifaRequestModal .frm-cancel:hover { color: var(--gt-text); }
+html[data-theme="light"] .fifa-btn-submit { background: linear-gradient(135deg, var(--gt-gold-2) 0%, var(--gt-gold) 100%); color: #161a21; }
 html[data-theme="light"] .fifa-btn-submit:hover { color: #161a21; }
 html[data-theme="light"] .evt { background: var(--gt-bg); color: var(--gt-text); }
 html[data-theme="light"] .evt-section-head h2 { color: var(--gt-text); }
@@ -1147,7 +1184,7 @@ html[data-theme="light"] .pilgrimage-feature p { color: var(--gt-text-muted); }
 html[data-theme="light"] .package-card { background: var(--gt-surface); border: 1px solid var(--gt-border); box-shadow: var(--gt-shadow-sm); }
 html[data-theme="light"] .package-card:hover { border-color: var(--gt-gold-border); box-shadow: var(--gt-shadow-lg); }
 html[data-theme="light"] .package-card.featured { border: 1px solid var(--gt-gold-border); background: var(--gt-surface-2); }
-html[data-theme="light"] .badge-gold { background: var(--gt-gold); color: #161a21; }
+html[data-theme="light"] .badge-gold { background: var(--gt-gold-2); color: #161a21; }
 html[data-theme="light"] .package-body h3 { color: var(--gt-text); }
 html[data-theme="light"] .package-body p { color: var(--gt-text-muted); }
 html[data-theme="light"] .package-features li { color: var(--gt-text-body); }
@@ -1155,7 +1192,7 @@ html[data-theme="light"] .package-features i { color: var(--gt-gold); }
 html[data-theme="light"] .package-footer { border-top: 1px solid var(--gt-border); }
 html[data-theme="light"] .package-footer .price { color: var(--gt-text-muted); }
 html[data-theme="light"] .package-footer .price strong { color: var(--gt-gold-deep); }
-html[data-theme="light"] .btn-book { background: var(--gt-gold); color: #161a21; }
+html[data-theme="light"] .btn-book { background: linear-gradient(135deg, var(--gt-gold-2) 0%, var(--gt-gold) 100%); color: #161a21; }
 html[data-theme="light"] .btn-book:hover { background: var(--gt-gold-2); color: #161a21; }
 html[data-theme="light"] .custom-input { background: var(--gt-surface-2) !important; border: 1px solid var(--gt-border-strong) !important; color: var(--gt-text) !important; }
 html[data-theme="light"] .custom-input:focus { border-color: var(--gt-gold) !important; }
@@ -1197,8 +1234,341 @@ html[data-theme="light"] .activity-v2-title { color: var(--gt-text); }
 html[data-theme="light"] .activity-v2-footer { border-top: 1px solid var(--gt-border); }
 html[data-theme="light"] .price-small { color: var(--gt-text-muted); }
 html[data-theme="light"] .price-big { color: var(--gt-gold-deep); }
-html[data-theme="light"] .book-btn-v2 { background: var(--gt-gold); color: #161a21; }
+html[data-theme="light"] .book-btn-v2 { background: linear-gradient(135deg, var(--gt-gold-2) 0%, var(--gt-gold) 100%); color: #161a21; }
 html[data-theme="light"] .book-btn-v2:hover { background: var(--gt-gold-2); }
 html[data-theme="light"] .emirates-page-wrapper .text-white-50 { color: var(--gt-text-muted) !important; }
 html[data-theme="light"] .ctab-btn { color: var(--gt-text-muted) !important; }
 html[data-theme="light"] .ctab-btn.active { background: var(--gt-gold-soft) !important; color: var(--gt-gold-deep) !important; }
+
+/* =========================================================================
+   4. LIGHT THEME — PREMIUM POLISH LAYER
+   -------------------------------------------------------------------------
+   Purely additive refinements layered on top of every per-page rule above:
+   smoother motion, a gentle hover lift, buttons with real depth, refined
+   form focus, and cleaner page chrome. Loaded last so it wins. Scoped
+   entirely to html[data-theme="light"] — the dark theme is never touched.
+   ========================================================================= */
+
+/* ---- Smooth motion for every common card family ---- */
+html[data-theme="light"] .card,
+html[data-theme="light"] .service-card,
+html[data-theme="light"] .ac-card,
+html[data-theme="light"] .abc-card,
+html[data-theme="light"] .tp-country-card,
+html[data-theme="light"] .tpc-card,
+html[data-theme="light"] .country-card,
+html[data-theme="light"] .stat-card,
+html[data-theme="light"] .value-box,
+html[data-theme="light"] .info-card,
+html[data-theme="light"] .qr-card,
+html[data-theme="light"] .quick-stat,
+html[data-theme="light"] .esim-feature-card,
+html[data-theme="light"] .esim-how-card,
+html[data-theme="light"] .esim-country-card,
+html[data-theme="light"] .esim-popular-card,
+html[data-theme="light"] .esim-bundle-card,
+html[data-theme="light"] .esim-faq-item,
+html[data-theme="light"] .evisa-type,
+html[data-theme="light"] .package-card,
+html[data-theme="light"] .pilgrimage-feature,
+html[data-theme="light"] .fifa-card,
+html[data-theme="light"] .fifa-live-card,
+html[data-theme="light"] .evt-card,
+html[data-theme="light"] .activity-v2-card,
+html[data-theme="light"] .emirate-card-v2,
+html[data-theme="light"] .payment-gateway-banner {
+    transition: transform .25s cubic-bezier(.4, 0, .2, 1),
+                box-shadow .25s cubic-bezier(.4, 0, .2, 1),
+                border-color .2s ease, background-color .2s ease;
+}
+
+/* ---- Gentle, consistent hover lift for content cards ---- */
+html[data-theme="light"] .card:hover,
+html[data-theme="light"] .service-card:hover,
+html[data-theme="light"] .ac-card:hover,
+html[data-theme="light"] .abc-card:hover,
+html[data-theme="light"] .tp-country-card:hover,
+html[data-theme="light"] .tpc-card:hover,
+html[data-theme="light"] .country-card:hover,
+html[data-theme="light"] .stat-card:hover,
+html[data-theme="light"] .value-box:hover,
+html[data-theme="light"] .info-card:hover,
+html[data-theme="light"] .qr-card:hover,
+html[data-theme="light"] .quick-stat:hover,
+html[data-theme="light"] .esim-feature-card:hover,
+html[data-theme="light"] .esim-how-card:hover,
+html[data-theme="light"] .package-card:hover,
+html[data-theme="light"] .pilgrimage-feature:hover,
+html[data-theme="light"] .fifa-card:hover,
+html[data-theme="light"] .evt-card:hover,
+html[data-theme="light"] .activity-v2-card:hover,
+html[data-theme="light"] .emirate-card-v2:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--gt-shadow-lg);
+}
+
+/* ---- Primary gold CTAs: real depth at rest + a confident lift on hover ---- */
+html[data-theme="light"] .gt-inline-search-btn,
+html[data-theme="light"] .pay-btn,
+html[data-theme="light"] .tpc-cta,
+html[data-theme="light"] .tpd-btn-pay,
+html[data-theme="light"] .tp-feat-btn,
+html[data-theme="light"] .btn-book,
+html[data-theme="light"] .btn-book-large,
+html[data-theme="light"] .book-btn-v2,
+html[data-theme="light"] .esim-continue-btn,
+html[data-theme="light"] .esim-pay-btn,
+html[data-theme="light"] .evisa-submit,
+html[data-theme="light"] .fifa-req-btn,
+html[data-theme="light"] .fifa-btn-submit,
+html[data-theme="light"] .btn-explore,
+html[data-theme="light"] .gt-cs-btn-primary {
+    box-shadow: 0 2px 6px rgba(169, 123, 10, 0.18);
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+html[data-theme="light"] .gt-inline-search-btn:hover,
+html[data-theme="light"] .pay-btn:hover:not(:disabled),
+html[data-theme="light"] .tpc-cta:hover,
+html[data-theme="light"] .tpd-btn-pay:hover,
+html[data-theme="light"] .tp-feat-btn:hover,
+html[data-theme="light"] .btn-book:hover,
+html[data-theme="light"] .btn-book-large:hover,
+html[data-theme="light"] .book-btn-v2:hover,
+html[data-theme="light"] .esim-continue-btn:hover:not(:disabled),
+html[data-theme="light"] .esim-pay-btn:hover:not(:disabled),
+html[data-theme="light"] .evisa-submit:hover,
+html[data-theme="light"] .fifa-req-btn:hover,
+html[data-theme="light"] .fifa-btn-submit:hover,
+html[data-theme="light"] .btn-explore:hover,
+html[data-theme="light"] .gt-cs-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(169, 123, 10, 0.28);
+}
+
+/* ---- Inputs: smooth focus transitions (resting/focus colors set above) ---- */
+html[data-theme="light"] .form-control,
+html[data-theme="light"] .form-select,
+html[data-theme="light"] textarea,
+html[data-theme="light"] .field-input,
+html[data-theme="light"] .evisa-input,
+html[data-theme="light"] .evisa-select,
+html[data-theme="light"] .esim-field-input,
+html[data-theme="light"] input[type="text"],
+html[data-theme="light"] input[type="email"],
+html[data-theme="light"] input[type="tel"],
+html[data-theme="light"] input[type="number"],
+html[data-theme="light"] input[type="search"],
+html[data-theme="light"] input[type="password"],
+html[data-theme="light"] input[type="date"] {
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+/* ---- Cleaner chrome: neutral hairline header + clearly defined footer.
+   Overrides the earlier gold header border for a calmer, more premium edge. */
+html[data-theme="light"] .gt-header {
+    border-bottom: 1px solid var(--gt-border-strong);
+    box-shadow: 0 1px 0 rgba(16, 24, 40, 0.02), var(--gt-shadow-sm);
+}
+html[data-theme="light"] .gt-footer {
+    background: var(--gt-bg-alt) !important;
+    border-top: 1px solid var(--gt-border-strong);
+}
+
+/* ---- Bootstrap card hover parity (cards rendered via .card on inner pages) ---- */
+html[data-theme="light"] .card { border-radius: 14px; }
+
+/* ---- Careers: lift the "Job Hunt Timeline" strip onto a clean white card
+   (it ships a hardcoded #111 inline gradient + #fff text for dark mode). ---- */
+html[data-theme="light"] .careers-timeline {
+    background: var(--gt-surface) !important;
+    border: 1px solid var(--gt-border) !important;
+    box-shadow: var(--gt-shadow-sm);
+}
+html[data-theme="light"] .careers-timeline h5 { color: var(--gt-text) !important; }
+html[data-theme="light"] .careers-timeline p { color: var(--gt-text-muted) !important; }
+html[data-theme="light"] .careers-timeline .border-secondary { border-color: var(--gt-border) !important; }
+
+/* =========================================================================
+   5. LIGHT THEME — DARK "OVER PHOTO" CONTENT SECTIONS → LIGHT
+   -------------------------------------------------------------------------
+   These mid-page sections shipped a fixed dark treatment (photo background +
+   dark overlay + dark "glass" cards + white text). In light mode that left
+   black bands and dark-on-dark (invisible) headings. Convert them to clean
+   light sections with readable text. Page-TOP photo heroes (Hajj, Tours,
+   the Contact "About" intro) are deliberately left as-is — a big title over a
+   travel photo reads well in both themes.
+   ========================================================================= */
+
+/* ---- Shared dark "glass" form card (Contact + Careers) ---- */
+html[data-theme="light"] .glass-card {
+    background: var(--gt-surface) !important;
+    border: 1px solid var(--gt-border) !important;
+    box-shadow: var(--gt-shadow) !important;
+    backdrop-filter: none !important;
+}
+html[data-theme="light"] .glass-card h4 { color: var(--gt-text) !important; }
+
+/* ---- Homepage: "Welcome to Ayn Al Amir" about section (bg photo s3.jpg) ---- */
+html[data-theme="light"] .aboutus[style*="s3.jpg"] {
+    background-image: none !important;
+    background-color: var(--gt-bg) !important;
+}
+html[data-theme="light"] .aboutus[style*="s3.jpg"] .overlay { display: none !important; }
+html[data-theme="light"] .aboutus[style*="s3.jpg"] .intro-text { color: var(--gt-text-body) !important; }
+html[data-theme="light"] .aboutus[style*="s3.jpg"] h2 span { color: var(--gt-text-muted) !important; }
+html[data-theme="light"] .vm-box {
+    background: var(--gt-surface) !important;
+    border: 1px solid var(--gt-border) !important;
+    box-shadow: var(--gt-shadow-sm) !important;
+}
+html[data-theme="light"] .vm-text { color: var(--gt-text-body) !important; }
+html[data-theme="light"] .vm-header h3 { color: var(--gt-gold-deep) !important; }
+
+/* ---- Contact: "Send us a message" section over Burj Khalifa photo ---- */
+html[data-theme="light"] .contact-section-wrapper {
+    background-image: none !important;
+    background: linear-gradient(180deg, var(--gt-bg) 0%, var(--gt-bg-alt) 100%) !important;
+}
+html[data-theme="light"] .contact-overlay {
+    background: transparent !important;
+    backdrop-filter: none !important;
+}
+
+/* ---- Careers: application section over photo (I1.jpeg) + status sub-cards ---- */
+html[data-theme="light"] .content-section[style*="I1.jpeg"] {
+    background-image: none !important;
+    background: linear-gradient(180deg, var(--gt-bg) 0%, var(--gt-bg-alt) 100%) !important;
+}
+html[data-theme="light"] .content-section[style*="I1.jpeg"] > div { background: transparent !important; }
+html[data-theme="light"] .status-card {
+    background: var(--gt-surface-2) !important;
+    border: 1px solid var(--gt-border) !important;
+}
+html[data-theme="light"] .status-card-label { color: var(--gt-gold-deep) !important; }
+html[data-theme="light"] .form-check-label { color: var(--gt-text-body) !important; }
+
+/* ---- Premium-form inputs (Contact + Careers): explicit light styling ---- */
+html[data-theme="light"] .premium-form .form-control,
+html[data-theme="light"] .premium-form .form-select {
+    background: var(--gt-surface) !important;
+    border: 1px solid var(--gt-border-strong) !important;
+    color: var(--gt-text) !important;
+}
+html[data-theme="light"] .premium-form .form-control::placeholder { color: var(--gt-text-faint) !important; }
+html[data-theme="light"] .premium-form .form-label { color: var(--gt-text-muted) !important; }
+
+/* ---- Homepage flights/hotels banner + carousel bands ---- */
+html[data-theme="light"] .custom-banner { background: var(--gt-bg) !important; }
+html[data-theme="light"] .custom-banner .image-overlay {
+    background: transparent !important;
+    background-image: none !important;
+}
+html[data-theme="light"] .custom-banner .overlay { background: transparent !important; }
+html[data-theme="light"] .blodgdf { background: var(--gt-bg) !important; }
+html[data-theme="light"] .carousel-inner,
+html[data-theme="light"] .carousel-item { background: transparent !important; }
+html[data-theme="light"] .blodgdf .card-title,
+html[data-theme="light"] .blodgdf a.card-title { color: var(--gt-text) !important; }
+html[data-theme="light"] .blodgdf h1,
+html[data-theme="light"] .blodgdf h2,
+html[data-theme="light"] .blodgdf .premium-section-title { color: var(--gt-text) !important; }
+
+/* ---- Hajj & Umrah page: dark inline-styled content sections → light.
+   The page <main> ships background:#000 + white text; its content sections use
+   inline #050505 / #000 / photo-gradient backgrounds. The page-top photo hero
+   (.hajj-hero) is kept. Inner cards (.pilgrimage-feature/.package-card) are
+   already light from their rules above. ---- */
+html[data-theme="light"] .hajj-page { background: var(--gt-bg) !important; color: var(--gt-text-body) !important; }
+html[data-theme="light"] .hajj-page > section:not(.hajj-hero) { background: var(--gt-bg) !important; }
+html[data-theme="light"] .hajj-page > section:not(.hajj-hero):nth-of-type(odd) { background: var(--gt-bg-alt) !important; }
+html[data-theme="light"] .hajj-page > section:not(.hajj-hero) p { color: var(--gt-text-body) !important; }
+html[data-theme="light"] .hajj-page [style*="rgba(10,10,10,0.9)"] {
+    background: var(--gt-surface) !important;
+    border-color: var(--gt-gold-border) !important;
+    box-shadow: var(--gt-shadow) !important;
+}
+html[data-theme="light"] .hajj-page [style*="rgba(10,10,10,0.9)"] h4 { color: var(--gt-gold-deep) !important; }
+
+/* ---- eSIM hero → light. Ships a dark network photo + dark gradient overlay +
+   white text. Convert to a clean light hero (gold-tinted light canvas, dark
+   heading, light trust pills) so it matches the rest of the light page. ---- */
+html[data-theme="light"] .esim-hero {
+    background: radial-gradient(900px 380px at 85% -10%, var(--gt-gold-soft) 0%, transparent 60%),
+                linear-gradient(135deg, var(--gt-bg) 0%, var(--gt-bg-alt) 100%) !important;
+}
+html[data-theme="light"] .esim-hero::before { background: none !important; }
+html[data-theme="light"] .esim-hero::after {
+    background:
+        radial-gradient(ellipse 520px 340px at 75% 18%, rgba(169, 123, 10, 0.06) 0%, transparent 70%),
+        radial-gradient(circle 600px at 6% 95%, rgba(169, 123, 10, 0.05) 0%, transparent 65%) !important;
+}
+html[data-theme="light"] .esim-hero-title { color: var(--gt-text) !important; }
+html[data-theme="light"] .esim-hero-subtitle { color: var(--gt-text-muted) !important; }
+html[data-theme="light"] .esim-hero-badge {
+    background: var(--gt-gold-soft) !important;
+    border: 1px solid var(--gt-gold-border) !important;
+    color: var(--gt-gold-deep) !important;
+    box-shadow: var(--gt-shadow-sm) !important;
+    backdrop-filter: none !important;
+}
+html[data-theme="light"] .esim-trust-pill {
+    background: var(--gt-surface) !important;
+    border: 1px solid var(--gt-border) !important;
+    color: var(--gt-text-body) !important;
+    box-shadow: var(--gt-shadow-sm) !important;
+}
+html[data-theme="light"] .esim-trust-pill:hover,
+html[data-theme="light"] .esim-trust-pill.rating {
+    background: var(--gt-gold-soft) !important;
+    border-color: var(--gt-gold-border) !important;
+}
+html[data-theme="light"] .esim-trust-pill strong { color: var(--gt-text) !important; }
+
+/* ---- Homepage splash / preloader (#fade-overlay) — light canvas so the very
+   first paint matches the theme (no black flash before a light page). ---- */
+html[data-theme="light"] #fade-overlay { background: var(--gt-bg) !important; }
+html[data-theme="light"] #fade-overlay [style*="#ffd235"] { color: var(--gt-gold-deep) !important; }
+html[data-theme="light"] #fade-overlay [style*="rgba(255,255,255,0.6)"] { color: var(--gt-text-muted) !important; }
+
+/* =========================================================================
+   6. LIGHT THEME — STANDALONE / INFO PAGES with inline dark styling
+   (Countries Tour hero, Dubai Global Village, Lotus Cruise activity pages).
+   ========================================================================= */
+
+/* Countries Tour: hero sits over a darkened photo (.image-overlay > .overlay);
+   keep its heading light so it stays readable (the gold span is inline). */
+html[data-theme="light"] .image-overlay .heading { color: #fff !important; }
+
+/* Activity/info pages ship solid-black inline sections + spacers + a page-local
+   footer. A solid #000 inline block is a dark-theme leftover — flip to the light
+   canvas in light mode (covers both `background:#000` and `background: #000`). */
+html[data-theme="light"] section[style*="background:#000"],
+html[data-theme="light"] section[style*="background: #000"] {
+    background: var(--gt-bg) !important; color: var(--gt-text-body) !important;
+}
+html[data-theme="light"] div[style*="background:#000"],
+html[data-theme="light"] div[style*="background: #000"] { background: var(--gt-bg) !important; }
+html[data-theme="light"] section[style*="background:#000"] .text-white,
+html[data-theme="light"] section[style*="background: #000"] .text-white { color: var(--gt-text-body) !important; }
+html[data-theme="light"] footer.footer-light[style*="background:#000"],
+html[data-theme="light"] footer.footer-light[style*="background: #000"] {
+    background: var(--gt-bg-alt) !important; border-top: 1px solid var(--gt-border) !important;
+}
+html[data-theme="light"] footer.footer-light,
+html[data-theme="light"] footer.footer-light span { color: var(--gt-text-muted) !important; }
+html[data-theme="light"] footer.footer-light a { color: var(--gt-gold-deep) !important; }
+
+/* ---- Honour reduced-motion: no lifts/animated transforms ---- */
+@media (prefers-reduced-motion: reduce) {
+    html[data-theme="light"] *,
+    html[data-theme="light"] *::before,
+    html[data-theme="light"] *::after { transition-duration: .01ms !important; }
+    html[data-theme="light"] .card:hover,
+    html[data-theme="light"] .service-card:hover,
+    html[data-theme="light"] .tpc-card:hover,
+    html[data-theme="light"] .package-card:hover,
+    html[data-theme="light"] .activity-v2-card:hover,
+    html[data-theme="light"] .gt-inline-search-btn:hover,
+    html[data-theme="light"] .pay-btn:hover:not(:disabled),
+    html[data-theme="light"] .btn-book:hover { transform: none; }
+}

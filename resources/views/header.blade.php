@@ -1234,19 +1234,21 @@
             }
         }
 
-        /* Header spacing - snug fit below fixed header */
+        /* Header spacing - clear the fixed header so page content is never
+           hidden beneath it. Values match the measured header height per
+           breakpoint (header is ~172px on desktop) plus a 2px safety gap. */
         body {
-            margin-top: 150px;
+            margin-top: 174px;
         }
 
         /* Homepage has ticker, needs extra space */
         body.has-ticker {
-            margin-top: 195px;
+            margin-top: 201px;
         }
 
         @media (max-width: 1200px) {
             body {
-                margin-top: 140px;
+                margin-top: 150px;
             }
             body.has-ticker {
                 margin-top: 185px;
@@ -1298,6 +1300,12 @@
         html[data-theme="light"] .gt-theme-toggle .bi-sun-fill { display: none; }
         html[data-theme="light"] .gt-theme-toggle .bi-moon-stars-fill { display: inline; }
         .gt-theme-toggle-mobile { margin-right: 6px; }
+
+        /* The fixed header sits at z-index 9999. Bootstrap modals default to
+           ~1055, so the header would paint OVER an open modal and clip its top
+           (e.g. the FIFA "Request Tickets" modal). Lift modals above the header. */
+        .modal { z-index: 10060 !important; }
+        .modal-backdrop { z-index: 10050 !important; }
 
     </style>
 
