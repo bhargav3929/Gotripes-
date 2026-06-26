@@ -1,6 +1,6 @@
 @include('header')
 
-<main style="background: #000; min-height: 100vh; color: #fff; font-family: 'Outfit', sans-serif;">
+<main class="hajj-page" style="background: #000; min-height: 100vh; color: #fff; font-family: 'Outfit', sans-serif;">
     <!-- Hero Section -->
     <section class="hajj-hero" style="position: relative; height: 70vh; background: url('assets/index_files/umrah_1.png') center center / cover no-repeat; display: flex; align-items: center; justify-content: center; text-align: center;">
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);"></div>

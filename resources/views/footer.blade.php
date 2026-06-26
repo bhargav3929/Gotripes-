@@ -372,12 +372,14 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    const dropdown = document.getElementById("currencyDropdown");
     const savedCurrency = localStorage.getItem("selectedCurrency") || "USD";
-
-    dropdown.value = savedCurrency;
     updateCurrencyDisplay(savedCurrency);
 
+    // Many pages have no currency picker — guard so we don't throw on null.
+    const dropdown = document.getElementById("currencyDropdown");
+    if (!dropdown) return;
+
+    dropdown.value = savedCurrency;
     dropdown.addEventListener("change", function () {
       const selected = this.value;
       localStorage.setItem("selectedCurrency", selected);

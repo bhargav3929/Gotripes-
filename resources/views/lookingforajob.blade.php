@@ -320,7 +320,7 @@
 <section class="container pt-2 pb-2">
   <div class="row g-2 justify-content-center">
     <div class="col-lg-11">
-      <div style="background: linear-gradient(to right, #111, #0a0a0a); border-radius: 14px; border: 1px solid #222; padding: 14px 18px;">
+      <div class="careers-timeline" style="background: linear-gradient(to right, #111, #0a0a0a); border-radius: 14px; border: 1px solid #222; padding: 14px 18px;">
         <h3 class="section-title-sm text-center mb-2"><i class="bi bi-clock-history me-2"></i> Typical Job Hunt Timeline (60-Day Visit Visa)</h3>
         <div class="row text-center g-2">
           <div class="col-md-4">
