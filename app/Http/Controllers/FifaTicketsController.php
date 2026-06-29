@@ -22,9 +22,20 @@ class FifaTicketsController extends Controller
         $markup   = FifaSetting::markupPercent();
         $currency = FifaSetting::currency();
 
+        // Only show UPCOMING matches — hide fixtures whose date has already passed
+        // so finished games drop off automatically each day. Matches with no date
+        // set (e.g. knockout placeholders that are still "to be decided") are kept.
+        $today = now()->startOfDay();
+
         $matches = FifaMatch::where('is_active', 1)
             ->whereHas('activeTickets')
+            ->where(function ($q) use ($today) {
+                $q->whereNull('match_date')
+                  ->orWhere('match_date', '>=', $today);
+            })
             ->with(['activeTickets'])
+            ->orderByRaw('match_date IS NULL')  // dated (soonest) first, undated last
+            ->orderBy('match_date')
             ->orderBy('sort_order')->orderBy('id')
             ->get()
             ->groupBy('stage');
