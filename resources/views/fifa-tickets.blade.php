@@ -228,6 +228,18 @@
         #fifaRequestModal .frm-footer { padding-left:16px; padding-right:16px; }
     }
     @media (max-width:560px){ .fifa-grid{ grid-template-columns:1fr; } }
+
+    /* ── Search / filter matches by team or country ── */
+    .fifa-search-wrap { position:relative; max-width:480px; margin:0 auto 34px; }
+    .fifa-search-wrap > i { position:absolute; left:18px; top:50%; transform:translateY(-50%); color:#FFD23F; font-size:14px; pointer-events:none; }
+    .fifa-search-input {
+        width:100%; height:50px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12);
+        border-radius:100px; color:#fff; padding:0 20px 0 44px; font-size:15px; font-family:'Outfit',sans-serif;
+        outline:none; transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    .fifa-search-input::placeholder { color:rgba(255,255,255,.4); }
+    .fifa-search-input:focus { border-color:#FFD23F; box-shadow:0 0 0 3px rgba(255,210,63,.15); }
+    .fifa-search-empty { text-align:center; color:rgba(255,255,255,.55); font-size:15px; padding:24px 0 40px; }
 </style>
 
 <div class="fifa-page">
@@ -264,6 +276,15 @@
             <div class="fifa-alert" style="background:rgba(200,60,60,.15); border-color:rgba(200,60,60,.4); color:#f1a5a5;">
                 {{ $errors->first() }}
             </div>
+        @endif
+
+        {{-- Search / filter matches by team or country (e.g. "Canada") --}}
+        @if($matches->isNotEmpty())
+        <div class="fifa-search-wrap">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input type="text" id="fifaSearch" class="fifa-search-input" placeholder="Search by team or country — e.g. Canada" autocomplete="off" aria-label="Search matches by team or country">
+        </div>
+        <div class="fifa-search-empty" id="fifaSearchEmpty" style="display:none;">No matches found for &ldquo;<span id="fifaSearchTerm"></span>&rdquo;. Try another country or team.</div>
         @endif
 
         {{-- Matches by stage --}}
@@ -411,6 +432,32 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // ---- Filter matches by team / country (e.g. "Canada") ----
+    (function () {
+        var search = document.getElementById('fifaSearch');
+        if (!search) return;
+        var emptyMsg = document.getElementById('fifaSearchEmpty');
+        var termEl   = document.getElementById('fifaSearchTerm');
+        search.addEventListener('input', function () {
+            var q = this.value.trim().toLowerCase();
+            var anyVisible = false;
+            document.querySelectorAll('.fifa-stage').forEach(function (stage) {
+                var stageVisible = false;
+                stage.querySelectorAll('.fifa-card').forEach(function (card) {
+                    var teamsEl = card.querySelector('.fifa-teams');
+                    var teams = (teamsEl ? teamsEl.textContent : '').toLowerCase();
+                    var show = !q || teams.indexOf(q) !== -1;
+                    card.style.display = show ? '' : 'none';
+                    if (show) stageVisible = true;
+                });
+                stage.style.display = stageVisible ? '' : 'none';
+                if (stageVisible) anyVisible = true;
+            });
+            if (emptyMsg) emptyMsg.style.display = (q && !anyVisible) ? 'block' : 'none';
+            if (termEl) termEl.textContent = this.value.trim();
+        });
+    })();
+
     var modalEl   = document.getElementById('fifaRequestModal');
     var modal     = new bootstrap.Modal(modalEl);
     var form      = document.getElementById('fifaRequestForm');
