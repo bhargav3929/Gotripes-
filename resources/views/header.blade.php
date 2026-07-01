@@ -1347,7 +1347,7 @@
                     <div class="gt-nav-row gt-nav-primary">
                         <a href="/" class="gt-nav-link {{ Request::is('/') ? 'active' : '' }}">Home</a>
                         @feature('activities')<a href="/activities" class="gt-nav-link {{ Request::is('activities') ? 'active' : '' }}">Activities{!! $gtBadge('activities') !!}</a>@endfeature
-                        @feature('visas')<a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">Visa Services{!! $gtBadge('visa_services') !!}</a>@endfeature
+                        @feature('visas')<a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">UAE Visa{!! $gtBadge('visa_services') !!}</a>@endfeature
                         @feature('tours')<a href="/tour-packages" class="gt-nav-link {{ Request::is('tour-packages') ? 'active' : '' }}">Tour Packages{!! $gtBadge('tour_packages') !!}</a>@endfeature
                         @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-nav-link {{ Request::is('hajj-umrah') ? 'active' : '' }}">Hajj &amp; Umrah{!! $gtBadge('hajj_umrah') !!}</a>@endfeature
                     </div>
