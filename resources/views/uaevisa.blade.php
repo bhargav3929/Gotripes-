@@ -4,6 +4,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/css/intlTelInput.css">
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/intlTelInput.min.js"></script>
 
+<!-- Tom Select (searchable select dropdown) -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
@@ -619,13 +623,168 @@
             grid-template-columns: 1fr;
         }
     }
+
+    /* --- Tom Select Dark Mode Theme --- */
+    .ts-wrapper.field-input {
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+    }
+    .ts-wrapper.field-input .ts-control {
+        background: var(--c-input-bg) !important;
+        border: 1px solid var(--c-input-border) !important;
+        border-radius: 10px !important;
+        padding: 0 16px !important;
+        color: #fff !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        height: 48px !important;
+        display: flex !important;
+        align-items: center !important;
+        cursor: pointer !important;
+        box-shadow: none !important;
+        transition: all 0.2s ease;
+        position: relative !important;
+    }
+    .ts-wrapper.field-input.focus .ts-control {
+        border-color: var(--c-gold) !important;
+        background: #161616 !important;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.05) !important;
+    }
+    .ts-wrapper.field-input .ts-control input {
+        color: #fff !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 15px !important;
+        padding: 0 !important;
+    }
+    .ts-wrapper.field-input.single .ts-control:after {
+        border-color: var(--c-gold) transparent transparent transparent !important;
+        border-width: 6px 5px 0 5px !important;
+        right: 20px !important;
+    }
+    .ts-wrapper.field-input.single.dropdown-active .ts-control:after {
+        border-color: transparent transparent var(--c-gold) transparent !important;
+        border-width: 0 5px 6px 5px !important;
+    }
+    .ts-dropdown {
+        background: #0d0d0d !important;
+        border: 1px solid #2a2a2a !important;
+        border-radius: 10px !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+        margin-top: 4px !important;
+        z-index: 1000 !important;
+        padding: 6px 0 !important;
+    }
+    .ts-dropdown .option {
+        padding: 8px 14px !important;
+        color: #ddd !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+    }
+    .ts-dropdown .active,
+    .ts-dropdown .option:hover {
+        background: rgba(255, 215, 0, 0.12) !important;
+        color: #fff !important;
+    }
+
+    /* --- Tom Select Light Mode Theme Overrides --- */
+    html[data-theme="light"] .ts-wrapper.field-input .ts-control {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        color: var(--gt-text) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.field-input.focus .ts-control {
+        border-color: var(--gt-gold-2) !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.18) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.field-input .ts-control input {
+        color: var(--gt-text) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.field-input.single .ts-control:after {
+        border-color: var(--gt-gold) transparent transparent transparent !important;
+    }
+    html[data-theme="light"] .ts-wrapper.field-input.single.dropdown-active .ts-control:after {
+        border-color: transparent transparent var(--gt-gold) transparent !important;
+    }
+    html[data-theme="light"] .ts-dropdown {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        box-shadow: var(--gt-shadow-lg) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .option {
+        color: var(--gt-text-body) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .active,
+    html[data-theme="light"] .ts-dropdown .option:hover {
+        background: var(--gt-gold-soft) !important;
+        color: var(--gt-gold) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .no-results {
+        color: var(--gt-text-muted) !important;
+    }
+
+    /* --- Active Emirate Badge Styling --- */
+    .emirate-active-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 215, 0, 0.1);
+        border: 1px solid rgba(255, 215, 0, 0.35);
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #FFD700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-family: 'Outfit', sans-serif;
+    }
+    .emirate-active-badge button {
+        background: transparent;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        text-decoration: underline;
+        font-size: 11px;
+        padding: 0 0 0 8px;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+    }
+    .emirate-active-badge button:hover {
+        opacity: 1;
+    }
+
+    /* Light Theme active badge overrides */
+    html[data-theme="light"] .emirate-active-badge {
+        background: var(--gt-gold-soft) !important;
+        border: 1px solid var(--gt-gold-border) !important;
+        color: var(--gt-gold) !important;
+    }
+    html[data-theme="light"] .emirate-active-badge button {
+        color: var(--gt-text-body) !important;
+    }
+    html[data-theme="light"] .emirate-active-badge button:hover {
+        color: var(--gt-text) !important;
+    }
 </style>
 
 <div class="visa-page">
     <div class="visa-wrapper">
         <div class="visa-header">
             <h1 class="visa-title">UAE Visa</h1>
-            <p class="visa-subtitle">Premium Processing</p>
+            <div class="visa-subtitle-wrapper" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <p class="visa-subtitle" style="margin: 0;">Premium Processing</p>
+                <div id="emirateActiveBadge" class="emirate-active-badge" style="display: none;">
+                    <span class="badge-icon">🏙️</span>
+                    <span class="badge-text">Dubai Processing</span>
+                    <button type="button" onclick="window.showEmirateSelector()">Change</button>
+                </div>
+            </div>
         </div>
 
         <div class="visa-main">
@@ -637,6 +796,7 @@
 
                 <form id="visaForm" method="POST" action="{{ route('uaev.submit') }}" enctype="multipart/form-data">
                     @csrf
+                    <input type="hidden" name="selected_emirate" id="selectedEmirate" value="">
 
                     {{-- Scan Passport → auto-fill (Groq vision OCR) --}}
                     <div class="pp-scan">
@@ -678,6 +838,9 @@
                             <label class="field-label">Nationality</label>
                             <select id="nationality" name="nationality" class="field-input" required>
                                 <option value="">Select Nationality</option>
+                                @foreach(\App\Support\CountryCodes::all() as $c)
+                                    <option value="{{ $c['name'] }}">{{ $c['name'] }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="form-field">
@@ -875,16 +1038,21 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const countrySelects = [document.getElementById('nationality')].filter(Boolean);
-        fetch('https://restcountries.com/v3.1/all?fields=name')
-            .then(res => res.json())
-            .then(data => {
-                data.sort((a, b) => a.name.common.localeCompare(b.name.common));
-                data.forEach(country => {
-                    const optionHtml = `<option value="${country.name.common}">${country.name.common}</option>`;
-                    countrySelects.forEach(select => select.insertAdjacentHTML('beforeend', optionHtml));
-                });
-            })
-            .catch(err => console.error(err));
+        let nationalitySelect = null;
+        const natEl = document.getElementById('nationality');
+        if (natEl && typeof TomSelect !== 'undefined') {
+            nationalitySelect = new TomSelect(natEl, {
+                create: false,
+                placeholder: 'Select Nationality',
+                controlInput: '<input>',
+                render: {
+                    no_results: function(data, escape) {
+                        return '<div class="no-results" style="padding: 8px 14px; color: #888;">No nationality found for "' + escape(data.input) + '"</div>';
+                    }
+                }
+            });
+            window.nationalityTomSelect = nationalitySelect;
+        }
 
         const visaCountSelect = document.getElementById('visaCount');
         const childrenCountInput = document.getElementById('visaChildren');
@@ -1175,7 +1343,14 @@
             if (NAT_MAP[c]) c = NAT_MAP[c].toLowerCase();
             let opt = opts.find(o => o.value.toLowerCase() === c);
             if (!opt) opt = opts.find(o => o.value.toLowerCase().includes(c) || (c.length > 3 && c.includes(o.value.toLowerCase())));
-            if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change')); return opt.value; }
+            if (opt) {
+                sel.value = opt.value;
+                sel.dispatchEvent(new Event('change'));
+                if (window.nationalityTomSelect) {
+                    window.nationalityTomSelect.setValue(opt.value);
+                }
+                return opt.value;
+            }
         }
         return null;
     }
@@ -1267,7 +1442,21 @@
         });
         closeBtn.addEventListener('click', stopCam);
     }
+
+    // Listen to emirate changes and update the UI badge
+    document.addEventListener('emirateChanged', function(e) {
+        const emirate = e.detail;
+        const badge = document.getElementById('emirateActiveBadge');
+        if (badge) {
+            const textEl = badge.querySelector('.badge-text');
+            if (textEl) {
+                textEl.textContent = emirate + ' Processing';
+            }
+            badge.style.display = 'inline-flex';
+        }
+    });
 })();
 </script>
 
+@include('partials.emirate_selector_modal')
 @include('footer')
