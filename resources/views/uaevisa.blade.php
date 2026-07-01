@@ -780,7 +780,7 @@
             <div class="visa-subtitle-wrapper" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                 <p class="visa-subtitle" style="margin: 0;">Premium Processing</p>
                 <div id="emirateActiveBadge" class="emirate-active-badge" style="display: none;">
-                    <span class="badge-icon">🏙️</span>
+                    <span class="badge-icon"></span>
                     <span class="badge-text">Dubai Processing</span>
                     <button type="button" onclick="window.showEmirateSelector()">Change</button>
                 </div>
@@ -1449,8 +1449,16 @@
         const badge = document.getElementById('emirateActiveBadge');
         if (badge) {
             const textEl = badge.querySelector('.badge-text');
+            const iconEl = badge.querySelector('.badge-icon');
             if (textEl) {
                 textEl.textContent = emirate + ' Processing';
+            }
+            const EMIRATE_FLAGS = {
+                'Dubai': `<svg class="badge-flag-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3" style="width: 16px; height: 12px; display: inline-block; border-radius: 1px; border: 1px solid rgba(255,255,255,0.2); vertical-align: middle; margin-right: 4px;"><rect width="4" height="3" fill="#D7141A" /><rect width="1" height="3" fill="#FFF" /></svg>`,
+                'Sharjah': `<svg class="badge-flag-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 1" style="width: 16px; height: 12px; display: inline-block; border-radius: 1px; border: 1px solid rgba(255,255,255,0.2); vertical-align: middle; margin-right: 4px;"><rect width="2" height="1" fill="#FFF" /><rect x="0.25" y="0.125" width="1.5" height="0.75" fill="#D7141A" /></svg>`
+            };
+            if (iconEl && EMIRATE_FLAGS[emirate]) {
+                iconEl.innerHTML = EMIRATE_FLAGS[emirate];
             }
             badge.style.display = 'inline-flex';
         }

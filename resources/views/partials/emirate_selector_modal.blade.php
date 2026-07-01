@@ -134,6 +134,19 @@
     html[data-theme="light"] .emirate-close-btn:hover {
         color: var(--gt-text);
     }
+    .emirate-flag-svg {
+        width: 64px;
+        height: 44px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        display: block;
+    }
+    html[data-theme="light"] .emirate-flag-svg {
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
 </style>
 
 <div id="emirateSelectorOverlay" class="emirate-overlay">
@@ -151,8 +164,16 @@
 <script>
     (function() {
         const AVAILABLE_EMIRATES = [
-            { id: 'Dubai', name: 'Dubai', icon: '🏙️' },
-            { id: 'Sharjah', name: 'Sharjah', icon: '🏙️' }
+            { 
+                id: 'Dubai', 
+                name: 'Dubai', 
+                icon: `<svg class="emirate-flag-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3"><rect width="4" height="3" fill="#D7141A" /><rect width="1" height="3" fill="#FFF" /></svg>` 
+            },
+            { 
+                id: 'Sharjah', 
+                name: 'Sharjah', 
+                icon: `<svg class="emirate-flag-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 1"><rect width="2" height="1" fill="#FFF" /><rect x="0.25" y="0.125" width="1.5" height="0.75" fill="#D7141A" /></svg>` 
+            }
         ];
 
         const overlay = document.getElementById('emirateSelectorOverlay');
