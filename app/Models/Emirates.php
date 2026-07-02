@@ -34,6 +34,12 @@ class Emirates extends Model
         return $this->hasMany(UAEActivity::class, 'emiratesID', 'emiratesID');
     }
 
+    // Relationship with UAE Visa Packages
+    public function packages()
+    {
+        return $this->hasMany(UAEVisaPackage::class, 'emirates_id', 'emiratesID');
+    }
+
     // Get active emirates
     public static function getActiveEmirates()
     {

@@ -539,7 +539,7 @@
                 <li class="wp-nav-item">
                     <a href="{{ route('manager.visa-pricing.index') }}" class="{{ request()->routeIs('manager.visa-pricing.*') ? 'active' : '' }}">
                         <i class="fas fa-passport"></i>
-                        <span>Visa Pricing</span>
+                        <span>Visa Services</span>
                     </a>
                 </li>
                 @endfeature

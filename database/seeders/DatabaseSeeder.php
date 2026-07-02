@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UAEEmiratesSeeder::class,
             AgentCompaniesSeeder::class,
+            UAEVisaPricingSeeder::class,
         ]);
     }
 }

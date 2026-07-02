@@ -8,8 +8,9 @@ use App\Models\UAEVisaMaster;
 use App\Models\NomodTransaction;
 use App\Mail\UAEVVisaMail;
 use App\Services\NomodService;
+use App\Models\UAEVisaPackage;
+use App\Models\UAEVisaPrice;
 use Illuminate\Support\Facades\Mail;
-// use Illuminate\Support\Facades\Log;
 
 class UAEVisaController extends Controller
 {
@@ -31,6 +32,9 @@ class UAEVisaController extends Controller
             'phone' => 'required|string|max:20',
             'passport_valid' => 'nullable|boolean',
             'not_stay_long' => 'nullable|boolean',
+            'selected_emirate' => 'nullable|string|max:100',
+            'visa_package_id' => 'nullable|integer',
+            'entry_type' => 'nullable|string|max:100',
 
             // Array Validation
             'passport_copy' => 'required|array',
@@ -44,18 +48,48 @@ class UAEVisaController extends Controller
         $adultCount = (int) $validated['visa_count'];
         $childrenCount = (int) ($validated['children_count'] ?? 0);
         $visaCount = $adultCount + $childrenCount;
-        $unitPrice = $validated['price']; // This is Total from frontend, but we need unit price validation logic if strictly needed. 
-        // Frontend sends TOTAL price in 'price'. Let's trust frontend total for now or recalculate.
-        // Actually, logic below recalculates per person to be safe? 
-        // Let's stick to simple logic: Input Price is TOTAL.
 
-        // Master Price Check (Unit Price)
-        $master = UAEVisaMaster::where('UAEVisaDuration', $validated['visaDuration'])
-            ->where('isActive', true)
-            ->first();
+        // Autoritative price lookups (Dynamic Package vs Legacy Fallback)
+        $packageId = $request->input('visa_package_id');
+        $adultPrice = 0.0;
+        $childPrice = 0.0;
+        $infantPrice = 0.0;
+        $packageName = null;
+        $emirateName = $request->input('selected_emirate');
 
-        if (!$master) {
-            return response()->json(['success' => false, 'message' => 'Invalid Visa Type'], 400);
+        if ($packageId) {
+            $package = UAEVisaPackage::findOrFail($packageId);
+            $packageName = $package->name;
+            
+            $pricingRows = UAEVisaPrice::where('visa_package_id', $package->id)
+                ->where('entry_type', $request->input('entry_type'))
+                ->where('duration', $request->input('visaDuration'))
+                ->where('isActive', true)
+                ->get();
+
+            if ($pricingRows->isEmpty()) {
+                return response()->json(['success' => false, 'message' => 'Invalid Visa Pricing Configuration'], 400);
+            }
+
+            $adultRow  = $pricingRows->firstWhere('traveller_type', 'Adult');
+            $childRow  = $pricingRows->firstWhere('traveller_type', 'Child');
+            $infantRow = $pricingRows->firstWhere('traveller_type', 'Infant');
+
+            $adultPrice  = $adultRow ? (float) $adultRow->price : 0.0;
+            $childPrice  = $childRow ? (float) $childRow->price : $adultPrice;
+            $infantPrice = $infantRow ? (float) $infantRow->price : 0.0;
+        } else {
+            // Legacy flat duration pricing row lookup
+            $master = UAEVisaMaster::where('UAEVisaDuration', $validated['visaDuration'])
+                ->where('isActive', true)
+                ->first();
+
+            if (!$master) {
+                return response()->json(['success' => false, 'message' => 'Invalid Visa Type'], 400);
+            }
+            $adultPrice = (float) $master->UAEVPrice;
+            $childPrice = $adultPrice;
+            $infantPrice = $adultPrice;
         }
 
         // Loop and Create Records
@@ -85,11 +119,14 @@ class UAEVisaController extends Controller
                 ? 'Child ' . $childNum
                 : 'Applicant ' . ($i + 1);
 
+            $travellerType = $isChild ? 'Child' : 'Adult';
+            $unitPrice = $isChild ? $childPrice : $adultPrice;
+
             // DB Record
             $dbData = [
                 'UAEV_nationality' => $validated['nationality'] ?? null,
                 'UAEV_residence' => $validated['residence'] ?? null,
-                'UAEV_first_name' => $applicantLabel, // Placeholder as name fields removed
+                'UAEV_first_name' => $applicantLabel,
                 'UAEV_last_name' => $isChild ? 'Child' : 'Guest',
                 'UAEV_passport_valid' => $validated['passport_valid'] ?? null,
                 'UAEV_not_stay_long' => $validated['not_stay_long'] ?? null,
@@ -99,13 +136,22 @@ class UAEVisaController extends Controller
                 'UAEV_email' => $validated['email'],
                 'UAEV_passport_copy' => $passportCopyPath,
                 'UAEV_passport_photo' => $passportPhotoPath,
-                // 'UAEV_supporting_doc' => $supportingDocPath, // Need to check if column exists, if not exclude
                 'UAEV_visaDuration' => $validated['visaDuration'],
-                'UAEV_price' => $master->UAEVPrice, // Unit Price
+                'UAEV_price' => $unitPrice,
                 'UAEV_Created_by' => 'Guest (Multi-Visa)',
                 'UAEV_created_date' => now(),
                 'UAEV_isActive' => 1,
                 'UAEV_status' => 1,
+
+                // Checkout fields
+                'UAEV_emirate' => $emirateName,
+                'UAEV_package_name' => $packageName,
+                'UAEV_visa_type' => $request->input('entry_type'),
+                'UAEV_traveller_type' => $travellerType,
+                'UAEV_addons' => json_encode(array_filter([
+                    $request->boolean('hotel_booking') ? 'hotel' : null,
+                    $request->boolean('ticket_booking') ? 'flight' : null,
+                ])),
             ];
 
             $uaev = UAEVApplication::create($dbData);
@@ -114,19 +160,15 @@ class UAEVisaController extends Controller
             $createdRecords[] = $uaev;
         }
 
-        // Email (Send one email for the first record, or loop? Let's send one summary email technically better, but for now stick to 1st)
-        // Or loop? Let's loop to be safe.
+        // Email notifications loop
         foreach ($createdRecords as $rec) {
-            // ... email logic (simplified) ...
             try {
                 Mail::to($rec->UAEV_email)->send(new UAEVVisaMail($rec->toArray(), $rec->UAEV_passport_copy, $rec->UAEV_passport_photo));
             } catch (\Exception $e) {
             }
         }
 
-        // Authoritative price — never trust the posted total. Air-ticket
-        // assistance is charged PER visa; hotel uses a tiered fee. Both scale
-        // with the total number of applicants (adults + children + infants).
+        // Authoritative pricing totals recalculation
         $infantsCount = (int) $request->input('infants_count', 0);
         $persons = $adultCount + $childrenCount + $infantsCount;
 
@@ -134,7 +176,7 @@ class UAEVisaController extends Controller
         $ticketRate = (float) ($company?->getSetting('visa_ticket_booking_fee', 25) ?? 25);
         $hotelBase  = (float) ($company?->getSetting('visa_hotel_booking_fee', 25) ?? 25);
 
-        $baseVisaTotal = (float) $master->UAEVPrice * $persons;
+        $baseVisaTotal = ($adultPrice * $adultCount) + ($childPrice * $childrenCount) + ($infantPrice * $infantsCount);
         $ticketCost = $request->boolean('ticket_booking') ? $ticketRate * $persons : 0.0;
         $hotelCost  = $request->boolean('hotel_booking')  ? $this->hotelFeeForVisas($persons, $hotelBase) : 0.0;
 

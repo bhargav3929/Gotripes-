@@ -1,5 +1,9 @@
 @include('header')
 
+<!-- Tom Select (searchable select dropdown) -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
@@ -240,6 +244,128 @@
     .fifa-search-input::placeholder { color:rgba(255,255,255,.4); }
     .fifa-search-input:focus { border-color:#FFD23F; box-shadow:0 0 0 3px rgba(255,210,63,.15); }
     .fifa-search-empty { text-align:center; color:rgba(255,255,255,.55); font-size:15px; padding:24px 0 40px; }
+
+    /* --- Tom Select Custom overrides for FIFA theme --- */
+    .ts-wrapper.frm-select {
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+    }
+    .ts-wrapper.frm-select .ts-control {
+        background: rgba(255,255,255,.05) !important;
+        border: 1px solid rgba(255,255,255,.12) !important;
+        border-radius: 10px !important;
+        padding: 0 16px !important;
+        color: #fff !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        cursor: pointer !important;
+        box-shadow: none !important;
+        transition: border-color .2s ease, box-shadow .2s ease;
+        position: relative !important;
+    }
+    .ts-wrapper.frm-select.focus .ts-control {
+        border-color: #FFD23F !important;
+        background: rgba(255,255,255,.08) !important;
+        box-shadow: 0 0 0 3px rgba(255,210,63,.15) !important;
+    }
+    .ts-wrapper.frm-select .ts-control .item {
+        color: #fff !important;
+        line-height: 42px !important;
+        height: 42px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .ts-wrapper.frm-select .ts-control input {
+        color: #fff !important;
+        font-size: 14px !important;
+        font-family: 'Outfit', sans-serif !important;
+        padding: 0 !important;
+        line-height: 42px !important;
+        height: 42px !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    html[data-theme="light"] .ts-wrapper.frm-select .ts-control .item {
+        color: var(--gt-text) !important;
+    }
+    .ts-wrapper.frm-select.single .ts-control:after {
+        border-color: #FFD23F transparent transparent transparent !important;
+        border-width: 6px 5px 0 5px !important;
+        right: 20px !important;
+    }
+    .ts-wrapper.frm-select.single.dropdown-active .ts-control:after {
+        border-color: transparent transparent #FFD23F transparent !important;
+        border-width: 0 5px 6px 5px !important;
+    }
+    .ts-dropdown {
+        background: #0d0d0d !important;
+        border: 1px solid #2a2a2a !important;
+        border-radius: 10px !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+        margin-top: 4px !important;
+        z-index: 1000 !important;
+        padding: 6px 0 !important;
+    }
+    .ts-dropdown .option {
+        padding: 8px 14px !important;
+        color: #ddd !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+    }
+    .ts-dropdown .active,
+    .ts-dropdown .option:hover {
+        background: rgba(255, 215, 0, 0.12) !important;
+        color: #fff !important;
+    }
+    .ts-dropdown .no-results {
+        color: #888 !important;
+    }
+
+    /* --- Tom Select Light Mode Theme Overrides --- */
+    html[data-theme="light"] .ts-wrapper.frm-select .ts-control {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        color: var(--gt-text) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.frm-select.focus .ts-control {
+        border-color: var(--gt-gold-2) !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.18) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.frm-select .ts-control input {
+        color: var(--gt-text) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.frm-select.single .ts-control:after {
+        border-color: var(--gt-gold) transparent transparent transparent !important;
+    }
+    html[data-theme="light"] .ts-wrapper.frm-select.single.dropdown-active .ts-control:after {
+        border-color: transparent transparent var(--gt-gold) transparent !important;
+    }
+    html[data-theme="light"] .ts-dropdown {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        box-shadow: var(--gt-shadow-lg) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .option {
+        color: var(--gt-text-body) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .active,
+    html[data-theme="light"] .ts-dropdown .option:hover {
+        background: var(--gt-gold-soft) !important;
+        color: var(--gt-gold) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .no-results {
+        color: var(--gt-text-muted) !important;
+    }
 </style>
 
 <div class="fifa-page">
@@ -432,6 +558,20 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const countrySelect = document.getElementById('fr_country');
+    if (countrySelect && typeof TomSelect !== 'undefined') {
+        new TomSelect(countrySelect, {
+            create: false,
+            placeholder: 'Select...',
+            controlInput: '<input>',
+            render: {
+                no_results: function(data, escape) {
+                    return '<div class="no-results" style="padding: 8px 14px; color: #888;">No country found for "' + escape(data.input) + '"</div>';
+                }
+            }
+        });
+    }
+
     // ---- Filter matches by team / country (e.g. "Canada") ----
     (function () {
         var search = document.getElementById('fifaSearch');

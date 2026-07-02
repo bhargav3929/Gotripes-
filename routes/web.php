@@ -336,13 +336,42 @@ Route::get('/news-ticker', [AnnouncementController::class, 'index']);
 
 
 use App\Models\UAEVisaMaster;
+use App\Models\Emirates;
+use App\Models\UAEVisaPackage;
 
 Route::get('/uaevisa', function () {
+    $activeEmirates = Emirates::where('isActive', 1)
+        ->whereHas('packages', function($q) {
+            $q->where('isActive', 1);
+        })
+        ->orderBy('emiratesName')
+        ->get();
+    $packages = UAEVisaPackage::with(['prices' => function($q) {
+        $q->where('isActive', 1);
+    }])->where('isActive', 1)->get();
+
+    $pricingData = [];
+    foreach ($packages as $pkg) {
+        $pricingData[] = [
+            'package_id'   => $pkg->id,
+            'emirates_id'  => $pkg->emirates_id,
+            'package_name' => $pkg->name,
+            'description'  => $pkg->description,
+            'prices'       => $pkg->prices->map(fn($p) => [
+                'entry_type'     => $p->entry_type,
+                'duration'       => $p->duration,
+                'traveller_type' => $p->traveller_type,
+                'price'          => (float) $p->price
+            ])->toArray()
+        ];
+    }
+
     $visaData = UAEVisaMaster::where('isActive', true)->get();
     $company = current_company();
     $hotelFee  = $company?->getSetting('visa_hotel_booking_fee', 25) ?? 25;
     $ticketFee = $company?->getSetting('visa_ticket_booking_fee', 25) ?? 25;
-    return view('uaevisa', compact('visaData', 'hotelFee', 'ticketFee'));
+
+    return view('uaevisa', compact('activeEmirates', 'pricingData', 'visaData', 'hotelFee', 'ticketFee'));
 })->middleware('tenant.feature:visas');
 
 
@@ -413,6 +442,19 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::delete('visa-pricing/{id}',        [ManagerVisaPricingController::class, 'destroy'])->name('visa-pricing.destroy');
     Route::put('visa-pricing-service-fees',   [ManagerVisaPricingController::class, 'updateServiceFees'])->name('visa-pricing.service-fees.update');
     Route::put('visa-pricing-evisa-markup',   [ManagerVisaPricingController::class, 'updateEvisaMarkup'])->name('visa-pricing.evisa-markup.update');
+
+    // Dynamic UAE Visa Packages & Pricing Grid routes
+    Route::post('visa-packages',              [ManagerVisaPricingController::class, 'storePackage'])->name('visa-packages.store');
+    Route::put('visa-packages/{id}',          [ManagerVisaPricingController::class, 'updatePackage'])->name('visa-packages.update');
+    Route::delete('visa-packages/{id}',       [ManagerVisaPricingController::class, 'destroyPackage'])->name('visa-packages.destroy');
+
+    Route::post('visa-prices',                [ManagerVisaPricingController::class, 'storePriceRow'])->name('visa-prices.store');
+    Route::put('visa-prices/{id}',            [ManagerVisaPricingController::class, 'updatePriceRow'])->name('visa-prices.update');
+    Route::delete('visa-prices/{id}',         [ManagerVisaPricingController::class, 'destroyPriceRow'])->name('visa-prices.destroy');
+
+    Route::post('visa-emirates',              [ManagerVisaPricingController::class, 'storeEmirate'])->name('visa-emirates.store');
+    Route::put('visa-emirates/{id}',          [ManagerVisaPricingController::class, 'updateEmirate'])->name('visa-emirates.update');
+    Route::delete('visa-emirates/{id}',       [ManagerVisaPricingController::class, 'destroyEmirate'])->name('visa-emirates.destroy');
 
     // FIFA World Cup 2026 tickets — SHARED across all companies (not tenant-scoped).
     // Global markup, match + ticket inventory, and the customer request inbox.

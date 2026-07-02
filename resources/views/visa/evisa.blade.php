@@ -1,5 +1,32 @@
 @include('header')
 
+<!-- Tom Select (searchable select dropdown) -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+@php
+if (empty($countries)) {
+    $countries = [];
+    foreach (\App\Support\CountryCodes::all() as $c) {
+        $countries[] = [
+            'code' => $c['iso'],
+            'name' => $c['name'],
+            'flag' => $c['flag'],
+            'types' => 1
+        ];
+    }
+}
+if (empty($nationalities)) {
+    $nationalities = [];
+    foreach (\App\Support\CountryCodes::all() as $c) {
+        $nationalities[] = [
+            'code' => $c['iso'],
+            'name' => $c['name']
+        ];
+    }
+}
+@endphp
+
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
@@ -18,6 +45,126 @@
     }
     .evisa-wrap { max-width: 1140px; margin: 0 auto; }
     .evisa-head { margin-bottom: 16px; }
+
+    /* --- Tom Select Custom Styling --- */
+    .ts-wrapper.evisa-select {
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+    }
+    .ts-wrapper.evisa-select .ts-control {
+        background: var(--c-input) !important;
+        border: 1px solid var(--c-border) !important;
+        border-radius: 9px !important;
+        padding: 0 12px !important;
+        color: #fff !important;
+        font-family: inherit !important;
+        font-size: 0.9rem !important;
+        height: 41px !important;
+        display: flex !important;
+        align-items: center !important;
+        cursor: pointer !important;
+        box-shadow: none !important;
+        transition: all 0.2s ease;
+        position: relative !important;
+    }
+    .ts-wrapper.evisa-select.focus .ts-control {
+        border-color: var(--c-gold) !important;
+        box-shadow: 0 0 0 3px rgba(255,215,0,.12) !important;
+    }
+    .ts-wrapper.evisa-select .ts-control .item {
+        color: #fff !important;
+        line-height: 39px !important;
+        height: 39px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .ts-wrapper.evisa-select .ts-control input {
+        color: #fff !important;
+        font-family: inherit !important;
+        font-size: 0.9rem !important;
+        padding: 0 !important;
+        line-height: 39px !important;
+        height: 39px !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    html[data-theme="light"] .ts-wrapper.evisa-select .ts-control .item {
+        color: var(--gt-text) !important;
+    }
+    .ts-wrapper.evisa-select.single .ts-control:after {
+        border-color: var(--c-gold) transparent transparent transparent !important;
+        border-width: 5px 4px 0 4px !important;
+        right: 15px !important;
+    }
+    .ts-wrapper.evisa-select.single.dropdown-active .ts-control:after {
+        border-color: transparent transparent var(--c-gold) transparent !important;
+        border-width: 0 4px 5px 4px !important;
+    }
+    .ts-dropdown {
+        background: #0d0d0d !important;
+        border: 1px solid #2a2a2a !important;
+        border-radius: 10px !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+        margin-top: 4px !important;
+        z-index: 1000 !important;
+        padding: 6px 0 !important;
+    }
+    .ts-dropdown .option {
+        padding: 8px 14px !important;
+        color: #ddd !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+    }
+    .ts-dropdown .active,
+    .ts-dropdown .option:hover {
+        background: rgba(255, 215, 0, 0.12) !important;
+        color: #fff !important;
+    }
+    .ts-dropdown .no-results {
+        color: #888 !important;
+    }
+
+    /* --- Tom Select Light Mode Theme Overrides --- */
+    html[data-theme="light"] .ts-wrapper.evisa-select .ts-control {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        color: var(--gt-text) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.evisa-select.focus .ts-control {
+        border-color: var(--gt-gold-2) !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.18) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.evisa-select .ts-control input {
+        color: var(--gt-text) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.evisa-select.single .ts-control:after {
+        border-color: var(--gt-gold) transparent transparent transparent !important;
+    }
+    html[data-theme="light"] .ts-wrapper.evisa-select.single.dropdown-active .ts-control:after {
+        border-color: transparent transparent var(--gt-gold) transparent !important;
+    }
+    html[data-theme="light"] .ts-dropdown {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        box-shadow: var(--gt-shadow-lg) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .option {
+        color: var(--gt-text-body) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .active,
+    html[data-theme="light"] .ts-dropdown .option:hover {
+        background: var(--gt-gold-soft) !important;
+        color: var(--gt-gold) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .no-results {
+        color: var(--gt-text-muted) !important;
+    }
     .evisa-head h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); font-weight: 800; margin: 0; color: #fff; }
     .evisa-head h1 span { color: var(--c-gold); }
     .evisa-head p { color: var(--c-muted); font-weight: 300; font-size: 0.9rem; margin: 6px 0 0; }
@@ -213,6 +360,33 @@
     var schemeBox  = document.getElementById('evScheme');
 
     var state = { typeId: null, versionId: null, price: null };
+
+    if (typeof TomSelect !== 'undefined') {
+        if (nat) {
+            new TomSelect(nat, {
+                create: false,
+                placeholder: 'Select your nationality',
+                controlInput: '<input>',
+                render: {
+                    no_results: function(data, escape) {
+                        return '<div class="no-results" style="padding: 8px 14px; color: #888;">No nationality found for "' + escape(data.input) + '"</div>';
+                    }
+                }
+            });
+        }
+        if (dest) {
+            new TomSelect(dest, {
+                create: false,
+                placeholder: 'Select a country',
+                controlInput: '<input>',
+                render: {
+                    no_results: function(data, escape) {
+                        return '<div class="no-results" style="padding: 8px 14px; color: #888;">No destination found for "' + escape(data.input) + '"</div>';
+                    }
+                }
+            });
+        }
+    }
 
     function err(msg) { alertBox.textContent = msg; alertBox.classList.add('show'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     function clearErr() { alertBox.textContent = ''; alertBox.classList.remove('show'); }

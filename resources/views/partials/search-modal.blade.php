@@ -23,7 +23,7 @@
                     <div class="gt-search-category-title">Quick Suggestions</div>
                     <div class="gt-suggestion-pills">
                         <span class="gt-pill" onclick="quickSearch('Dubai')">Dubai</span>
-                        <span class="gt-pill" onclick="quickSearch('Visa')">UAE Visa</span>
+                        <span class="gt-pill" onclick="quickSearch('Visa')">UAE Visa Services</span>
                         <span class="gt-pill" onclick="quickSearch('Abu Dhabi')">Abu Dhabi</span>
                         <span class="gt-pill" onclick="quickSearch('Desert')">Desert Safari</span>
                         <span class="gt-pill" onclick="quickSearch('Burj Khalifa')">Burj Khalifa</span>
@@ -319,7 +319,7 @@
                 <div class="gt-search-category-title">Quick Suggestions</div>
                 <div class="gt-suggestion-pills">
                     <span class="gt-pill" onclick="window.quickSearch('Dubai')">Dubai</span>
-                    <span class="gt-pill" onclick="window.quickSearch('Visa')">UAE Visa</span>
+                    <span class="gt-pill" onclick="window.quickSearch('Visa')">UAE Visa Services</span>
                     <span class="gt-pill" onclick="window.quickSearch('Abu Dhabi')">Abu Dhabi</span>
                     <span class="gt-pill" onclick="window.quickSearch('Hajj')">Hajj & Umrah</span>
                     <span class="gt-pill" onclick="window.quickSearch('Desert Safari')">Desert Safari</span>
