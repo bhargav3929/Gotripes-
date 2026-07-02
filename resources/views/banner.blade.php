@@ -7,6 +7,9 @@
   <title>Partner Registration</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Tom Select (searchable select dropdown) -->
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <!-- Owl Carousel CSS -->
@@ -775,6 +778,113 @@
         font-size: 9px;
       }
     }
+
+    /* --- Tom Select Custom Styling for Partner form --- */
+    .ts-wrapper.partner-select {
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+    }
+    .ts-wrapper.partner-select .ts-control {
+        width: 100% !important;
+        height: 44px !important;
+        background: linear-gradient(145deg, #0e0e0e 0%, #0a0a0a 100%) !important;
+        border: 1px solid #222 !important;
+        border-radius: 10px !important;
+        padding: 0 16px !important;
+        color: #fff !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        display: flex !important;
+        align-items: center !important;
+        cursor: pointer !important;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.25s ease;
+        position: relative !important;
+    }
+    .ts-wrapper.partner-select.focus .ts-control {
+        border-color: #FFD700 !important;
+        background: linear-gradient(145deg, #151515 0%, #101010 100%) !important;
+        box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+    }
+    .ts-wrapper.partner-select .ts-control input {
+        color: #fff !important;
+        font-size: 14px !important;
+        font-family: 'Outfit', sans-serif !important;
+        padding: 0 !important;
+    }
+    .ts-wrapper.partner-select.single .ts-control:after {
+        border-color: #FFD700 transparent transparent transparent !important;
+        border-width: 6px 5px 0 5px !important;
+        right: 20px !important;
+    }
+    .ts-wrapper.partner-select.single.dropdown-active .ts-control:after {
+        border-color: transparent transparent #FFD700 transparent !important;
+        border-width: 0 5px 6px 5px !important;
+    }
+    .ts-dropdown {
+        background: #0d0d0d !important;
+        border: 1px solid #2a2a2a !important;
+        border-radius: 10px !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+        margin-top: 4px !important;
+        z-index: 1000 !important;
+        padding: 6px 0 !important;
+    }
+    .ts-dropdown .option {
+        padding: 8px 14px !important;
+        color: #ddd !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+    }
+    .ts-dropdown .active,
+    .ts-dropdown .option:hover {
+        background: rgba(255, 215, 0, 0.12) !important;
+        color: #fff !important;
+    }
+    .ts-dropdown .no-results {
+        color: #888 !important;
+    }
+
+    /* --- Tom Select Light Mode Theme Overrides --- */
+    html[data-theme="light"] .ts-wrapper.partner-select .ts-control {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        color: var(--gt-text) !important;
+        box-shadow: none !important;
+    }
+    html[data-theme="light"] .ts-wrapper.partner-select.focus .ts-control {
+        border-color: var(--gt-gold-2) !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.18) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.partner-select .ts-control input {
+        color: var(--gt-text) !important;
+    }
+    html[data-theme="light"] .ts-wrapper.partner-select.single .ts-control:after {
+        border-color: var(--gt-gold) transparent transparent transparent !important;
+    }
+    html[data-theme="light"] .ts-wrapper.partner-select.single.dropdown-active .ts-control:after {
+        border-color: transparent transparent var(--gt-gold) transparent !important;
+    }
+    html[data-theme="light"] .ts-dropdown {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        box-shadow: var(--gt-shadow-lg) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .option {
+        color: var(--gt-text-body) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .active,
+    html[data-theme="light"] .ts-dropdown .option:hover {
+        background: var(--gt-gold-soft) !important;
+        color: var(--gt-gold) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .no-results {
+        color: var(--gt-text-muted) !important;
+    }
   </style>
 </head>
 
@@ -820,12 +930,14 @@
                       <span class="partner-error-msg" id="partnerEmail-error"></span>
                     </div>
 
-                    <!-- Country Dropdown - Dynamically populated -->
+                    <!-- Country Dropdown - Server-side preloaded + Tom Select searchable -->
                     <div class="partner-form-group">
                       <label for="partnerCountry">Country</label>
-                      <select id="partnerCountry" name="country" required
-                        style="width:100%; padding:12px 15px; background:#000; border:1px solid #444; color:#fff; border-radius:8px; font-size:14px;">
+                      <select id="partnerCountry" name="country" required class="partner-select">
                         <option value="">Select your country</option>
+                        @foreach(\App\Support\CountryCodes::all() as $code => $c)
+                          <option value="{{ $c['name'] }}">{{ $c['name'] }}</option>
+                        @endforeach
                       </select>
                       <span class="partner-error-msg" id="partnerCountry-error"></span>
                     </div>
@@ -968,25 +1080,19 @@
       document.addEventListener('DOMContentLoaded', function () {
         console.log('🚀 Partner registration modal initializing...');
 
-        // Load countries from API for the country dropdown
+        // Initialize Tom Select for country dropdown
         const countrySelect = document.getElementById('partnerCountry');
-        if (countrySelect) {
-          fetch('https://restcountries.com/v3.1/all?fields=name')
-            .then(res => res.json())
-            .then(countries => {
-              // Sort countries alphabetically
-              countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
-              countries.forEach(country => {
-                const option = document.createElement('option');
-                option.value = country.name.common;
-                option.textContent = country.name.common;
-                countrySelect.appendChild(option);
-              });
-              console.log('✅ Countries loaded successfully');
-            })
-            .catch(err => {
-              console.error('❌ Failed to load countries:', err);
-            });
+        if (countrySelect && typeof TomSelect !== 'undefined') {
+          new TomSelect(countrySelect, {
+            create: false,
+            placeholder: 'Select your country',
+            controlInput: '<input>',
+            render: {
+              no_results: function(data, escape) {
+                return '<div class="no-results" style="padding: 8px 14px; color: #888;">No country found for "' + escape(data.input) + '"</div>';
+              }
+            }
+          });
         }
 
         // Modal Elements
