@@ -72,11 +72,28 @@ if (empty($nationalities)) {
         border-color: var(--c-gold) !important;
         box-shadow: 0 0 0 3px rgba(255,215,0,.12) !important;
     }
+    .ts-wrapper.evisa-select .ts-control .item {
+        color: #fff !important;
+        line-height: 39px !important;
+        height: 39px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
     .ts-wrapper.evisa-select .ts-control input {
         color: #fff !important;
         font-family: inherit !important;
         font-size: 0.9rem !important;
         padding: 0 !important;
+        line-height: 39px !important;
+        height: 39px !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    html[data-theme="light"] .ts-wrapper.evisa-select .ts-control .item {
+        color: var(--gt-text) !important;
     }
     .ts-wrapper.evisa-select.single .ts-control:after {
         border-color: var(--c-gold) transparent transparent transparent !important;

@@ -273,11 +273,28 @@
         background: rgba(255,255,255,.08) !important;
         box-shadow: 0 0 0 3px rgba(255,210,63,.15) !important;
     }
+    .ts-wrapper.frm-select .ts-control .item {
+        color: #fff !important;
+        line-height: 42px !important;
+        height: 42px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
     .ts-wrapper.frm-select .ts-control input {
         color: #fff !important;
         font-size: 14px !important;
         font-family: 'Outfit', sans-serif !important;
         padding: 0 !important;
+        line-height: 42px !important;
+        height: 42px !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    html[data-theme="light"] .ts-wrapper.frm-select .ts-control .item {
+        color: var(--gt-text) !important;
     }
     .ts-wrapper.frm-select.single .ts-control:after {
         border-color: #FFD23F transparent transparent transparent !important;

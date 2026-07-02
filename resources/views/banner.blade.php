@@ -808,11 +808,28 @@
         background: linear-gradient(145deg, #151515 0%, #101010 100%) !important;
         box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
     }
+    .ts-wrapper.partner-select .ts-control .item {
+        color: #fff !important;
+        line-height: 42px !important;
+        height: 42px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
     .ts-wrapper.partner-select .ts-control input {
         color: #fff !important;
         font-size: 14px !important;
         font-family: 'Outfit', sans-serif !important;
         padding: 0 !important;
+        line-height: 42px !important;
+        height: 42px !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    html[data-theme="light"] .ts-wrapper.partner-select .ts-control .item {
+        color: var(--gt-text) !important;
     }
     .ts-wrapper.partner-select.single .ts-control:after {
         border-color: #FFD700 transparent transparent transparent !important;
