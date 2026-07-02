@@ -1347,7 +1347,7 @@
                     <div class="gt-nav-row gt-nav-primary">
                         <a href="/" class="gt-nav-link {{ Request::is('/') ? 'active' : '' }}">Home</a>
                         @feature('activities')<a href="/activities" class="gt-nav-link {{ Request::is('activities') ? 'active' : '' }}">Activities{!! $gtBadge('activities') !!}</a>@endfeature
-                        @feature('visas')<a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">UAE Visa{!! $gtBadge('visa_services') !!}</a>@endfeature
+                        @feature('visas')<a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">UAE Visa Services{!! $gtBadge('visa_services') !!}</a>@endfeature
                         @feature('tours')<a href="/tour-packages" class="gt-nav-link {{ Request::is('tour-packages') ? 'active' : '' }}">Tour Packages{!! $gtBadge('tour_packages') !!}</a>@endfeature
                         @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-nav-link {{ Request::is('hajj-umrah') ? 'active' : '' }}">Hajj &amp; Umrah{!! $gtBadge('hajj_umrah') !!}</a>@endfeature
                     </div>
@@ -1418,7 +1418,7 @@
                 <button type="button" class="gt-mobile-nav-link gt-macc-toggle">Visas <i class="bi bi-chevron-down"></i></button>
                 <div class="gt-macc-panel">
                     @feature('visas')
-                    <a href="/uaevisa" class="gt-macc-item">UAE Visa</a>
+                    <a href="/uaevisa" class="gt-macc-item">UAE Visa Services</a>
                     <a href="/e-visa" class="gt-macc-item">e-Visa (80+ Countries){!! $gtBadge('evisa') !!}</a>
                     @endfeature
                     <a href="{{ $gtSoon('insurance') }}" class="gt-macc-item">Insurance{!! $gtBadge('insurance') !!}</a>
@@ -1490,7 +1490,7 @@
                         <div class="gt-dropdown-cat-title"><i class="bi bi-lightning"></i> Popular Searches</div>
                         <div class="gt-quick-pills">
                             <span class="gt-quick-pill" data-query="Dubai">Dubai</span>
-                            <span class="gt-quick-pill" data-query="Visa">UAE Visa</span>
+                            <span class="gt-quick-pill" data-query="Visa">UAE Visa Services</span>
                             <span class="gt-quick-pill" data-query="Abu Dhabi">Abu Dhabi</span>
                             <span class="gt-quick-pill" data-query="Desert Safari">Desert Safari</span>
                             <span class="gt-quick-pill" data-query="Hajj">Hajj & Umrah</span>

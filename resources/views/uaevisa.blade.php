@@ -1,5 +1,10 @@
 @include('header')
 
+<script>
+    window.emiratesData = @json($activeEmirates->map(fn($e) => ['id' => $e->emiratesID, 'name' => $e->emiratesName])->toArray());
+    window.visaPricingData = @json($pricingData);
+</script>
+
 <!-- intl-tel-input (phone with country dropdown) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/css/intlTelInput.css">
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/intlTelInput.min.js"></script>
@@ -776,7 +781,7 @@
 <div class="visa-page">
     <div class="visa-wrapper">
         <div class="visa-header">
-            <h1 class="visa-title">UAE Visa</h1>
+            <h1 class="visa-title">UAE Visa Services</h1>
             <div class="visa-subtitle-wrapper" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                 <p class="visa-subtitle" style="margin: 0;">Premium Processing</p>
                 <div id="emirateActiveBadge" class="emirate-active-badge" style="display: none;">
@@ -832,7 +837,7 @@
                     </div>
                     <canvas id="ppCamCanvas" style="display:none;"></canvas>
 
-                    {{-- ROW 1: Nationality, Duration --}}
+                    {{-- ROW 1: Nationality, Visa Package --}}
                     <div class="form-grid-3" style="grid-template-columns: 1fr 1fr;">
                         <div class="form-field">
                             <label class="field-label">Nationality</label>
@@ -844,19 +849,25 @@
                             </select>
                         </div>
                         <div class="form-field">
+                            <label class="field-label">Visa Package</label>
+                            <select class="field-input" id="visaPackage" name="visa_package_id" required>
+                                <option value="">Select Package</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- ROW 2: Visa Type (Entry), Duration --}}
+                    <div class="form-grid-3" style="grid-template-columns: 1fr 1fr; margin-top: 12px;">
+                        <div class="form-field">
+                            <label class="field-label">Visa Type</label>
+                            <select class="field-input" id="visaEntryType" name="entry_type" required>
+                                <option value="">Select Type</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
                             <label class="field-label">Visa Duration</label>
                             <select class="field-input" id="visaDuration" name="visaDuration" required>
                                 <option value="">Select Duration</option>
-                                @if(isset($visaData) && $visaData->count() > 0)
-                                    @foreach($visaData as $v)
-                                        <option value="{{ $v->UAEVisaDuration }}" data-price="{{ $v->UAEVPrice }}">
-                                            {{ $v->UAEVisaDuration }} — {{ number_format($v->UAEVPrice, 0) }} AED
-                                        </option>
-                                    @endforeach
-                                @else
-                                    <option value="30 DAYS VISA" data-price="300">30 DAYS VISA — 300 AED</option>
-                                    <option value="60 DAYS VISA" data-price="600">60 DAYS VISA — 600 AED</option>
-                                @endif
                             </select>
                             <input type="hidden" name="price" id="hiddenPrice" value="0">
                         </div>
@@ -1058,9 +1069,12 @@
         const childrenCountInput = document.getElementById('visaChildren');
         const infantsCountInput = document.getElementById('visaInfants');
         const applicantsContainer = document.getElementById('applicantsContainer');
-        const durationSelect = document.getElementById('visaDuration');
         const hotelCheckbox = document.getElementById('hotelCheckbox');
         const ticketCheckbox = document.getElementById('ticketCheckbox');
+
+        const visaPackageSelect = document.getElementById('visaPackage');
+        const visaEntryTypeSelect = document.getElementById('visaEntryType');
+        const visaDurationSelect = document.getElementById('visaDuration');
 
         function getAdults() { return parseInt(visaCountSelect.value, 10) || 1; }
         function getChildren() { return parseInt(childrenCountInput.value, 10) || 0; }
@@ -1076,23 +1090,23 @@
                 } else if (i < adults + children) {
                     label = `Child #${i - adults + 1}`;
                     ageField = `
-                        <div class="form-field">
-                            <label class="field-label">Child Age (2–12)</label>
-                            <select name="child_age[]" class="field-input" required>
-                                ${Array.from({length: 11}, (_, k) => k + 2).map(a => `<option value="${a}">${a} years</option>`).join('')}
-                            </select>
-                        </div>`;
+                         <div class="form-field">
+                             <label class="field-label">Child Age (2–12)</label>
+                             <select name="child_age[]" class="field-input" required>
+                                 ${Array.from({length: 11}, (_, k) => k + 2).map(a => `<option value="${a}">${a} years</option>`).join('')}
+                             </select>
+                         </div>`;
                 } else {
                     label = `Infant #${i - adults - children + 1}`;
                     ageField = `
-                        <div class="form-field">
-                            <label class="field-label">Infant Age (0–2)</label>
-                            <select name="infant_age[]" class="field-input" required>
-                                <option value="0">Under 1 year</option>
-                                <option value="1">1 year</option>
-                                <option value="2">2 years</option>
-                            </select>
-                        </div>`;
+                         <div class="form-field">
+                             <label class="field-label">Infant Age (0–2)</label>
+                             <select name="infant_age[]" class="field-input" required>
+                                 <option value="0">Under 1 year</option>
+                                 <option value="1">1 year</option>
+                                 <option value="2">2 years</option>
+                             </select>
+                         </div>`;
                 }
 
                 const html = `
@@ -1169,20 +1183,43 @@
             const children = getChildren();
             const infants = getInfants();
             const totalPersons = adults + children + infants;
-            const option = durationSelect.options[durationSelect.selectedIndex];
-            const unitPrice = parseFloat(option.getAttribute('data-price')) || 0;
 
-            const visaTotal = unitPrice * totalPersons;
-            // Air-ticket assistance is charged PER visa; hotel uses the tiered fee.
+            const selectedPackageId = visaPackageSelect.value;
+            const selectedEntryType = visaEntryTypeSelect.value;
+            const selectedDuration  = visaDurationSelect.value;
+
+            let adultPrice = 0;
+            let childPrice = 0;
+            let infantPrice = 0;
+
+            if (selectedPackageId && selectedEntryType && selectedDuration) {
+                const pkg = window.visaPricingData.find(p => String(p.package_id) === String(selectedPackageId));
+                if (pkg && pkg.prices) {
+                    const pricesForCombo = pkg.prices.filter(p => 
+                        p.entry_type === selectedEntryType && 
+                        p.duration === selectedDuration
+                    );
+
+                    const adultRow  = pricesForCombo.find(p => p.traveller_type.toLowerCase() === 'adult');
+                    const childRow  = pricesForCombo.find(p => p.traveller_type.toLowerCase() === 'child');
+                    const infantRow = pricesForCombo.find(p => p.traveller_type.toLowerCase() === 'infant');
+
+                    adultPrice = adultRow ? parseFloat(adultRow.price) : 0;
+                    childPrice = childRow ? parseFloat(childRow.price) : adultPrice;
+                    infantPrice = infantRow ? parseFloat(infantRow.price) : 0;
+                }
+            }
+
+            const baseVisaTotal = (adultPrice * adults) + (childPrice * children) + (infantPrice * infants);
             const ticketUnit = TICKET_RATE * totalPersons;
             const hotelUnit  = hotelFeeForVisas(totalPersons);
             const ticketCost = ticketCheckbox.checked ? ticketUnit : 0;
             const hotelCost  = hotelCheckbox.checked ? hotelUnit : 0;
-            const grandTotal = visaTotal + hotelCost + ticketCost;
+            const grandTotal = baseVisaTotal + hotelCost + ticketCost;
 
             document.getElementById('hiddenPrice').value = grandTotal.toFixed(2);
             document.getElementById('countDisplay').textContent = totalPersons;
-            document.getElementById('summaryBase').textContent = 'AED ' + visaTotal.toFixed(2);
+            document.getElementById('summaryBase').textContent = 'AED ' + baseVisaTotal.toFixed(2);
 
             // Reflect the live amounts on the add-on cards + summary rows.
             document.getElementById('hotelPriceLabel').textContent = hotelUnit.toFixed(0) + ' AED';
@@ -1199,17 +1236,100 @@
             document.getElementById('summaryTotal').textContent = 'AED ' + grandTotal.toFixed(2);
         }
 
+        function populatePackages() {
+            const selectedEmirateName = localStorage.getItem('selected_emirate') || 'Dubai';
+            const matchedEmirate = window.emiratesData.find(e => e.name.toLowerCase() === selectedEmirateName.toLowerCase());
+            const emirateId = matchedEmirate ? matchedEmirate.id : null;
+
+            visaPackageSelect.innerHTML = '<option value="">Select Package</option>';
+            visaEntryTypeSelect.innerHTML = '<option value="">Select Type</option>';
+            visaDurationSelect.innerHTML = '<option value="">Select Duration</option>';
+
+            if (!emirateId) return;
+
+            const filteredPkgs = window.visaPricingData.filter(p => String(p.emirates_id) === String(emirateId));
+            filteredPkgs.forEach(pkg => {
+                const opt = document.createElement('option');
+                opt.value = pkg.package_id;
+                opt.textContent = pkg.package_name;
+                visaPackageSelect.appendChild(opt);
+            });
+
+            if (filteredPkgs.length === 1) {
+                visaPackageSelect.value = filteredPkgs[0].package_id;
+                populateEntryTypes();
+            }
+        }
+
+        function populateEntryTypes() {
+            const selectedPackageId = visaPackageSelect.value;
+            visaEntryTypeSelect.innerHTML = '<option value="">Select Type</option>';
+            visaDurationSelect.innerHTML = '<option value="">Select Duration</option>';
+
+            if (!selectedPackageId) return;
+
+            const pkg = window.visaPricingData.find(p => String(p.package_id) === String(selectedPackageId));
+            if (!pkg || !pkg.prices) return;
+
+            const entryTypes = [...new Set(pkg.prices.map(p => p.entry_type))];
+            entryTypes.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                visaEntryTypeSelect.appendChild(opt);
+            });
+
+            if (entryTypes.length === 1) {
+                visaEntryTypeSelect.value = entryTypes[0];
+                populateDurations();
+            }
+        }
+
+        function populateDurations() {
+            const selectedPackageId = visaPackageSelect.value;
+            const selectedEntryType = visaEntryTypeSelect.value;
+            visaDurationSelect.innerHTML = '<option value="">Select Duration</option>';
+
+            if (!selectedPackageId || !selectedEntryType) return;
+
+            const pkg = window.visaPricingData.find(p => String(p.package_id) === String(selectedPackageId));
+            if (!pkg || !pkg.prices) return;
+
+            const durations = [...new Set(pkg.prices.filter(p => p.entry_type === selectedEntryType).map(p => p.duration))];
+            durations.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                visaDurationSelect.appendChild(opt);
+            });
+
+            if (durations.length === 1) {
+                visaDurationSelect.value = durations[0];
+            }
+            updatePrice();
+        }
+
         function refreshForm() {
             generateApplicants(getAdults(), getChildren(), getInfants());
             updatePrice();
         }
 
+        // Initialize selectors and price grid
+        populatePackages();
         refreshForm();
 
         visaCountSelect.addEventListener('change', refreshForm);
         childrenCountInput.addEventListener('change', refreshForm);
         infantsCountInput.addEventListener('change', refreshForm);
-        durationSelect.addEventListener('change', updatePrice);
+
+        visaPackageSelect.addEventListener('change', populateEntryTypes);
+        visaEntryTypeSelect.addEventListener('change', populateDurations);
+        visaDurationSelect.addEventListener('change', updatePrice);
+
+        document.addEventListener('emirateChanged', function() {
+            populatePackages();
+            updatePrice();
+        });
 
         hotelCheckbox.addEventListener('change', function() {
             document.getElementById('addonHotel').classList.toggle('active', this.checked);
@@ -1255,6 +1375,7 @@
             formData.set('visa_count', String(getAdults()));
             formData.set('children_count', String(getChildren()));
             formData.set('infants_count', String(getInfants()));
+            formData.set('selected_emirate', localStorage.getItem('selected_emirate') || 'Dubai');
 
             fetch(this.action, {
                 method: 'POST',

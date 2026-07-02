@@ -163,18 +163,11 @@
 
 <script>
     (function() {
-        const AVAILABLE_EMIRATES = [
-            { 
-                id: 'Dubai', 
-                name: 'Dubai', 
-                icon: `<svg class="emirate-flag-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3"><rect width="4" height="3" fill="#D7141A" /><rect width="1" height="3" fill="#FFF" /></svg>` 
-            },
-            { 
-                id: 'Sharjah', 
-                name: 'Sharjah', 
-                icon: `<svg class="emirate-flag-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 1"><rect width="2" height="1" fill="#FFF" /><rect x="0.25" y="0.125" width="1.5" height="0.75" fill="#D7141A" /></svg>` 
-            }
-        ];
+        const AVAILABLE_EMIRATES = @json($activeEmirates->map(fn($e) => [
+            'id' => $e->emiratesName,
+            'name' => $e->emiratesName,
+            'icon' => $e->emiratesImage ? '<img class="emirate-flag-svg" src="' . asset($e->emiratesImage) . '" alt="' . $e->emiratesName . '">' : '<i class="fas fa-flag fa-2x"></i>'
+        ])->toArray());
 
         const overlay = document.getElementById('emirateSelectorOverlay');
         const grid = document.getElementById('emirateGrid');

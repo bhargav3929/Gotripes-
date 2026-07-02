@@ -225,7 +225,7 @@
           @feature('shop')<li><a href="/shopnow" class="gt-footer-link">Shop Now</a></li>@endfeature
           @feature('careers')<li><a href="/lookingforajob" class="gt-footer-link">Looking for a Job</a></li>@endfeature
           @feature('visas')<li><a href="/visaservice" class="gt-footer-link">Visa Service</a></li>@endfeature
-          @feature('visas')<li><a href="/uaevisa" class="gt-footer-link">UAE Visa</a></li>@endfeature
+          @feature('visas')<li><a href="/uaevisa" class="gt-footer-link">UAE Visa Services</a></li>@endfeature
         </ul>
       </div>
 
