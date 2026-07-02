@@ -340,7 +340,12 @@ use App\Models\Emirates;
 use App\Models\UAEVisaPackage;
 
 Route::get('/uaevisa', function () {
-    $activeEmirates = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
+    $activeEmirates = Emirates::where('isActive', 1)
+        ->whereHas('packages', function($q) {
+            $q->where('isActive', 1);
+        })
+        ->orderBy('emiratesName')
+        ->get();
     $packages = UAEVisaPackage::with(['prices' => function($q) {
         $q->where('isActive', 1);
     }])->where('isActive', 1)->get();

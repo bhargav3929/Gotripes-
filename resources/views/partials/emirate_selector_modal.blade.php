@@ -21,16 +21,17 @@
     .emirate-modal {
         background: #0b0b0b;
         border: 1px solid rgba(255, 215, 0, 0.15);
-        border-radius: 18px;
-        padding: 36px 30px;
-        width: 480px;
+        border-radius: 20px;
+        padding: 32px 28px;
+        width: 520px;
         max-width: 100%;
         position: relative;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
         transform: scale(0.9);
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         font-family: 'Outfit', sans-serif;
         text-align: center;
+        overflow: hidden;
     }
     .emirate-overlay.active .emirate-modal {
         transform: scale(1);
@@ -55,7 +56,7 @@
         color: #FFD700;
         font-size: 22px;
         font-weight: 700;
-        margin: 0 0 10px;
+        margin: 0 0 8px;
         letter-spacing: 0.5px;
         line-height: 1.3;
     }
@@ -69,17 +70,17 @@
     .emirate-cards-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
+        gap: 18px;
     }
     .emirate-card {
         background: #111;
         border: 1px solid #222;
         border-radius: 14px;
-        padding: 28px 16px;
+        padding: 32px 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 14px;
+        gap: 16px;
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: #fff;
@@ -93,8 +94,10 @@
         box-shadow: 0 8px 24px rgba(255, 215, 0, 0.1);
     }
     .emirate-card-icon {
-        font-size: 36px;
-        line-height: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
     }
     .emirate-card-name {
         font-size: 15px;
@@ -135,17 +138,41 @@
         color: var(--gt-text);
     }
     .emirate-flag-svg {
-        width: 64px;
-        height: 44px;
+        width: 100px;
+        height: 66px;
         object-fit: cover;
-        border-radius: 4px;
+        border-radius: 6px;
         border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         display: block;
     }
     html[data-theme="light"] .emirate-flag-svg {
         border: 1px solid rgba(0, 0, 0, 0.15);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    @media (max-width: 575.98px) {
+        .emirate-cards-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .emirate-modal {
+            padding: 24px 20px;
+            width: 340px;
+        }
+        .emirate-card {
+            padding: 24px 16px;
+            flex-direction: row;
+            gap: 20px;
+            text-align: left;
+        }
+        .emirate-card-icon {
+            width: auto;
+        }
+        .emirate-flag-svg {
+            width: 80px;
+            height: 53px;
+        }
     }
 </style>
 
