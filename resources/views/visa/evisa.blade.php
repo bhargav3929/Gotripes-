@@ -204,15 +204,55 @@ if (empty($nationalities)) {
     /* Visa-type option list */
     .evisa-types { display: grid; gap: 10px; }
     .evisa-type {
-        display: flex; align-items: center; gap: 12px; border: 1px solid var(--c-border); border-radius: 11px;
-        padding: 12px 14px; cursor: pointer; transition: .15s; background: #0e0e0e;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border: 1px solid var(--c-border);
+        border-radius: 12px;
+        padding: 14px 18px;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        background: #0e0e11;
     }
-    .evisa-type:hover { border-color: #3a3a3a; }
-    .evisa-type.sel { border-color: var(--c-gold); background: rgba(255,215,0,.05); }
-    .evisa-type input { accent-color: var(--c-gold); width: 18px; height: 18px; flex: none; }
-    .evisa-type .t-name { font-weight: 600; color: #fff; font-size: 0.92rem; }
-    .evisa-type .t-meta { font-size: 0.74rem; color: var(--c-muted); margin-top: 2px; display: block; }
-    .evisa-type .t-price { margin-left: auto; font-weight: 800; color: var(--c-gold); font-size: 1.1rem; white-space: nowrap; }
+    .evisa-type:hover {
+        border-color: rgba(255, 215, 0, 0.25);
+        background: rgba(255, 255, 255, 0.015);
+    }
+    .evisa-type.sel {
+        border-color: var(--c-gold);
+        background: rgba(255, 215, 0, 0.04);
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.08);
+    }
+    .evisa-type input {
+        accent-color: var(--c-gold);
+        width: 18px;
+        height: 18px;
+        flex: none;
+        cursor: pointer;
+    }
+    .evisa-type .t-info-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .evisa-type .t-name {
+        font-weight: 700;
+        color: #fff;
+        font-size: 1rem;
+        letter-spacing: 0.2px;
+    }
+    .evisa-type .t-meta {
+        font-size: 0.76rem;
+        color: var(--c-muted);
+        letter-spacing: 0.1px;
+    }
+    .evisa-type .t-price {
+        margin-left: auto;
+        font-weight: 800;
+        color: var(--c-gold);
+        font-size: 1.15rem;
+        white-space: nowrap;
+    }
 
     /* Light Theme overrides */
     html[data-theme="light"] .evisa-type {
@@ -220,11 +260,13 @@ if (empty($nationalities)) {
         border-color: var(--gt-border-strong);
     }
     html[data-theme="light"] .evisa-type:hover {
-        border-color: var(--gt-gold);
+        border-color: rgba(255, 215, 0, 0.45);
+        background: rgba(0, 0, 0, 0.01);
     }
     html[data-theme="light"] .evisa-type.sel {
         border-color: var(--gt-gold);
         background: var(--gt-gold-soft);
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.1);
     }
     html[data-theme="light"] .evisa-type .t-name {
         color: var(--gt-text) !important;
@@ -454,28 +496,22 @@ if (empty($nationalities)) {
                     }
                     if (t.stay) {
                         var stayStr = t.stay;
-                        if (stayStr.toLowerCase().indexOf('stay') < 0) {
-                            stayStr = 'Stay ' + stayStr;
-                        }
-                        metaParts.push(stayStr);
+                        stayStr = stayStr.replace(/\bStay\b/gi, '').trim();
+                        metaParts.push(stayStr + ' Stay');
                     }
                     if (t.validity) {
                         var validityStr = t.validity;
-                        if (validityStr.toLowerCase().indexOf('validity') < 0 && validityStr.toLowerCase().indexOf('valid') < 0) {
-                            validityStr = 'Validity ' + validityStr;
-                        } else {
-                            validityStr = validityStr.replace(/^Valid\s+/i, 'Validity ');
-                        }
-                        metaParts.push(validityStr);
+                        validityStr = validityStr.replace(/\bValid(\s+for)?\b/gi, '').replace(/\bValidity\b/gi, '').trim();
+                        metaParts.push('Valid for ' + validityStr);
                     }
                     var meta = metaParts.join(' • ');
 
                     return '<label class="evisa-type" data-id="' + t.id + '">' +
                         '<input type="radio" name="visa_type_id" value="' + t.id + '">' +
-                        '<span>' +
+                        '<div class="t-info-block">' +
                             '<span class="t-name">' + esc(title) + '</span>' +
                             '<span class="t-meta">' + esc(meta) + '</span>' +
-                        '</span>' +
+                        '</div>' +
                         '<span class="t-price">$' + t.price + '</span>' +
                     '</label>';
                 }).join('');
