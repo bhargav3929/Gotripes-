@@ -7,6 +7,13 @@ return new class extends Migration
 {
     public function up(): void
     {
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+        if ($isSqlite) {
+            DB::statement('PRAGMA foreign_keys = OFF;');
+        } else {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        }
+
         $images = [
             1 => 'assets/activities/1772191653_lKKwjAlhwq.jpeg',
             2 => 'assets/activities/1772191578_UtTHLVZLBi.jpeg',
@@ -153,6 +160,12 @@ return new class extends Migration
                     'createdDate' => now(),
                 ]);
             }
+        }
+
+        if ($isSqlite) {
+            DB::statement('PRAGMA foreign_keys = ON;');
+        } else {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         }
     }
 

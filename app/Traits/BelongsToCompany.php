@@ -15,7 +15,7 @@ trait BelongsToCompany
 
         // Auto-set company_id when creating
         static::creating(function ($model) {
-            if (empty($model->company_id) && app()->has('current_company')) {
+            if (empty($model->company_id) && app()->has('current_company') && app('current_company')) {
                 $model->company_id = app('current_company')->id;
             }
         });
