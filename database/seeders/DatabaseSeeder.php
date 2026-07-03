@@ -19,6 +19,19 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
+        \App\Models\Company::updateOrCreate(
+            ['slug' => 'gotrips'],
+            [
+                'name' => 'GoTrips Main',
+                'domain' => 'gotrips.ai',
+                'subdomain' => null,
+                'plan' => 'enterprise',
+                'is_active' => true,
+                'features' => array_keys(\App\Models\Company::AVAILABLE_FEATURES),
+                'subscription_ends_at' => now()->addYears(10),
+            ]
+        );
+
         $this->call([
             UAEEmiratesSeeder::class,
             AgentCompaniesSeeder::class,

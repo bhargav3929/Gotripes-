@@ -201,147 +201,75 @@ if (empty($nationalities)) {
     .evisa-file .hint { display: block; font-size: 0.68rem; color: var(--c-muted); }
     .evisa-file.has-file { border-color: var(--c-gold); border-style: solid; }
 
-    /* Visa-type option cards */
-    .evisa-types {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 16px;
-        margin-top: 10px;
-    }
+    /* Visa-type option list */
+    .evisa-types { display: grid; gap: 10px; }
     .evisa-type {
-        position: relative;
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+        align-items: center;
+        gap: 16px;
         border: 1px solid var(--c-border);
-        border-radius: 16px;
-        padding: 20px 24px;
+        border-radius: 12px;
+        padding: 14px 18px;
         cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        background: #0d0d0f;
-        min-height: 160px;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        background: #0e0e11;
     }
     .evisa-type:hover {
-        border-color: rgba(255, 215, 0, 0.4);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        border-color: rgba(255, 215, 0, 0.25);
+        background: rgba(255, 255, 255, 0.015);
     }
     .evisa-type.sel {
         border-color: var(--c-gold);
         background: rgba(255, 215, 0, 0.04);
-        box-shadow: 0 0 0 1px var(--c-gold), 0 8px 30px rgba(255, 215, 0, 0.06);
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.08);
     }
-    .evisa-type input[type="radio"] {
-        position: absolute;
-        top: 20px;
-        right: 20px;
+    .evisa-type input {
         accent-color: var(--c-gold);
-        width: 20px;
-        height: 20px;
-        margin: 0;
+        width: 18px;
+        height: 18px;
+        flex: none;
         cursor: pointer;
     }
+    .evisa-type .t-info-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
     .evisa-type .t-name {
-        font-size: 16px;
         font-weight: 700;
         color: #fff;
-        letter-spacing: 0.5px;
-        margin-right: 24px; /* leave space for the radio button */
+        font-size: 1rem;
+        letter-spacing: 0.2px;
+    }
+    .evisa-type .t-meta {
+        font-size: 0.76rem;
+        color: var(--c-muted);
+        letter-spacing: 0.1px;
     }
     .evisa-type .t-price {
-        font-size: 26px;
+        margin-left: auto;
         font-weight: 800;
         color: var(--c-gold);
-        margin-top: auto;
-        display: flex;
-        align-items: baseline;
-        gap: 2px;
+        font-size: 1.15rem;
         white-space: nowrap;
     }
-    .evisa-type .t-price::after {
-        content: ' USD';
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--c-muted);
-        letter-spacing: 1px;
-    }
 
-    /* Badges list & individual badges */
-    .evisa-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 8px;
-    }
-    .evisa-badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 6px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .badge-entry {
-        background: rgba(255, 255, 255, 0.04);
-        color: #ddd;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .badge-stay {
-        background: rgba(255, 215, 0, 0.08);
-        color: var(--c-gold);
-        border: 1px solid rgba(255, 215, 0, 0.15);
-    }
-    .badge-validity {
-        background: rgba(59, 130, 246, 0.08);
-        color: #60a5fa;
-        border: 1px solid rgba(59, 130, 246, 0.15);
-    }
-    .badge-processing {
-        background: rgba(16, 185, 129, 0.08);
-        color: #34d399;
-        border: 1px solid rgba(16, 185, 129, 0.15);
-    }
-
-    /* Light Theme Badges & Card overrides */
+    /* Light Theme overrides */
     html[data-theme="light"] .evisa-type {
         background: var(--gt-surface);
-        border: 1px solid var(--gt-border-strong);
+        border-color: var(--gt-border-strong);
     }
     html[data-theme="light"] .evisa-type:hover {
-        border-color: var(--gt-gold);
-        box-shadow: var(--gt-shadow-md);
+        border-color: rgba(255, 215, 0, 0.45);
+        background: rgba(0, 0, 0, 0.01);
     }
     html[data-theme="light"] .evisa-type.sel {
         border-color: var(--gt-gold);
         background: var(--gt-gold-soft);
-        box-shadow: 0 0 0 1px var(--gt-gold), var(--gt-shadow-md);
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.1);
     }
     html[data-theme="light"] .evisa-type .t-name {
-        color: var(--gt-text);
-    }
-    html[data-theme="light"] .badge-entry {
-        background: var(--gt-surface-2);
-        color: var(--gt-text-body);
-        border: 1px solid var(--gt-border-strong);
-    }
-    html[data-theme="light"] .badge-stay {
-        background: var(--gt-gold-soft);
-        color: var(--gt-gold);
-        border: 1px solid var(--gt-gold-border);
-    }
-    html[data-theme="light"] .badge-validity {
-        background: rgba(59, 130, 246, 0.08);
-        color: #1e40af;
-        border: 1px solid rgba(59, 130, 246, 0.2);
-    }
-    html[data-theme="light"] .badge-processing {
-        background: rgba(16, 185, 129, 0.08);
-        color: #065f46;
-        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: var(--gt-text) !important;
     }
 
     .evisa-muted-note { color: var(--c-muted); font-size: 0.82rem; }
@@ -548,25 +476,44 @@ if (empty($nationalities)) {
                 if (d.needs_nationality) { typesBox.innerHTML = '<p class="evisa-hint-empty">Select your nationality above to see available visas.</p>'; return; }
                 if (!d.success || !d.types.length) { typesBox.innerHTML = '<p class="evisa-hint-empty">No online visa options available for this nationality/destination.</p>'; return; }
                 typesBox.innerHTML = d.types.map(function (t, i) {
-                    var title = t.category ? (t.category + ' Visa') : t.name;
-                    var badges = '';
+                    var title = t.name;
+                    if (t.category) {
+                        title = t.category.indexOf('Visa') >= 0 ? t.category : (t.category + ' Visa');
+                    } else {
+                        var countryName = d.country && d.country.name ? d.country.name : '';
+                        if (countryName) {
+                            title = title.replace(new RegExp('^' + countryName + '\\s*', 'i'), '');
+                        }
+                        title = title.replace(/\s*e-?Visa\s*$/i, '');
+                        if (title.toLowerCase().indexOf('visa') < 0) {
+                            title = title + ' Visa';
+                        }
+                    }
+
+                    var metaParts = [];
                     if (t.entry) {
-                        badges += '<span class="evisa-badge badge-entry"><i class="bi bi-door-open-fill"></i> ' + esc(t.entry) + '</span>';
+                        metaParts.push(t.entry);
                     }
                     if (t.stay) {
-                        badges += '<span class="evisa-badge badge-stay"><i class="bi bi-clock-fill"></i> Stay: ' + esc(t.stay) + '</span>';
+                        var stayStr = t.stay;
+                        stayStr = stayStr.replace(/\bStay\b/gi, '').trim();
+                        metaParts.push(stayStr + ' Stay');
                     }
                     if (t.validity) {
-                        badges += '<span class="evisa-badge badge-validity"><i class="bi bi-calendar-event-fill"></i> Validity: ' + esc(t.validity) + '</span>';
+                        var validityStr = t.validity;
+                        validityStr = validityStr.replace(/\bValid(\s+for)?\b/gi, '').replace(/\bValidity\b/gi, '').trim();
+                        metaParts.push('Valid for ' + validityStr);
                     }
-                    if (t.processing) {
-                        badges += '<span class="evisa-badge badge-processing"><i class="bi bi-lightning-charge-fill"></i> ' + esc(t.processing) + '</span>';
-                    }
+                    var meta = metaParts.join(' • ');
+
                     return '<label class="evisa-type" data-id="' + t.id + '">' +
                         '<input type="radio" name="visa_type_id" value="' + t.id + '">' +
-                        '<span class="t-name">' + esc(title) + '</span>' +
-                        '<div class="evisa-badges">' + badges + '</div>' +
-                        '<span class="t-price">$' + t.price + '</span></label>';
+                        '<div class="t-info-block">' +
+                            '<span class="t-name">' + esc(title) + '</span>' +
+                            '<span class="t-meta">' + esc(meta) + '</span>' +
+                        '</div>' +
+                        '<span class="t-price">$' + t.price + '</span>' +
+                    '</label>';
                 }).join('');
                 typesBox.querySelectorAll('input[name="visa_type_id"]').forEach(function (inp) {
                     inp.addEventListener('change', function () { onTypeChosen(inp); });

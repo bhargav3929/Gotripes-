@@ -352,8 +352,8 @@ class FluxirEvisaController extends Controller
         ]);
     }
 
-    /** Run the Fluxir application with a scheme-driven (dynamic) document set. */
     public function apply(Request $request)
+    {
         if (!$this->fluxir->isConfigured()) {
             if (config('app.env') === 'local' || config('app.env') === 'testing') {
                 $orderId = 'ORDVISA-MOCK' . strtoupper(uniqid());
