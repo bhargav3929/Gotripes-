@@ -420,42 +420,66 @@ if (empty($nationalities)) {
     var state = { typeId: null, versionId: null, price: null };
 
     if (typeof TomSelect !== 'undefined') {
-        var flagRenderer = {
-            option: function(data, escape) {
-                var iso = data.iso2 || '';
-                var flagHtml = '';
-                if (iso) {
-                    flagHtml = '<img src="https://flagcdn.com/w40/' + iso.toLowerCase() + '.png" style="width: 20px; height: 14px; margin-right: 8px; vertical-align: middle; object-fit: cover; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" alt="">';
+
+        // Build a value→iso2 lookup from each <select>'s option[data-iso2] attributes
+        // so flags work regardless of how TomSelect exposes custom data attributes.
+        function buildIsoMap(selectEl) {
+            var map = {};
+            if (!selectEl) return map;
+            Array.prototype.forEach.call(selectEl.querySelectorAll('option[data-iso2]'), function(opt) {
+                var iso = opt.getAttribute('data-iso2');
+                if (opt.value && iso) map[opt.value] = iso.toLowerCase();
+            });
+            return map;
+        }
+
+        function makeFlagHtml(iso) {
+            if (!iso || iso.length !== 2) return '';
+            return '<img src="https://flagcdn.com/w40/' + iso + '.png"'
+                + ' style="width:20px;height:14px;margin-right:8px;vertical-align:middle;'
+                + 'object-fit:cover;border-radius:2px;flex-shrink:0;" alt="" loading="lazy"'
+                + ' onerror="this.style.display=\'none\'">';
+        }
+
+        function makeRenderer(isoMap) {
+            return {
+                option: function(data, escape) {
+                    var iso = isoMap[data.value] || data.iso2 || '';
+                    return '<div style="display:flex;align-items:center;gap:0;">'
+                        + makeFlagHtml(iso)
+                        + '<span>' + escape(data.text) + '</span>'
+                        + '</div>';
+                },
+                item: function(data, escape) {
+                    var iso = isoMap[data.value] || data.iso2 || '';
+                    return '<div style="display:flex;align-items:center;gap:0;">'
+                        + makeFlagHtml(iso)
+                        + '<span>' + escape(data.text) + '</span>'
+                        + '</div>';
+                },
+                no_results: function(data, escape) {
+                    return '<div style="padding:8px 14px;color:#888;">No results for "'
+                        + escape(data.input) + '"</div>';
                 }
-                return '<div class="option" style="display: flex; align-items: center;">' + flagHtml + '<span>' + escape(data.text) + '</span></div>';
-            },
-            item: function(data, escape) {
-                var iso = data.iso2 || '';
-                var flagHtml = '';
-                if (iso) {
-                    flagHtml = '<img src="https://flagcdn.com/w40/' + iso.toLowerCase() + '.png" style="width: 20px; height: 14px; margin-right: 8px; vertical-align: middle; object-fit: cover; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" alt="">';
-                }
-                return '<div class="item" style="display: flex; align-items: center;">' + flagHtml + '<span>' + escape(data.text) + '</span></div>';
-            },
-            no_results: function(data, escape) {
-                return '<div class="no-results" style="padding: 8px 14px; color: #888;">No results found for "' + escape(data.input) + '"</div>';
-            }
-        };
+            };
+        }
 
         if (nat) {
+            var natIsoMap = buildIsoMap(nat);
             new TomSelect(nat, {
                 create: false,
                 placeholder: 'Select your nationality',
                 controlInput: '<input>',
-                render: flagRenderer
+                render: makeRenderer(natIsoMap)
             });
         }
         if (dest) {
+            var destIsoMap = buildIsoMap(dest);
             new TomSelect(dest, {
                 create: false,
                 placeholder: 'Select a country',
                 controlInput: '<input>',
-                render: flagRenderer
+                render: makeRenderer(destIsoMap)
             });
         }
     }
