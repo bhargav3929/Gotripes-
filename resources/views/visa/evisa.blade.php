@@ -490,19 +490,49 @@ if (empty($nationalities)) {
                 if (d.needs_nationality) { typesBox.innerHTML = '<p class="evisa-hint-empty">Select your nationality above to see available visas.</p>'; return; }
                 if (!d.success || !d.types.length) { typesBox.innerHTML = '<p class="evisa-hint-empty">No online visa options available for this nationality/destination.</p>'; return; }
                 typesBox.innerHTML = d.types.map(function (t, i) {
-                    var title = t.name;
-                    if (t.category) {
-                        title = t.category.indexOf('Visa') >= 0 ? t.category : (t.category + ' Visa');
-                    } else {
+                    var rawPkg = t.category || '';
+                    if (!rawPkg) {
+                        var titleClean = t.name;
                         var countryName = d.country && d.country.name ? d.country.name : '';
                         if (countryName) {
-                            title = title.replace(new RegExp('^' + countryName + '\\s*', 'i'), '');
+                            titleClean = titleClean.replace(new RegExp('^' + countryName + '\\s*', 'i'), '');
                         }
-                        title = title.replace(/\s*e-?Visa\s*$/i, '');
-                        if (title.toLowerCase().indexOf('visa') < 0) {
-                            title = title + ' Visa';
-                        }
+                        titleClean = titleClean.replace(/\s*e-?Visa\s*$/i, '');
+                        rawPkg = titleClean;
                     }
+
+                    // Strip stay duration if it exists in rawPkg
+                    if (t.stay) {
+                        rawPkg = rawPkg.replace(new RegExp('\\b' + t.stay + '\\b', 'gi'), '');
+                        rawPkg = rawPkg.replace(/\bstay\b/gi, '');
+                    }
+
+                    // Strip entry type if it exists in rawPkg
+                    if (t.entry) {
+                        rawPkg = rawPkg.replace(new RegExp('\\b' + t.entry + '\\b', 'gi'), '');
+                        var entryWord = t.entry.split(' ')[0] || '';
+                        if (entryWord) {
+                            rawPkg = rawPkg.replace(new RegExp('\\b' + entryWord + '\\b', 'gi'), '');
+                        }
+                        rawPkg = rawPkg.replace(/\bentry\b/gi, '');
+                    }
+
+                    // Clean up extra whitespace and normalize base package name
+                    rawPkg = rawPkg.replace(/\s+/g, ' ').trim();
+                    rawPkg = rawPkg.replace(/\s*visa\s*$/i, '');
+                    if (rawPkg.toLowerCase().indexOf('tourist') < 0 && rawPkg.toLowerCase().indexOf('tourism') < 0) {
+                        rawPkg = rawPkg + ' Tourist';
+                    }
+                    var cleanPackageName = rawPkg.trim() + ' Visa';
+
+                    // Build dynamic title: {Duration} + {Entry Type} + {Package Name}
+                    var durationPart = t.stay ? t.stay : '';
+                    if (durationPart && durationPart.toLowerCase().indexOf('days') < 0 && durationPart.toLowerCase().indexOf('day') < 0) {
+                        durationPart = durationPart + ' Days';
+                    }
+
+                    var entryPart = t.entry ? t.entry : '';
+                    var title = [durationPart, entryPart, cleanPackageName].filter(Boolean).join(' ');
 
                     var metaParts = [];
                     if (t.entry) {
