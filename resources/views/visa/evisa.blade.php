@@ -490,6 +490,19 @@ if (empty($nationalities)) {
                 if (d.needs_nationality) { typesBox.innerHTML = '<p class="evisa-hint-empty">Select your nationality above to see available visas.</p>'; return; }
                 if (!d.success || !d.types.length) { typesBox.innerHTML = '<p class="evisa-hint-empty">No online visa options available for this nationality/destination.</p>'; return; }
                 typesBox.innerHTML = d.types.map(function (t, i) {
+                    // ── Normalize entry type to full "X Entry" label ──────────────────
+                    var rawEntry = (t.entry || '').trim();
+                    var normalizedEntry = '';
+                    if (/multiple/i.test(rawEntry)) {
+                        normalizedEntry = 'Multiple Entry';
+                    } else if (/single/i.test(rawEntry)) {
+                        normalizedEntry = 'Single Entry';
+                    } else if (rawEntry) {
+                        // Append "Entry" if not already present
+                        normalizedEntry = /entry/i.test(rawEntry) ? rawEntry : (rawEntry + ' Entry');
+                    }
+
+                    // ── Build the clean base package name ────────────────────────────
                     var rawPkg = t.category || '';
                     if (!rawPkg) {
                         var titleClean = t.name;
@@ -501,47 +514,51 @@ if (empty($nationalities)) {
                         rawPkg = titleClean;
                     }
 
-                    // Strip stay duration if it exists in rawPkg
+                    // Strip duration words from base name
                     if (t.stay) {
-                        rawPkg = rawPkg.replace(new RegExp('\\b' + t.stay + '\\b', 'gi'), '');
-                        rawPkg = rawPkg.replace(/\bstay\b/gi, '');
+                        rawPkg = rawPkg.replace(new RegExp('\\b' + t.stay.replace(/\s+/g, '\\s+') + '\\b', 'gi'), '');
                     }
+                    rawPkg = rawPkg.replace(/\b\d+\s*(days?|months?|weeks?)\b/gi, '');
+                    rawPkg = rawPkg.replace(/\bstay\b/gi, '');
 
-                    // Strip entry type if it exists in rawPkg
-                    if (t.entry) {
-                        rawPkg = rawPkg.replace(new RegExp('\\b' + t.entry + '\\b', 'gi'), '');
-                        var entryWord = t.entry.split(' ')[0] || '';
-                        if (entryWord) {
-                            rawPkg = rawPkg.replace(new RegExp('\\b' + entryWord + '\\b', 'gi'), '');
-                        }
-                        rawPkg = rawPkg.replace(/\bentry\b/gi, '');
-                    }
+                    // Strip all entry-type words from base name
+                    rawPkg = rawPkg.replace(/\bmultiple\s+entry\b/gi, '');
+                    rawPkg = rawPkg.replace(/\bsingle\s+entry\b/gi, '');
+                    rawPkg = rawPkg.replace(/\b(single|multiple|double|triple)\b/gi, '');
+                    rawPkg = rawPkg.replace(/\bentry\b/gi, '');
 
-                    // Clean up extra whitespace and normalize base package name
-                    rawPkg = rawPkg.replace(/\s+/g, ' ').trim();
+                    // Strip trailing/leading Visa keyword (will be added back)
                     rawPkg = rawPkg.replace(/\s*visa\s*$/i, '');
-                    if (rawPkg.toLowerCase().indexOf('tourist') < 0 && rawPkg.toLowerCase().indexOf('tourism') < 0) {
-                        rawPkg = rawPkg + ' Tourist';
+
+                    // Normalize "Tourism" → "Tourist"
+                    rawPkg = rawPkg.replace(/\btourism\b/gi, 'Tourist');
+
+                    // Ensure "Tourist" is present if no other visa-type word
+                    rawPkg = rawPkg.replace(/\s+/g, ' ').trim();
+                    if (rawPkg.toLowerCase().indexOf('tourist') < 0 && rawPkg.toLowerCase().indexOf('visa') < 0) {
+                        rawPkg = rawPkg.length > 0 ? rawPkg + ' Tourist' : 'Tourist';
                     }
+
                     var cleanPackageName = rawPkg.trim() + ' Visa';
 
-                    // Build dynamic title: {Duration} + {Entry Type} + {Package Name}
-                    var durationPart = t.stay ? t.stay : '';
-                    if (durationPart && durationPart.toLowerCase().indexOf('days') < 0 && durationPart.toLowerCase().indexOf('day') < 0) {
+                    // ── Normalize duration label ─────────────────────────────────────
+                    var durationPart = (t.stay || '').trim();
+                    durationPart = durationPart.replace(/\bdays?\b/gi, '').replace(/\bstay\b/gi, '').trim();
+                    if (durationPart) {
                         durationPart = durationPart + ' Days';
                     }
 
-                    var entryPart = t.entry ? t.entry : '';
-                    var title = [durationPart, entryPart, cleanPackageName].filter(Boolean).join(' ');
+                    // ── Compose final unique title ────────────────────────────────────
+                    var title = [durationPart, normalizedEntry, cleanPackageName].filter(Boolean).join(' ');
 
                     var metaParts = [];
-                    if (t.entry) {
-                        metaParts.push(t.entry);
+                    if (normalizedEntry) {
+                        metaParts.push(normalizedEntry);
                     }
                     if (t.stay) {
                         var stayStr = t.stay;
-                        stayStr = stayStr.replace(/\bStay\b/gi, '').trim();
-                        metaParts.push(stayStr + ' Stay');
+                        stayStr = stayStr.replace(/\bdays?\b/gi, '').replace(/\bStay\b/gi, '').trim();
+                        metaParts.push(stayStr + ' Days Stay');
                     }
                     if (t.validity) {
                         var validityStr = t.validity;
