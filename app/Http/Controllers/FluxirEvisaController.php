@@ -22,6 +22,54 @@ use Illuminate\Support\Facades\Log;
  */
 class FluxirEvisaController extends Controller
 {
+    private static array $codeMap = [
+        'AE' => 'ARE', 'IN' => 'IND', 'GB' => 'GBR', 'US' => 'USA',
+        'AF' => 'AFG', 'AL' => 'ALB', 'DZ' => 'DZA', 'AD' => 'AND',
+        'AO' => 'AGO', 'AR' => 'ARG', 'AM' => 'ARM', 'AU' => 'AUS',
+        'AT' => 'AUT', 'AZ' => 'AZE', 'BH' => 'BHR', 'BD' => 'BGD',
+        'BY' => 'BLR', 'BE' => 'BEL', 'BZ' => 'BLZ', 'BJ' => 'BEN',
+        'BT' => 'BTN', 'BO' => 'BOL', 'BA' => 'BIH', 'BW' => 'BWA',
+        'BR' => 'BRA', 'BN' => 'BRN', 'BG' => 'BGR', 'BF' => 'BFA',
+        'BI' => 'BDI', 'KH' => 'KHM', 'CM' => 'CMR', 'CA' => 'CAN',
+        'CV' => 'CPV', 'CF' => 'CAF', 'TD' => 'TCD', 'CL' => 'CHL',
+        'CN' => 'CHN', 'CO' => 'COL', 'KM' => 'COM', 'CG' => 'COG',
+        'CD' => 'COD', 'CR' => 'CRI', 'CI' => 'CIV', 'HR' => 'HRV',
+        'CU' => 'CUB', 'CY' => 'CYP', 'CZ' => 'CZE', 'DK' => 'DNK',
+        'DJ' => 'DJI', 'DO' => 'DOM', 'EC' => 'ECU', 'EG' => 'EGY',
+        'SV' => 'SLV', 'GQ' => 'GNQ', 'ER' => 'ERI', 'EE' => 'EST',
+        'SZ' => 'SWZ', 'ET' => 'ETH', 'FJ' => 'FJI', 'FI' => 'FIN',
+        'FR' => 'FRA', 'GA' => 'GAB', 'GM' => 'GMB', 'GE' => 'GEO',
+        'DE' => 'DEU', 'GH' => 'GHA', 'GR' => 'GRC', 'GT' => 'GTM',
+        'GN' => 'GIN', 'GY' => 'GUY', 'HT' => 'HTI', 'HN' => 'HND',
+        'HK' => 'HKG', 'HU' => 'HUN', 'IS' => 'ISL', 'ID' => 'IDN',
+        'IR' => 'IRN', 'IQ' => 'IRQ', 'IE' => 'IRL', 'IL' => 'ISR',
+        'IT' => 'ITA', 'JM' => 'JAM', 'JP' => 'JPN', 'JO' => 'JOR',
+        'KZ' => 'KAZ', 'KE' => 'KEN', 'KW' => 'KWT', 'KG' => 'KGZ',
+        'LA' => 'LAO', 'LV' => 'LVA', 'LB' => 'LBN', 'LS' => 'LSO',
+        'LR' => 'LBR', 'LY' => 'LBY', 'LI' => 'LIE', 'LT' => 'LTU',
+        'LU' => 'LUX', 'MO' => 'MAC', 'MG' => 'MDG', 'MW' => 'MWI',
+        'MY' => 'MYS', 'MV' => 'MDV', 'ML' => 'MLI', 'MT' => 'MLT',
+        'MR' => 'MRT', 'MU' => 'MUS', 'MX' => 'MEX', 'MD' => 'MDA',
+        'MC' => 'MCO', 'MN' => 'MNG', 'ME' => 'MNE', 'MA' => 'MAR',
+        'MZ' => 'MOZ', 'MM' => 'MMR', 'NA' => 'NAM', 'NP' => 'NPL',
+        'NL' => 'NLD', 'NZ' => 'NZL', 'NI' => 'NIC', 'NE' => 'NER',
+        'NG' => 'NGA', 'KP' => 'PRK', 'MK' => 'MKD', 'NO' => 'NOR',
+        'OM' => 'OMN', 'PK' => 'PAK', 'PS' => 'PSE', 'PA' => 'PAN',
+        'PG' => 'PNG', 'PY' => 'PRY', 'PE' => 'PER', 'PH' => 'PHL',
+        'PL' => 'POL', 'PT' => 'PRT', 'PR' => 'PRI', 'QA' => 'QAT',
+        'RO' => 'ROU', 'RU' => 'RUS', 'RW' => 'RWA', 'SM' => 'SMR',
+        'SA' => 'SAU', 'SN' => 'SEN', 'RS' => 'SRB', 'SC' => 'SYC',
+        'SL' => 'SLE', 'SG' => 'SGP', 'SK' => 'SVK', 'SI' => 'SVN',
+        'SO' => 'SOM', 'ZA' => 'ZAF', 'KR' => 'KOR', 'SS' => 'SSD',
+        'ES' => 'ESP', 'LK' => 'LKA', 'SD' => 'SDN', 'SR' => 'SUR',
+        'SE' => 'SWE', 'CH' => 'CHE', 'SY' => 'SYR', 'TW' => 'TWN',
+        'TJ' => 'TJK', 'TZ' => 'TZA', 'TH' => 'THA', 'TG' => 'TGO',
+        'TT' => 'TTO', 'TN' => 'TUN', 'TR' => 'TUR', 'TM' => 'TKM',
+        'UG' => 'UGA', 'UA' => 'UKR', 'UY' => 'URY', 'UZ' => 'UZB',
+        'VE' => 'VEN', 'VN' => 'VNM', 'YE' => 'YEM', 'ZM' => 'ZMB',
+        'ZW' => 'ZWE'
+    ];
+
     public function __construct(protected FluxirService $fluxir)
     {
     }
@@ -32,19 +80,29 @@ class FluxirEvisaController extends Controller
         $catalog = $this->fluxir->isConfigured() ? $this->fluxir->getOnlineVisaCatalog() : [];
         $markup  = EvisaSetting::markupPercent();
 
+        $iso3to2 = [];
+        foreach (self::$codeMap as $iso2 => $iso3) {
+            $iso3to2[$iso3] = strtolower($iso2);
+        }
+
         // Shape a lightweight country list for the picker (code, name, flag, #types).
         $countries = [];
         foreach ($catalog as $code => $c) {
             $countries[] = [
-                'code'  => $code,
-                'name'  => $c['name'],
-                'flag'  => $this->flagEmoji($c['alpha2'] ?? ''),
-                'types' => count($c['types']),
+                'code'   => $code,
+                'name'   => $c['name'],
+                'iso2'   => strtolower($c['alpha2'] ?? ''),
+                'flag'   => $this->flagEmoji($c['alpha2'] ?? ''),
+                'types'  => count($c['types']),
             ];
         }
 
         // All countries for the nationality picker.
         $nationalities = $this->fluxir->isConfigured() ? $this->fluxir->getCountryOptions() : [];
+        foreach ($nationalities as &$n) {
+            $n['iso2'] = $iso3to2[$n['code']] ?? '';
+        }
+        unset($n);
 
         return view('visa.evisa', compact('countries', 'nationalities', 'markup'));
     }
@@ -61,53 +119,7 @@ class FluxirEvisaController extends Controller
     {
         $code = strtoupper((string) $request->query('country'));
         $nat  = strtoupper((string) $request->query('nationality'));
-        $codeMap = [
-            'AE' => 'ARE', 'IN' => 'IND', 'GB' => 'GBR', 'US' => 'USA',
-            'AF' => 'AFG', 'AL' => 'ALB', 'DZ' => 'DZA', 'AD' => 'AND',
-            'AO' => 'AGO', 'AR' => 'ARG', 'AM' => 'ARM', 'AU' => 'AUS',
-            'AT' => 'AUT', 'AZ' => 'AZE', 'BH' => 'BHR', 'BD' => 'BGD',
-            'BY' => 'BLR', 'BE' => 'BEL', 'BZ' => 'BLZ', 'BJ' => 'BEN',
-            'BT' => 'BTN', 'BO' => 'BOL', 'BA' => 'BIH', 'BW' => 'BWA',
-            'BR' => 'BRA', 'BN' => 'BRN', 'BG' => 'BGR', 'BF' => 'BFA',
-            'BI' => 'BDI', 'KH' => 'KHM', 'CM' => 'CMR', 'CA' => 'CAN',
-            'CV' => 'CPV', 'CF' => 'CAF', 'TD' => 'TCD', 'CL' => 'CHL',
-            'CN' => 'CHN', 'CO' => 'COL', 'KM' => 'COM', 'CG' => 'COG',
-            'CD' => 'COD', 'CR' => 'CRI', 'CI' => 'CIV', 'HR' => 'HRV',
-            'CU' => 'CUB', 'CY' => 'CYP', 'CZ' => 'CZE', 'DK' => 'DNK',
-            'DJ' => 'DJI', 'DO' => 'DOM', 'EC' => 'ECU', 'EG' => 'EGY',
-            'SV' => 'SLV', 'GQ' => 'GNQ', 'ER' => 'ERI', 'EE' => 'EST',
-            'SZ' => 'SWZ', 'ET' => 'ETH', 'FJ' => 'FJI', 'FI' => 'FIN',
-            'FR' => 'FRA', 'GA' => 'GAB', 'GM' => 'GMB', 'GE' => 'GEO',
-            'DE' => 'DEU', 'GH' => 'GHA', 'GR' => 'GRC', 'GT' => 'GTM',
-            'GN' => 'GIN', 'GY' => 'GUY', 'HT' => 'HTI', 'HN' => 'HND',
-            'HK' => 'HKG', 'HU' => 'HUN', 'IS' => 'ISL', 'ID' => 'IDN',
-            'IR' => 'IRN', 'IQ' => 'IRQ', 'IE' => 'IRL', 'IL' => 'ISR',
-            'IT' => 'ITA', 'JM' => 'JAM', 'JP' => 'JPN', 'JO' => 'JOR',
-            'KZ' => 'KAZ', 'KE' => 'KEN', 'KW' => 'KWT', 'KG' => 'KGZ',
-            'LA' => 'LAO', 'LV' => 'LVA', 'LB' => 'LBN', 'LS' => 'LSO',
-            'LR' => 'LBR', 'LY' => 'LBY', 'LI' => 'LIE', 'LT' => 'LTU',
-            'LU' => 'LUX', 'MO' => 'MAC', 'MG' => 'MDG', 'MW' => 'MWI',
-            'MY' => 'MYS', 'MV' => 'MDV', 'ML' => 'MLI', 'MT' => 'MLT',
-            'MR' => 'MRT', 'MU' => 'MUS', 'MX' => 'MEX', 'MD' => 'MDA',
-            'MC' => 'MCO', 'MN' => 'MNG', 'ME' => 'MNE', 'MA' => 'MAR',
-            'MZ' => 'MOZ', 'MM' => 'MMR', 'NA' => 'NAM', 'NP' => 'NPL',
-            'NL' => 'NLD', 'NZ' => 'NZL', 'NI' => 'NIC', 'NE' => 'NER',
-            'NG' => 'NGA', 'KP' => 'PRK', 'MK' => 'MKD', 'NO' => 'NOR',
-            'OM' => 'OMN', 'PK' => 'PAK', 'PS' => 'PSE', 'PA' => 'PAN',
-            'PG' => 'PNG', 'PY' => 'PRY', 'PE' => 'PER', 'PH' => 'PHL',
-            'PL' => 'POL', 'PT' => 'PRT', 'PR' => 'PRI', 'QA' => 'QAT',
-            'RO' => 'ROU', 'RU' => 'RUS', 'RW' => 'RWA', 'SM' => 'SMR',
-            'SA' => 'SAU', 'SN' => 'SEN', 'RS' => 'SRB', 'SC' => 'SYC',
-            'SL' => 'SLE', 'SG' => 'SGP', 'SK' => 'SVK', 'SI' => 'SVN',
-            'SO' => 'SOM', 'ZA' => 'ZAF', 'KR' => 'KOR', 'SS' => 'SSD',
-            'ES' => 'ESP', 'LK' => 'LKA', 'SD' => 'SDN', 'SR' => 'SUR',
-            'SE' => 'SWE', 'CH' => 'CHE', 'SY' => 'SYR', 'TW' => 'TWN',
-            'TJ' => 'TJK', 'TZ' => 'TZA', 'TH' => 'THA', 'TG' => 'TGO',
-            'TT' => 'TTO', 'TN' => 'TUN', 'TR' => 'TUR', 'TM' => 'TKM',
-            'UG' => 'UGA', 'UA' => 'UKR', 'UY' => 'URY', 'UZ' => 'UZB',
-            'VE' => 'VEN', 'VN' => 'VNM', 'YE' => 'YEM', 'ZM' => 'ZMB',
-            'ZW' => 'ZWE'
-        ];
+        $codeMap = self::$codeMap;
 
         if (strlen($code) === 2) {
             $code = $codeMap[$code] ?? $code;

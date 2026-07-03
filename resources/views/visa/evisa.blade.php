@@ -328,7 +328,7 @@ if (empty($nationalities)) {
                             <select class="evisa-select" name="nationality" id="evNationality" required>
                                 <option value="">Select your nationality</option>
                                 @foreach($nationalities as $n)
-                                    <option value="{{ $n['code'] }}">{{ $n['name'] }}</option>
+                                    <option value="{{ $n['code'] }}" data-iso2="{{ strtolower($n['iso2'] ?? '') }}">{{ $n['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -337,7 +337,7 @@ if (empty($nationalities)) {
                             <select class="evisa-select" name="destination_code" id="evDestination" required>
                                 <option value="">Select a country</option>
                                 @foreach($countries as $c)
-                                    <option value="{{ $c['code'] }}">{{ $c['flag'] }} {{ $c['name'] }}</option>
+                                    <option value="{{ $c['code'] }}" data-iso2="{{ strtolower($c['iso2'] ?? '') }}">{{ $c['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -420,16 +420,34 @@ if (empty($nationalities)) {
     var state = { typeId: null, versionId: null, price: null };
 
     if (typeof TomSelect !== 'undefined') {
+        var flagRenderer = {
+            option: function(data, escape) {
+                var iso = data.iso2 || '';
+                var flagHtml = '';
+                if (iso) {
+                    flagHtml = '<img src="https://flagcdn.com/w40/' + iso.toLowerCase() + '.png" style="width: 20px; height: 14px; margin-right: 8px; vertical-align: middle; object-fit: cover; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" alt="">';
+                }
+                return '<div class="option" style="display: flex; align-items: center;">' + flagHtml + '<span>' + escape(data.text) + '</span></div>';
+            },
+            item: function(data, escape) {
+                var iso = data.iso2 || '';
+                var flagHtml = '';
+                if (iso) {
+                    flagHtml = '<img src="https://flagcdn.com/w40/' + iso.toLowerCase() + '.png" style="width: 20px; height: 14px; margin-right: 8px; vertical-align: middle; object-fit: cover; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" alt="">';
+                }
+                return '<div class="item" style="display: flex; align-items: center;">' + flagHtml + '<span>' + escape(data.text) + '</span></div>';
+            },
+            no_results: function(data, escape) {
+                return '<div class="no-results" style="padding: 8px 14px; color: #888;">No results found for "' + escape(data.input) + '"</div>';
+            }
+        };
+
         if (nat) {
             new TomSelect(nat, {
                 create: false,
                 placeholder: 'Select your nationality',
                 controlInput: '<input>',
-                render: {
-                    no_results: function(data, escape) {
-                        return '<div class="no-results" style="padding: 8px 14px; color: #888;">No nationality found for "' + escape(data.input) + '"</div>';
-                    }
-                }
+                render: flagRenderer
             });
         }
         if (dest) {
@@ -437,11 +455,7 @@ if (empty($nationalities)) {
                 create: false,
                 placeholder: 'Select a country',
                 controlInput: '<input>',
-                render: {
-                    no_results: function(data, escape) {
-                        return '<div class="no-results" style="padding: 8px 14px; color: #888;">No destination found for "' + escape(data.input) + '"</div>';
-                    }
-                }
+                render: flagRenderer
             });
         }
     }
