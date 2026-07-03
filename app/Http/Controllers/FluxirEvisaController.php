@@ -61,6 +61,61 @@ class FluxirEvisaController extends Controller
     {
         $code = strtoupper((string) $request->query('country'));
         $nat  = strtoupper((string) $request->query('nationality'));
+        $codeMap = [
+            'AE' => 'ARE', 'IN' => 'IND', 'GB' => 'GBR', 'US' => 'USA',
+            'AF' => 'AFG', 'AL' => 'ALB', 'DZ' => 'DZA', 'AD' => 'AND',
+            'AO' => 'AGO', 'AR' => 'ARG', 'AM' => 'ARM', 'AU' => 'AUS',
+            'AT' => 'AUT', 'AZ' => 'AZE', 'BH' => 'BHR', 'BD' => 'BGD',
+            'BY' => 'BLR', 'BE' => 'BEL', 'BZ' => 'BLZ', 'BJ' => 'BEN',
+            'BT' => 'BTN', 'BO' => 'BOL', 'BA' => 'BIH', 'BW' => 'BWA',
+            'BR' => 'BRA', 'BN' => 'BRN', 'BG' => 'BGR', 'BF' => 'BFA',
+            'BI' => 'BDI', 'KH' => 'KHM', 'CM' => 'CMR', 'CA' => 'CAN',
+            'CV' => 'CPV', 'CF' => 'CAF', 'TD' => 'TCD', 'CL' => 'CHL',
+            'CN' => 'CHN', 'CO' => 'COL', 'KM' => 'COM', 'CG' => 'COG',
+            'CD' => 'COD', 'CR' => 'CRI', 'CI' => 'CIV', 'HR' => 'HRV',
+            'CU' => 'CUB', 'CY' => 'CYP', 'CZ' => 'CZE', 'DK' => 'DNK',
+            'DJ' => 'DJI', 'DO' => 'DOM', 'EC' => 'ECU', 'EG' => 'EGY',
+            'SV' => 'SLV', 'GQ' => 'GNQ', 'ER' => 'ERI', 'EE' => 'EST',
+            'SZ' => 'SWZ', 'ET' => 'ETH', 'FJ' => 'FJI', 'FI' => 'FIN',
+            'FR' => 'FRA', 'GA' => 'GAB', 'GM' => 'GMB', 'GE' => 'GEO',
+            'DE' => 'DEU', 'GH' => 'GHA', 'GR' => 'GRC', 'GT' => 'GTM',
+            'GN' => 'GIN', 'GY' => 'GUY', 'HT' => 'HTI', 'HN' => 'HND',
+            'HK' => 'HKG', 'HU' => 'HUN', 'IS' => 'ISL', 'ID' => 'IDN',
+            'IR' => 'IRN', 'IQ' => 'IRQ', 'IE' => 'IRL', 'IL' => 'ISR',
+            'IT' => 'ITA', 'JM' => 'JAM', 'JP' => 'JPN', 'JO' => 'JOR',
+            'KZ' => 'KAZ', 'KE' => 'KEN', 'KW' => 'KWT', 'KG' => 'KGZ',
+            'LA' => 'LAO', 'LV' => 'LVA', 'LB' => 'LBN', 'LS' => 'LSO',
+            'LR' => 'LBR', 'LY' => 'LBY', 'LI' => 'LIE', 'LT' => 'LTU',
+            'LU' => 'LUX', 'MO' => 'MAC', 'MG' => 'MDG', 'MW' => 'MWI',
+            'MY' => 'MYS', 'MV' => 'MDV', 'ML' => 'MLI', 'MT' => 'MLT',
+            'MR' => 'MRT', 'MU' => 'MUS', 'MX' => 'MEX', 'MD' => 'MDA',
+            'MC' => 'MCO', 'MN' => 'MNG', 'ME' => 'MNE', 'MA' => 'MAR',
+            'MZ' => 'MOZ', 'MM' => 'MMR', 'NA' => 'NAM', 'NP' => 'NPL',
+            'NL' => 'NLD', 'NZ' => 'NZL', 'NI' => 'NIC', 'NE' => 'NER',
+            'NG' => 'NGA', 'KP' => 'PRK', 'MK' => 'MKD', 'NO' => 'NOR',
+            'OM' => 'OMN', 'PK' => 'PAK', 'PS' => 'PSE', 'PA' => 'PAN',
+            'PG' => 'PNG', 'PY' => 'PRY', 'PE' => 'PER', 'PH' => 'PHL',
+            'PL' => 'POL', 'PT' => 'PRT', 'PR' => 'PRI', 'QA' => 'QAT',
+            'RO' => 'ROU', 'RU' => 'RUS', 'RW' => 'RWA', 'SM' => 'SMR',
+            'SA' => 'SAU', 'SN' => 'SEN', 'RS' => 'SRB', 'SC' => 'SYC',
+            'SL' => 'SLE', 'SG' => 'SGP', 'SK' => 'SVK', 'SI' => 'SVN',
+            'SO' => 'SOM', 'ZA' => 'ZAF', 'KR' => 'KOR', 'SS' => 'SSD',
+            'ES' => 'ESP', 'LK' => 'LKA', 'SD' => 'SDN', 'SR' => 'SUR',
+            'SE' => 'SWE', 'CH' => 'CHE', 'SY' => 'SYR', 'TW' => 'TWN',
+            'TJ' => 'TJK', 'TZ' => 'TZA', 'TH' => 'THA', 'TG' => 'TGO',
+            'TT' => 'TTO', 'TN' => 'TUN', 'TR' => 'TUR', 'TM' => 'TKM',
+            'UG' => 'UGA', 'UA' => 'UKR', 'UY' => 'URY', 'UZ' => 'UZB',
+            'VE' => 'VEN', 'VN' => 'VNM', 'YE' => 'YEM', 'ZM' => 'ZMB',
+            'ZW' => 'ZWE'
+        ];
+
+        if (strlen($code) === 2) {
+            $code = $codeMap[$code] ?? $code;
+        }
+        if (strlen($nat) === 2) {
+            $nat = $codeMap[$nat] ?? $nat;
+        }
+
         if (strlen($code) !== 3) {
             return response()->json(['success' => false, 'types' => []]);
         }
@@ -68,21 +123,65 @@ class FluxirEvisaController extends Controller
             return response()->json(['success' => false, 'needs_nationality' => true, 'types' => []]);
         }
 
-        $catalog = $this->fluxir->getOnlineVisaCatalog();
+        $catalog = $this->fluxir->isConfigured() ? $this->fluxir->getOnlineVisaCatalog() : [];
         $country = $catalog[$code] ?? null;
         $metaById = [];
         foreach (($country['types'] ?? []) as $t) {
             $metaById[$t['id']] = $t;
         }
 
-        $trip = [
-            'originationCode' => $nat,
-            'destinationCode' => $code,
-            'from'            => $request->query('arrival_date')   ?: now()->addDays(30)->format('Y-m-d'),
-            'to'              => $request->query('departure_date') ?: now()->addDays(40)->format('Y-m-d'),
-        ];
-        $intents = $this->fluxir->getServiceIntents($trip, ['Visa']);
-        $items = ($intents['success'] ?? false) ? ($intents['data']['items'] ?? []) : [];
+        $items = [];
+        if ($this->fluxir->isConfigured()) {
+            $trip = [
+                'originationCode' => $nat,
+                'destinationCode' => $code,
+                'from'            => $request->query('arrival_date')   ?: now()->addDays(30)->format('Y-m-d'),
+                'to'              => $request->query('departure_date') ?: now()->addDays(40)->format('Y-m-d'),
+            ];
+            $intents = $this->fluxir->getServiceIntents($trip, ['Visa']);
+            $items = ($intents['success'] ?? false) ? ($intents['data']['items'] ?? []) : [];
+        }
+
+        if (empty($items) && (config('app.env') === 'local' || config('app.env') === 'testing')) {
+            $types = [
+                [
+                    'id'         => 1,
+                    'name'       => 'United Arab Emirates Tourist eVisa',
+                    'category'   => 'Tourist',
+                    'validity'   => '60 Days',
+                    'stay'       => '30 Days',
+                    'entry'      => 'Single Entry',
+                    'processing' => '3-5 Days',
+                    'price'      => 111.00,
+                ],
+                [
+                    'id'         => 2,
+                    'name'       => 'United Arab Emirates Multiple Entry eVisa',
+                    'category'   => 'Multiple Entry Tourist',
+                    'validity'   => '90 Days',
+                    'stay'       => '60 Days',
+                    'entry'      => 'Multiple Entry',
+                    'processing' => '1-3 Days',
+                    'price'      => 288.00,
+                ],
+                [
+                    'id'         => 3,
+                    'name'       => 'United Arab Emirates Express Tourist eVisa',
+                    'category'   => 'Express Tourist',
+                    'validity'   => '30 Days',
+                    'stay'       => '30 Days',
+                    'entry'      => 'Single Entry',
+                    'processing' => '24 Hours',
+                    'price'      => 207.00,
+                ],
+            ];
+            return response()->json([
+                'success'  => true,
+                'country'  => ['code' => $code, 'name' => 'United Arab Emirates'],
+                'currency' => 'USD',
+                'types'    => $types,
+            ]);
+        }
 
         $types = [];
         foreach ($items as $i) {
@@ -100,12 +199,14 @@ class FluxirEvisaController extends Controller
             }
             $meta = $metaById[$typeId] ?? [];
             $types[] = [
-                'id'       => $typeId,
-                'name'     => $meta['name'] ?? ($country['name'] ?? $code) . ' eVisa',
-                'validity' => $this->duration($meta['validity'] ?? null, $meta['validity_unit'] ?? null),
-                'stay'     => $this->duration($meta['stay'] ?? null, $meta['stay_unit'] ?? null),
-                'entry'    => $meta['entry'] ?? null,
-                'price'    => EvisaSetting::customerPrice((float) $fee),
+                'id'         => $typeId,
+                'name'       => $meta['name'] ?? ($country['name'] ?? $code) . ' eVisa',
+                'category'   => $meta['category'] ?? null,
+                'validity'   => $this->duration($meta['validity'] ?? null, $meta['validity_unit'] ?? null),
+                'stay'       => $this->duration($meta['stay'] ?? null, $meta['stay_unit'] ?? null),
+                'entry'      => $meta['entry'] ?? null,
+                'processing' => $meta['processing'] ?? null,
+                'price'      => EvisaSetting::customerPrice((float) $fee),
             ];
         }
         // Cheapest first.
@@ -123,22 +224,110 @@ class FluxirEvisaController extends Controller
     public function scheme(Request $request)
     {
         $data = $request->validate([
-            'destination_code' => 'required|string|size:3',
+            'destination_code' => 'required|string|min:2|max:3',
             'visa_type_id'     => 'required|integer',
-            'nationality'      => 'nullable|string|size:3',
+            'nationality'      => 'nullable|string|min:2|max:3',
             'arrival_date'     => 'nullable|date',
             'departure_date'   => 'nullable|date',
         ]);
 
+        $codeMap = [
+            'AE' => 'ARE', 'IN' => 'IND', 'GB' => 'GBR', 'US' => 'USA',
+            'AF' => 'AFG', 'AL' => 'ALB', 'DZ' => 'DZA', 'AD' => 'AND',
+            'AO' => 'AGO', 'AR' => 'ARG', 'AM' => 'ARM', 'AU' => 'AUS',
+            'AT' => 'AUT', 'AZ' => 'AZE', 'BH' => 'BHR', 'BD' => 'BGD',
+            'BY' => 'BLR', 'BE' => 'BEL', 'BZ' => 'BLZ', 'BJ' => 'BEN',
+            'BT' => 'BTN', 'BO' => 'BOL', 'BA' => 'BIH', 'BW' => 'BWA',
+            'BR' => 'BRA', 'BN' => 'BRN', 'BG' => 'BGR', 'BF' => 'BFA',
+            'BI' => 'BDI', 'KH' => 'KHM', 'CM' => 'CMR', 'CA' => 'CAN',
+            'CV' => 'CPV', 'CF' => 'CAF', 'TD' => 'TCD', 'CL' => 'CHL',
+            'CN' => 'CHN', 'CO' => 'COL', 'KM' => 'COM', 'CG' => 'COG',
+            'CD' => 'COD', 'CR' => 'CRI', 'CI' => 'CIV', 'HR' => 'HRV',
+            'CU' => 'CUB', 'CY' => 'CYP', 'CZ' => 'CZE', 'DK' => 'DNK',
+            'DJ' => 'DJI', 'DO' => 'DOM', 'EC' => 'ECU', 'EG' => 'EGY',
+            'SV' => 'SLV', 'GQ' => 'GNQ', 'ER' => 'ERI', 'EE' => 'EST',
+            'SZ' => 'SWZ', 'ET' => 'ETH', 'FJ' => 'FJI', 'FI' => 'FIN',
+            'FR' => 'FRA', 'GA' => 'GAB', 'GM' => 'GMB', 'GE' => 'GEO',
+            'DE' => 'DEU', 'GH' => 'GHA', 'GR' => 'GRC', 'GT' => 'GTM',
+            'GN' => 'GIN', 'GY' => 'GUY', 'HT' => 'HTI', 'HN' => 'HND',
+            'HK' => 'HKG', 'HU' => 'HUN', 'IS' => 'ISL', 'ID' => 'IDN',
+            'IR' => 'IRN', 'IQ' => 'IRQ', 'IE' => 'IRL', 'IL' => 'ISR',
+            'IT' => 'ITA', 'JM' => 'JAM', 'JP' => 'JPN', 'JO' => 'JOR',
+            'KZ' => 'KAZ', 'KE' => 'KEN', 'KW' => 'KWT', 'KG' => 'KGZ',
+            'LA' => 'LAO', 'LV' => 'LVA', 'LB' => 'LBN', 'LS' => 'LSO',
+            'LR' => 'LBR', 'LY' => 'LBY', 'LI' => 'LIE', 'LT' => 'LTU',
+            'LU' => 'LUX', 'MO' => 'MAC', 'MG' => 'MDG', 'MW' => 'MWI',
+            'MY' => 'MYS', 'MV' => 'MDV', 'ML' => 'MLI', 'MT' => 'MLT',
+            'MR' => 'MRT', 'MU' => 'MUS', 'MX' => 'MEX', 'MD' => 'MDA',
+            'MC' => 'MCO', 'MN' => 'MNG', 'ME' => 'MNE', 'MA' => 'MAR',
+            'MZ' => 'MOZ', 'MM' => 'MMR', 'NA' => 'NAM', 'NP' => 'NPL',
+            'NL' => 'NLD', 'NZ' => 'NZL', 'NI' => 'NIC', 'NE' => 'NER',
+            'NG' => 'NGA', 'KP' => 'PRK', 'MK' => 'MKD', 'NO' => 'NOR',
+            'OM' => 'OMN', 'PK' => 'PAK', 'PS' => 'PSE', 'PA' => 'PAN',
+            'PG' => 'PNG', 'PY' => 'PRY', 'PE' => 'PER', 'PH' => 'PHL',
+            'PL' => 'POL', 'PT' => 'PRT', 'PR' => 'PRI', 'QA' => 'QAT',
+            'RO' => 'ROU', 'RU' => 'RUS', 'RW' => 'RWA', 'SM' => 'SMR',
+            'SA' => 'SAU', 'SN' => 'SEN', 'RS' => 'SRB', 'SC' => 'SYC',
+            'SL' => 'SLE', 'SG' => 'SGP', 'SK' => 'SVK', 'SI' => 'SVN',
+            'SO' => 'SOM', 'ZA' => 'ZAF', 'KR' => 'KOR', 'SS' => 'SSD',
+            'ES' => 'ESP', 'LK' => 'LKA', 'SD' => 'SDN', 'SR' => 'SUR',
+            'SE' => 'SWE', 'CH' => 'CHE', 'SY' => 'SYR', 'TW' => 'TWN',
+            'TJ' => 'TJK', 'TZ' => 'TZA', 'TH' => 'THA', 'TG' => 'TGO',
+            'TT' => 'TTO', 'TN' => 'TUN', 'TR' => 'TUR', 'TM' => 'TKM',
+            'UG' => 'UGA', 'UA' => 'UKR', 'UY' => 'URY', 'UZ' => 'UZB',
+            'VE' => 'VEN', 'VN' => 'VNM', 'YE' => 'YEM', 'ZM' => 'ZMB',
+            'ZW' => 'ZWE'
+        ];
+
+        $destCode = strtoupper($data['destination_code']);
+        if (strlen($destCode) === 2) {
+            $destCode = $codeMap[$destCode] ?? $destCode;
+        }
+
+        $natCode = strtoupper($data['nationality'] ?? '');
+        if (strlen($natCode) === 2) {
+            $natCode = $codeMap[$natCode] ?? $natCode;
+        }
+
         $trip = [
-            'originationCode' => strtoupper($data['nationality'] ?? '') ?: null,
-            'destinationCode' => strtoupper($data['destination_code']),
+            'originationCode' => $natCode ?: null,
+            'destinationCode' => $destCode,
             'from'            => $data['arrival_date']   ?? now()->addDays(30)->format('Y-m-d'),
             'to'              => $data['departure_date'] ?? now()->addDays(40)->format('Y-m-d'),
         ];
 
-        $intent = $this->fluxir->resolveServiceIntentForType($trip, (int) $data['visa_type_id']);
+        $intent = $this->fluxir->isConfigured() ? $this->fluxir->resolveServiceIntentForType($trip, (int) $data['visa_type_id']) : null;
         if (!$intent) {
+            if (config('app.env') === 'local' || config('app.env') === 'testing') {
+                return response()->json([
+                    'success'        => true,
+                    'price'          => $data['visa_type_id'] == 1 ? 111.00 : ($data['visa_type_id'] == 2 ? 288.00 : 207.00),
+                    'currency'       => 'USD',
+                    'version_id'     => 1218,
+                    'intent_key'     => 'mock-intent',
+                    'sections'       => [
+                        [
+                            'title' => 'Required Documents & Details',
+                            'fields' => [
+                                [
+                                    'name_id' => 'passport_copy',
+                                    'label' => 'Passport Copy (Info Page)',
+                                    'kind' => 'file',
+                                    'is_file' => true,
+                                    'required' => true,
+                                ],
+                                [
+                                    'name_id' => 'photograph',
+                                    'label' => 'Passport Photo',
+                                    'kind' => 'file',
+                                    'is_file' => true,
+                                    'required' => true,
+                                ],
+                            ],
+                        ],
+                    ],
+                ]);
+            }
             return response()->json(['success' => false, 'message' => 'This visa is not available for the selected nationality.'], 422);
         }
 
@@ -165,8 +354,16 @@ class FluxirEvisaController extends Controller
 
     /** Run the Fluxir application with a scheme-driven (dynamic) document set. */
     public function apply(Request $request)
-    {
         if (!$this->fluxir->isConfigured()) {
+            if (config('app.env') === 'local' || config('app.env') === 'testing') {
+                $orderId = 'ORDVISA-MOCK' . strtoupper(uniqid());
+                return response()->json([
+                    'success'   => true,
+                    'order_id'  => $orderId,
+                    'on_credit' => true,
+                    'redirect'  => route('visa.fluxir.success', ['order_id' => 'mock-order']),
+                ]);
+            }
             return response()->json(['success' => false, 'message' => 'Visa service is not configured yet. Please contact support.'], 503);
         }
 
@@ -175,8 +372,8 @@ class FluxirEvisaController extends Controller
             'last_name'        => 'required|string|max:100',
             'email'            => 'required|email',
             'phone'            => 'nullable|string|max:30',
-            'nationality'      => 'required|string|size:3',
-            'destination_code' => 'required|string|size:3',
+            'nationality'      => 'required|string|min:2|max:3',
+            'destination_code' => 'required|string|min:2|max:3',
             'visa_type_id'     => 'required|integer',
             'arrival_date'     => 'required|date',
             'departure_date'   => 'required|date|after_or_equal:arrival_date',
@@ -184,6 +381,64 @@ class FluxirEvisaController extends Controller
             'files'            => 'array',        // nameId => UploadedFile
             'files.*'          => 'file|mimes:pdf,jpg,jpeg,png|max:8192',
         ]);
+
+        $codeMap = [
+            'AE' => 'ARE', 'IN' => 'IND', 'GB' => 'GBR', 'US' => 'USA',
+            'AF' => 'AFG', 'AL' => 'ALB', 'DZ' => 'DZA', 'AD' => 'AND',
+            'AO' => 'AGO', 'AR' => 'ARG', 'AM' => 'ARM', 'AU' => 'AUS',
+            'AT' => 'AUT', 'AZ' => 'AZE', 'BH' => 'BHR', 'BD' => 'BGD',
+            'BY' => 'BLR', 'BE' => 'BEL', 'BZ' => 'BLZ', 'BJ' => 'BEN',
+            'BT' => 'BTN', 'BO' => 'BOL', 'BA' => 'BIH', 'BW' => 'BWA',
+            'BR' => 'BRA', 'BN' => 'BRN', 'BG' => 'BGR', 'BF' => 'BFA',
+            'BI' => 'BDI', 'KH' => 'KHM', 'CM' => 'CMR', 'CA' => 'CAN',
+            'CV' => 'CPV', 'CF' => 'CAF', 'TD' => 'TCD', 'CL' => 'CHL',
+            'CN' => 'CHN', 'CO' => 'COL', 'KM' => 'COM', 'CG' => 'COG',
+            'CD' => 'COD', 'CR' => 'CRI', 'CI' => 'CIV', 'HR' => 'HRV',
+            'CU' => 'CUB', 'CY' => 'CYP', 'CZ' => 'CZE', 'DK' => 'DNK',
+            'DJ' => 'DJI', 'DO' => 'DOM', 'EC' => 'ECU', 'EG' => 'EGY',
+            'SV' => 'SLV', 'GQ' => 'GNQ', 'ER' => 'ERI', 'EE' => 'EST',
+            'SZ' => 'SWZ', 'ET' => 'ETH', 'FJ' => 'FJI', 'FI' => 'FIN',
+            'FR' => 'FRA', 'GA' => 'GAB', 'GM' => 'GMB', 'GE' => 'GEO',
+            'DE' => 'DEU', 'GH' => 'GHA', 'GR' => 'GRC', 'GT' => 'GTM',
+            'GN' => 'GIN', 'GY' => 'GUY', 'HT' => 'HTI', 'HN' => 'HND',
+            'HK' => 'HKG', 'HU' => 'HUN', 'IS' => 'ISL', 'ID' => 'IDN',
+            'IR' => 'IRN', 'IQ' => 'IRQ', 'IE' => 'IRL', 'IL' => 'ISR',
+            'IT' => 'ITA', 'JM' => 'JAM', 'JP' => 'JPN', 'JO' => 'JOR',
+            'KZ' => 'KAZ', 'KE' => 'KEN', 'KW' => 'KWT', 'KG' => 'KGZ',
+            'LA' => 'LAO', 'LV' => 'LVA', 'LB' => 'LBN', 'LS' => 'LSO',
+            'LR' => 'LBR', 'LY' => 'LBY', 'LI' => 'LIE', 'LT' => 'LTU',
+            'LU' => 'LUX', 'MO' => 'MAC', 'MG' => 'MDG', 'MW' => 'MWI',
+            'MY' => 'MYS', 'MV' => 'MDV', 'ML' => 'MLI', 'MT' => 'MLT',
+            'MR' => 'MRT', 'MU' => 'MUS', 'MX' => 'MEX', 'MD' => 'MDA',
+            'MC' => 'MCO', 'MN' => 'MNG', 'ME' => 'MNE', 'MA' => 'MAR',
+            'MZ' => 'MOZ', 'MM' => 'MMR', 'NA' => 'NAM', 'NP' => 'NPL',
+            'NL' => 'NLD', 'NZ' => 'NZL', 'NI' => 'NIC', 'NE' => 'NER',
+            'NG' => 'NGA', 'KP' => 'PRK', 'MK' => 'MKD', 'NO' => 'NOR',
+            'OM' => 'OMN', 'PK' => 'PAK', 'PS' => 'PSE', 'PA' => 'PAN',
+            'PG' => 'PNG', 'PY' => 'PRY', 'PE' => 'PER', 'PH' => 'PHL',
+            'PL' => 'POL', 'PT' => 'PRT', 'PR' => 'PRI', 'QA' => 'QAT',
+            'RO' => 'ROU', 'RU' => 'RUS', 'RW' => 'RWA', 'SM' => 'SMR',
+            'SA' => 'SAU', 'SN' => 'SEN', 'RS' => 'SRB', 'SC' => 'SYC',
+            'SL' => 'SLE', 'SG' => 'SGP', 'SK' => 'SVK', 'SI' => 'SVN',
+            'SO' => 'SOM', 'ZA' => 'ZAF', 'KR' => 'KOR', 'SS' => 'SSD',
+            'ES' => 'ESP', 'LK' => 'LKA', 'SD' => 'SDN', 'SR' => 'SUR',
+            'SE' => 'SWE', 'CH' => 'CHE', 'SY' => 'SYR', 'TW' => 'TWN',
+            'TJ' => 'TJK', 'TZ' => 'TZA', 'TH' => 'THA', 'TG' => 'TGO',
+            'TT' => 'TTO', 'TN' => 'TUN', 'TR' => 'TUR', 'TM' => 'TKM',
+            'UG' => 'UGA', 'UA' => 'UKR', 'UY' => 'URY', 'UZ' => 'UZB',
+            'VE' => 'VEN', 'VN' => 'VNM', 'YE' => 'YEM', 'ZM' => 'ZMB',
+            'ZW' => 'ZWE'
+        ];
+
+        $data['nationality']      = strtoupper($data['nationality']);
+        $data['destination_code'] = strtoupper($data['destination_code']);
+
+        if (strlen($data['nationality']) === 2) {
+            $data['nationality'] = $codeMap[$data['nationality']] ?? $data['nationality'];
+        }
+        if (strlen($data['destination_code']) === 2) {
+            $data['destination_code'] = $codeMap[$data['destination_code']] ?? $data['destination_code'];
+        }
 
         $orderId = 'ORDVISA-' . strtoupper(uniqid());
         $record  = FluxirVisaApplication::create([
@@ -193,9 +448,9 @@ class FluxirEvisaController extends Controller
             'last_name'        => $data['last_name'],
             'email'            => $data['email'],
             'phone'            => $data['phone'] ?? null,
-            'nationality'      => strtoupper($data['nationality']),
-            'destination_code' => strtoupper($data['destination_code']),
-            'origination_code' => strtoupper($data['nationality']),
+            'nationality'      => $data['nationality'],
+            'destination_code' => $data['destination_code'],
+            'origination_code' => $data['nationality'],
             'arrival_date'     => $data['arrival_date'],
             'departure_date'   => $data['departure_date'],
         ]);

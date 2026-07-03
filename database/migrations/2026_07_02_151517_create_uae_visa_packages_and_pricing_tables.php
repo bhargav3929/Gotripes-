@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('uae_visa_packages', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('emirates_id');
+            $table->integer('emirates_id');
             $table->string('name');
             $table->text('description')->nullable();
             $table->boolean('isActive')->default(1);
