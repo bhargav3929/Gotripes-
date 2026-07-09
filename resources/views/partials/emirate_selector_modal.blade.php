@@ -34,7 +34,7 @@
         border: 1px solid rgba(255, 215, 0, 0.15);
         border-radius: 22px;
         padding: 36px 34px;
-        width: 580px;
+        width: 680px;
         max-width: 100%;
         max-height: 92vh;
         overflow-y: auto;
@@ -75,57 +75,24 @@
         color: #FFD700;
         font-size: 25px;
         font-weight: 800;
-        margin: 0 0 10px;
+        margin: 0 0 26px;
         letter-spacing: 0.3px;
         line-height: 1.3;
-    }
-    .emirate-subtitle {
-        color: #999;
-        font-size: 14px;
-        margin: 0 0 22px;
-        font-weight: 400;
-        line-height: 1.5;
-    }
-    .emirate-bullets {
-        list-style: none;
-        margin: 0 0 28px;
-        padding: 16px 18px;
-        display: grid;
-        gap: 11px;
-        text-align: left;
-        background: rgba(255, 215, 0, 0.04);
-        border: 1px solid rgba(255, 215, 0, 0.12);
-        border-radius: 12px;
-    }
-    .emirate-bullets li {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        color: #ccc;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 1.5;
-    }
-    .emirate-bullets li i {
-        color: #FFD700;
-        font-size: 15px;
-        margin-top: 2px;
-        flex-shrink: 0;
     }
     .emirate-cards-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 18px;
+        gap: 20px;
     }
     .emirate-card {
         background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
         border: none;
-        border-radius: 16px;
-        padding: 24px 18px;
+        border-radius: 18px;
+        padding: 12px 12px 18px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: #1a1400;
@@ -145,10 +112,10 @@
         width: 100%;
     }
     .emirate-card-name {
-        font-size: 15px;
+        font-size: 20px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
+        letter-spacing: 1px;
         line-height: 1.3;
     }
 
@@ -164,16 +131,6 @@
     html[data-theme="light"] .emirate-title {
         color: var(--gt-text);
     }
-    html[data-theme="light"] .emirate-subtitle {
-        color: var(--gt-text-body);
-    }
-    html[data-theme="light"] .emirate-bullets {
-        background: var(--gt-gold-soft);
-        border-color: var(--gt-gold-border);
-    }
-    html[data-theme="light"] .emirate-bullets li {
-        color: var(--gt-text-body);
-    }
     html[data-theme="light"] .emirate-close-btn {
         color: var(--gt-text-muted);
     }
@@ -181,18 +138,16 @@
         color: var(--gt-text);
     }
     .emirate-flag-img {
-        width: 128px;
-        height: 84px;
+        width: 100%;
+        height: 200px;
         object-fit: cover;
-        border-radius: 10px;
-        border: 2px solid rgba(0, 0, 0, 0.15);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        border-radius: 12px;
         display: block;
     }
 
     @media (max-width: 575.98px) {
         .emirate-modal {
-            padding: 28px 20px;
+            padding: 28px 16px;
             width: 100%;
         }
         .emirate-title { font-size: 21px; }
@@ -200,18 +155,11 @@
             grid-template-columns: 1fr;
             gap: 14px;
         }
-        .emirate-card {
-            padding: 18px 16px;
-            flex-direction: row;
-            gap: 18px;
-            text-align: left;
-        }
-        .emirate-card-icon {
-            width: auto;
-        }
         .emirate-flag-img {
-            width: 92px;
-            height: 60px;
+            height: 150px;
+        }
+        .emirate-card-name {
+            font-size: 18px;
         }
     }
 </style>
@@ -221,14 +169,6 @@
         <button type="button" class="emirate-close-btn" id="emirateCloseBtn" aria-label="Close modal">&times;</button>
         <img src="{{ $modalLogo }}" alt="{{ $modalName }}" class="emirate-logo">
         <h2 class="emirate-title">Which Emirates Visa Are You Applying For?</h2>
-        <p class="emirate-subtitle">Pick your destination emirate to see instant pricing and start your application.</p>
-
-        <ul class="emirate-bullets">
-            <li><i class="bi bi-check-circle-fill"></i> 100% online application — no embassy visit required</li>
-            <li><i class="bi bi-check-circle-fill"></i> AI passport scan auto-fills your details in seconds</li>
-            <li><i class="bi bi-check-circle-fill"></i> Every document reviewed before submission</li>
-            <li><i class="bi bi-check-circle-fill"></i> Secure, SSL-encrypted checkout</li>
-        </ul>
 
         <div class="emirate-cards-grid" id="emirateGrid">
             <!-- Dynamic selection cards rendered in JS -->
@@ -251,7 +191,7 @@
         grid.innerHTML = AVAILABLE_EMIRATES.map(e => `
             <button type="button" class="emirate-card" data-emirate="${e.id}">
                 <span class="emirate-card-icon">${e.image ? `<img class="emirate-flag-img" src="${e.image}" alt="${e.name}">` : '<i class="bi bi-flag-fill" style="font-size:40px;"></i>'}</span>
-                <span class="emirate-card-name">${e.name} Visa Application</span>
+                <span class="emirate-card-name">${e.name}</span>
             </button>
         `).join('');
 
