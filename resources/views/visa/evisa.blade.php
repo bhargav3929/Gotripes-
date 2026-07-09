@@ -59,8 +59,8 @@ if (empty($nationalities)) {
         padding: 0 12px !important;
         color: #fff !important;
         font-family: inherit !important;
-        font-size: 0.9rem !important;
-        height: 41px !important;
+        font-size: 15px !important;
+        height: 48px !important;
         display: flex !important;
         align-items: center !important;
         cursor: pointer !important;
@@ -74,8 +74,8 @@ if (empty($nationalities)) {
     }
     .ts-wrapper.evisa-select .ts-control .item {
         color: #fff !important;
-        line-height: 39px !important;
-        height: 39px !important;
+        line-height: 46px !important;
+        height: 46px !important;
         display: inline-flex !important;
         align-items: center !important;
         margin: 0 !important;
@@ -84,10 +84,10 @@ if (empty($nationalities)) {
     .ts-wrapper.evisa-select .ts-control input {
         color: #fff !important;
         font-family: inherit !important;
-        font-size: 0.9rem !important;
+        font-size: 15px !important;
         padding: 0 !important;
-        line-height: 39px !important;
-        height: 39px !important;
+        line-height: 46px !important;
+        height: 46px !important;
         margin: 0 !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -167,26 +167,26 @@ if (empty($nationalities)) {
     }
     .evisa-head h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); font-weight: 800; margin: 0; color: #fff; }
     .evisa-head h1 span { color: var(--c-gold); }
-    .evisa-head p { color: var(--c-muted); font-weight: 300; font-size: 0.9rem; margin: 6px 0 0; }
+    .evisa-head p { color: var(--c-muted); font-weight: 300; font-size: 13px; margin: 6px 0 0; }
 
-    .evisa-alert { display: none; margin-bottom: 14px; padding: 11px 15px; border-radius: 9px; font-size: 0.86rem; border: 1px solid; }
+    .evisa-alert { display: none; margin-bottom: 14px; padding: 11px 15px; border-radius: 9px; font-size: 14px; border: 1px solid; }
     .evisa-alert.show { display: block; background: rgba(220,38,38,.1); border-color: rgba(220,38,38,.4); color: #fca5a5; }
 
     .evisa-main { display: grid; grid-template-columns: 1fr 340px; gap: 18px; align-items: start; }
     .evisa-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: 14px; padding: 16px 18px; margin-bottom: 16px; }
-    .evisa-section-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-gold); margin: 0 0 12px; }
+    .evisa-section-title { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-gold); margin: 0 0 12px; }
 
     .evisa-grid { display: grid; gap: 10px 14px; }
     .evisa-grid.g3 { grid-template-columns: repeat(3, 1fr); }
     .evisa-grid.g2 { grid-template-columns: 1fr 1fr; }
     .evisa-field { min-width: 0; }
-    .evisa-field label { display: block; font-size: 0.74rem; font-weight: 500; color: var(--c-muted); margin-bottom: 5px; }
+    .evisa-field label { display: block; font-size: 13px; font-weight: 600; color: var(--c-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1.2px; }
     .evisa-field label .req { color: var(--c-gold); }
     .evisa-input, .evisa-select, .evisa-textarea {
-        width: 100%; background: var(--c-input); border: 1px solid var(--c-border); border-radius: 9px;
-        padding: 10px 12px; color: #fff; font-size: 0.9rem; font-family: inherit;
+        width: 100%; background: var(--c-input); border: 1px solid var(--c-border); border-radius: 10px;
+        padding: 0 16px; height: 48px; color: #fff; font-size: 15px; font-weight: 500; font-family: inherit;
     }
-    .evisa-textarea { min-height: 74px; resize: vertical; }
+    .evisa-textarea { height: auto; min-height: 74px; padding: 10px 16px; resize: vertical; }
     .evisa-input:focus, .evisa-select:focus, .evisa-textarea:focus { outline: none; border-color: var(--c-gold); box-shadow: 0 0 0 3px rgba(255,215,0,.12); }
     .evisa-input::placeholder { color: #555; }
 
@@ -197,8 +197,8 @@ if (empty($nationalities)) {
     .evisa-file:hover { border-color: var(--c-gold); background: #141414; }
     .evisa-file input { display: none; }
     .evisa-file i { color: var(--c-gold); font-size: 1.05rem; flex: none; }
-    .evisa-file .lab { font-size: 0.82rem; color: var(--c-light); font-weight: 500; display: block; }
-    .evisa-file .hint { display: block; font-size: 0.68rem; color: var(--c-muted); }
+    .evisa-file .lab { font-size: 14px; color: var(--c-light); font-weight: 500; display: block; }
+    .evisa-file .hint { display: block; font-size: 12px; color: var(--c-muted); }
     .evisa-file.has-file { border-color: var(--c-gold); border-style: solid; }
 
     /* Visa-type option list */
@@ -242,9 +242,23 @@ if (empty($nationalities)) {
         letter-spacing: 0.2px;
     }
     .evisa-type .t-meta {
-        font-size: 0.76rem;
+        font-size: 13px;
         color: var(--c-muted);
         letter-spacing: 0.1px;
+    }
+    .evisa-type .t-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 2px 8px;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        border-radius: 20px;
+        vertical-align: middle;
+        color: var(--c-gold);
+        border: 1px solid rgba(255, 215, 0, 0.35);
+        background: rgba(255, 215, 0, 0.08);
     }
     .evisa-type .t-price {
         margin-left: auto;
@@ -272,27 +286,27 @@ if (empty($nationalities)) {
         color: var(--gt-text) !important;
     }
 
-    .evisa-muted-note { color: var(--c-muted); font-size: 0.82rem; }
+    .evisa-muted-note { color: var(--c-muted); font-size: 13px; }
     .evisa-scheme-sec { margin-top: 6px; }
-    .evisa-scheme-sec > h4 { font-size: 0.82rem; color: #fff; font-weight: 600; margin: 14px 0 9px; padding-top: 12px; border-top: 1px solid #1a1a1a; }
+    .evisa-scheme-sec > h4 { font-size: 14px; color: #fff; font-weight: 600; margin: 14px 0 9px; padding-top: 12px; border-top: 1px solid #1a1a1a; }
     .evisa-checks { display: flex; flex-wrap: wrap; gap: 8px 16px; }
-    .evisa-checks label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--c-light); }
+    .evisa-checks label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--c-light); }
 
     .evisa-sum-card { position: sticky; top: 16px; }
     .evisa-sum-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 9px; }
-    .evisa-sum-list li { display: flex; align-items: center; gap: 9px; font-size: 0.83rem; color: #d6d6d6; }
+    .evisa-sum-list li { display: flex; align-items: center; gap: 9px; font-size: 13px; color: #d6d6d6; }
     .evisa-sum-list li i { color: var(--c-gold); width: 18px; text-align: center; flex: none; }
     .evisa-fee { display: flex; align-items: baseline; justify-content: space-between; padding: 13px 0; border-top: 1px solid var(--c-border); }
-    .evisa-fee .lbl { color: var(--c-muted); font-size: 0.82rem; }
-    .evisa-fee .amt { font-size: 1.8rem; font-weight: 800; color: var(--c-gold); }
+    .evisa-fee .lbl { color: var(--c-muted); font-size: 13px; }
+    .evisa-fee .amt { font-size: 28px; font-weight: 800; color: var(--c-gold); }
     .evisa-submit {
         width: 100%; background: var(--c-gold); color: #1a1a1a; border: none; border-radius: 10px;
-        padding: 13px; font-weight: 700; font-size: 0.96rem; cursor: pointer; transition: .15s; font-family: inherit;
+        padding: 13px; font-weight: 700; font-size: 15px; cursor: pointer; transition: .15s; font-family: inherit;
     }
     .evisa-submit:hover:not(:disabled) { transform: translateY(-1px); }
     .evisa-submit:disabled { opacity: .5; cursor: not-allowed; }
-    .evisa-note { margin: 10px 0 0; font-size: 0.7rem; color: var(--c-muted); text-align: center; line-height: 1.4; }
-    .evisa-hint-empty { color: var(--c-muted); font-size: 0.85rem; padding: 4px 0; }
+    .evisa-note { margin: 10px 0 0; font-size: 12px; color: var(--c-muted); text-align: center; line-height: 1.4; }
+    .evisa-hint-empty { color: var(--c-muted); font-size: 14px; padding: 4px 0; }
     .spin { display:inline-block; width:13px; height:13px; border:2px solid rgba(0,0,0,.3); border-top-color:#1a1a1a; border-radius:50%; animation: evspin .7s linear infinite; vertical-align:-1px; }
     @keyframes evspin { to { transform: rotate(360deg); } }
 
@@ -504,12 +518,16 @@ if (empty($nationalities)) {
                         validityStr = validityStr.replace(/\bValid(\s+for)?\b/gi, '').replace(/\bValidity\b/gi, '').trim();
                         metaParts.push('Valid for ' + validityStr);
                     }
+                    if (t.processing) {
+                        metaParts.push('Processing: ' + t.processing);
+                    }
                     var meta = metaParts.join(' • ');
+                    var badge = t.express ? ' <span class="t-badge express">Express</span>' : '';
 
                     return '<label class="evisa-type" data-id="' + t.id + '">' +
                         '<input type="radio" name="visa_type_id" value="' + t.id + '">' +
                         '<div class="t-info-block">' +
-                            '<span class="t-name">' + esc(title) + '</span>' +
+                            '<span class="t-name">' + esc(title) + badge + '</span>' +
                             '<span class="t-meta">' + esc(meta) + '</span>' +
                         '</div>' +
                         '<span class="t-price">$' + t.price + '</span>' +
@@ -615,7 +633,8 @@ if (empty($nationalities)) {
         .then(function (res) {
             var d = res.d;
             if (!res.ok || !d.success) { throw new Error(d.message || 'We could not submit your application.'); }
-            if (d.on_credit || d.redirect) { window.location.assign(d.redirect || '/uaevisa'); return; }
+            if (d.checkout_url) { window.location.assign(d.checkout_url); return; }
+            if (d.redirect) { window.location.assign(d.redirect); return; }
             if (!d.checkout_session_id) { throw new Error('Application submitted but payment could not be started. Please contact support.'); }
             // Redirect directly to the Stripe-hosted checkout URL — no publishable key needed.
             window.location.href = 'https://checkout.stripe.com/pay/' + d.checkout_session_id;

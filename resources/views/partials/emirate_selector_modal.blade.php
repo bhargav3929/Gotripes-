@@ -1,9 +1,20 @@
+@php
+    $modalLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
+    $modalName = (isset($company) && $company && $company->name) ? $company->name : 'Go Trips';
+    $modalEmirates = $activeEmirates->map(function ($e) {
+        return [
+            'id' => $e->emiratesName,
+            'name' => $e->emiratesName,
+            'image' => $e->emiratesImage ? asset($e->emiratesImage) : null,
+        ];
+    })->values();
+@endphp
 <!-- EMIRATE SELECTION POPUP MODAL -->
 <style>
     .emirate-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.82);
         backdrop-filter: blur(8px);
         z-index: 11000; /* Must be higher than header (usually 9999) but lower than camera modals if any */
         display: flex;
@@ -21,17 +32,18 @@
     .emirate-modal {
         background: #0b0b0b;
         border: 1px solid rgba(255, 215, 0, 0.15);
-        border-radius: 20px;
-        padding: 32px 28px;
-        width: 520px;
+        border-radius: 22px;
+        padding: 36px 34px;
+        width: 580px;
         max-width: 100%;
+        max-height: 92vh;
+        overflow-y: auto;
         position: relative;
         box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
         transform: scale(0.9);
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         font-family: 'Outfit', sans-serif;
         text-align: center;
-        overflow: hidden;
     }
     .emirate-overlay.active .emirate-modal {
         transform: scale(1);
@@ -52,20 +64,53 @@
     .emirate-close-btn:hover {
         color: #fff;
     }
+    .emirate-logo {
+        display: block;
+        height: 68px;
+        width: auto;
+        margin: 0 auto 20px;
+        object-fit: contain;
+    }
     .emirate-title {
         color: #FFD700;
-        font-size: 22px;
-        font-weight: 700;
-        margin: 0 0 8px;
-        letter-spacing: 0.5px;
+        font-size: 25px;
+        font-weight: 800;
+        margin: 0 0 10px;
+        letter-spacing: 0.3px;
         line-height: 1.3;
     }
     .emirate-subtitle {
-        color: #888;
+        color: #999;
         font-size: 14px;
-        margin: 0 0 24px;
+        margin: 0 0 22px;
         font-weight: 400;
         line-height: 1.5;
+    }
+    .emirate-bullets {
+        list-style: none;
+        margin: 0 0 28px;
+        padding: 16px 18px;
+        display: grid;
+        gap: 11px;
+        text-align: left;
+        background: rgba(255, 215, 0, 0.04);
+        border: 1px solid rgba(255, 215, 0, 0.12);
+        border-radius: 12px;
+    }
+    .emirate-bullets li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        color: #ccc;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+    .emirate-bullets li i {
+        color: #FFD700;
+        font-size: 15px;
+        margin-top: 2px;
+        flex-shrink: 0;
     }
     .emirate-cards-grid {
         display: grid;
@@ -73,25 +118,25 @@
         gap: 18px;
     }
     .emirate-card {
-        background: #111;
-        border: 1px solid #222;
-        border-radius: 14px;
-        padding: 32px 20px;
+        background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+        border: none;
+        border-radius: 16px;
+        padding: 24px 18px;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 16px;
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-        color: #fff;
+        color: #1a1400;
         font-family: 'Outfit', sans-serif;
         width: 100%;
+        box-shadow: 0 10px 26px -8px rgba(255, 215, 0, 0.35);
     }
     .emirate-card:hover {
-        border-color: #FFD700;
-        background: #161616;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(255, 215, 0, 0.1);
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px -8px rgba(255, 215, 0, 0.5);
+        filter: brightness(1.04);
     }
     .emirate-card-icon {
         display: flex;
@@ -101,14 +146,15 @@
     }
     .emirate-card-name {
         font-size: 15px;
-        font-weight: 700;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.8px;
+        line-height: 1.3;
     }
 
     /* --- Light Theme Support --- */
     html[data-theme="light"] .emirate-overlay {
-        background: rgba(248, 249, 250, 0.9);
+        background: rgba(248, 249, 250, 0.92);
     }
     html[data-theme="light"] .emirate-modal {
         background: var(--gt-surface);
@@ -121,15 +167,12 @@
     html[data-theme="light"] .emirate-subtitle {
         color: var(--gt-text-body);
     }
-    html[data-theme="light"] .emirate-card {
-        background: var(--gt-surface-2);
-        border: 1px solid var(--gt-border-strong);
-        color: var(--gt-text);
+    html[data-theme="light"] .emirate-bullets {
+        background: var(--gt-gold-soft);
+        border-color: var(--gt-gold-border);
     }
-    html[data-theme="light"] .emirate-card:hover {
-        border-color: var(--gt-gold);
-        background: var(--gt-surface-3);
-        box-shadow: 0 8px 24px rgba(169, 123, 10, 0.12);
+    html[data-theme="light"] .emirate-bullets li {
+        color: var(--gt-text-body);
     }
     html[data-theme="light"] .emirate-close-btn {
         color: var(--gt-text-muted);
@@ -137,41 +180,38 @@
     html[data-theme="light"] .emirate-close-btn:hover {
         color: var(--gt-text);
     }
-    .emirate-flag-svg {
-        width: 100px;
-        height: 66px;
+    .emirate-flag-img {
+        width: 128px;
+        height: 84px;
         object-fit: cover;
-        border-radius: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        border: 2px solid rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
         display: block;
-    }
-    html[data-theme="light"] .emirate-flag-svg {
-        border: 1px solid rgba(0, 0, 0, 0.15);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
 
     @media (max-width: 575.98px) {
+        .emirate-modal {
+            padding: 28px 20px;
+            width: 100%;
+        }
+        .emirate-title { font-size: 21px; }
         .emirate-cards-grid {
             grid-template-columns: 1fr;
             gap: 14px;
         }
-        .emirate-modal {
-            padding: 24px 20px;
-            width: 340px;
-        }
         .emirate-card {
-            padding: 24px 16px;
+            padding: 18px 16px;
             flex-direction: row;
-            gap: 20px;
+            gap: 18px;
             text-align: left;
         }
         .emirate-card-icon {
             width: auto;
         }
-        .emirate-flag-svg {
-            width: 80px;
-            height: 53px;
+        .emirate-flag-img {
+            width: 92px;
+            height: 60px;
         }
     }
 </style>
@@ -179,9 +219,17 @@
 <div id="emirateSelectorOverlay" class="emirate-overlay">
     <div class="emirate-modal">
         <button type="button" class="emirate-close-btn" id="emirateCloseBtn" aria-label="Close modal">&times;</button>
-        <h2 class="emirate-title">Where are you travelling in the UAE?</h2>
-        <p class="emirate-subtitle">Please select the emirate for your visa application.</p>
-        
+        <img src="{{ $modalLogo }}" alt="{{ $modalName }}" class="emirate-logo">
+        <h2 class="emirate-title">Which Emirates Visa Are You Applying For?</h2>
+        <p class="emirate-subtitle">Pick your destination emirate to see instant pricing and start your application.</p>
+
+        <ul class="emirate-bullets">
+            <li><i class="bi bi-check-circle-fill"></i> 100% online application — no embassy visit required</li>
+            <li><i class="bi bi-check-circle-fill"></i> AI passport scan auto-fills your details in seconds</li>
+            <li><i class="bi bi-check-circle-fill"></i> Every document reviewed before submission</li>
+            <li><i class="bi bi-check-circle-fill"></i> Secure, SSL-encrypted checkout</li>
+        </ul>
+
         <div class="emirate-cards-grid" id="emirateGrid">
             <!-- Dynamic selection cards rendered in JS -->
         </div>
@@ -190,11 +238,7 @@
 
 <script>
     (function() {
-        const AVAILABLE_EMIRATES = @json($activeEmirates->map(fn($e) => [
-            'id' => $e->emiratesName,
-            'name' => $e->emiratesName,
-            'icon' => $e->emiratesImage ? '<img class="emirate-flag-svg" src="' . asset($e->emiratesImage) . '" alt="' . $e->emiratesName . '">' : '<i class="fas fa-flag fa-2x"></i>'
-        ])->toArray());
+        const AVAILABLE_EMIRATES = @json($modalEmirates);
 
         const overlay = document.getElementById('emirateSelectorOverlay');
         const grid = document.getElementById('emirateGrid');
@@ -206,16 +250,15 @@
         // Render Cards dynamically
         grid.innerHTML = AVAILABLE_EMIRATES.map(e => `
             <button type="button" class="emirate-card" data-emirate="${e.id}">
-                <span class="emirate-card-icon">${e.icon}</span>
-                <span class="emirate-card-name">${e.name}</span>
+                <span class="emirate-card-icon">${e.image ? `<img class="emirate-flag-img" src="${e.image}" alt="${e.name}">` : '<i class="bi bi-flag-fill" style="font-size:40px;"></i>'}</span>
+                <span class="emirate-card-name">${e.name} Visa Application</span>
             </button>
         `).join('');
 
         // Attach Event Listeners to cards
         grid.querySelectorAll('.emirate-card').forEach(card => {
             card.addEventListener('click', function() {
-                const emirate = this.getAttribute('data-emirate');
-                selectEmirate(emirate);
+                selectEmirate(this.getAttribute('data-emirate'));
             });
         });
 
@@ -232,8 +275,6 @@
         });
 
         function selectEmirate(emirate) {
-            localStorage.setItem('selected_emirate', emirate);
-            
             // Sync with hidden form input if present
             if (hiddenInput) {
                 hiddenInput.value = emirate;
@@ -253,26 +294,7 @@
             overlay.classList.remove('active');
         }
 
-        // Initialize state on page load
-        function initEmirateSelector() {
-            const saved = localStorage.getItem('selected_emirate');
-            if (saved) {
-                if (hiddenInput) hiddenInput.value = saved;
-                document.dispatchEvent(new CustomEvent('emirateChanged', { detail: saved }));
-            } else {
-                // Auto-show modal if selection is missing
-                setTimeout(showEmirateSelector, 500);
-            }
-        }
-
-        // Expose globally so main page can trigger it via "Change" button
+        // Expose globally so the main page can trigger it (initial load + "Change" badge)
         window.showEmirateSelector = showEmirateSelector;
-
-        // Let page load settle before initializing selector
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initEmirateSelector);
-        } else {
-            initEmirateSelector();
-        }
     })();
 </script>
