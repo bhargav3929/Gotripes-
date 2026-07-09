@@ -1359,6 +1359,28 @@
             }
         }, 500);
 
+        // Browsers restore this page from the back/forward cache (bfcache) when the
+        // visitor navigates away and hits Back — no fresh DOMContentLoaded fires, so
+        // without this the popup and badge would stay stuck on the old selection.
+        // Force a clean slate and re-prompt every time that happens.
+        window.addEventListener('pageshow', function (event) {
+            if (!event.persisted) return;
+
+            selectedEmirateName = null;
+            const hiddenInput = document.getElementById('selectedEmirate');
+            if (hiddenInput) hiddenInput.value = '';
+
+            const badge = document.getElementById('emirateActiveBadge');
+            if (badge) badge.style.display = 'none';
+
+            populatePackages();
+            updatePrice();
+
+            if (typeof window.showEmirateSelector === 'function') {
+                window.showEmirateSelector();
+            }
+        });
+
         hotelCheckbox.addEventListener('change', function() {
             document.getElementById('addonHotel').classList.toggle('active', this.checked);
             updatePrice();
