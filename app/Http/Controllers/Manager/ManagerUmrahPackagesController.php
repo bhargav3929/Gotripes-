@@ -28,34 +28,56 @@ class ManagerUmrahPackagesController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'price'       => 'required|numeric|min:0',
-            'currency'    => 'required|string|max:10',
-            'description' => 'required|string',
-            'duration'    => 'required|string|max:255',
-            'tag'         => 'nullable|string|max:50',
-            'features'    => 'nullable|string',
-            'image'       => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'isFeatured'  => 'nullable|boolean',
-            'sortOrder'   => 'nullable|integer|min:0',
+            'title'           => 'required|string|max:255',
+            'category'        => 'required|string|in:economy,standard,premium,vip',
+            'price'           => 'required|numeric|min:0',
+            'currency'        => 'required|string|max:10',
+            'description'     => 'required|string',
+            'duration'        => 'required|string|max:255',
+            'transport'       => 'nullable|string',
+            'hotels'          => 'nullable|string',
+            'inclusions'      => 'nullable|string',
+            'exclusions'      => 'nullable|string',
+            'itinerary'       => 'nullable|string',
+            'tag'             => 'nullable|string|max:50',
+            'features'        => 'nullable|string',
+            'image'           => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'gallery_images'  => 'nullable|array',
+            'gallery_images.*'=> 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'isFeatured'      => 'nullable|boolean',
+            'sortOrder'       => 'nullable|integer|min:0',
         ]);
 
         $imagePath = $this->storeImage($request->file('image'));
 
+        $galleryPaths = [];
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $file) {
+                $galleryPaths[] = $this->storeImage($file);
+            }
+        }
+
         UmrahPackage::create([
-            'title'        => $validated['title'],
-            'price'        => $validated['price'],
-            'currency'     => $validated['currency'],
-            'description'  => $validated['description'],
-            'duration'     => $validated['duration'],
-            'tag'          => $validated['tag'] ?? null,
-            'features'     => $this->parseFeatures($request->features),
-            'image'        => $imagePath,
-            'isFeatured'   => $request->boolean('isFeatured'),
-            'sortOrder'    => $validated['sortOrder'] ?? 0,
-            'isActive'     => 1,
-            'createdBy'    => auth()->user()?->name ?? 'manager',
-            'createdDate'  => now(),
+            'title'          => $validated['title'],
+            'category'       => $validated['category'],
+            'price'          => $validated['price'],
+            'currency'       => $validated['currency'],
+            'description'    => $validated['description'],
+            'duration'       => $validated['duration'],
+            'transport'      => $validated['transport'],
+            'hotels'         => $validated['hotels'],
+            'inclusions'     => $this->parseFeatures($request->inclusions),
+            'exclusions'     => $this->parseFeatures($request->exclusions),
+            'itinerary'      => $this->parseFeatures($request->itinerary),
+            'gallery_images' => $galleryPaths,
+            'tag'            => $validated['tag'] ?? null,
+            'features'       => $this->parseFeatures($request->features),
+            'image'          => $imagePath,
+            'isFeatured'     => $request->boolean('isFeatured'),
+            'sortOrder'      => $validated['sortOrder'] ?? 0,
+            'isActive'       => 1,
+            'createdBy'      => auth()->user()?->name ?? 'manager',
+            'createdDate'    => now(),
         ]);
 
         return redirect()->route('manager.umrah-packages.index')
@@ -73,16 +95,24 @@ class ManagerUmrahPackagesController extends Controller
         $package = UmrahPackage::where('id', $id)->where('isActive', 1)->firstOrFail();
 
         $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'price'       => 'required|numeric|min:0',
-            'currency'    => 'required|string|max:10',
-            'description' => 'required|string',
-            'duration'    => 'required|string|max:255',
-            'tag'         => 'nullable|string|max:50',
-            'features'    => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'isFeatured'  => 'nullable|boolean',
-            'sortOrder'   => 'nullable|integer|min:0',
+            'title'           => 'required|string|max:255',
+            'category'        => 'required|string|in:economy,standard,premium,vip',
+            'price'           => 'required|numeric|min:0',
+            'currency'        => 'required|string|max:10',
+            'description'     => 'required|string',
+            'duration'        => 'required|string|max:255',
+            'transport'       => 'nullable|string',
+            'hotels'          => 'nullable|string',
+            'inclusions'      => 'nullable|string',
+            'exclusions'      => 'nullable|string',
+            'itinerary'       => 'nullable|string',
+            'tag'             => 'nullable|string|max:50',
+            'features'        => 'nullable|string',
+            'image'           => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'gallery_images'  => 'nullable|array',
+            'gallery_images.*'=> 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'isFeatured'      => 'nullable|boolean',
+            'sortOrder'       => 'nullable|integer|min:0',
         ]);
 
         $imagePath = $package->image;
@@ -93,19 +123,41 @@ class ManagerUmrahPackagesController extends Controller
             $imagePath = $this->storeImage($request->file('image'));
         }
 
+        $galleryPaths = $package->gallery_images ?? [];
+        if ($request->hasFile('gallery_images')) {
+            if (!empty($package->gallery_images)) {
+                foreach ($package->gallery_images as $oldImg) {
+                    if (File::exists(public_path($oldImg))) {
+                        File::delete(public_path($oldImg));
+                    }
+                }
+            }
+            $galleryPaths = [];
+            foreach ($request->file('gallery_images') as $file) {
+                $galleryPaths[] = $this->storeImage($file);
+            }
+        }
+
         $package->update([
-            'title'        => $validated['title'],
-            'price'        => $validated['price'],
-            'currency'     => $validated['currency'],
-            'description'  => $validated['description'],
-            'duration'     => $validated['duration'],
-            'tag'          => $validated['tag'] ?? null,
-            'features'     => $this->parseFeatures($request->features),
-            'image'        => $imagePath,
-            'isFeatured'   => $request->boolean('isFeatured'),
-            'sortOrder'    => $validated['sortOrder'] ?? 0,
-            'modifiedBy'   => auth()->user()?->name ?? 'manager',
-            'modifiedDate' => now(),
+            'title'          => $validated['title'],
+            'category'       => $validated['category'],
+            'price'          => $validated['price'],
+            'currency'       => $validated['currency'],
+            'description'    => $validated['description'],
+            'duration'       => $validated['duration'],
+            'transport'      => $validated['transport'],
+            'hotels'         => $validated['hotels'],
+            'inclusions'     => $this->parseFeatures($request->inclusions),
+            'exclusions'     => $this->parseFeatures($request->exclusions),
+            'itinerary'      => $this->parseFeatures($request->itinerary),
+            'gallery_images' => $galleryPaths,
+            'tag'            => $validated['tag'] ?? null,
+            'features'       => $this->parseFeatures($request->features),
+            'image'          => $imagePath,
+            'isFeatured'     => $request->boolean('isFeatured'),
+            'sortOrder'      => $validated['sortOrder'] ?? 0,
+            'modifiedBy'     => auth()->user()?->name ?? 'manager',
+            'modifiedDate'   => now(),
         ]);
 
         return redirect()->route('manager.umrah-packages.index')

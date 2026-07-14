@@ -70,6 +70,9 @@
                     </td>
                     <td>
                         <div style="display: flex; gap: 6px;">
+                            <a href="{{ route('manager.umrah-packages.departures.index', $package->id) }}" class="wp-btn wp-btn-secondary wp-btn-sm" style="background: #28a745; border-color: #28a745; color: #fff;">
+                                <i class="fas fa-calendar-alt"></i> Dates
+                            </a>
                             <a href="{{ route('manager.umrah-packages.edit', $package->id) }}" class="wp-btn wp-btn-secondary wp-btn-sm">
                                 <i class="fas fa-pen"></i> Edit
                             </a>

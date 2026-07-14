@@ -15,11 +15,18 @@ class UmrahPackage extends Model
     protected $fillable = [
         'company_id',
         'title',
+        'category',
         'image',
         'price',
         'currency',
         'description',
         'duration',
+        'transport',
+        'hotels',
+        'inclusions',
+        'exclusions',
+        'itinerary',
+        'gallery_images',
         'tag',
         'features',
         'isFeatured',
@@ -36,6 +43,10 @@ class UmrahPackage extends Model
         'isFeatured' => 'boolean',
         'price' => 'decimal:2',
         'features' => 'array',
+        'inclusions' => 'array',
+        'exclusions' => 'array',
+        'itinerary' => 'array',
+        'gallery_images' => 'array',
         'createdDate' => 'datetime',
         'modifiedDate' => 'datetime',
     ];
@@ -43,5 +54,10 @@ class UmrahPackage extends Model
     public function scopeActive($query)
     {
         return $query->where('isActive', 1);
+    }
+
+    public function departures()
+    {
+        return $this->hasMany(UmrahDeparture::class, 'umrah_package_id');
     }
 }

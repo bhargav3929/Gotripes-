@@ -1349,7 +1349,7 @@
                         @feature('activities')<a href="/activities" class="gt-nav-link {{ Request::is('activities') ? 'active' : '' }}">Activities{!! $gtBadge('activities') !!}</a>@endfeature
                         @feature('visas')<a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">UAE Visa Services{!! $gtBadge('visa_services') !!}</a>@endfeature
                         @feature('tours')<a href="/tour-packages" class="gt-nav-link {{ Request::is('tour-packages') ? 'active' : '' }}">Tour Packages{!! $gtBadge('tour_packages') !!}</a>@endfeature
-                        @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-nav-link {{ Request::is('hajj-umrah') ? 'active' : '' }}">Hajj &amp; Umrah{!! $gtBadge('hajj_umrah') !!}</a>@endfeature
+                        @feature('hajj_umrah')<a href="/umrah-visas" class="gt-nav-link {{ Request::is('umrah-visas') ? 'active' : '' }}">Umrah &amp; Saudi Visas{!! $gtBadge('hajj_umrah') !!}</a>@endfeature
                     </div>
                     <div class="gt-nav-row gt-nav-secondary">
                         @feature('esim')<a href="/esim" class="gt-nav-sublink {{ Request::is('esim') ? 'active' : '' }}">eSIM{!! $gtBadge('esim') !!}</a>@endfeature
@@ -1434,7 +1434,7 @@
                     <a href="{{ $gtSoon('festival-tours') }}" class="gt-macc-item">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
                     <a href="{{ $gtSoon('medical-tours') }}" class="gt-macc-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
                     @feature('activities')<a href="/activities" class="gt-macc-item">Activities</a>@endfeature
-                    @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-macc-item">Hajj &amp; Umrah</a>@endfeature
+                    @feature('hajj_umrah')<a href="/umrah-visas" class="gt-macc-item">Umrah &amp; Saudi Visas</a>@endfeature
                 </div>
             </div>
 

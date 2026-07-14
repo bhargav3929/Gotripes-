@@ -94,6 +94,10 @@
                         </div>
 
                         <div class="umrah-pkg-actions">
+                            <a href="{{ route('admin.umrah-packages.departures.index', $package->id) }}"
+                               class="umrah-action-btn umrah-action-edit bg-success" title="Manage Departures" style="margin-right: 5px;">
+                                <i class="fas fa-calendar-alt"></i>
+                            </a>
                             <a href="{{ route('admin.umrah-packages.edit', $package->id) }}"
                                class="umrah-action-btn umrah-action-edit" title="Edit Package">
                                 <i class="fas fa-pen"></i>
