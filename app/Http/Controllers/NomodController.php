@@ -342,6 +342,38 @@ class NomodController extends Controller
             if ($application) {
                 return ['type' => 'evisa', 'data' => $application->toArray()];
             }
+        } elseif (stripos($orderId, 'ORDUMB') !== false) {
+            $booking = \App\Models\UmrahBooking::where('order_id', $orderId)->first();
+            if ($booking) {
+                return [
+                    'type' => 'umrah_bus',
+                    'data' => [
+                        'order_id' => $orderId,
+                        'amount' => $booking->total_price,
+                        'currency' => 'AED',
+                        'package_name' => $booking->package->title ?? 'Umrah Bus Package',
+                        'customer_name' => $booking->customer_name,
+                        'customer_email' => $booking->customer_email,
+                        'customer_phone' => $booking->customer_phone,
+                    ],
+                ];
+            }
+        } elseif (stripos($orderId, 'ORDSV') !== false) {
+            $application = \App\Models\SaudiVisaApplication::where('order_id', $orderId)->first();
+            if ($application) {
+                return [
+                    'type' => 'saudi_visa',
+                    'data' => [
+                        'order_id' => $orderId,
+                        'amount' => $application->price,
+                        'currency' => 'AED',
+                        'visa_type' => $application->visaType->name ?? 'Saudi Visa',
+                        'customer_name' => $application->full_name,
+                        'customer_email' => $application->email,
+                        'customer_phone' => $application->phone,
+                    ],
+                ];
+            }
         } elseif (stripos($orderId, 'ORDUM') !== false) {
             $transaction = NomodTransaction::where('order_id', $orderId)->first();
             if ($transaction) {
@@ -463,6 +495,34 @@ class NomodController extends Controller
         if ($bookingType === 'umrah' && stripos($orderId, 'ORDUM') !== false) {
             // Umrah payments are tracked in nomod_transactions only; status already updated in handleCallback
             return;
+        } elseif ($bookingType === 'umrah_bus' && stripos($orderId, 'ORDUMB') !== false) {
+            $booking = \App\Models\UmrahBooking::where('order_id', $orderId)->first();
+            if ($booking) {
+                $status = ($paymentStatus === 'Success') ? 'paid' : 'failed';
+                $booking->update(['payment_status' => $status]);
+                
+                if ($paymentStatus === 'Success') {
+                    $totalPassengers = $booking->adults + $booking->children + $booking->infants;
+                    $departure = \App\Models\UmrahDeparture::where('umrah_package_id', $booking->umrah_package_id)
+                        ->where('departure_date', $booking->departure_date->toDateString())
+                        ->first();
+                    if ($departure) {
+                        $departure->increment('seats_booked', $totalPassengers);
+                    }
+                    
+                    $this->notifyUmrahBooking($booking);
+                }
+            }
+        } elseif ($bookingType === 'saudi_visa' && stripos($orderId, 'ORDSV') !== false) {
+            $application = \App\Models\SaudiVisaApplication::where('order_id', $orderId)->first();
+            if ($application) {
+                $status = ($paymentStatus === 'Success') ? 'paid' : 'failed';
+                $application->update(['payment_status' => $status]);
+                
+                if ($paymentStatus === 'Success') {
+                    $this->notifySaudiVisaApplication($application);
+                }
+            }
         } elseif ($bookingType === 'evisa' && stripos($orderId, 'ORDVISA') !== false) {
             $this->finalizeEvisaBooking($orderId, $paymentStatus);
         } elseif ($bookingType === 'fifa' && stripos($orderId, 'ORDFIFA') !== false) {
@@ -775,8 +835,12 @@ class NomodController extends Controller
     {
         if (stripos($orderId, 'ORDFIFA') !== false) {
             return 'fifa';
+        } elseif (stripos($orderId, 'ORDUMB') !== false) {
+            return 'umrah_bus';
         } elseif (stripos($orderId, 'ORDUM') !== false) {
             return 'umrah';
+        } elseif (stripos($orderId, 'ORDSV') !== false) {
+            return 'saudi_visa';
         } elseif (stripos($orderId, 'ORDESIM') !== false) {
             return 4;
         } elseif (stripos($orderId, 'ORDVISA') !== false) {
@@ -865,5 +929,59 @@ class NomodController extends Controller
         }
 
         return null;
+    }
+
+    private function notifyUmrahBooking(\App\Models\UmrahBooking $booking): void
+    {
+        try {
+            $recipients = booking_recipients(service_notification_emails('hajj_umrah', $booking->company));
+            if (!empty($recipients)) {
+                Mail::to($recipients)->send(new BookingNotificationMail(
+                    heading: 'New Umrah Bus Booking — PAID',
+                    intro: 'A customer has booked and paid for an Umrah Bus Package.',
+                    rows: [
+                        'Package'        => $booking->package->title ?? 'Umrah Bus Package',
+                        'Departure Date' => $booking->departure_date->format('d M Y'),
+                        'Adults'         => $booking->adults,
+                        'Children'       => $booking->children,
+                        'Infants'        => $booking->infants,
+                        'Total Price'    => 'AED ' . number_format($booking->total_price, 2),
+                        'Payment Method' => $booking->payment_gateway,
+                        'Customer Name'  => $booking->customer_name,
+                        'Email'          => $booking->customer_email,
+                        'Phone'          => $booking->customer_phone,
+                    ],
+                    reference: $booking->order_id,
+                    replyToAddress: $booking->customer_email,
+                ));
+            }
+        } catch (\Throwable $e) {
+            Log::error('Umrah booking notification failed', ['order_id' => $booking->order_id, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function notifySaudiVisaApplication(\App\Models\SaudiVisaApplication $application): void
+    {
+        try {
+            $recipients = booking_recipients(service_notification_emails('visas', $application->company));
+            if (!empty($recipients)) {
+                Mail::to($recipients)->send(new BookingNotificationMail(
+                    heading: 'New Saudi Visa Application — PAID',
+                    intro: 'A customer has submitted and paid for a Saudi Visa.',
+                    rows: [
+                        'Visa Type'   => $application->visaType->name ?? 'Saudi Visa',
+                        'Nationality' => $application->nationality,
+                        'Applicant'   => $application->full_name,
+                        'Email'       => $application->email,
+                        'Phone'       => $application->phone,
+                        'Price'       => 'AED ' . number_format($application->price, 2),
+                    ],
+                    reference: $application->order_id,
+                    replyToAddress: $application->email,
+                ));
+            }
+        } catch (\Throwable $e) {
+            Log::error('Saudi Visa booking notification failed', ['order_id' => $application->order_id, 'error' => $e->getMessage()]);
+        }
     }
 }

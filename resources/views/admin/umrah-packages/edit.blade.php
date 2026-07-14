@@ -46,58 +46,73 @@
                                     @enderror
                                 </div>
 
-                                <!-- Price, Currency & Duration Row -->
-                                <div class="row g-2 g-sm-3">
-                                    <div class="col-6 col-sm-4">
-                                        <div class="mb-3 mb-md-4">
-                                            <label for="price" class="form-label fw-semibold text-gold d-flex align-items-center">
-                                                <i class="fas fa-tag me-2 d-none d-sm-inline"></i>
-                                                <span>Price</span>
-                                                <span class="text-danger ms-1">*</span>
-                                            </label>
-                                            <input type="number"
-                                                   class="form-control form-control-mobile @error('price') is-invalid @enderror"
-                                                   id="price" name="price"
-                                                   value="{{ old('price', $package->price) }}"
-                                                   step="0.01" min="0" required>
-                                            @error('price')
-                                                <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-sm-3">
-                                        <div class="mb-3 mb-md-4">
-                                            <label for="currency" class="form-label fw-semibold text-gold d-flex align-items-center">
-                                                <i class="fas fa-dollar-sign me-2 d-none d-sm-inline"></i>
-                                                <span>Currency</span>
-                                            </label>
-                                            <select class="form-control form-control-mobile" id="currency" name="currency">
-                                                <option value="USD" {{ old('currency', $package->currency) == 'USD' ? 'selected' : '' }}>USD ($)</option>
-                                                <option value="AED" {{ old('currency', $package->currency) == 'AED' ? 'selected' : '' }}>AED</option>
-                                                <option value="SAR" {{ old('currency', $package->currency) == 'SAR' ? 'selected' : '' }}>SAR</option>
-                                                <option value="GBP" {{ old('currency', $package->currency) == 'GBP' ? 'selected' : '' }}>GBP (£)</option>
-                                                <option value="EUR" {{ old('currency', $package->currency) == 'EUR' ? 'selected' : '' }}>EUR (€)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-sm-5">
-                                        <div class="mb-3 mb-md-4">
-                                            <label for="duration" class="form-label fw-semibold text-gold d-flex align-items-center">
-                                                <i class="fas fa-clock me-2 d-none d-sm-inline"></i>
-                                                <span>Duration</span>
-                                                <span class="text-danger ms-1">*</span>
-                                            </label>
-                                            <input type="text"
-                                                   class="form-control form-control-mobile @error('duration') is-invalid @enderror"
-                                                   id="duration" name="duration"
-                                                   value="{{ old('duration', $package->duration) }}"
-                                                   required maxlength="255">
-                                            @error('duration')
-                                                <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
+                                 <!-- Price, Currency, Category & Duration Row -->
+                                 <div class="row g-2 g-sm-3">
+                                     <div class="col-6 col-sm-3">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="price" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-tag me-2 d-none d-sm-inline"></i>
+                                                 <span>Price</span>
+                                                 <span class="text-danger ms-1">*</span>
+                                             </label>
+                                             <input type="number"
+                                                    class="form-control form-control-mobile @error('price') is-invalid @enderror"
+                                                    id="price" name="price"
+                                                    value="{{ old('price', $package->price) }}"
+                                                    step="0.01" min="0" required>
+                                             @error('price')
+                                                 <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                             @enderror
+                                         </div>
+                                     </div>
+                                     <div class="col-6 col-sm-2">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="currency" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-dollar-sign me-2 d-none d-sm-inline"></i>
+                                                 <span>Currency</span>
+                                             </label>
+                                             <select class="form-control form-control-mobile" id="currency" name="currency">
+                                                 <option value="USD" {{ old('currency', $package->currency) == 'USD' ? 'selected' : '' }}>USD ($)</option>
+                                                 <option value="AED" {{ old('currency', $package->currency) == 'AED' ? 'selected' : '' }}>AED</option>
+                                                 <option value="SAR" {{ old('currency', $package->currency) == 'SAR' ? 'selected' : '' }}>SAR</option>
+                                                 <option value="GBP" {{ old('currency', $package->currency) == 'GBP' ? 'selected' : '' }}>GBP (£)</option>
+                                                 <option value="EUR" {{ old('currency', $package->currency) == 'EUR' ? 'selected' : '' }}>EUR (€)</option>
+                                             </select>
+                                         </div>
+                                     </div>
+                                     <div class="col-6 col-sm-3">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="category" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-list me-2 d-none d-sm-inline"></i>
+                                                 <span>Category</span>
+                                                 <span class="text-danger ms-1">*</span>
+                                             </label>
+                                             <select class="form-control form-control-mobile" id="category" name="category" required>
+                                                 <option value="economy" {{ old('category', $package->category) == 'economy' ? 'selected' : '' }}>Economy</option>
+                                                 <option value="standard" {{ old('category', $package->category) == 'standard' ? 'selected' : '' }}>Standard</option>
+                                                 <option value="premium" {{ old('category', $package->category) == 'premium' ? 'selected' : '' }}>Premium</option>
+                                                 <option value="vip" {{ old('category', $package->category) == 'vip' ? 'selected' : '' }}>VIP</option>
+                                             </select>
+                                         </div>
+                                     </div>
+                                     <div class="col-6 col-sm-4">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="duration" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-clock me-2 d-none d-sm-inline"></i>
+                                                 <span>Duration</span>
+                                                 <span class="text-danger ms-1">*</span>
+                                             </label>
+                                             <input type="text"
+                                                    class="form-control form-control-mobile @error('duration') is-invalid @enderror"
+                                                    id="duration" name="duration"
+                                                    value="{{ old('duration', $package->duration) }}"
+                                                    required maxlength="255">
+                                             @error('duration')
+                                                 <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                             @enderror
+                                         </div>
+                                     </div>
+                                 </div>
 
                                 <!-- Tag & Sort Order Row -->
                                 <div class="row g-2 g-sm-3">
@@ -156,22 +171,68 @@
                                     @enderror
                                 </div>
 
-                                <!-- Features -->
-                                <div class="mb-3 mb-md-4">
-                                    <label for="features" class="form-label fw-semibold text-gold d-flex align-items-center">
-                                        <i class="fas fa-list-check me-2 d-none d-sm-inline"></i>
-                                        <span>Package Features</span>
-                                    </label>
-                                    <textarea class="form-control form-control-mobile @error('features') is-invalid @enderror"
-                                              id="features" name="features" rows="5"
-                                              placeholder="One feature per line...">{{ old('features', is_array($package->features) ? implode("\n", $package->features) : '') }}</textarea>
-                                    @error('features')
-                                        <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                    @enderror
-                                    <div class="form-text text-light-muted">
-                                        <small><i class="fas fa-info-circle me-1"></i>One feature per line. Each line becomes a bullet point.</small>
-                                    </div>
-                                </div>
+                                 <!-- Features -->
+                                 <div class="mb-3 mb-md-4">
+                                     <label for="features" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                         <i class="fas fa-list-check me-2 d-none d-sm-inline"></i>
+                                         <span>Package Features</span>
+                                     </label>
+                                     <textarea class="form-control form-control-mobile" id="features" name="features" rows="4"
+                                               placeholder="One feature per line...">{{ old('features', is_array($package->features) ? implode("\n", $package->features) : '') }}</textarea>
+                                 </div>
+
+                                 <!-- Transport & Hotels -->
+                                 <div class="row g-2 g-sm-3">
+                                     <div class="col-sm-6">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="transport" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-bus me-2 d-none d-sm-inline"></i>
+                                                 <span>Transport Details</span>
+                                             </label>
+                                             <input type="text" class="form-control form-control-mobile" id="transport" name="transport" value="{{ old('transport', $package->transport) }}" placeholder="e.g., Luxury AC Coach Service">
+                                         </div>
+                                     </div>
+                                     <div class="col-sm-6">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="hotels" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-building me-2 d-none d-sm-inline"></i>
+                                                 <span>Hotels Description</span>
+                                             </label>
+                                             <input type="text" class="form-control form-control-mobile" id="hotels" name="hotels" value="{{ old('hotels', $package->hotels) }}" placeholder="e.g., 3 Nights Makkah + 4 Nights Medina">
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <!-- Inclusions & Exclusions -->
+                                 <div class="row g-2 g-sm-3">
+                                     <div class="col-sm-6">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="inclusions" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-plus-circle me-2 d-none d-sm-inline"></i>
+                                                 <span>Inclusions (one per line)</span>
+                                             </label>
+                                             <textarea class="form-control form-control-mobile" id="inclusions" name="inclusions" rows="4" placeholder="Umrah Visa included&#10;Complimentary Zamzam water">{{ old('inclusions', is_array($package->inclusions) ? implode("\n", $package->inclusions) : '') }}</textarea>
+                                         </div>
+                                     </div>
+                                     <div class="col-sm-6">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="exclusions" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-minus-circle me-2 d-none d-sm-inline"></i>
+                                                 <span>Exclusions (one per line)</span>
+                                             </label>
+                                             <textarea class="form-control form-control-mobile" id="exclusions" name="exclusions" rows="4" placeholder="Food not included&#10;Personal items">{{ old('exclusions', is_array($package->exclusions) ? implode("\n", $package->exclusions) : '') }}</textarea>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <!-- Itinerary -->
+                                 <div class="mb-3 mb-md-4">
+                                     <label for="itinerary" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                         <i class="fas fa-route me-2 d-none d-sm-inline"></i>
+                                         <span>Itinerary (one day per line)</span>
+                                     </label>
+                                     <textarea class="form-control form-control-mobile" id="itinerary" name="itinerary" rows="5" placeholder="Day 1: Departure from Dubai&#10;Day 2: Rest and Medina Ziyarat">{{ old('itinerary', is_array($package->itinerary) ? implode("\n", $package->itinerary) : '') }}</textarea>
+                                 </div>
                             </div>
 
                             <!-- Right Column: Image Upload -->
@@ -214,6 +275,16 @@
                                                 <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
                                             </div>
                                         @enderror
+
+                                         <div class="mt-4 mb-2">
+                                             <h6 class="card-title text-gold fw-semibold mb-2 fs-6">
+                                                 <i class="fas fa-images me-2"></i>Gallery Images (optional)
+                                             </h6>
+                                             <input type="file" name="gallery_images[]" class="form-control" multiple accept="image/*" style="background-color: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff;">
+                                             <div class="form-text text-light-muted">
+                                                 <small><i class="fas fa-info-circle me-1"></i>This will overwrite existing gallery images.</small>
+                                             </div>
+                                         </div>
 
                                         <div id="imagePreview" class="mt-3 d-none">
                                             <div class="border border-gold rounded p-2 bg-dark text-center">

@@ -72,12 +72,14 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 
 Route::prefix('/')->group(function () {
     Route::get('hajj-umrah', function () {
-        $umrahPackages = \App\Models\UmrahPackage::where('isActive', 1)
-            ->orderBy('sortOrder', 'asc')
-            ->orderBy('createdDate', 'desc')
-            ->get();
-        return view('hajj-umrah', compact('umrahPackages'));
-    })->middleware('tenant.feature:hajj_umrah')->name('hajj-umrah');
+        return redirect()->route('umrah-visas.index');
+    })->name('hajj-umrah');
+    
+    Route::get('umrah-visas', [\App\Http\Controllers\UmrahController::class, 'index'])->name('umrah-visas.index');
+    Route::get('umrah-visas/{id}', [\App\Http\Controllers\UmrahController::class, 'show'])->name('umrah-visas.show');
+    Route::post('umrah-visas/{id}/checkout', [\App\Http\Controllers\UmrahController::class, 'checkout'])->name('umrah-visas.checkout');
+    Route::get('saudi-visas', [\App\Http\Controllers\SaudiVisaController::class, 'index'])->name('saudi-visa.index');
+    Route::post('saudi-visa/submit', [\App\Http\Controllers\SaudiVisaController::class, 'submit'])->name('saudi-visa.submit');
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
     Route::get('banner0', fn() => view('banner0'));
     Route::get('countriestour', fn() => view('countriestour'))->middleware('tenant.feature:tours');
@@ -209,6 +211,8 @@ Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 
 
     // Umrah Packages
     Route::resource('umrah-packages', UmrahPackageController::class)->except(['show']);
+    Route::resource('umrah-packages.departures', \App\Http\Controllers\Admin\UmrahDepartureController::class)->except(['show', 'create', 'edit']);
+    Route::resource('saudi-visas', \App\Http\Controllers\Admin\SaudiVisaAdminController::class)->except(['show', 'create', 'edit']);
 });
 
 // Admin routes accessible to both full Admin and Activities Manager
@@ -361,6 +365,7 @@ Route::get('/uaevisa', function () {
                 'entry_type'     => $p->entry_type,
                 'duration'       => $p->duration,
                 'traveller_type' => $p->traveller_type,
+                'nationality'    => $p->nationality,
                 'price'          => (float) $p->price
             ])->toArray()
         ];
@@ -431,6 +436,17 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     // BelongsToCompany trait auto-scopes queries; CRUD is per-tenant.
     Route::resource('packages', ManagerTravelPackagesController::class)->except(['show']);
     Route::resource('umrah-packages', ManagerUmrahPackagesController::class)->except(['show']);
+    Route::post('umrah-packages/{id}/toggle', [\App\Http\Controllers\Manager\ManagerUmrahPackagesController::class, 'toggle'])->name('umrah-packages.toggle');
+    Route::resource('umrah-packages.departures', \App\Http\Controllers\Manager\ManagerUmrahDepartureController::class)->except(['show', 'create', 'edit']);
+    Route::resource('saudi-visas', \App\Http\Controllers\Manager\ManagerSaudiVisaController::class)->except(['show', 'create', 'edit']);
+
+    // Umrah Booking Management
+    Route::prefix('umrah-bookings')->name('umrah-bookings.')->group(function () {
+        Route::get('/',              [\App\Http\Controllers\Manager\ManagerUmrahBookingController::class, 'index'])->name('index');
+        Route::get('/{id}',         [\App\Http\Controllers\Manager\ManagerUmrahBookingController::class, 'show'])->name('show');
+        Route::post('/{id}/status', [\App\Http\Controllers\Manager\ManagerUmrahBookingController::class, 'updateStatus'])->name('status');
+        Route::get('/export/csv',   [\App\Http\Controllers\Manager\ManagerUmrahBookingController::class, 'export'])->name('export');
+    });
 
     // "Add Agent": managers create agent accounts and pick which services
     // (tours / activities / esim) each agent may manage in the /agent portal.
@@ -502,6 +518,9 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::get('/esim/{order}',                [OrdersController::class, 'esimDetail'])->name('esim.show');
         Route::get('/visa',                        [OrdersController::class, 'visa'])->name('visa');
         Route::get('/visa/{application}',          [OrdersController::class, 'visaDetail'])->name('visa.show');
+        Route::get('/saudi-visa',                  [OrdersController::class, 'saudiVisa'])->name('saudi-visa');
+        Route::get('/saudi-visa/{application}',    [OrdersController::class, 'saudiVisaDetail'])->name('saudi-visa.show');
+        Route::post('/saudi-visa/{application}/status', [OrdersController::class, 'updateSaudiVisaStatus'])->name('saudi-visa.status');
         Route::get('/flights-hotels',              [OrdersController::class, 'flightsHotels'])->name('flights-hotels');
     });
 });

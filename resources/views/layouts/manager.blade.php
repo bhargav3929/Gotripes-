@@ -453,6 +453,13 @@
                         <span>Visa Applications</span>
                     </a>
                 </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.orders.saudi-visa') }}"
+                       class="{{ request()->routeIs('manager.orders.saudi-visa*') ? 'active' : '' }}">
+                        <i class="fas fa-passport text-warning"></i>
+                        <span>Saudi Visas</span>
+                    </a>
+                </li>
                 @endfeature
 
                 <li class="wp-nav-item">
@@ -540,6 +547,12 @@
                     <a href="{{ route('manager.visa-pricing.index') }}" class="{{ request()->routeIs('manager.visa-pricing.*') ? 'active' : '' }}">
                         <i class="fas fa-passport"></i>
                         <span>Visa Services</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.saudi-visas.index') }}" class="{{ request()->routeIs('manager.saudi-visas.*') ? 'active' : '' }}">
+                        <i class="fas fa-passport text-warning"></i>
+                        <span>Saudi Visa Setup</span>
                     </a>
                 </li>
                 @endfeature

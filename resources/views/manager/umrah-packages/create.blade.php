@@ -1,128 +1,464 @@
 @extends('layouts.manager')
 
-@section('title', 'Add Hajj/Umrah Package')
-@section('page-title', 'Hajj & Umrah Packages')
+@section('title', 'Create Umrah Package')
+
+@section('page-title', 'Create New Umrah Package')
 
 @section('content')
-<div class="wp-page-header">
-    <h1 class="wp-page-title">Add Hajj/Umrah Package</h1>
-    <a href="{{ route('manager.umrah-packages.index') }}" class="wp-btn wp-btn-secondary">
-        <i class="fas fa-arrow-left"></i> Back
-    </a>
-</div>
-
-<form action="{{ route('manager.umrah-packages.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="wp-card">
-                <div class="wp-card-header"><i class="fas fa-kaaba text-secondary-wp"></i> Package Details</div>
-                <div class="wp-card-body">
-                    <div class="wp-form-group">
-                        <label class="wp-form-label">Title <span class="required">*</span></label>
-                        <input type="text" class="wp-input" name="title" value="{{ old('title') }}" required maxlength="255" placeholder="e.g. Premium Umrah 7 Nights — Makkah + Madinah">
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Price <span class="required">*</span></label>
-                                <input type="number" class="wp-input" name="price" value="{{ old('price') }}" step="0.01" min="0" required placeholder="e.g. 4500.00">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Currency <span class="required">*</span></label>
-                                <select class="wp-select" name="currency" required>
-                                    @foreach(['AED','SAR','USD','EUR','GBP','INR'] as $cur)
-                                        <option value="{{ $cur }}" @selected(old('currency','AED') === $cur)>{{ $cur }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Duration <span class="required">*</span></label>
-                                <input type="text" class="wp-input" name="duration" value="{{ old('duration') }}" required maxlength="255" placeholder="e.g. 7 Nights / 8 Days">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Tag (badge text)</label>
-                                <input type="text" class="wp-input" name="tag" value="{{ old('tag') }}" maxlength="50" placeholder="e.g. Best Seller, Family">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Sort Order</label>
-                                <input type="number" class="wp-input" name="sortOrder" value="{{ old('sortOrder', 0) }}" min="0">
-                                <p class="wp-form-help">Lower numbers appear first.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3" style="display:flex; align-items:flex-end;">
-                            <div class="wp-form-group" style="padding-bottom:6px;">
-                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                                    <input type="checkbox" name="isFeatured" value="1" {{ old('isFeatured') ? 'checked' : '' }}>
-                                    <span class="wp-form-label" style="margin:0;">Featured</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="wp-form-group">
-                        <label class="wp-form-label">Description <span class="required">*</span></label>
-                        <textarea class="wp-input" name="description" rows="5" required placeholder="What's included, accommodation, transport…">{{ old('description') }}</textarea>
-                    </div>
-
-                    <div class="wp-form-group">
-                        <label class="wp-form-label">Features (one per line)</label>
-                        <textarea class="wp-input" name="features" rows="5" placeholder="5-star hotel near Haram&#10;Direct flights&#10;Ziyarat included">{{ old('features') }}</textarea>
-                        <p class="wp-form-help">Each line becomes a bullet point on the public package card.</p>
+<div class="container-fluid px-2 px-md-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="card shadow-lg border-0 animate-fade-in">
+                <div class="card-header">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                        <h3 class="card-title">
+                            <i class="fas fa-kaaba me-2"></i>Create New Umrah Package
+                        </h3>
+                        <a href="{{ route('manager.umrah-packages.index') }}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to List
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-lg-4">
-            <div class="wp-card">
-                <div class="wp-card-header"><i class="fas fa-image text-secondary-wp"></i> Package Image <span class="required">*</span></div>
-                <div class="wp-card-body">
-                    <div class="wp-form-group">
-                        <input type="file" class="wp-input" name="image" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" required onchange="previewUmrahImage(this)">
-                        <p class="wp-form-help">JPEG, PNG, GIF, or WebP. Max 5 MB.</p>
-                    </div>
-                    <div id="umrahPreviewWrap" style="display:none; margin-top:12px; border:1px solid var(--wp-border-light); border-radius:6px; overflow:hidden;">
-                        <img id="umrahPreviewImg" src="" style="width:100%; display:block;">
-                    </div>
-                </div>
-            </div>
+                <form method="POST" action="{{ route('manager.umrah-packages.store') }}" enctype="multipart/form-data" id="packageForm">
+                    @csrf
+                    <div class="card-body p-2 p-sm-3 p-md-4">
+                        <div class="row g-2 g-sm-3 g-md-4">
 
-            <div class="wp-card">
-                <div class="wp-card-body" style="display:flex; gap:8px;">
-                    <button type="submit" class="wp-btn wp-btn-primary" style="flex:1;">
-                        <i class="fas fa-save"></i> Save Package
-                    </button>
-                    <a href="{{ route('manager.umrah-packages.index') }}" class="wp-btn wp-btn-secondary">Cancel</a>
-                </div>
+                            <!-- Left Column: Main Fields -->
+                            <div class="col-12 col-lg-8">
+                                <!-- Title -->
+                                <div class="mb-3 mb-md-4">
+                                    <label for="title" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                        <i class="fas fa-heading me-2 d-none d-sm-inline"></i>
+                                        <span>Package Title</span>
+                                        <span class="text-danger ms-1">*</span>
+                                    </label>
+                                    <input type="text"
+                                           class="form-control form-control-mobile @error('title') is-invalid @enderror"
+                                           id="title" name="title"
+                                           value="{{ old('title') }}"
+                                           placeholder="e.g., Premium Umrah Package"
+                                           required maxlength="255">
+                                    @error('title')
+                                        <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- Price, Currency, Category & Duration Row -->
+                                <div class="row g-2 g-sm-3">
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="price" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-tag me-2 d-none d-sm-inline"></i>
+                                                <span>Price</span>
+                                                <span class="text-danger ms-1">*</span>
+                                            </label>
+                                            <input type="number"
+                                                   class="form-control form-control-mobile @error('price') is-invalid @enderror"
+                                                   id="price" name="price"
+                                                   value="{{ old('price') }}"
+                                                   placeholder="799.00"
+                                                   step="0.01" min="0" required>
+                                            @error('price')
+                                                <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-2">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="currency" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-dollar-sign me-2 d-none d-sm-inline"></i>
+                                                <span>Currency</span>
+                                            </label>
+                                            <select class="form-control form-control-mobile @error('currency') is-invalid @enderror"
+                                                    id="currency" name="currency">
+                                                <option value="USD" {{ old('currency', 'USD') == 'USD' ? 'selected' : '' }}>USD ($)</option>
+                                                <option value="AED" {{ old('currency') == 'AED' ? 'selected' : '' }}>AED</option>
+                                                <option value="SAR" {{ old('currency') == 'SAR' ? 'selected' : '' }}>SAR</option>
+                                                <option value="GBP" {{ old('currency') == 'GBP' ? 'selected' : '' }}>GBP (£)</option>
+                                                <option value="EUR" {{ old('currency') == 'EUR' ? 'selected' : '' }}>EUR (€)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="category" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-bus me-2 d-none d-sm-inline"></i>
+                                                <span>Type</span>
+                                                <span class="text-danger ms-1">*</span>
+                                            </label>
+                                            <select class="form-control form-control-mobile" id="category" name="category" required>
+                                                <option value="bus" {{ old('category','bus') == 'bus' ? 'selected' : '' }}>🚌 Bus</option>
+                                                <option value="air" {{ old('category') == 'air' ? 'selected' : '' }}>✈️ Air</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-4">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="sub_category" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-layer-group me-2 d-none d-sm-inline"></i>
+                                                <span>Tier</span>
+                                                <span class="text-danger ms-1">*</span>
+                                            </label>
+                                            <select class="form-control form-control-mobile" id="sub_category" name="sub_category" required>
+                                                <option value="economy"  {{ old('sub_category') == 'economy'  ? 'selected' : '' }}>Economy</option>
+                                                <option value="standard" {{ old('sub_category','standard') == 'standard' ? 'selected' : '' }}>Standard</option>
+                                                <option value="premium"  {{ old('sub_category') == 'premium'  ? 'selected' : '' }}>Premium</option>
+                                                <option value="vip"      {{ old('sub_category') == 'vip'      ? 'selected' : '' }}>VIP</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-4">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="duration" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-clock me-2 d-none d-sm-inline"></i>
+                                                <span>Duration</span>
+                                                <span class="text-danger ms-1">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   class="form-control form-control-mobile @error('duration') is-invalid @enderror"
+                                                   id="duration" name="duration"
+                                                   value="{{ old('duration') }}"
+                                                   placeholder="e.g., 10 Days Stay"
+                                                   required maxlength="255">
+                                            @error('duration')
+                                                <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Discount + Passenger Pricing -->
+                                <div class="row g-2 g-sm-3">
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold text-gold">Discount Price</label>
+                                            <input type="number" class="form-control form-control-mobile" name="discount_price"
+                                                   value="{{ old('discount_price') }}" placeholder="Optional" step="0.01" min="0">
+                                            <small class="text-muted">Leave blank if no discount</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold text-gold">Adult Price</label>
+                                            <input type="number" class="form-control form-control-mobile" name="adult_price"
+                                                   value="{{ old('adult_price') }}" placeholder="Defaults to base price" step="0.01" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold text-gold">Child Price</label>
+                                            <input type="number" class="form-control form-control-mobile" name="child_price"
+                                                   value="{{ old('child_price') }}" placeholder="e.g. 50% of base" step="0.01" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold text-gold">Infant Price</label>
+                                            <input type="number" class="form-control form-control-mobile" name="infant_price"
+                                                   value="{{ old('infant_price') }}" placeholder="e.g. 0 or flat fee" step="0.01" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tag & Sort Order Row -->
+                                <div class="row g-2 g-sm-3">
+                                    <div class="col-8 col-sm-6">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="tag" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-bookmark me-2 d-none d-sm-inline"></i>
+                                                <span>Tag / Badge</span>
+                                            </label>
+                                            <select class="form-control form-control-mobile" id="tag" name="tag">
+                                                <option value="">No Tag</option>
+                                                <option value="POPULAR" {{ old('tag') == 'POPULAR' ? 'selected' : '' }}>POPULAR</option>
+                                                <option value="BEST VALUE" {{ old('tag') == 'BEST VALUE' ? 'selected' : '' }}>BEST VALUE</option>
+                                                <option value="LUXURY" {{ old('tag') == 'LUXURY' ? 'selected' : '' }}>LUXURY</option>
+                                                <option value="NEW" {{ old('tag') == 'NEW' ? 'selected' : '' }}>NEW</option>
+                                                <option value="ECONOMY" {{ old('tag') == 'ECONOMY' ? 'selected' : '' }}>ECONOMY</option>
+                                            </select>
+                                            <div class="form-text text-light-muted">
+                                                <small><i class="fas fa-info-circle me-1"></i>Badge shown on the package card</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-sm-3">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="sortOrder" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-sort me-2 d-none d-sm-inline"></i>
+                                                <span>Order</span>
+                                            </label>
+                                            <input type="number"
+                                                   class="form-control form-control-mobile"
+                                                   id="sortOrder" name="sortOrder"
+                                                   value="{{ old('sortOrder', 0) }}"
+                                                   min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3 d-flex align-items-center">
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" role="switch"
+                                                   id="isFeatured" name="isFeatured" value="1"
+                                                   {{ old('isFeatured') ? 'checked' : '' }}
+                                                   style="min-width: 3rem; min-height: 1.5rem; background-color: rgba(255,255,255,0.06); border: 1px solid var(--border-color);">
+                                            <label class="form-check-label text-white ms-2" for="isFeatured">
+                                                <i class="fas fa-star text-gold me-1"></i>Featured
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-3 mb-md-4">
+                                    <label for="description" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                        <i class="fas fa-align-left me-2 d-none d-sm-inline"></i>
+                                        <span>Description</span>
+                                        <span class="text-danger ms-1">*</span>
+                                    </label>
+                                    <textarea class="form-control form-control-mobile @error('description') is-invalid @enderror"
+                                              id="description" name="description" rows="3"
+                                              placeholder="Brief description of the package..."
+                                              required>{{ old('description') }}</textarea>
+                                    @error('description')
+                                        <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- Features -->
+                                <div class="mb-3 mb-md-4">
+                                    <label for="features" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                        <i class="fas fa-list-check me-2 d-none d-sm-inline"></i>
+                                        <span>Package Features</span>
+                                    </label>
+                                    <textarea class="form-control form-control-mobile @error('features') is-invalid @enderror"
+                                              id="features" name="features" rows="4"
+                                              placeholder="One feature per line, e.g.:&#10;3-Star Hotels&#10;10 Days Stay&#10;Shared Transport">{{ old('features') }}</textarea>
+                                    <div class="form-text text-light-muted">
+                                        <small><i class="fas fa-info-circle me-1"></i>Enter one feature per line.</small>
+                                    </div>
+                                </div>
+
+                                <!-- Transport & Hotels -->
+                                <div class="row g-2 g-sm-3">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="transport" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-bus me-2 d-none d-sm-inline"></i>
+                                                <span>Transport Details</span>
+                                            </label>
+                                            <input type="text" class="form-control form-control-mobile" id="transport" name="transport" value="{{ old('transport') }}" placeholder="e.g., Luxury AC Coach Service">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="hotels" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-building me-2 d-none d-sm-inline"></i>
+                                                <span>Hotels Description</span>
+                                            </label>
+                                            <input type="text" class="form-control form-control-mobile" id="hotels" name="hotels" value="{{ old('hotels') }}" placeholder="e.g., 3 Nights Makkah + 4 Nights Medina">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Inclusions & Exclusions -->
+                                <div class="row g-2 g-sm-3">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="inclusions" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-plus-circle me-2 d-none d-sm-inline"></i>
+                                                <span>Inclusions (one per line)</span>
+                                            </label>
+                                            <textarea class="form-control form-control-mobile" id="inclusions" name="inclusions" rows="4" placeholder="Umrah Visa included&#10;Complimentary Zamzam water">{{ old('inclusions') }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="exclusions" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-minus-circle me-2 d-none d-sm-inline"></i>
+                                                <span>Exclusions (one per line)</span>
+                                            </label>
+                                            <textarea class="form-control form-control-mobile" id="exclusions" name="exclusions" rows="4" placeholder="Food not included&#10;Personal items">{{ old('exclusions') }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Itinerary -->
+                                <div class="mb-3 mb-md-4">
+                                    <label for="itinerary" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                        <i class="fas fa-route me-2 d-none d-sm-inline"></i>
+                                        <span>Itinerary (one day per line)</span>
+                                    </label>
+                                    <textarea class="form-control form-control-mobile" id="itinerary" name="itinerary" rows="5" placeholder="Day 1: Departure from Dubai&#10;Day 2: Rest and Medina Ziyarat">{{ old('itinerary') }}</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Image Upload -->
+                            <div class="col-12 col-lg-4">
+                                <div class="card bg-light-dark border-gold">
+                                    <div class="card-body p-2 p-sm-3">
+                                        <h6 class="card-title text-gold fw-semibold mb-2 mb-sm-3 fs-6">
+                                            <i class="fas fa-image me-2"></i>Package Image
+                                            <span class="text-danger">*</span>
+                                        </h6>
+
+                                        <div class="image-upload-area" id="dropZone" onclick="document.getElementById('image').click()">
+                                            <i class="fas fa-cloud-upload-alt text-gold mb-2" style="font-size: 2rem;"></i>
+                                            <p class="text-muted mb-1" style="font-size: 0.85rem;">
+                                                <span class="d-none d-sm-inline">Drag & drop or click to upload</span>
+                                                <span class="d-sm-none">Tap to upload image</span>
+                                            </p>
+                                            <small class="text-muted">JPEG, PNG, GIF, WebP | Max 5MB</small>
+                                        </div>
+
+                                        <input type="file" class="d-none @error('image') is-invalid @enderror"
+                                               id="image" name="image"
+                                               accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                               onchange="previewImage(this)">
+                                        @error('image')
+                                            <div class="text-danger mt-2" style="font-size: 0.8rem;">
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                            </div>
+                                        @enderror
+
+                                        <div id="imagePreview" class="mt-3 d-none">
+                                            <div class="border border-gold rounded p-2 bg-dark text-center">
+                                                <img id="previewImg" src="" alt="Preview" class="rounded" style="max-width: 100%; max-height: 200px; object-fit: cover;">
+                                                <div class="mt-2 d-flex justify-content-between align-items-center">
+                                                    <small class="text-gold">Image Preview</small>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeImage()">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 mb-2">
+                                            <h6 class="card-title text-gold fw-semibold mb-2 fs-6">
+                                                <i class="fas fa-images me-2"></i>Gallery Images
+                                            </h6>
+                                            <input type="file" name="gallery_images[]" class="form-control" multiple accept="image/*" style="background-color: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff;">
+                                            <div class="form-text text-light-muted">
+                                                <small><i class="fas fa-info-circle me-1"></i>Upload multiple photos for details gallery.</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Live Preview Card -->
+                                        <div class="mt-3 p-2 border border-gold rounded bg-dark">
+                                            <small class="text-gold d-block mb-2 fw-semibold"><i class="fas fa-eye me-1"></i>Card Preview</small>
+                                            <div id="livePreview" style="background: #111; border-radius: 12px; border: 1px solid #333; overflow: hidden; font-size: 0.75rem;">
+                                                <div style="height: 80px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: #333;">
+                                                    <i class="fas fa-image"></i>
+                                                </div>
+                                                <div style="padding: 10px;">
+                                                    <div class="text-white fw-bold" id="previewTitle" style="font-size: 0.8rem;">Package Title</div>
+                                                    <div class="text-gold fw-bold" id="previewPrice" style="font-size: 0.75rem;">$0.00</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card-footer bg-transparent border-top-gold p-2 p-sm-3 p-md-4">
+                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2">
+                            <div class="text-light-muted order-2 order-sm-1 text-center text-sm-start">
+                                <small><i class="fas fa-info-circle me-1"></i>All required fields must be filled</small>
+                            </div>
+                            <div class="d-flex gap-2 order-1 order-sm-2">
+                                <a href="{{ route('manager.umrah-packages.index') }}"
+                                   class="btn btn-outline-primary flex-fill flex-sm-grow-0 animate-scale">
+                                    <i class="fas fa-times me-1"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary flex-fill flex-sm-grow-0 animate-scale" id="submitBtn">
+                                    <i class="fas fa-save me-1"></i>
+                                    <span class="d-none d-sm-inline">Create Package</span>
+                                    <span class="d-sm-none">Create</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</form>
+</div>
+
+<style>
+    .border-top-gold { border-top: 1px solid var(--border-gold) !important; }
+    .image-upload-area {
+        border: 2px dashed var(--border-gold); border-radius: var(--radius-sm);
+        padding: 1.5rem; text-align: center; background: rgba(255, 215, 0, 0.03);
+        transition: all 0.15s; cursor: pointer;
+    }
+    .image-upload-area:hover, .image-upload-area.dragover {
+        background: rgba(255, 215, 0, 0.08); border-color: var(--primary-gold);
+    }
+</style>
 
 <script>
-function previewUmrahImage(input) {
-    const wrap = document.getElementById('umrahPreviewWrap');
-    const img  = document.getElementById('umrahPreviewImg');
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('packageForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const dropZone = document.getElementById('dropZone');
+
+    // Live preview updates
+    document.getElementById('title').addEventListener('input', function() {
+        document.getElementById('previewTitle').textContent = this.value || 'Package Title';
+    });
+    document.getElementById('price').addEventListener('input', function() {
+        const curr = document.getElementById('currency').value;
+        const sym = curr === 'USD' ? '$' : curr === 'GBP' ? '£' : curr === 'EUR' ? '€' : curr + ' ';
+        document.getElementById('previewPrice').textContent = 'From ' + sym + (parseFloat(this.value) || 0).toFixed(2);
+    });
+    document.getElementById('currency').addEventListener('change', function() {
+        document.getElementById('price').dispatchEvent(new Event('input'));
+    });
+
+    form.addEventListener('submit', function() {
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Creating...';
+        submitBtn.disabled = true;
+        setTimeout(() => { submitBtn.innerHTML = '<i class="fas fa-save me-1"></i> Create Package'; submitBtn.disabled = false; }, 10000);
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        dropZone.addEventListener(evt, function(e) { e.preventDefault(); dropZone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+        dropZone.addEventListener(evt, function(e) { e.preventDefault(); dropZone.classList.remove('dragover'); });
+    });
+    dropZone.addEventListener('drop', function(e) {
+        if (e.dataTransfer.files.length > 0) {
+            document.getElementById('image').files = e.dataTransfer.files;
+            previewImage(document.getElementById('image'));
+        }
+    });
+});
+
+function previewImage(input) {
+    const preview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
     if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (!['image/jpeg','image/png','image/jpg','image/gif','image/webp'].includes(file.type)) {
+            alert('Please select a valid image file.'); input.value = ''; preview.classList.add('d-none'); return;
+        }
+        if (file.size / 1024 / 1024 > 5) {
+            alert('Image must be less than 5MB.'); input.value = ''; preview.classList.add('d-none'); return;
+        }
         const reader = new FileReader();
-        reader.onload = e => { img.src = e.target.result; wrap.style.display = 'block'; };
-        reader.readAsDataURL(input.files[0]);
-    } else {
-        wrap.style.display = 'none';
+        reader.onload = function(e) { previewImg.src = e.target.result; preview.classList.remove('d-none'); };
+        reader.readAsDataURL(file);
     }
+}
+
+function removeImage() {
+    document.getElementById('image').value = '';
+    document.getElementById('imagePreview').classList.add('d-none');
 }
 </script>
 @endsection

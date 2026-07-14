@@ -342,7 +342,7 @@ if (empty($nationalities)) {
                             <select class="evisa-select" name="nationality" id="evNationality" required>
                                 <option value="">Select your nationality</option>
                                 @foreach($nationalities as $n)
-                                    <option value="{{ $n['code'] }}">{{ $n['name'] }}</option>
+                                    <option value="{{ $n['code'] }}" data-iso2="{{ strtolower($n['iso2'] ?? '') }}">{{ $n['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -351,7 +351,7 @@ if (empty($nationalities)) {
                             <select class="evisa-select" name="destination_code" id="evDestination" required>
                                 <option value="">Select a country</option>
                                 @foreach($countries as $c)
-                                    <option value="{{ $c['code'] }}">{{ $c['flag'] }} {{ $c['name'] }}</option>
+                                    <option value="{{ $c['code'] }}" data-iso2="{{ strtolower($c['iso2'] ?? '') }}">{{ $c['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -434,28 +434,66 @@ if (empty($nationalities)) {
     var state = { typeId: null, versionId: null, price: null };
 
     if (typeof TomSelect !== 'undefined') {
+
+        // Build a value→iso2 lookup from each <select>'s option[data-iso2] attributes
+        // so flags work regardless of how TomSelect exposes custom data attributes.
+        function buildIsoMap(selectEl) {
+            var map = {};
+            if (!selectEl) return map;
+            Array.prototype.forEach.call(selectEl.querySelectorAll('option[data-iso2]'), function(opt) {
+                var iso = opt.getAttribute('data-iso2');
+                if (opt.value && iso) map[opt.value] = iso.toLowerCase();
+            });
+            return map;
+        }
+
+        function makeFlagHtml(iso) {
+            if (!iso || iso.length !== 2) return '';
+            return '<img src="https://flagcdn.com/w40/' + iso + '.png"'
+                + ' style="width:20px;height:14px;margin-right:8px;vertical-align:middle;'
+                + 'object-fit:cover;border-radius:2px;flex-shrink:0;" alt="" loading="lazy"'
+                + ' onerror="this.style.display=\'none\'">';
+        }
+
+        function makeRenderer(isoMap) {
+            return {
+                option: function(data, escape) {
+                    var iso = isoMap[data.value] || data.iso2 || '';
+                    return '<div style="display:flex;align-items:center;gap:0;">'
+                        + makeFlagHtml(iso)
+                        + '<span>' + escape(data.text) + '</span>'
+                        + '</div>';
+                },
+                item: function(data, escape) {
+                    var iso = isoMap[data.value] || data.iso2 || '';
+                    return '<div style="display:flex;align-items:center;gap:0;">'
+                        + makeFlagHtml(iso)
+                        + '<span>' + escape(data.text) + '</span>'
+                        + '</div>';
+                },
+                no_results: function(data, escape) {
+                    return '<div style="padding:8px 14px;color:#888;">No results for "'
+                        + escape(data.input) + '"</div>';
+                }
+            };
+        }
+
         if (nat) {
+            var natIsoMap = buildIsoMap(nat);
             new TomSelect(nat, {
                 create: false,
                 placeholder: 'Select your nationality',
                 controlInput: '<input>',
-                render: {
-                    no_results: function(data, escape) {
-                        return '<div class="no-results" style="padding: 8px 14px; color: #888;">No nationality found for "' + escape(data.input) + '"</div>';
-                    }
-                }
+                render: makeRenderer(natIsoMap)
             });
         }
         if (dest) {
+            var destIsoMap = buildIsoMap(dest);
             new TomSelect(dest, {
                 create: false,
                 placeholder: 'Select a country',
                 controlInput: '<input>',
-                render: {
-                    no_results: function(data, escape) {
-                        return '<div class="no-results" style="padding: 8px 14px; color: #888;">No destination found for "' + escape(data.input) + '"</div>';
-                    }
-                }
+                render: makeRenderer(destIsoMap)
             });
         }
     }
@@ -490,28 +528,75 @@ if (empty($nationalities)) {
                 if (d.needs_nationality) { typesBox.innerHTML = '<p class="evisa-hint-empty">Select your nationality above to see available visas.</p>'; return; }
                 if (!d.success || !d.types.length) { typesBox.innerHTML = '<p class="evisa-hint-empty">No online visa options available for this nationality/destination.</p>'; return; }
                 typesBox.innerHTML = d.types.map(function (t, i) {
-                    var title = t.name;
-                    if (t.category) {
-                        title = t.category.indexOf('Visa') >= 0 ? t.category : (t.category + ' Visa');
-                    } else {
-                        var countryName = d.country && d.country.name ? d.country.name : '';
-                        if (countryName) {
-                            title = title.replace(new RegExp('^' + countryName + '\\s*', 'i'), '');
-                        }
-                        title = title.replace(/\s*e-?Visa\s*$/i, '');
-                        if (title.toLowerCase().indexOf('visa') < 0) {
-                            title = title + ' Visa';
-                        }
+                    // ── Normalize entry type to full "X Entry" label ──────────────────
+                    var rawEntry = (t.entry || '').trim();
+                    var normalizedEntry = '';
+                    if (/multiple/i.test(rawEntry)) {
+                        normalizedEntry = 'Multiple Entry';
+                    } else if (/single/i.test(rawEntry)) {
+                        normalizedEntry = 'Single Entry';
+                    } else if (rawEntry) {
+                        // Append "Entry" if not already present
+                        normalizedEntry = /entry/i.test(rawEntry) ? rawEntry : (rawEntry + ' Entry');
                     }
 
+                    // ── Build the clean base package name ────────────────────────────
+                    var rawPkg = t.category || '';
+                    if (!rawPkg) {
+                        var titleClean = t.name;
+                        var countryName = d.country && d.country.name ? d.country.name : '';
+                        if (countryName) {
+                            titleClean = titleClean.replace(new RegExp('^' + countryName + '\\s*', 'i'), '');
+                        }
+                        titleClean = titleClean.replace(/\s*e-?Visa\s*$/i, '');
+                        rawPkg = titleClean;
+                    }
+
+                    // Strip duration words from base name
+                    if (t.stay) {
+                        rawPkg = rawPkg.replace(new RegExp('\\b' + t.stay.replace(/\s+/g, '\\s+') + '\\b', 'gi'), '');
+                    }
+                    rawPkg = rawPkg.replace(/\b\d+\s*(days?|months?|weeks?)\b/gi, '');
+                    rawPkg = rawPkg.replace(/\bstay\b/gi, '');
+
+                    // Strip all entry-type words from base name
+                    rawPkg = rawPkg.replace(/\bmultiple\s+entry\b/gi, '');
+                    rawPkg = rawPkg.replace(/\bsingle\s+entry\b/gi, '');
+                    rawPkg = rawPkg.replace(/\b(single|multiple|double|triple)\b/gi, '');
+                    rawPkg = rawPkg.replace(/\bentry\b/gi, '');
+
+                    // Strip trailing/leading Visa keyword (will be added back)
+                    rawPkg = rawPkg.replace(/\s*visa\s*$/i, '');
+
+                    // Normalize "Tourism" → "Tourist"
+                    rawPkg = rawPkg.replace(/\btourism\b/gi, 'Tourist');
+
+                    // Ensure "Tourist" is present if no other visa-type word
+                    rawPkg = rawPkg.replace(/\s+/g, ' ').trim();
+                    if (rawPkg.toLowerCase().indexOf('tourist') < 0 && rawPkg.toLowerCase().indexOf('visa') < 0) {
+                        rawPkg = rawPkg.length > 0 ? rawPkg + ' Tourist' : 'Tourist';
+                    }
+
+                    var cleanPackageName = rawPkg.trim() + ' Visa';
+
+                    // ── Normalize duration label ─────────────────────────────────────
+                    var durationPart = (t.stay || '').trim();
+                    durationPart = durationPart.replace(/\bdays?\b/gi, '').replace(/\bstay\b/gi, '').trim();
+                    if (durationPart) {
+                        durationPart = durationPart + ' Days';
+                    }
+
+                    // ── Compose final unique title ────────────────────────────────────
+                    var title = [durationPart, normalizedEntry, cleanPackageName].filter(Boolean).join(' ');
+
                     var metaParts = [];
-                    if (t.entry) {
-                        metaParts.push(t.entry);
+                    if (normalizedEntry) {
+                        metaParts.push(normalizedEntry);
                     }
                     if (t.stay) {
                         var stayStr = t.stay;
-                        stayStr = stayStr.replace(/\bStay\b/gi, '').trim();
-                        metaParts.push(stayStr + ' Stay');
+                        stayStr = stayStr.replace(/\bdays?\b/gi, '').replace(/\bStay\b/gi, '').trim();
+                        metaParts.push(stayStr + ' Days Stay');
                     }
                     if (t.validity) {
                         var validityStr = t.validity;

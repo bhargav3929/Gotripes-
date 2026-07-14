@@ -16,6 +16,7 @@ class UAEVisaPrice extends Model
         'entry_type',
         'duration',
         'traveller_type',
+        'nationality',
         'price',
         'isActive',
         'company_id',

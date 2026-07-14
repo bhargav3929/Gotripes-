@@ -12,12 +12,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Seed UAE Visa statuses
+        \Illuminate\Support\Facades\DB::table('tbl_UAEVStatus')->insertOrIgnore([
+            ['id' => 1, 'status_name' => 'Pending'],
+            ['id' => 2, 'status_name' => 'Approved'],
+            ['id' => 3, 'status_name' => 'Rejected'],
+        ]);
 
         \App\Models\Company::updateOrCreate(
             ['slug' => 'gotrips'],

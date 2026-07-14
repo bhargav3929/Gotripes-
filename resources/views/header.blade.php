@@ -1349,7 +1349,23 @@
                         @feature('activities')<a href="/activities" class="gt-nav-link {{ Request::is('activities') ? 'active' : '' }}">Activities{!! $gtBadge('activities') !!}</a>@endfeature
                         @feature('visas')<a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">UAE Visa Services{!! $gtBadge('visa_services') !!}</a>@endfeature
                         @feature('tours')<a href="/tour-packages" class="gt-nav-link {{ Request::is('tour-packages') ? 'active' : '' }}">Tour Packages{!! $gtBadge('tour_packages') !!}</a>@endfeature
-                        @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-nav-link {{ Request::is('hajj-umrah') ? 'active' : '' }}">Hajj &amp; Umrah{!! $gtBadge('hajj_umrah') !!}</a>@endfeature
+                        @feature('hajj_umrah')
+                        <div class="gt-dropdown">
+                            <button type="button" class="gt-dd-toggle gt-nav-link {{ Request::is('umrah-visas*') || Request::is('saudi-visas*') ? 'active' : '' }}">
+                                Umrah &amp; Saudi Visas{!! $gtBadge('hajj_umrah') !!} <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+                            </button>
+                            <div class="gt-dd-menu">
+                                <a href="/umrah-visas" class="gt-dd-item {{ Request::is('umrah-visas') ? 'active' : '' }}">
+                                    <i class="bi bi-bus-front text-warning"></i>
+                                    <span>Umrah Bus Packages</span>
+                                </a>
+                                <a href="/saudi-visas" class="gt-dd-item {{ Request::is('saudi-visas*') ? 'active' : '' }}">
+                                    <i class="bi bi-passport text-warning"></i>
+                                    <span>Saudi Visas</span>
+                                </a>
+                            </div>
+                        </div>
+                        @endfeature
                     </div>
                     <div class="gt-nav-row gt-nav-secondary">
                         @feature('esim')<a href="/esim" class="gt-nav-sublink {{ Request::is('esim') ? 'active' : '' }}">eSIM{!! $gtBadge('esim') !!}</a>@endfeature
@@ -1434,7 +1450,10 @@
                     <a href="{{ $gtSoon('festival-tours') }}" class="gt-macc-item">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
                     <a href="{{ $gtSoon('medical-tours') }}" class="gt-macc-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
                     @feature('activities')<a href="/activities" class="gt-macc-item">Activities</a>@endfeature
-                    @feature('hajj_umrah')<a href="/hajj-umrah" class="gt-macc-item">Hajj &amp; Umrah</a>@endfeature
+                    @feature('hajj_umrah')
+                    <a href="/umrah-visas" class="gt-macc-item">Umrah Bus Packages</a>
+                    <a href="/saudi-visas" class="gt-macc-item">Saudi Visas</a>
+                    @endfeature
                 </div>
             </div>
 
