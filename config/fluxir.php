@@ -106,4 +106,11 @@ return [
 
     // Verbose request/response logging. Disable in production.
     'debug' => (bool) env('FLUXIR_DEBUG', false),
+
+    // Demo/canned visa data for local development when Fluxir's API is
+    // unreachable (e.g. TCP blocked on this network — see FluxirService).
+    // NEVER rely on app()->environment() for this: it can't be trusted to
+    // reflect the real deployment environment. Defaults off everywhere,
+    // including production, unless a developer opts in locally.
+    'demo_fallback' => (bool) env('FLUXIR_DEMO_FALLBACK', false),
 ];

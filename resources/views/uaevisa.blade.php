@@ -431,7 +431,7 @@
 
     .checkbox-text {
         color: #bbb;
-        font-size: 13px;
+        font-size: 15px;
         letter-spacing: 0.2px;
         line-height: 1.5;
     }
@@ -735,12 +735,12 @@
     .emirate-active-badge {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         background: rgba(255, 215, 0, 0.1);
         border: 1px solid rgba(255, 215, 0, 0.35);
-        border-radius: 8px;
-        padding: 5px 12px;
-        font-size: 12px;
+        border-radius: 10px;
+        padding: 8px 16px;
+        font-size: 14px;
         font-weight: 700;
         color: #FFD700;
         text-transform: uppercase;
@@ -753,7 +753,7 @@
         color: #fff;
         cursor: pointer;
         text-decoration: underline;
-        font-size: 11px;
+        font-size: 12px;
         padding: 0 0 0 8px;
         font-family: 'Outfit', sans-serif;
         font-weight: 600;
@@ -925,7 +925,7 @@
                         <label class="custom-checkbox-label">
                             <input type="checkbox" class="custom-checkbox-input" name="overstay_agree" value="1" required>
                             <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
-                            <span class="checkbox-text">I agree not to overstay. If so, I agree to pay the overstay charges per day and also the absconding fee.</span>
+                            <span class="checkbox-text">I agree not to overstay. If so, I agree to pay the overstay charges per day (AED 3,200) and also the absconding fee.</span>
                         </label>
                     </div>
 
@@ -1075,6 +1075,15 @@
         const visaPackageSelect = document.getElementById('visaPackage');
         const visaEntryTypeSelect = document.getElementById('visaEntryType');
         const visaDurationSelect = document.getElementById('visaDuration');
+
+        // --- Emirate selection: driven by the popup modal, no silent default ---
+        // Nothing is pre-selected on load; the visitor must explicitly pick an
+        // emirate in the popup every time they land on the page (no localStorage restore).
+        let selectedEmirateName = null;
+        const EMIRATE_FLAGS = {
+            'Dubai': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3" style="width: 16px; height: 12px; display: inline-block; border-radius: 1px; border: 1px solid rgba(255,255,255,0.2); vertical-align: middle; margin-right: 4px;"><rect width="4" height="3" fill="#D7141A" /><rect width="1" height="3" fill="#FFF" /></svg>',
+            'Sharjah': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 1" style="width: 16px; height: 12px; display: inline-block; border-radius: 1px; border: 1px solid rgba(255,255,255,0.2); vertical-align: middle; margin-right: 4px;"><rect width="2" height="1" fill="#FFF" /><rect x="0.25" y="0.125" width="1.5" height="0.75" fill="#D7141A" /></svg>'
+        };
 
         function getAdults() { return parseInt(visaCountSelect.value, 10) || 1; }
         function getChildren() { return parseInt(childrenCountInput.value, 10) || 0; }
@@ -1237,8 +1246,9 @@
         }
 
         function populatePackages() {
-            const selectedEmirateName = localStorage.getItem('selected_emirate') || 'Dubai';
-            const matchedEmirate = window.emiratesData.find(e => e.name.toLowerCase() === selectedEmirateName.toLowerCase());
+            const matchedEmirate = selectedEmirateName
+                ? window.emiratesData.find(e => e.name.toLowerCase() === selectedEmirateName.toLowerCase())
+                : null;
             const emirateId = matchedEmirate ? matchedEmirate.id : null;
 
             visaPackageSelect.innerHTML = '<option value="">Select Package</option>';
@@ -1326,9 +1336,49 @@
         visaEntryTypeSelect.addEventListener('change', populateDurations);
         visaDurationSelect.addEventListener('change', updatePrice);
 
-        document.addEventListener('emirateChanged', function() {
+        document.addEventListener('emirateChanged', function(e) {
+            selectedEmirateName = e.detail;
+
+            const badge = document.getElementById('emirateActiveBadge');
+            if (badge) {
+                const textEl = badge.querySelector('.badge-text');
+                const iconEl = badge.querySelector('.badge-icon');
+                if (textEl) textEl.textContent = selectedEmirateName + ' Processing';
+                if (iconEl) iconEl.innerHTML = EMIRATE_FLAGS[selectedEmirateName] || '';
+                badge.style.display = 'inline-flex';
+            }
+
             populatePackages();
             updatePrice();
+        });
+
+        // Ask the visitor to choose an emirate as soon as the page settles.
+        setTimeout(function () {
+            if (!selectedEmirateName && typeof window.showEmirateSelector === 'function') {
+                window.showEmirateSelector();
+            }
+        }, 500);
+
+        // Browsers restore this page from the back/forward cache (bfcache) when the
+        // visitor navigates away and hits Back — no fresh DOMContentLoaded fires, so
+        // without this the popup and badge would stay stuck on the old selection.
+        // Force a clean slate and re-prompt every time that happens.
+        window.addEventListener('pageshow', function (event) {
+            if (!event.persisted) return;
+
+            selectedEmirateName = null;
+            const hiddenInput = document.getElementById('selectedEmirate');
+            if (hiddenInput) hiddenInput.value = '';
+
+            const badge = document.getElementById('emirateActiveBadge');
+            if (badge) badge.style.display = 'none';
+
+            populatePackages();
+            updatePrice();
+
+            if (typeof window.showEmirateSelector === 'function') {
+                window.showEmirateSelector();
+            }
         });
 
         hotelCheckbox.addEventListener('change', function() {
@@ -1353,6 +1403,13 @@
         const form = document.getElementById('visaForm');
         form.addEventListener('submit', function (e) {
             e.preventDefault();
+
+            if (!selectedEmirateName) {
+                if (typeof window.showEmirateSelector === 'function') window.showEmirateSelector();
+                alert('Please select which Emirate visa you need before continuing.');
+                return;
+            }
+
             const btn = document.getElementById('submitBtn');
             const originalText = btn.innerHTML;
 
@@ -1375,7 +1432,7 @@
             formData.set('visa_count', String(getAdults()));
             formData.set('children_count', String(getChildren()));
             formData.set('infants_count', String(getInfants()));
-            formData.set('selected_emirate', localStorage.getItem('selected_emirate') || 'Dubai');
+            formData.set('selected_emirate', selectedEmirateName);
 
             fetch(this.action, {
                 method: 'POST',
@@ -1564,26 +1621,6 @@
         closeBtn.addEventListener('click', stopCam);
     }
 
-    // Listen to emirate changes and update the UI badge
-    document.addEventListener('emirateChanged', function(e) {
-        const emirate = e.detail;
-        const badge = document.getElementById('emirateActiveBadge');
-        if (badge) {
-            const textEl = badge.querySelector('.badge-text');
-            const iconEl = badge.querySelector('.badge-icon');
-            if (textEl) {
-                textEl.textContent = emirate + ' Processing';
-            }
-            const EMIRATE_FLAGS = {
-                'Dubai': `<svg class="badge-flag-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3" style="width: 16px; height: 12px; display: inline-block; border-radius: 1px; border: 1px solid rgba(255,255,255,0.2); vertical-align: middle; margin-right: 4px;"><rect width="4" height="3" fill="#D7141A" /><rect width="1" height="3" fill="#FFF" /></svg>`,
-                'Sharjah': `<svg class="badge-flag-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 1" style="width: 16px; height: 12px; display: inline-block; border-radius: 1px; border: 1px solid rgba(255,255,255,0.2); vertical-align: middle; margin-right: 4px;"><rect width="2" height="1" fill="#FFF" /><rect x="0.25" y="0.125" width="1.5" height="0.75" fill="#D7141A" /></svg>`
-            };
-            if (iconEl && EMIRATE_FLAGS[emirate]) {
-                iconEl.innerHTML = EMIRATE_FLAGS[emirate];
-            }
-            badge.style.display = 'inline-flex';
-        }
-    });
 })();
 </script>
 

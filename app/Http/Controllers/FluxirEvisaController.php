@@ -154,7 +154,7 @@ class FluxirEvisaController extends Controller
             $items = ($intents['success'] ?? false) ? ($intents['data']['items'] ?? []) : [];
         }
 
-        if (empty($items) && (config('app.env') === 'local' || config('app.env') === 'testing')) {
+        if (empty($items) && config('fluxir.demo_fallback')) {
             $types = [
                 [
                     'id'         => 1,
@@ -164,6 +164,7 @@ class FluxirEvisaController extends Controller
                     'stay'       => '30 Days',
                     'entry'      => 'Single Entry',
                     'processing' => '3-5 Days',
+                    'express'    => false,
                     'price'      => 111.00,
                 ],
                 [
@@ -174,6 +175,7 @@ class FluxirEvisaController extends Controller
                     'stay'       => '60 Days',
                     'entry'      => 'Multiple Entry',
                     'processing' => '1-3 Days',
+                    'express'    => false,
                     'price'      => 288.00,
                 ],
                 [
@@ -184,12 +186,13 @@ class FluxirEvisaController extends Controller
                     'stay'       => '30 Days',
                     'entry'      => 'Single Entry',
                     'processing' => '24 Hours',
+                    'express'    => true,
                     'price'      => 207.00,
                 ],
             ];
             return response()->json([
                 'success'  => true,
-                'country'  => ['code' => $code, 'name' => 'United Arab Emirates'],
+                'country'  => ['code' => $code, 'name' => $country['name'] ?? $code],
                 'currency' => 'USD',
                 'types'    => $types,
             ]);
@@ -210,6 +213,7 @@ class FluxirEvisaController extends Controller
                 continue;
             }
             $meta = $metaById[$typeId] ?? [];
+            $processing = $meta['processing'] ?? null;
             $types[] = [
                 'id'         => $typeId,
                 'name'       => $meta['name'] ?? ($country['name'] ?? $code) . ' eVisa',
@@ -217,7 +221,8 @@ class FluxirEvisaController extends Controller
                 'validity'   => $this->duration($meta['validity'] ?? null, $meta['validity_unit'] ?? null),
                 'stay'       => $this->duration($meta['stay'] ?? null, $meta['stay_unit'] ?? null),
                 'entry'      => $meta['entry'] ?? null,
-                'processing' => $meta['processing'] ?? null,
+                'processing' => $this->processingLabel($processing),
+                'express'    => $this->isExpress($processing),
                 'price'      => EvisaSetting::customerPrice((float) $fee),
             ];
         }
@@ -310,7 +315,7 @@ class FluxirEvisaController extends Controller
 
         $intent = $this->fluxir->isConfigured() ? $this->fluxir->resolveServiceIntentForType($trip, (int) $data['visa_type_id']) : null;
         if (!$intent) {
-            if (config('app.env') === 'local' || config('app.env') === 'testing') {
+            if (config('fluxir.demo_fallback')) {
                 return response()->json([
                     'success'        => true,
                     'price'          => $data['visa_type_id'] == 1 ? 111.00 : ($data['visa_type_id'] == 2 ? 288.00 : 207.00),
@@ -566,15 +571,51 @@ class FluxirEvisaController extends Controller
             }
 
             if (config('fluxir.deferred_payment')) {
-                $review = $this->fluxir->submitForReview($serviceAppId, $items);
-                if (!$review['success']) {
-                    return $this->fail($record, 'submitForReview', $review);
+                // Store form items so the Nomod callback can submit them to Fluxir
+                // after the customer's payment is confirmed on our gateway.
+                $record->update(['items' => $items, 'status' => 'awaiting_payment']);
+
+                $nomod    = new \App\Services\NomodService();
+                $checkout = $nomod->createCheckout([
+                    'amount'      => $record->amount,
+                    'currency'    => 'USD',
+                    'order_id'    => $orderId,
+                    'description' => 'e-Visa — ' . strtoupper($record->destination_code),
+                    'customer'    => array_filter([
+                        'name'  => trim($data['first_name'] . ' ' . $data['last_name']),
+                        'email' => $data['email'],
+                        'phone' => $data['phone'] ?? null,
+                    ]),
+                    'metadata' => ['type' => 'evisa', 'fluxir_app_id' => $serviceAppId],
+                ]);
+
+                if (!($checkout['success'] ?? false)) {
+                    return $this->fail($record, 'createNomodCheckout', ['error' => $checkout['error'] ?? 'Payment gateway error']);
                 }
-                $record->update(['state' => $review['data']['state'] ?? 'ReadyForReview', 'status' => 'submitted', 'last_response' => $review['data'] ?? null]);
+
+                \App\Models\NomodTransaction::create([
+                    'checkout_id'  => $checkout['checkout_id'],
+                    'order_id'     => $orderId,
+                    'status'       => 'created',
+                    'amount'       => $record->amount,
+                    'currency'     => 'USD',
+                    'booking_type' => 'evisa',
+                    'checkout_url' => $checkout['checkout_url'],
+                    'customer'     => ['name' => trim($data['first_name'] . ' ' . $data['last_name']), 'email' => $data['email'], 'phone' => $data['phone'] ?? null],
+                    'metadata'     => ['type' => 'evisa', 'fluxir_app_id' => $serviceAppId],
+                ]);
+
+                $record->update([
+                    'checkout_session_id' => $checkout['checkout_id'],
+                    'checkout_url'        => $checkout['checkout_url'],
+                ]);
+
                 return response()->json([
-                    'success' => true, 'order_id' => $orderId, 'on_credit' => true,
-                    'amount' => $record->amount, 'currency' => $record->currency,
-                    'redirect' => route('visa.fluxir.success', ['order_id' => $orderId]),
+                    'success'      => true,
+                    'order_id'     => $orderId,
+                    'checkout_url' => $checkout['checkout_url'],
+                    'amount'       => $record->amount,
+                    'currency'     => 'USD',
                 ]);
             }
 
@@ -631,6 +672,41 @@ class FluxirEvisaController extends Controller
             return null;
         }
         return $n . ' ' . rtrim((string) $unit, 's') . ($n > 1 ? 's' : '');
+    }
+
+    /**
+     * Friendly processing-time label. Live catalog data gives a raw hour
+     * count (e.g. 72, 8); the demo catalog already supplies a formatted
+     * string (e.g. "3-5 Days") which is passed through unchanged.
+     */
+    private function processingLabel($value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+        if (!is_numeric($value)) {
+            return (string) $value;
+        }
+        $hours = (float) $value;
+        if ($hours <= 24) {
+            $h = (int) round($hours);
+            return $h . ' Hour' . ($h > 1 ? 's' : '');
+        }
+        $days = (int) round($hours / 24);
+        return $days . ' Day' . ($days > 1 ? 's' : '');
+    }
+
+    /** Whether a processing time counts as an express/rush service. */
+    private function isExpress($value): bool
+    {
+        if ($value === null || $value === '') {
+            return false;
+        }
+        if (is_numeric($value)) {
+            return (float) $value <= 24;
+        }
+        $s = strtolower((string) $value);
+        return str_contains($s, 'hour') && !str_contains($s, 'day');
     }
 
     /** Persist a failed step and return a clean JSON error. */

@@ -299,6 +299,10 @@ class NomodController extends Controller
                 $email = $bookingData['UAEV_email'] ?? null;
                 break;
 
+            case 'evisa':
+                $email = $bookingData['email'] ?? null;
+                break;
+
             case 'agent_booking':
                 $email = $bookingData['client_email'] ?? null;
                 break;
@@ -332,6 +336,11 @@ class NomodController extends Controller
                 $data = $booking->toArray();
                 $data['booking_title'] = trim(($booking->match_label ?: 'FIFA World Cup 2026') . ' — ' . $booking->category);
                 return ['type' => 'fifa', 'data' => $data];
+            }
+        } elseif (stripos($orderId, 'ORDVISA') !== false) {
+            $application = \App\Models\FluxirVisaApplication::where('order_id', $orderId)->first();
+            if ($application) {
+                return ['type' => 'evisa', 'data' => $application->toArray()];
             }
         } elseif (stripos($orderId, 'ORDUM') !== false) {
             $transaction = NomodTransaction::where('order_id', $orderId)->first();
@@ -454,6 +463,8 @@ class NomodController extends Controller
         if ($bookingType === 'umrah' && stripos($orderId, 'ORDUM') !== false) {
             // Umrah payments are tracked in nomod_transactions only; status already updated in handleCallback
             return;
+        } elseif ($bookingType === 'evisa' && stripos($orderId, 'ORDVISA') !== false) {
+            $this->finalizeEvisaBooking($orderId, $paymentStatus);
         } elseif ($bookingType === 'fifa' && stripos($orderId, 'ORDFIFA') !== false) {
             $this->finalizeFifaBooking($orderId, $paymentStatus);
         } elseif ($bookingType === 1 && stripos($orderId, 'UAEV') !== false) {
@@ -584,6 +595,75 @@ class NomodController extends Controller
     }
 
     /**
+     * After Nomod confirms payment for a Fluxir e-visa application:
+     * mark paid, submit to Fluxir on credit, notify the business team.
+     * notified_at guards against duplicate callbacks.
+     */
+    private function finalizeEvisaBooking(string $orderId, string $paymentStatus): void
+    {
+        $record = \App\Models\FluxirVisaApplication::where('order_id', $orderId)->first();
+        if (!$record) {
+            return;
+        }
+
+        if ($paymentStatus !== 'Success') {
+            $record->update(['status' => 'failed']);
+            return;
+        }
+
+        $record->update(['is_paid' => true, 'status' => 'paid']);
+
+        $fluxir = new \App\Services\FluxirService();
+        $review = $fluxir->submitForReview(
+            $record->fluxir_service_application_id,
+            $record->items ?? []
+        );
+
+        if ($review['success'] ?? false) {
+            $record->update([
+                'state'         => $review['data']['state'] ?? 'ReadyForReview',
+                'status'        => 'submitted',
+                'last_response' => $review['data'] ?? null,
+            ]);
+        } else {
+            Log::error('Fluxir submitForReview failed after Nomod payment', [
+                'order_id' => $orderId,
+                'error'    => $review['error'] ?? null,
+            ]);
+        }
+
+        if ($record->notified_at) {
+            return;
+        }
+
+        try {
+            $recipients = booking_recipients(
+                service_notification_emails('visa', $record->company)
+            );
+            if (!empty($recipients)) {
+                Mail::to($recipients)->send(new BookingNotificationMail(
+                    heading: 'New e-Visa application — PAID',
+                    intro: 'A customer paid for an e-Visa. The application has been submitted to Fluxir for processing.',
+                    rows: [
+                        'Applicant'   => trim(($record->first_name ?? '') . ' ' . ($record->last_name ?? '')),
+                        'Email'       => $record->email,
+                        'Phone'       => $record->phone,
+                        'Nationality' => $record->nationality,
+                        'Destination' => $record->destination_code,
+                        'Arrival'     => optional($record->arrival_date)->format('d M Y'),
+                        'Amount'      => 'USD ' . $record->amount,
+                    ],
+                    reference: $orderId,
+                    replyToAddress: $record->email,
+                ));
+            }
+            $record->forceFill(['notified_at' => now()])->save();
+        } catch (\Throwable $e) {
+            Log::error('e-Visa booking notification failed', ['order_id' => $orderId, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
      * Mark a FIFA ticket booking paid/failed and notify the configured FIFA
      * recipients (the agents). The customer confirmation is sent separately by
      * sendPaymentStatusEmail. notified_at dedupes a duplicate payment callback.
@@ -699,6 +779,8 @@ class NomodController extends Controller
             return 'umrah';
         } elseif (stripos($orderId, 'ORDESIM') !== false) {
             return 4;
+        } elseif (stripos($orderId, 'ORDVISA') !== false) {
+            return 'evisa';
         } elseif (stripos($orderId, 'UAEV') !== false) {
             return 1;
         } elseif (stripos($orderId, 'ORDAG') !== false) {

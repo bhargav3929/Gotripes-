@@ -83,6 +83,8 @@
         width:30px; height:21px; border-radius:3px; object-fit:cover; flex-shrink:0;
         box-shadow:0 0 0 1px rgba(255,255,255,.14); background:rgba(255,255,255,.06);
     }
+    .fifa-date { font-size:12px; color:rgba(255,255,255,.5); margin-top:6px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .fifa-date i { font-size:11px; opacity:.7; }
     .fifa-from { font-size:12px; color:rgba(255,255,255,.5); margin-top:8px; }
     .fifa-from b { color:#fff; font-size:15px; font-weight:700; }
 
@@ -435,6 +437,19 @@
                             <span class="vs">vs</span>
                             <span class="fifa-side">@if($match->flag_b)<img class="fifa-flag" src="{{ $match->flag_b }}" alt="" loading="lazy">@endif{{ $match->team_b }}</span>
                         </div>
+                        @if($match->match_date || $match->venue)
+                        <div class="fifa-date">
+                            @if($match->match_date)
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ $match->match_date->format('d M Y') }}
+                            @endif
+                            @if($match->venue)
+                                @if($match->match_date)<span style="opacity:.4">·</span>@endif
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ $match->venue }}
+                            @endif
+                        </div>
+                        @endif
                         <div class="fifa-from">From <b>${{ number_format($minPrice, 0) }}</b> per ticket</div>
                     </div>
                     <div class="fifa-tickets-list">
@@ -775,8 +790,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(url, { headers: { 'Accept': 'application/json' } })
             .then(function (r) { return r.json(); })
             .then(function (d) {
-                if (!d.configured || !d.matches || !d.matches.length) { box.style.display = 'none'; return; }
-                label.textContent = (d.scope === 'world_cup') ? 'Live Scores' : 'Live Football Scores';
+                if (!d.configured || !d.matches || !d.matches.length || d.scope !== 'world_cup') { box.style.display = 'none'; return; }
+                label.textContent = 'Live World Cup Scores';
                 updated.textContent = 'Auto-updating every 30s';
                 grid.innerHTML = d.matches.map(card).join('');
                 box.style.display = 'block';

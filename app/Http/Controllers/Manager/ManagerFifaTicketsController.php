@@ -41,6 +41,7 @@ class ManagerFifaTicketsController extends Controller
             'team_b'     => 'required|string|max:120',
             'stage'      => 'required|string|max:60',
             'match_date' => 'nullable|date',
+            'venue'      => 'nullable|string|max:160',
         ]);
         $data['sort_order'] = (int) preg_replace('/\D/', '', $data['match_code']);
         $data['is_active']  = true;
@@ -58,6 +59,7 @@ class ManagerFifaTicketsController extends Controller
             'team_b'     => 'required|string|max:120',
             'stage'      => 'required|string|max:60',
             'match_date' => 'nullable|date',
+            'venue'      => 'nullable|string|max:160',
             'is_active'  => 'nullable|boolean',
         ]);
         $data['is_active'] = $request->boolean('is_active');

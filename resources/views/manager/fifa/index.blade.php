@@ -76,7 +76,8 @@
                 <button class="wp-btn wp-btn-secondary wp-btn-sm js-edit-match"
                         data-id="{{ $match->id }}" data-a="{{ $match->team_a }}" data-b="{{ $match->team_b }}"
                         data-stage="{{ $match->stage }}" data-active="{{ $match->is_active ? 1 : 0 }}"
-                        data-date="{{ $match->match_date?->format('Y-m-d\TH:i') }}">
+                        data-date="{{ $match->match_date?->format('Y-m-d\TH:i') }}"
+                        data-venue="{{ $match->venue }}">
                     <i class="fas fa-pen"></i>
                 </button>
                 <form action="{{ route('manager.fifa-tickets.matches.destroy', $match->id) }}" method="POST"
@@ -157,9 +158,10 @@
         <div class="wp-form-group"><label class="wp-form-label">Stage</label>
           @include('manager.fifa._stage_options')
         </div>
-        <div class="wp-form-group" style="margin-bottom:0;"><label class="wp-form-label">Match Date &amp; Time <span style="color:var(--wp-text-muted); font-weight:400;">(optional — leave blank to hide)</span></label>
+        <div class="wp-form-group"><label class="wp-form-label">Match Date &amp; Time <span style="color:var(--wp-text-muted); font-weight:400;">(optional — leave blank to hide)</span></label>
           <input type="datetime-local" name="match_date" class="wp-input">
         </div>
+        <div class="wp-form-group" style="margin-bottom:0;"><label class="wp-form-label">Venue</label><input name="venue" class="wp-input" placeholder="Stadium, City"></div>
       </div>
       <div class="modal-footer"><button type="button" class="wp-btn wp-btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="wp-btn wp-btn-primary">Add Match</button></div>
     </form>
@@ -179,6 +181,7 @@
         <div class="wp-form-group"><label class="wp-form-label">Match Date &amp; Time <span style="color:var(--wp-text-muted); font-weight:400;">(optional — leave blank to hide)</span></label>
           <input type="datetime-local" name="match_date" id="em_date" class="wp-input">
         </div>
+        <div class="wp-form-group"><label class="wp-form-label">Venue</label><input name="venue" id="em_venue" class="wp-input" placeholder="Stadium, City"></div>
         <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--wp-text-secondary);">
           <input type="checkbox" name="is_active" id="em_active" value="1"> Visible on website
         </label>
@@ -253,7 +256,7 @@ $(function () {
         var d = $(this).data();
         $('#editMatchForm').attr('action', matchBase + '/' + d.id);
         $('#em_a').val(d.a); $('#em_b').val(d.b); $('#em_stage').val(d.stage);
-        $('#em_date').val(d.date || '');
+        $('#em_date').val(d.date || ''); $('#em_venue').val(d.venue || '');
         $('#em_active').prop('checked', d.active == 1);
         new bootstrap.Modal('#editMatchModal').show();
     });

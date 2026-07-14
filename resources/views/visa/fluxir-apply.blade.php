@@ -202,8 +202,8 @@
         .then(function (res) {
             const d = res.d;
             if (!res.ok || !d.success) { throw new Error(d.message || 'We could not submit your application. Please try again.'); }
-            // Credit / invoicing model: no Stripe step — go straight to confirmation.
-            if (d.on_credit || d.redirect) { window.location.assign(d.redirect || '/uaevisa'); return; }
+            if (d.checkout_url) { window.location.assign(d.checkout_url); return; }
+            if (d.redirect) { window.location.assign(d.redirect); return; }
             if (!d.checkout_session_id) { throw new Error('Application submitted, but payment could not be started. Please contact support.'); }
             if (!stripePk) { throw new Error('Payment is not configured yet. Please contact support.'); }
             const stripe = Stripe(stripePk);
