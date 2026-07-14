@@ -440,7 +440,14 @@ body, main { font-family: 'Outfit', sans-serif; }
                 <div class="col-lg-4">
                     <div class="ud-hero-price-card">
                         <span class="from-label">Starting from</span>
-                        <div class="price">AED {{ number_format($package->price, 0) }}</div>
+                        <div class="price">
+                            @if($package->discount_price && $package->discount_price < $package->price)
+                                <span style="text-decoration: line-through; font-size: 20px; color: #888; margin-right: 8px;">AED {{ number_format($package->price, 0) }}</span>
+                                AED {{ number_format($package->discount_price, 0) }}
+                            @else
+                                AED {{ number_format($package->price, 0) }}
+                            @endif
+                        </div>
                         <button onclick="scrollToBooking()" class="ud-btn-next w-100 mt-3" style="border-radius:9px;padding:11px;">
                             Book Now <i class="bi bi-arrow-down-short"></i>
                         </button>
@@ -683,7 +690,15 @@ body, main { font-family: 'Outfit', sans-serif; }
                     <div class="ud-bk-header">
                         <h3 class="ud-bk-title">Book Your Pilgrimage</h3>
                         <div>
-                            <div class="ud-bk-price">AED {{ number_format($package->price, 0) }}<small>per person</small></div>
+                            <div class="ud-bk-price">
+                                @if($package->discount_price && $package->discount_price < $package->price)
+                                    <span style="text-decoration: line-through; font-size: 13px; color: #888; margin-right: 4px;">AED {{ number_format($package->price, 0) }}</span>
+                                    AED {{ number_format($package->discount_price, 0) }}
+                                @else
+                                    AED {{ number_format($package->price, 0) }}
+                                @endif
+                                <small>per person</small>
+                            </div>
                         </div>
                     </div>
 
@@ -899,7 +914,7 @@ body, main { font-family: 'Outfit', sans-serif; }
                             <hr class="ud-sum-divider">
                             <div class="ud-sum-total">
                                 <span class="tlabel">Total</span>
-                                <span class="tval" id="sum-total">AED {{ number_format($package->price, 0) }}</span>
+                                <span class="tval" id="sum-total">AED {{ number_format($package->adult_price ?? $package->effectivePrice(), 0) }}</span>
                             </div>
                         </div>
                     </div>
@@ -924,7 +939,14 @@ body, main { font-family: 'Outfit', sans-serif; }
 {{-- ─── Mobile Floating CTA ─── --}}
 <div class="ud-mobile-cta">
     <div class="ud-mobile-price">
-        <div class="mprice">AED {{ number_format($package->price, 0) }}</div>
+        <div class="mprice">
+            @if($package->discount_price && $package->discount_price < $package->price)
+                <span style="text-decoration: line-through; font-size: 12px; color: #888; margin-right: 4px;">AED {{ number_format($package->price, 0) }}</span>
+                AED {{ number_format($package->discount_price, 0) }}
+            @else
+                AED {{ number_format($package->price, 0) }}
+            @endif
+        </div>
         <div class="mlabel">per person · <span id="mob-date-label">No date selected</span></div>
     </div>
     <button class="ud-mobile-book-btn" onclick="openMobileModal()">
@@ -956,7 +978,9 @@ const activeDepartures = @json($departures->map(fn($d) => [
     'seats' => $d->seats_available - $d->seats_booked
 ]));
 
-const PKG_PRICE = {{ $package->price }};
+const ADULT_PRICE = {{ $package->adult_price ?? $package->effectivePrice() }};
+const CHILD_PRICE = {{ $package->child_price ?? ($package->effectivePrice() * 0.5) }};
+const INFANT_PRICE = {{ $package->infant_price ?? 0 }};
 
 let selectedDate = '';
 let currentYear, currentMonth;
@@ -1061,8 +1085,7 @@ function updateCounter(type, delta) {
    LIVE SUMMARY
 ═══════════════════════════════════════════════════════════ */
 function updateSummary() {
-    const paying = pax.adults + pax.children;
-    const total  = paying * PKG_PRICE;
+    const total  = (pax.adults * ADULT_PRICE) + (pax.children * CHILD_PRICE) + (pax.infants * INFANT_PRICE);
 
     // Summary box
     document.getElementById('sum-adults').textContent   = pax.adults;
@@ -1195,7 +1218,7 @@ function generatePassengerFields() {
 ═══════════════════════════════════════════════════════════ */
 function populateReview() {
     const fmt = { day:'numeric', month:'short', year:'numeric' };
-    const total = (pax.adults + pax.children) * PKG_PRICE;
+    const total = (pax.adults * ADULT_PRICE) + (pax.children * CHILD_PRICE) + (pax.infants * INFANT_PRICE);
     const gw = document.querySelector('input[name="payment_gateway"]:checked').value;
 
     document.getElementById('rv-date').textContent     = selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', fmt) : '—';

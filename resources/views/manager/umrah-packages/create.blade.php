@@ -85,15 +85,28 @@
                                     <div class="col-6 col-sm-3">
                                         <div class="mb-3 mb-md-4">
                                             <label for="category" class="form-label fw-semibold text-gold d-flex align-items-center">
-                                                <i class="fas fa-list me-2 d-none d-sm-inline"></i>
-                                                <span>Category</span>
+                                                <i class="fas fa-bus me-2 d-none d-sm-inline"></i>
+                                                <span>Type</span>
                                                 <span class="text-danger ms-1">*</span>
                                             </label>
                                             <select class="form-control form-control-mobile" id="category" name="category" required>
-                                                <option value="economy" {{ old('category') == 'economy' ? 'selected' : '' }}>Economy</option>
-                                                <option value="standard" {{ old('category') == 'standard' ? 'selected' : '' }}>Standard</option>
-                                                <option value="premium" {{ old('category', 'premium') == 'premium' ? 'selected' : '' }}>Premium</option>
-                                                <option value="vip" {{ old('category') == 'vip' ? 'selected' : '' }}>VIP</option>
+                                                <option value="bus" {{ old('category','bus') == 'bus' ? 'selected' : '' }}>🚌 Bus</option>
+                                                <option value="air" {{ old('category') == 'air' ? 'selected' : '' }}>✈️ Air</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-4">
+                                        <div class="mb-3 mb-md-4">
+                                            <label for="sub_category" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-layer-group me-2 d-none d-sm-inline"></i>
+                                                <span>Tier</span>
+                                                <span class="text-danger ms-1">*</span>
+                                            </label>
+                                            <select class="form-control form-control-mobile" id="sub_category" name="sub_category" required>
+                                                <option value="economy"  {{ old('sub_category') == 'economy'  ? 'selected' : '' }}>Economy</option>
+                                                <option value="standard" {{ old('sub_category','standard') == 'standard' ? 'selected' : '' }}>Standard</option>
+                                                <option value="premium"  {{ old('sub_category') == 'premium'  ? 'selected' : '' }}>Premium</option>
+                                                <option value="vip"      {{ old('sub_category') == 'vip'      ? 'selected' : '' }}>VIP</option>
                                             </select>
                                         </div>
                                     </div>
@@ -113,6 +126,39 @@
                                             @error('duration')
                                                 <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
                                             @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Discount + Passenger Pricing -->
+                                <div class="row g-2 g-sm-3">
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold text-gold">Discount Price</label>
+                                            <input type="number" class="form-control form-control-mobile" name="discount_price"
+                                                   value="{{ old('discount_price') }}" placeholder="Optional" step="0.01" min="0">
+                                            <small class="text-muted">Leave blank if no discount</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold text-gold">Adult Price</label>
+                                            <input type="number" class="form-control form-control-mobile" name="adult_price"
+                                                   value="{{ old('adult_price') }}" placeholder="Defaults to base price" step="0.01" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold text-gold">Child Price</label>
+                                            <input type="number" class="form-control form-control-mobile" name="child_price"
+                                                   value="{{ old('child_price') }}" placeholder="e.g. 50% of base" step="0.01" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold text-gold">Infant Price</label>
+                                            <input type="number" class="form-control form-control-mobile" name="infant_price"
+                                                   value="{{ old('infant_price') }}" placeholder="e.g. 0 or flat fee" step="0.01" min="0">
                                         </div>
                                     </div>
                                 </div>

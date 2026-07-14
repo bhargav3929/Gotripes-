@@ -84,7 +84,7 @@ class UmrahController extends Controller
 
         // Check departures availability in DB
         $departure = $package->departures()
-            ->where('departure_date', $departureDate)
+            ->whereDate('departure_date', $departureDate)
             ->where('status', 'available')
             ->first();
 
@@ -96,9 +96,10 @@ class UmrahController extends Controller
             return response()->json(['success' => false, 'error' => 'Not enough seats available on this departure date.'], 422);
         }
 
-        // Calculate total price: Infants stay free, adults and children pay full price
-        $payingPassengers = $validated['adults'] + $validated['children'];
-        $totalPrice = $package->price * $payingPassengers;
+        // Calculate total price based on individual passenger category pricing
+        $totalPrice = ($validated['adults'] * $package->priceFor('adult'))
+                    + ($validated['children'] * $package->priceFor('child'))
+                    + ($validated['infants'] * $package->priceFor('infant'));
 
         // Generate Order ID (starts with ORDUMB to track Umrah Bus Package)
         $orderId = 'ORDUMB-' . time() . '-' . Str::random(4);

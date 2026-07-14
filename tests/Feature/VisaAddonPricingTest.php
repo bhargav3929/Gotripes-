@@ -198,4 +198,131 @@ class VisaAddonPricingTest extends TestCase
         $this->assertStringContainsString('hotel', $app->UAEV_addons);
         $this->assertStringContainsString('flight', $app->UAEV_addons);
     }
+
+    public function test_submit_charges_sharjah_deposit_and_nationality_pricing()
+    {
+        Storage::fake('public');
+        Http::fake([
+            '*/v1/checkout' => Http::response(['id' => 'chk_s', 'url' => 'https://pay.test/chk_s', 'status' => 'created'], 200),
+        ]);
+
+        \Illuminate\Support\Facades\DB::table('tbl_UAEVStatus')->insertOrIgnore([
+            'id' => 1, 'status_name' => 'Pending',
+        ]);
+
+        $company = \App\Models\Company::first() ?: \App\Models\Company::create(['name' => 'Test Company', 'subdomain' => 'test']);
+        
+        $emirate = \App\Models\Emirates::create([
+            'emiratesName' => 'Sharjah',
+            'isActive' => 1,
+            'company_id' => 1,
+        ]);
+
+        $package = \App\Models\UAEVisaPackage::create([
+            'emirates_id' => $emirate->emiratesID,
+            'name' => 'Sharjah Entry Visa',
+            'description' => 'Sharjah Tourist Visa',
+            'isActive' => 1,
+            'company_id' => 1,
+        ]);
+
+        // Default pricing (null nationality)
+        \App\Models\UAEVisaPrice::create([
+            'visa_package_id' => $package->id,
+            'entry_type' => 'Single Entry',
+            'duration' => '30 Days',
+            'traveller_type' => 'Adult',
+            'nationality' => null,
+            'price' => 340.00,
+            'isActive' => 1,
+            'company_id' => 1,
+        ]);
+
+        // Pakistan pricing
+        \App\Models\UAEVisaPrice::create([
+            'visa_package_id' => $package->id,
+            'entry_type' => 'Single Entry',
+            'duration' => '30 Days',
+            'traveller_type' => 'Adult',
+            'nationality' => 'Pakistan',
+            'price' => 450.00,
+            'isActive' => 1,
+            'company_id' => 1,
+        ]);
+        \App\Models\UAEVisaPrice::create([
+            'visa_package_id' => $package->id,
+            'entry_type' => 'Single Entry',
+            'duration' => '30 Days',
+            'traveller_type' => 'Child',
+            'nationality' => 'Pakistan',
+            'price' => 400.00,
+            'isActive' => 1,
+            'company_id' => 1,
+        ]);
+
+        $payload = [
+            'selected_emirate' => 'Sharjah',
+            'visa_package_id'  => $package->id,
+            'entry_type'       => 'Single Entry',
+            'visaDuration'     => '30 Days',
+            'price'            => '999999',
+            'visa_count'       => 1,
+            'children_count'   => 1,
+            'nationality'      => 'Pakistan',
+            'arrival_date'     => '2026-08-01',
+            'departure_date'   => '2026-08-10',
+            'email'            => 'sharjah_visa@example.com',
+            'phone'            => '+971500000000',
+            
+            // Passenger details
+            'first_name'       => ['John', 'Jane'],
+            'last_name'        => ['Doe', 'Smith'],
+            'passport_number'  => ['P123456', 'P654321'],
+            'dob'              => ['1990-01-01', '2018-05-05'],
+            'gender'           => ['Male', 'Female'],
+
+            // Bank details for Sharjah refund
+            'bank_account_holder' => 'John Doe Refund Account',
+            'bank_name'           => 'Emirates NBD',
+            'bank_account_number' => 'AE1234567890123456789',
+            'bank_swift_code'     => 'EBANDAEAAXXX',
+
+            'passport_copy'    => [
+                UploadedFile::fake()->create('p0.pdf', 50, 'application/pdf'),
+                UploadedFile::fake()->create('p1.pdf', 50, 'application/pdf'),
+            ],
+            'passport_photo'   => [
+                UploadedFile::fake()->create('ph0.jpg', 50, 'image/jpeg'),
+                UploadedFile::fake()->create('ph1.jpg', 50, 'image/jpeg'),
+            ],
+        ];
+
+        $this->withoutMiddleware(VerifyCsrfToken::class)
+            ->post(route('uaev.submit'), $payload)
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        // Recalculation verification: (450 + 400) + (5000 * 2) = 850 + 10000 = 10850.00
+        $txn = NomodTransaction::where('booking_type', 'visa')->latest('id')->first();
+        $this->assertNotNull($txn);
+        $this->assertEquals(10850.00, (float) $txn->amount);
+
+        // Verify stored applications
+        $apps = \App\Models\UAEVApplication::where('UAEV_email', 'sharjah_visa@example.com')->get();
+        $this->assertCount(2, $apps);
+
+        $firstApp = $apps->first();
+        $this->assertEquals('John', $firstApp->UAEV_first_name);
+        $this->assertEquals('Doe', $firstApp->UAEV_last_name);
+        $this->assertEquals('P123456', $firstApp->UAEV_passport_number);
+        $this->assertEquals('Male', $firstApp->UAEV_gender);
+        $this->assertEquals('1990-01-01', $firstApp->UAEV_dob);
+        
+        $this->assertEquals(5000.00, (float) $firstApp->UAEV_deposit_amount);
+        $this->assertEquals(5000.00, (float) $firstApp->UAEV_refund_amount);
+        $this->assertEquals('John Doe Refund Account', $firstApp->UAEV_bank_account_holder);
+        $this->assertEquals('Emirates NBD', $firstApp->UAEV_bank_name);
+        $this->assertEquals('AE1234567890123456789', $firstApp->UAEV_bank_account_number);
+        $this->assertEquals('EBANDAEAAXXX', $firstApp->UAEV_bank_swift_code);
+    }
 }

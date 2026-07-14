@@ -941,6 +941,39 @@
                         <!-- Dynamic fields injected by JS -->
                     </div>
 
+                    {{-- Sharjah Refund Bank Details --}}
+                    <div id="sharjahRefundFields" style="display: none; margin-top: 16px;">
+                        <div class="section-divider"></div>
+                        <div class="section-label">
+                            <i class="bi bi-bank2"></i> Sharjah Refund Bank Details
+                        </div>
+                        <div style="background: rgba(255, 215, 0, 0.03); border: 1px solid rgba(255, 215, 0, 0.1); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                            <p style="color: #FFD700; font-size: 13px; font-weight: 500; margin: 0 0 12px 0; line-height: 1.4;">
+                                A security deposit of <strong>AED 5,000 per applicant</strong> is required for Sharjah Visa processing. Please provide the bank details where the deposit should be refunded after departure.
+                            </p>
+                            <div class="form-grid">
+                                <div class="form-field">
+                                    <label class="field-label">Account Holder Name</label>
+                                    <input type="text" class="field-input" id="bank_account_holder" name="bank_account_holder" placeholder="Enter full name">
+                                </div>
+                                <div class="form-field">
+                                    <label class="field-label">Bank Name</label>
+                                    <input type="text" class="field-input" id="bank_name" name="bank_name" placeholder="Enter bank name">
+                                </div>
+                            </div>
+                            <div class="form-grid" style="margin-top: 12px;">
+                                <div class="form-field">
+                                    <label class="field-label">Account Number / IBAN</label>
+                                    <input type="text" class="field-input" id="bank_account_number" name="bank_account_number" placeholder="AE00 0000 ...">
+                                </div>
+                                <div class="form-field">
+                                    <label class="field-label">SWIFT Code</label>
+                                    <input type="text" class="field-input" id="bank_swift_code" name="bank_swift_code" placeholder="Enter SWIFT code (optional)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="section-divider"></div>
 
                     {{-- ADD-ON SERVICES --}}
@@ -1012,6 +1045,14 @@
                     <div class="summary-row" id="ticketRow" style="display: none;">
                         <span class="summary-label">Ticket Booking</span>
                         <span class="summary-value" id="summaryTicket">AED {{ number_format($ticketFee ?? 25, 2) }}</span>
+                    </div>
+                    <div class="summary-row" id="depositRow" style="display: none;">
+                        <span class="summary-label" style="color: #FFD700;">Security Deposit</span>
+                        <span class="summary-value" id="summaryDeposit" style="color: #FFD700;">AED 0.00</span>
+                    </div>
+                    <div class="summary-row" id="refundRow" style="display: none;">
+                        <span class="summary-label" style="color: #22c55e;">Refundable Amount</span>
+                        <span class="summary-value" id="summaryRefund" style="color: #22c55e;">AED 0.00</span>
                     </div>
                     <div class="summary-total">
                         <span class="total-label">Total Payable</span>
@@ -1119,15 +1160,42 @@
                 }
 
                 const html = `
-                    <div class="applicant-box">
+                    <div class="applicant-box" id="applicant-box-${i}">
                         <div class="applicant-header">
                             <span><i class="bi bi-person-fill"></i> ${label}</span>
+                        </div>
+                        <div class="form-grid" style="margin-bottom: 12px;">
+                            <div class="form-field">
+                                <label class="field-label">First Name (Given Names)</label>
+                                <input type="text" name="first_name[]" class="field-input app-first-name" placeholder="As in passport" required>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Last Name (Surname)</label>
+                                <input type="text" name="last_name[]" class="field-input app-last-name" placeholder="As in passport" required>
+                            </div>
+                        </div>
+                        <div class="form-grid-3" style="margin-bottom: 12px;">
+                            <div class="form-field">
+                                <label class="field-label">Passport Number</label>
+                                <input type="text" name="passport_number[]" class="field-input app-passport-number" placeholder="Enter passport number" required>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Gender</label>
+                                <select name="gender[]" class="field-input app-gender" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Date of Birth</label>
+                                <input type="date" name="dob[]" class="field-input app-dob" required>
+                            </div>
                         </div>
                         <div class="form-grid-3">
                             <div class="form-field">
                                 <label class="field-label">Passport Copy</label>
                                 <div class="file-input-wrapper">
-                                    <input type="file" name="passport_copy[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this)">
+                                    <input type="file" name="passport_copy[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this); if (typeof window.handlePassportUpload === 'function') window.handlePassportUpload(this, ${i});">
                                     <div class="file-input-custom">
                                         <span class="file-name">Upload passport (PDF/Image)...</span>
                                         <i class="bi bi-cloud-arrow-up-fill file-icon"></i>
@@ -1204,10 +1272,20 @@
             if (selectedPackageId && selectedEntryType && selectedDuration) {
                 const pkg = window.visaPricingData.find(p => String(p.package_id) === String(selectedPackageId));
                 if (pkg && pkg.prices) {
-                    const pricesForCombo = pkg.prices.filter(p => 
+                    let pricesForCombo = pkg.prices.filter(p => 
                         p.entry_type === selectedEntryType && 
                         p.duration === selectedDuration
                     );
+
+                    // Filter by nationality first, fallback to null/empty nationality
+                    const selectedNat = document.getElementById('nationality').value;
+                    const hasNatPrice = pricesForCombo.some(p => p.nationality && p.nationality.toLowerCase() === selectedNat.toLowerCase());
+                    
+                    if (hasNatPrice) {
+                        pricesForCombo = pricesForCombo.filter(p => p.nationality && p.nationality.toLowerCase() === selectedNat.toLowerCase());
+                    } else {
+                        pricesForCombo = pricesForCombo.filter(p => !p.nationality);
+                    }
 
                     const adultRow  = pricesForCombo.find(p => p.traveller_type.toLowerCase() === 'adult');
                     const childRow  = pricesForCombo.find(p => p.traveller_type.toLowerCase() === 'child');
@@ -1224,7 +1302,14 @@
             const hotelUnit  = hotelFeeForVisas(totalPersons);
             const ticketCost = ticketCheckbox.checked ? ticketUnit : 0;
             const hotelCost  = hotelCheckbox.checked ? hotelUnit : 0;
-            const grandTotal = baseVisaTotal + hotelCost + ticketCost;
+
+            // Sharjah specific calculations
+            const isSharjah = (selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah');
+            const depositUnit = isSharjah ? 5000.00 : 0;
+            const depositCost = depositUnit * totalPersons;
+            const refundCost = depositCost;
+
+            const grandTotal = baseVisaTotal + hotelCost + ticketCost + depositCost;
 
             document.getElementById('hiddenPrice').value = grandTotal.toFixed(2);
             document.getElementById('countDisplay').textContent = totalPersons;
@@ -1241,6 +1326,36 @@
 
             document.getElementById('hotelRow').style.display = hotelCheckbox.checked ? 'flex' : 'none';
             document.getElementById('ticketRow').style.display = ticketCheckbox.checked ? 'flex' : 'none';
+
+            // Show/hide Sharjah deposit and refund rows
+            const depRow = document.getElementById('depositRow');
+            const refRow = document.getElementById('refundRow');
+            if (depRow && refRow) {
+                if (isSharjah) {
+                    depRow.style.display = 'flex';
+                    refRow.style.display = 'flex';
+                    document.getElementById('summaryDeposit').textContent = 'AED ' + depositCost.toFixed(2);
+                    document.getElementById('summaryRefund').textContent = 'AED ' + refundCost.toFixed(2);
+                } else {
+                    depRow.style.display = 'none';
+                    refRow.style.display = 'none';
+                }
+            }
+
+            // Show/hide Sharjah refund bank details
+            const refundFieldsDiv = document.getElementById('sharjahRefundFields');
+            if (refundFieldsDiv) {
+                refundFieldsDiv.style.display = isSharjah ? 'block' : 'none';
+                
+                // Toggle required attributes for Sharjah Visa bank details
+                const bankHolderInput = document.getElementById('bank_account_holder');
+                const bankNameInput = document.getElementById('bank_name');
+                const bankNumberInput = document.getElementById('bank_account_number');
+                
+                if (bankHolderInput) bankHolderInput.required = isSharjah;
+                if (bankNameInput) bankNameInput.required = isSharjah;
+                if (bankNumberInput) bankNumberInput.required = isSharjah;
+            }
 
             document.getElementById('summaryTotal').textContent = 'AED ' + grandTotal.toFixed(2);
         }
@@ -1335,6 +1450,79 @@
         visaPackageSelect.addEventListener('change', populateEntryTypes);
         visaEntryTypeSelect.addEventListener('change', populateDurations);
         visaDurationSelect.addEventListener('change', updatePrice);
+
+        if (nationalitySelect) {
+            nationalitySelect.on('change', function() {
+                updatePrice();
+            });
+        }
+
+        // Handle automated OCR scan on individual passport copy file uploads
+        window.handlePassportUpload = function(input, index) {
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
+            
+            const card = document.getElementById(`applicant-box-${index}`);
+            if (!card) return;
+            
+            const firstNameInput = card.querySelector('.app-first-name');
+            const lastNameInput = card.querySelector('.app-last-name');
+            const passportNumInput = card.querySelector('.app-passport-number');
+            const dobInput = card.querySelector('.app-dob');
+            const genderInput = card.querySelector('.app-gender');
+            
+            const headerText = card.querySelector('.applicant-header span');
+            const originalHTML = headerText.innerHTML;
+            headerText.innerHTML = `<span style="color: #FFD700;"><i class="bi bi-hourglass-split"></i> Scanning passport...</span>`;
+            
+            const token = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+            const fd = new FormData();
+            fd.append('passport', file);
+            fd.append('_token', token);
+
+            fetch("{{ route('passport.extract') }}", {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                body: fd
+            })
+            .then(res => res.json())
+            .then(data => {
+                headerText.innerHTML = originalHTML;
+                if (data.success && data.fields) {
+                    const f = data.fields;
+                    
+                    if (firstNameInput && (f.given_names || f.full_name)) {
+                        firstNameInput.value = f.given_names || f.full_name;
+                    }
+                    if (lastNameInput && f.surname) {
+                        lastNameInput.value = f.surname;
+                    }
+                    if (passportNumInput && f.passport_number) {
+                        passportNumInput.value = f.passport_number;
+                    }
+                    if (dobInput && f.date_of_birth) {
+                        dobInput.value = f.date_of_birth;
+                    }
+                    if (genderInput && f.sex) {
+                        const sex = String(f.sex).toLowerCase();
+                        if (sex.startsWith('m')) {
+                            genderInput.value = 'Male';
+                        } else if (sex.startsWith('f')) {
+                            genderInput.value = 'Female';
+                        }
+                    }
+                    
+                    // If it is the first applicant, prefill nationality too
+                    if (index === 0 && f.nationality) {
+                        selectNationality(f);
+                    }
+                }
+            })
+            .catch(err => {
+                headerText.innerHTML = originalHTML;
+                console.error('Passport OCR error:', err);
+            });
+        };
 
         document.addEventListener('emirateChanged', function(e) {
             selectedEmirateName = e.detail;
@@ -1553,6 +1741,27 @@
             if (ok && d.success && d.fields) {
                 const f = d.fields;
                 const picked = selectNationality(f);
+                
+                // Auto-fill Applicant #1
+                const firstCard = document.getElementById('applicant-box-0');
+                if (firstCard) {
+                    const fn = firstCard.querySelector('.app-first-name');
+                    const ln = firstCard.querySelector('.app-last-name');
+                    const pn = firstCard.querySelector('.app-passport-number');
+                    const dob = firstCard.querySelector('.app-dob');
+                    const gen = firstCard.querySelector('.app-gender');
+                    
+                    if (fn && (f.given_names || f.full_name)) fn.value = f.given_names || f.full_name;
+                    if (ln && f.surname) ln.value = f.surname;
+                    if (pn && f.passport_number) pn.value = f.passport_number;
+                    if (dob && f.date_of_birth) dob.value = f.date_of_birth;
+                    if (gen && f.sex) {
+                        const sex = String(f.sex).toLowerCase();
+                        if (sex.startsWith('m')) gen.value = 'Male';
+                        else if (sex.startsWith('f')) gen.value = 'Female';
+                    }
+                }
+                
                 const det = [
                     ['Name', f.full_name || [f.given_names, f.surname].filter(Boolean).join(' ')],
                     ['Passport No', f.passport_number], ['Nationality', f.nationality],

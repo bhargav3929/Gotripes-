@@ -83,15 +83,28 @@
                                      <div class="col-6 col-sm-3">
                                          <div class="mb-3 mb-md-4">
                                              <label for="category" class="form-label fw-semibold text-gold d-flex align-items-center">
-                                                 <i class="fas fa-list me-2 d-none d-sm-inline"></i>
-                                                 <span>Category</span>
+                                                 <i class="fas fa-bus me-2 d-none d-sm-inline"></i>
+                                                 <span>Type</span>
                                                  <span class="text-danger ms-1">*</span>
                                              </label>
                                              <select class="form-control form-control-mobile" id="category" name="category" required>
-                                                 <option value="economy" {{ old('category', $package->category) == 'economy' ? 'selected' : '' }}>Economy</option>
-                                                 <option value="standard" {{ old('category', $package->category) == 'standard' ? 'selected' : '' }}>Standard</option>
-                                                 <option value="premium" {{ old('category', $package->category) == 'premium' ? 'selected' : '' }}>Premium</option>
-                                                 <option value="vip" {{ old('category', $package->category) == 'vip' ? 'selected' : '' }}>VIP</option>
+                                                 <option value="bus" {{ old('category', $package->category) == 'bus' ? 'selected' : '' }}>🚌 Bus</option>
+                                                 <option value="air" {{ old('category', $package->category) == 'air' ? 'selected' : '' }}>✈️ Air</option>
+                                             </select>
+                                         </div>
+                                     </div>
+                                     <div class="col-6 col-sm-3">
+                                         <div class="mb-3 mb-md-4">
+                                             <label for="sub_category" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-layer-group me-2 d-none d-sm-inline"></i>
+                                                 <span>Tier</span>
+                                                 <span class="text-danger ms-1">*</span>
+                                             </label>
+                                             <select class="form-control form-control-mobile" id="sub_category" name="sub_category" required>
+                                                 <option value="economy"  {{ old('sub_category', $package->sub_category) == 'economy'  ? 'selected' : '' }}>Economy</option>
+                                                 <option value="standard" {{ old('sub_category', $package->sub_category) == 'standard' ? 'selected' : '' }}>Standard</option>
+                                                 <option value="premium"  {{ old('sub_category', $package->sub_category) == 'premium'  ? 'selected' : '' }}>Premium</option>
+                                                 <option value="vip"      {{ old('sub_category', $package->sub_category) == 'vip'      ? 'selected' : '' }}>VIP</option>
                                              </select>
                                          </div>
                                      </div>
@@ -114,7 +127,40 @@
                                      </div>
                                  </div>
 
-                                <!-- Tag & Sort Order Row -->
+                                 <!-- Discount + Passenger Pricing -->
+                                 <div class="row g-2 g-sm-3">
+                                     <div class="col-6 col-sm-3">
+                                         <div class="mb-3">
+                                             <label class="form-label fw-semibold text-gold">Discount Price</label>
+                                             <input type="number" class="form-control form-control-mobile" name="discount_price"
+                                                    value="{{ old('discount_price', $package->discount_price) }}" placeholder="Optional" step="0.01" min="0">
+                                             <small class="text-muted">Leave blank if no discount</small>
+                                         </div>
+                                     </div>
+                                     <div class="col-6 col-sm-3">
+                                         <div class="mb-3">
+                                             <label class="form-label fw-semibold text-gold">Adult Price</label>
+                                             <input type="number" class="form-control form-control-mobile" name="adult_price"
+                                                    value="{{ old('adult_price', $package->adult_price) }}" placeholder="Defaults to base" step="0.01" min="0">
+                                         </div>
+                                     </div>
+                                     <div class="col-6 col-sm-3">
+                                         <div class="mb-3">
+                                             <label class="form-label fw-semibold text-gold">Child Price</label>
+                                             <input type="number" class="form-control form-control-mobile" name="child_price"
+                                                    value="{{ old('child_price', $package->child_price) }}" placeholder="e.g. 50% of base" step="0.01" min="0">
+                                         </div>
+                                     </div>
+                                     <div class="col-6 col-sm-3">
+                                         <div class="mb-3">
+                                             <label class="form-label fw-semibold text-gold">Infant Price</label>
+                                             <input type="number" class="form-control form-control-mobile" name="infant_price"
+                                                    value="{{ old('infant_price', $package->infant_price) }}" placeholder="e.g. 0 or flat" step="0.01" min="0">
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <!-- Tag & Sort Order Row -->
                                 <div class="row g-2 g-sm-3">
                                     <div class="col-8 col-sm-6">
                                         <div class="mb-3 mb-md-4">

@@ -10,6 +10,9 @@ use App\Models\HomepageAd;
 use App\Models\TenantCommission;
 use App\Models\UAEActivity;
 use App\Models\UAEVApplication;
+use App\Models\UmrahPackage;
+use App\Models\UmrahDeparture;
+use App\Models\UmrahBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -65,11 +68,24 @@ class ManagerDashboardController extends Controller
         $announcementCount = Announcement::where('isActive', 1)->count();
         $activityCount     = UAEActivity::where('isActive', 1)->count();
 
+        // ─── Umrah & Saudi module KPIs ──────────────────────────────────
+        $umrahTotalPackages  = UmrahPackage::count();
+        $umrahActivePackages = UmrahPackage::where('isActive', 1)->count();
+        $umrahUpcomingDeps   = UmrahDeparture::where('departure_date', '>=', now()->toDateString())
+                                ->where('status', 'available')->count();
+        $umrahTotalBookings  = UmrahBooking::count();
+        $umrahAvailSeats     = UmrahDeparture::where('departure_date', '>=', now()->toDateString())
+                                ->where('status', 'available')
+                                ->selectRaw('SUM(seats_available - seats_booked) as total')
+                                ->value('total') ?? 0;
+
         return view('manager.dashboard', compact(
             'period',
             'totalBookings', 'revenue', 'commission', 'last7DaysBookings',
             'series',
-            'adCount', 'announcementCount', 'activityCount'
+            'adCount', 'announcementCount', 'activityCount',
+            'umrahTotalPackages', 'umrahActivePackages', 'umrahUpcomingDeps',
+            'umrahTotalBookings', 'umrahAvailSeats'
         ));
     }
 }

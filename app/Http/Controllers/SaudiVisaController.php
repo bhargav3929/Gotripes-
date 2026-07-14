@@ -12,15 +12,27 @@ use Illuminate\Support\Facades\Log;
 
 class SaudiVisaController extends Controller
 {
+    public function index()
+    {
+        $visaTypes = SaudiVisaType::active()->get();
+        return view('saudi-visa', compact('visaTypes'));
+    }
+
     public function submit(Request $request)
     {
         $validated = $request->validate([
-            'full_name'           => 'required|string|max:255',
+            'first_name'          => 'required|string|max:255',
+            'last_name'           => 'required|string|max:255',
             'email'               => 'required|email|max:255',
             'phone'               => 'required|string|max:30',
             'nationality'         => 'required|string|max:100',
+            'passport_number'     => 'required|string|max:50',
+            'passport_expiry'     => 'required|date',
+            'dob'                 => 'required|date',
+            'gender'              => 'required|string|max:20',
             'saudi_visa_type_id'  => 'required|exists:tbl_saudi_visa_types,id',
             'passport_copy'       => 'required|file|mimes:pdf,jpg,jpeg,png|max:4096',
+            'passport_photo'      => 'required|file|mimes:jpg,jpeg,png|max:4096',
             'additional_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
@@ -34,6 +46,11 @@ class SaudiVisaController extends Controller
                 $passportPath = $request->file('passport_copy')->store('visas/saudi/passports', 'public');
             }
 
+            $photoPath = '';
+            if ($request->hasFile('passport_photo')) {
+                $photoPath = $request->file('passport_photo')->store('visas/saudi/photos', 'public');
+            }
+
             $additionalDocPath = null;
             if ($request->hasFile('additional_document')) {
                 $additionalDocPath = $request->file('additional_document')->store('visas/saudi/docs', 'public');
@@ -45,14 +62,22 @@ class SaudiVisaController extends Controller
             $application = SaudiVisaApplication::create([
                 'company_id'          => current_company()?->id,
                 'saudi_visa_type_id'  => $visaType->id,
-                'full_name'           => $validated['full_name'],
+                'full_name'           => $validated['first_name'] . ' ' . $validated['last_name'],
+                'first_name'          => $validated['first_name'],
+                'last_name'           => $validated['last_name'],
                 'email'               => $validated['email'],
                 'phone'               => $validated['phone'],
                 'nationality'         => $validated['nationality'],
+                'passport_number'     => $validated['passport_number'],
+                'passport_expiry'     => $validated['passport_expiry'],
+                'dob'                 => $validated['dob'],
+                'gender'              => $validated['gender'],
                 'passport_path'       => $passportPath,
+                'photo_path'          => $photoPath,
                 'additional_doc_path' => $additionalDocPath,
                 'price'               => $price,
                 'payment_status'      => 'pending',
+                'status'              => 'pending',
                 'order_id'            => $orderId,
             ]);
 
@@ -62,7 +87,7 @@ class SaudiVisaController extends Controller
                 'amount' => $price,
                 'currency' => 'AED',
                 'order_id' => $orderId,
-                'description' => "Saudi Visa Application: {$visaType->name} ({$validated['full_name']})",
+                'description' => "Saudi Visa Application: {$visaType->name} ({$validated['first_name']} {$validated['last_name']})",
                 'customer' => [
                     'email' => $validated['email'],
                     'phone' => $validated['phone'],
@@ -113,3 +138,5 @@ class SaudiVisaController extends Controller
         }
     }
 }
+
+

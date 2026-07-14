@@ -8,6 +8,7 @@ use App\Models\EsimOrder;
 use App\Models\NomodTransaction;
 use App\Models\UAEActivity;
 use App\Models\UAEVApplication;
+use App\Models\SaudiVisaApplication;
 use Illuminate\Http\Request;
 
 /**
@@ -107,5 +108,45 @@ class OrdersController extends Controller
             ->withQueryString();
 
         return view('manager.orders.flights-hotels', compact('transactions'));
+    }
+
+    // ─── Saudi Visa Applications ────────────────────────────────────
+    public function saudiVisa(Request $request)
+    {
+        $applications = SaudiVisaApplication::query()
+            ->when($request->q, fn ($q, $s) => $q->where(function ($w) use ($s) {
+                $w->where('first_name', 'like', "%{$s}%")
+                  ->orWhere('last_name', 'like', "%{$s}%")
+                  ->orWhere('email', 'like', "%{$s}%")
+                  ->orWhere('passport_number', 'like', "%{$s}%");
+            }))
+            ->when($request->status, fn ($q, $s) => $q->where('status', $s))
+            ->orderByDesc('id')
+            ->paginate(25)
+            ->withQueryString();
+
+        return view('manager.orders.saudi-visa', compact('applications'));
+    }
+
+    public function saudiVisaDetail(SaudiVisaApplication $application)
+    {
+        $application->load('visaType');
+        return view('manager.orders.saudi-visa-detail', compact('application'));
+    }
+
+    public function updateSaudiVisaStatus(Request $request, SaudiVisaApplication $application)
+    {
+        $validated = $request->validate([
+            'status'         => 'required|string|max:50',
+            'internal_notes' => 'nullable|string',
+        ]);
+
+        $application->update([
+            'status'         => $validated['status'],
+            'internal_notes' => $validated['internal_notes'],
+        ]);
+
+        return redirect()->route('manager.orders.saudi-visa.show', $application->id)
+            ->with('success', 'Application status and notes updated successfully.');
     }
 }

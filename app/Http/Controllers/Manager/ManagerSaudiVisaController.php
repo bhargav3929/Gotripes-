@@ -17,15 +17,21 @@ class ManagerSaudiVisaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'name'               => 'required|string|max:255',
+            'price'              => 'required|numeric|min:0',
+            'description'        => 'nullable|string|max:1000',
+            'required_documents' => 'nullable|string',
+            'processing_days'    => 'nullable|integer|min:1|max:90',
         ]);
 
         SaudiVisaType::create([
-            'company_id' => current_company()?->id,
-            'name'       => $validated['name'],
-            'price'      => $validated['price'],
-            'isActive'   => true,
+            'company_id'          => current_company()?->id,
+            'name'                => $validated['name'],
+            'price'               => $validated['price'],
+            'description'         => $validated['description'] ?? null,
+            'required_documents'  => $this->parseDocuments($request->required_documents),
+            'processing_days'     => $validated['processing_days'] ?? 3,
+            'isActive'            => true,
         ]);
 
         return redirect()->route('manager.saudi-visas.index')
@@ -37,15 +43,21 @@ class ManagerSaudiVisaController extends Controller
         $visaType = SaudiVisaType::findOrFail($id);
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'price'    => 'required|numeric|min:0',
-            'isActive' => 'required|boolean',
+            'name'               => 'required|string|max:255',
+            'price'              => 'required|numeric|min:0',
+            'isActive'           => 'required|boolean',
+            'description'        => 'nullable|string|max:1000',
+            'required_documents' => 'nullable|string',
+            'processing_days'    => 'nullable|integer|min:1|max:90',
         ]);
 
         $visaType->update([
-            'name'     => $validated['name'],
-            'price'    => $validated['price'],
-            'isActive' => $validated['isActive'],
+            'name'               => $validated['name'],
+            'price'              => $validated['price'],
+            'isActive'           => $validated['isActive'],
+            'description'        => $validated['description'] ?? null,
+            'required_documents' => $this->parseDocuments($request->required_documents),
+            'processing_days'    => $validated['processing_days'] ?? 3,
         ]);
 
         return redirect()->route('manager.saudi-visas.index')
@@ -59,5 +71,14 @@ class ManagerSaudiVisaController extends Controller
 
         return redirect()->route('manager.saudi-visas.index')
             ->with('success', 'Saudi Visa Type deactivated.');
+    }
+
+    private function parseDocuments(?string $raw): array
+    {
+        if (empty($raw)) return [];
+        return array_values(array_filter(
+            array_map('trim', explode("\n", $raw)),
+            fn($l) => $l !== ''
+        ));
     }
 }

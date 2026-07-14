@@ -75,7 +75,12 @@
                             <div style="border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: auto; display: flex; align-items: center; justify-content: space-between;">
                                 <div class="price-box">
                                     <span style="font-size: 12px; color: #888; display: block;">Starting From</span>
-                                    <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->price, 0) }}</strong>
+                                    @if($pkg->discount_price && $pkg->discount_price < $pkg->price)
+                                        <span style="text-decoration: line-through; font-size: 13px; color: #888; margin-right: 4px;">AED {{ number_format($pkg->price, 0) }}</span>
+                                        <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->discount_price, 0) }}</strong>
+                                    @else
+                                        <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->price, 0) }}</strong>
+                                    @endif
                                 </div>
                                 <a href="{{ route('umrah-visas.show', $pkg->id) }}" class="btn-book-now" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-weight: 700; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; transition: all 0.2s;">
                                     View Details

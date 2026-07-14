@@ -137,6 +137,7 @@ class UAEVisaPricingSeeder extends Seeder
                 'entry_type' => 'Single Entry',
                 'duration' => '30 Days',
                 'traveller_type' => 'Adult',
+                'nationality' => null,
                 'price' => 340.00,
                 'isActive' => 1,
                 'company_id' => 1,
@@ -146,6 +147,7 @@ class UAEVisaPricingSeeder extends Seeder
                 'entry_type' => 'Single Entry',
                 'duration' => '30 Days',
                 'traveller_type' => 'Child',
+                'nationality' => null,
                 'price' => 290.00,
                 'isActive' => 1,
                 'company_id' => 1,
@@ -155,7 +157,104 @@ class UAEVisaPricingSeeder extends Seeder
                 'entry_type' => 'Single Entry',
                 'duration' => '30 Days',
                 'traveller_type' => 'Infant',
+                'nationality' => null,
                 'price' => 90.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+
+            // India specific pricing
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Adult',
+                'nationality' => 'India',
+                'price' => 350.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Child',
+                'nationality' => 'India',
+                'price' => 300.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Infant',
+                'nationality' => 'India',
+                'price' => 100.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+
+            // Pakistan specific pricing
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Adult',
+                'nationality' => 'Pakistan',
+                'price' => 450.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Child',
+                'nationality' => 'Pakistan',
+                'price' => 400.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Infant',
+                'nationality' => 'Pakistan',
+                'price' => 150.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+
+            // United Kingdom specific pricing
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Adult',
+                'nationality' => 'United Kingdom',
+                'price' => 320.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Child',
+                'nationality' => 'United Kingdom',
+                'price' => 270.00,
+                'isActive' => 1,
+                'company_id' => 1,
+            ]);
+            UAEVisaPrice::create([
+                'visa_package_id' => $sharjahTour->id,
+                'entry_type' => 'Single Entry',
+                'duration' => '30 Days',
+                'traveller_type' => 'Infant',
+                'nationality' => 'United Kingdom',
+                'price' => 70.00,
                 'isActive' => 1,
                 'company_id' => 1,
             ]);
