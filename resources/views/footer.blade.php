@@ -186,7 +186,7 @@
     $footerLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
     $footerEmail = (isset($company) && $company && $company->email) ? $company->email : 'info@gotrips.ai';
     $footerPhone = (isset($company) && $company && $company->phone) ? $company->phone : '+971 54 365 1065';
-    $footerAddress = (isset($company) && $company && $company->address) ? $company->address : 'Abu Dhabi, United Arab Emirates';
+    $footerAddress = (isset($company) && $company && $company->address) ? $company->address : 'Dubai, United Arab Emirates';
     // Show the address over two lines (city on the first, the rest on the second)
     // so the contact column reads as 4 tidy lines.
     $footerAddressParts = array_map('trim', explode(',', $footerAddress, 2));

@@ -165,27 +165,50 @@ class FluxirVisaController extends Controller
 
             // --- Step 6: submit — two models, chosen by config ---
             if (config('fluxir.deferred_payment')) {
-                // CREDIT / invoicing model. Payment was (or will be) collected
-                // from the customer on OUR gateway; we submit to Fluxir on credit
-                // with a single PATCH to ReadyForReview — no Fluxir Stripe
-                // checkout, no finalize. Fluxir invoices us monthly thereafter.
-                $review = $this->fluxir->submitForReview($serviceAppId, []);
-                if (!$review['success']) {
-                    return $this->fail($record, 'submitForReview', $review);
+                // Collect payment on our gateway first; submit to Fluxir after confirmation.
+                $record->update(['status' => 'awaiting_payment']);
+
+                $nomod    = new \App\Services\NomodService();
+                $checkout = $nomod->createCheckout([
+                    'amount'      => $record->amount,
+                    'currency'    => 'USD',
+                    'order_id'    => $orderId,
+                    'description' => 'e-Visa — ' . strtoupper($record->destination_code),
+                    'customer'    => array_filter([
+                        'name'  => trim($data['first_name'] . ' ' . $data['last_name']),
+                        'email' => $data['email'],
+                        'phone' => $data['phone'] ?? null,
+                    ]),
+                    'metadata' => ['type' => 'evisa', 'fluxir_app_id' => $serviceAppId],
+                ]);
+
+                if (!($checkout['success'] ?? false)) {
+                    return $this->fail($record, 'createNomodCheckout', ['error' => $checkout['error'] ?? 'Payment gateway error']);
                 }
+
+                \App\Models\NomodTransaction::create([
+                    'checkout_id'  => $checkout['checkout_id'],
+                    'order_id'     => $orderId,
+                    'status'       => 'created',
+                    'amount'       => $record->amount,
+                    'currency'     => 'USD',
+                    'booking_type' => 'evisa',
+                    'checkout_url' => $checkout['checkout_url'],
+                    'customer'     => ['name' => trim($data['first_name'] . ' ' . $data['last_name']), 'email' => $data['email'], 'phone' => $data['phone'] ?? null],
+                    'metadata'     => ['type' => 'evisa', 'fluxir_app_id' => $serviceAppId],
+                ]);
+
                 $record->update([
-                    'state'         => $review['data']['state'] ?? 'ReadyForReview',
-                    'status'        => 'submitted',
-                    'last_response' => $review['data'] ?? null,
+                    'checkout_session_id' => $checkout['checkout_id'],
+                    'checkout_url'        => $checkout['checkout_url'],
                 ]);
 
                 return response()->json([
-                    'success'   => true,
-                    'order_id'  => $orderId,
-                    'on_credit' => true,
-                    'amount'    => $record->amount,
-                    'currency'  => $record->currency,
-                    'redirect'  => route('visa.fluxir.success', ['order_id' => $orderId]),
+                    'success'      => true,
+                    'order_id'     => $orderId,
+                    'checkout_url' => $checkout['checkout_url'],
+                    'amount'       => $record->amount,
+                    'currency'     => 'USD',
                 ]);
             }
 

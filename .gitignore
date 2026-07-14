@@ -70,3 +70,10 @@ DEPLOYMENT.md
 
 # Compiled Blade view cache (generated at runtime)
 /storage/framework/views/*.php
+
+# Local deploy artifacts and private docs (never commit)
+/deploy-*.zip
+/gotrips-deploy.zip
+/superadmin-show-fix.zip
+/*.pdf
+/public/gt-deploy-run.php
