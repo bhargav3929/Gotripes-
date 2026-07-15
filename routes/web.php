@@ -82,6 +82,7 @@ Route::prefix('/')->group(function () {
     Route::post('saudi-visa/submit', [\App\Http\Controllers\SaudiVisaController::class, 'submit'])->name('saudi-visa.submit');
 
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
+    Route::get('study-abroad', fn() => view('study-abroad'))->name('study-abroad');
     Route::get('banner0', fn() => view('banner0'));
     Route::get('countriestour', fn() => view('countriestour'))->middleware('tenant.feature:tours');
     Route::get('tour-packages', function () {
