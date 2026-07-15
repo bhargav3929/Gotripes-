@@ -187,6 +187,14 @@
     .tab-btn {
         outline: none;
     }
+    .tab-section {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    .tab-content {
+        padding-top: 25px !important;
+        padding-bottom: 60px !important;
+    }
     .tab-btn.active {
         background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%) !important;
         color: #000 !important;
