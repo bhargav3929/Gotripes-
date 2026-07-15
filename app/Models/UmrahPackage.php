@@ -42,6 +42,14 @@ class UmrahPackage extends Model
         'createdDate',
         'modifiedBy',
         'modifiedDate',
+        'category_id',
+        'airline',
+        'flight_number',
+        'departure_airport',
+        'arrival_airport',
+        'cabin_class',
+        'baggage',
+        'transit_details',
     ];
 
     protected $casts = [
@@ -76,6 +84,21 @@ class UmrahPackage extends Model
         return $this->hasMany(UmrahBooking::class, 'umrah_package_id');
     }
 
+    public function umrahCategory()
+    {
+        return $this->belongsTo(UmrahCategory::class, 'category_id');
+    }
+
+    public function mapped_hotels()
+    {
+        return $this->belongsToMany(
+            UmrahHotel::class,
+            'tbl_umrah_package_hotels',
+            'umrah_package_id',
+            'umrah_hotel_id'
+        );
+    }
+
     /** Price for a given passenger type, falling back to base price for adults */
     public function priceFor(string $type): float
     {
@@ -93,5 +116,18 @@ class UmrahPackage extends Model
         return (float) ($this->discount_price && $this->discount_price < $this->price
             ? $this->discount_price
             : $this->price);
+    }
+
+    public function getStartingPriceAttribute(): float
+    {
+        $base = $this->price > 0 ? $this->price : ($this->adult_price ?? 0);
+        return (float) ($this->discount_price && $this->discount_price < $base
+            ? $this->discount_price
+            : $base);
+    }
+    
+    public function getOriginalPriceAttribute(): float
+    {
+        return (float) ($this->price > 0 ? $this->price : ($this->adult_price ?? 0));
     }
 }

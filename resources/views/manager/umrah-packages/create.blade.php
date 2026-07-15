@@ -95,18 +95,16 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-sm-4">
                                         <div class="mb-3 mb-md-4">
-                                            <label for="sub_category" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                            <label for="category_id" class="form-label fw-semibold text-gold d-flex align-items-center">
                                                 <i class="fas fa-layer-group me-2 d-none d-sm-inline"></i>
-                                                <span>Tier</span>
-                                                <span class="text-danger ms-1">*</span>
+                                                <span>Category</span>
                                             </label>
-                                            <select class="form-control form-control-mobile" id="sub_category" name="sub_category" required>
-                                                <option value="economy"  {{ old('sub_category') == 'economy'  ? 'selected' : '' }}>Economy</option>
-                                                <option value="standard" {{ old('sub_category','standard') == 'standard' ? 'selected' : '' }}>Standard</option>
-                                                <option value="premium"  {{ old('sub_category') == 'premium'  ? 'selected' : '' }}>Premium</option>
-                                                <option value="vip"      {{ old('sub_category') == 'vip'      ? 'selected' : '' }}>VIP</option>
+                                            <select class="form-control form-control-mobile" id="category_id" name="category_id">
+                                                <option value="">Select Category</option>
+                                                @foreach($categories as $cat)
+                                                    <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -127,6 +125,39 @@
                                                 <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
                                             @enderror
                                         </div>
+                                    </div>
+                                </div>
+
+                                <!-- Air Details Section (Hidden by Default) -->
+                                <div class="row g-2 g-sm-3 mt-1" id="airDetailsSection" style="display: none;">
+                                    <h5 class="text-gold"><i class="fas fa-plane"></i> Air Package Details</h5>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Airline</label>
+                                        <input type="text" name="airline" class="form-control form-control-mobile" value="{{ old('airline') }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Flight Number</label>
+                                        <input type="text" name="flight_number" class="form-control form-control-mobile" value="{{ old('flight_number') }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Departure Airport</label>
+                                        <input type="text" name="departure_airport" class="form-control form-control-mobile" value="{{ old('departure_airport') }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Arrival Airport</label>
+                                        <input type="text" name="arrival_airport" class="form-control form-control-mobile" value="{{ old('arrival_airport') }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Cabin Class</label>
+                                        <input type="text" name="cabin_class" class="form-control form-control-mobile" value="{{ old('cabin_class') }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Baggage</label>
+                                        <input type="text" name="baggage" class="form-control form-control-mobile" value="{{ old('baggage') }}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>Transit Details</label>
+                                        <input type="text" name="transit_details" class="form-control form-control-mobile" value="{{ old('transit_details') }}">
                                     </div>
                                 </div>
 
@@ -248,10 +279,27 @@
                                                 <i class="fas fa-bus me-2 d-none d-sm-inline"></i>
                                                 <span>Transport Details</span>
                                             </label>
-                                            <input type="text" class="form-control form-control-mobile" id="transport" name="transport" value="{{ old('transport') }}" placeholder="e.g., Luxury AC Coach Service">
+                                            <input type="text" class="form-control form-control-mobile"
+                                                   id="transport" name="transport"
+                                                   value="{{ old('transport') }}"
+                                                   placeholder="e.g., Luxury AC Bus, VIP GMC">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
+                                        <div class="mb-3 mb-md-4">
+                                            <label class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                <i class="fas fa-hotel me-2 d-none d-sm-inline"></i>
+                                                <span>Map Hotels</span>
+                                            </label>
+                                            <select class="form-select form-control-mobile" name="mapped_hotels[]" multiple style="height: 100px;">
+                                                @foreach($hotels as $hotel)
+                                                    <option value="{{ $hotel->id }}">{{ $hotel->name }} ({{ $hotel->city }})</option>
+                                                @endforeach
+                                            </select>
+                                            <small class="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</small>
+                                        </div>
+                                    </div>
+                                </div>
                                         <div class="mb-3 mb-md-4">
                                             <label for="hotels" class="form-label fw-semibold text-gold d-flex align-items-center">
                                                 <i class="fas fa-building me-2 d-none d-sm-inline"></i>
@@ -418,6 +466,22 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('currency').addEventListener('change', function() {
         document.getElementById('price').dispatchEvent(new Event('input'));
     });
+
+    const categorySelect = document.getElementById('category');
+    const airDetailsSection = document.getElementById('airDetailsSection');
+    
+    function toggleAirDetails() {
+        if (categorySelect.value === 'air') {
+            airDetailsSection.style.display = 'flex';
+        } else {
+            airDetailsSection.style.display = 'none';
+        }
+    }
+    
+    if(categorySelect) {
+        categorySelect.addEventListener('change', toggleAirDetails);
+        toggleAirDetails();
+    }
 
     form.addEventListener('submit', function() {
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Creating...';

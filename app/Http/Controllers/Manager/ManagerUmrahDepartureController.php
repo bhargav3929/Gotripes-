@@ -23,20 +23,24 @@ class ManagerUmrahDepartureController extends Controller
 
         $validated = $request->validate([
             'departure_date'  => 'required|date',
-            'seats_available' => 'required|integer|min:0',
+            'seats_total'     => 'required|integer|min:0',
+            'booking_cutoff'  => 'nullable|date',
             'status'          => 'required|string|in:available,sold_out,inactive',
         ]);
 
-        // Enforce departures are on Wednesdays
-        $dayOfWeek = date('w', strtotime($validated['departure_date']));
-        if ($dayOfWeek != 3) { // 3 = Wednesday
-            return back()->withErrors(['departure_date' => 'Bus departures are only allowed on Wednesdays.'])->withInput();
+        if ($package->category === 'bus') {
+            $dayOfWeek = date('w', strtotime($validated['departure_date']));
+            if ($dayOfWeek != 3) {
+                return back()->withErrors(['departure_date' => 'Bus departures are only allowed on Wednesdays.'])->withInput();
+            }
         }
 
         $package->departures()->create([
             'departure_date'  => $validated['departure_date'],
-            'seats_available' => $validated['seats_available'],
+            'seats_total'     => $validated['seats_total'],
+            'seats_available' => $validated['seats_total'],
             'seats_booked'    => 0,
+            'booking_cutoff'  => $validated['booking_cutoff'] ?? null,
             'status'          => $validated['status'],
         ]);
 
@@ -49,13 +53,22 @@ class ManagerUmrahDepartureController extends Controller
         $departure = UmrahDeparture::where('umrah_package_id', $packageId)->findOrFail($id);
 
         $validated = $request->validate([
-            'seats_available' => 'required|integer|min:0',
+            'seats_total'     => 'required|integer|min:0',
+            'booking_cutoff'  => 'nullable|date',
             'status'          => 'required|string|in:available,sold_out,inactive',
         ]);
 
+        $seats_available = max(0, $validated['seats_total'] - $departure->seats_booked);
+        $status = $validated['status'];
+        if ($seats_available == 0 && $status == 'available') {
+            $status = 'sold_out';
+        }
+
         $departure->update([
-            'seats_available' => $validated['seats_available'],
-            'status'          => $validated['status'],
+            'seats_total'     => $validated['seats_total'],
+            'seats_available' => $seats_available,
+            'booking_cutoff'  => $validated['booking_cutoff'] ?? null,
+            'status'          => $status,
         ]);
 
         return redirect()->route('manager.umrah-packages.departures.index', $packageId)

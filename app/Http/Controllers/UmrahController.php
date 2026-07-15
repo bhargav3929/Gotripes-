@@ -16,13 +16,17 @@ class UmrahController extends Controller
 {
     public function index()
     {
-        $packages = UmrahPackage::where('isActive', 1)
+        $packages = UmrahPackage::with('umrahCategory')->where('isActive', 1)
             ->orderBy('sortOrder', 'asc')
             ->get();
+            
+        $packagesBus = $packages->where('category', 'bus');
+        $packagesAir = $packages->where('category', 'air');
 
         $saudiVisas = SaudiVisaType::where('isActive', 1)->get();
+        $categories = \App\Models\UmrahCategory::where('isActive', 1)->get();
 
-        return view('umrah-visas', compact('packages', 'saudiVisas'));
+        return view('umrah-visas', compact('packagesBus', 'packagesAir', 'saudiVisas', 'categories'));
     }
 
     public function show($id)

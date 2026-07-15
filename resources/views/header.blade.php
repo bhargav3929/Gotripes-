@@ -1386,7 +1386,7 @@
                 <div class="gt-nav-side gt-nav-side-right">
                     <div class="gt-nav-row gt-nav-primary">
                         <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our Services</a>
-                        @platformOnly<a href="/study-abroad" class="gt-nav-link {{ Request::is('study-abroad') ? 'active' : '' }}">Study Abroad <span class="badge-new" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-size: 8px; padding: 2px 6px; margin-left: 4px; border-radius: 4px; font-weight: 700; text-transform: uppercase; vertical-align: middle;">Soon</span></a>@endplatformOnly
+                        @platformOnly<a href="/fifa-world-cup-2026" class="gt-nav-link {{ Request::is('fifa-world-cup-2026') ? 'active' : '' }}">FIFA WC 2026 <i class="bi bi-lightning-charge-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
                         @feature('shop')<a href="/shopnow" class="gt-nav-link {{ Request::is('shopnow') ? 'active' : '' }}">Shop Online</a>@endfeature
                         @feature('pay_online')<a href="/payonline" class="gt-nav-link {{ Request::is('payonline') ? 'active' : '' }}">Pay Online</a>@endfeature
                         @feature('careers')<a href="/lookingforajob" class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>@endfeature
@@ -1469,7 +1469,7 @@
 
             @platformOnly<a href="{{ $gtSoon('events') }}" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
 
-            @platformOnly<a href="/study-abroad" class="gt-mobile-nav-link {{ Request::is('study-abroad') ? 'active' : '' }}">Study Abroad <span class="badge-new" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-size: 8px; padding: 2px 6px; margin-left: 4px; border-radius: 4px; font-weight: 700; text-transform: uppercase; vertical-align: middle;">Soon</span></a>@endplatformOnly
+            @platformOnly<a href="/fifa-world-cup-2026" class="gt-mobile-nav-link">FIFA WC 2026 <i class="bi bi-lightning-charge-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
 
             {{-- More --}}
             <div class="gt-macc">

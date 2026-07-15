@@ -82,7 +82,6 @@ Route::prefix('/')->group(function () {
     Route::post('saudi-visa/submit', [\App\Http\Controllers\SaudiVisaController::class, 'submit'])->name('saudi-visa.submit');
 
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
-    Route::get('study-abroad', fn() => view('study-abroad'))->name('study-abroad');
     Route::get('banner0', fn() => view('banner0'));
     Route::get('countriestour', fn() => view('countriestour'))->middleware('tenant.feature:tours');
     Route::get('tour-packages', function () {
@@ -439,8 +438,16 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::resource('packages', ManagerTravelPackagesController::class)->except(['show']);
     Route::resource('umrah-packages', ManagerUmrahPackagesController::class)->except(['show']);
     Route::post('umrah-packages/{id}/toggle', [\App\Http\Controllers\Manager\ManagerUmrahPackagesController::class, 'toggle'])->name('umrah-packages.toggle');
+    Route::post('umrah-packages/{id}/duplicate', [\App\Http\Controllers\Manager\ManagerUmrahPackagesController::class, 'duplicate'])->name('umrah-packages.duplicate');
     Route::resource('umrah-packages.departures', \App\Http\Controllers\Manager\ManagerUmrahDepartureController::class)->except(['show', 'create', 'edit']);
     Route::resource('saudi-visas', \App\Http\Controllers\Manager\ManagerSaudiVisaController::class)->except(['show', 'create', 'edit']);
+
+    Route::prefix('umrah')->name('umrah.')->group(function () {
+        Route::resource('categories', \App\Http\Controllers\Manager\ManagerUmrahCategoryController::class);
+        Route::resource('hotels', \App\Http\Controllers\Manager\ManagerUmrahHotelController::class);
+        Route::get('pricing', [\App\Http\Controllers\Manager\ManagerUmrahPricingController::class, 'index'])->name('pricing.index');
+        Route::post('pricing', [\App\Http\Controllers\Manager\ManagerUmrahPricingController::class, 'update'])->name('pricing.update');
+    });
 
     // Umrah Booking Management
     Route::prefix('umrah-bookings')->name('umrah-bookings.')->group(function () {
