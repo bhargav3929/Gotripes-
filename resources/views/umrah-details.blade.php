@@ -672,7 +672,7 @@ body, main { font-family: 'Outfit', sans-serif; }
                                         <span class="ud-rel-from">From</span>
                                         <span class="ud-rel-price">AED {{ number_format($rp->price, 0) }}</span>
                                     </div>
-                                    <a href="{{ route('umrah-visas.show', $rp->id) }}" class="ud-btn-next" style="font-size:12px;padding:8px 16px;border-radius:7px;display:inline-block;">View</a>
+                                    <a href="{{ route('umrah-visas.show', $rp->id) }}" class="ud-btn-next" style="font-size:12px;padding:8px 16px;border-radius:7px;display:inline-block;flex:none !important;width:auto !important;text-decoration:none;">View</a>
                                 </div>
                             </div>
                         </div>
