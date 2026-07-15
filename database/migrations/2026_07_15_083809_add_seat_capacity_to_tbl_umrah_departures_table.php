@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('tbl_umrah_departures', function (Blueprint $table) {
             if (!Schema::hasColumn('tbl_umrah_departures', 'seats_total')) {
-                $table->integer('seats_total')->default(0)->after('price');
+                $table->integer('seats_total')->default(0)->after('status');
             }
             if (!Schema::hasColumn('tbl_umrah_departures', 'booking_cutoff')) {
                 $table->date('booking_cutoff')->nullable()->after('seats_booked');
