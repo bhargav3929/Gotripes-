@@ -534,15 +534,42 @@
                 @endfeature
 
                 @feature('hajj_umrah')
+                <div class="wp-nav-separator"></div>
+                <li class="wp-nav-label">Umrah Management</li>
                 <li class="wp-nav-item">
                     <a href="{{ route('manager.umrah-packages.index') }}" class="{{ request()->routeIs('manager.umrah-packages.*') ? 'active' : '' }}">
                         <i class="fas fa-kaaba"></i>
-                        <span>Hajj &amp; Umrah</span>
+                        <span>Packages</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.umrah.categories.index') }}" class="{{ request()->routeIs('manager.umrah.categories.*') ? 'active' : '' }}">
+                        <i class="fas fa-list"></i>
+                        <span>Categories</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.umrah.hotels.index') }}" class="{{ request()->routeIs('manager.umrah.hotels.*') ? 'active' : '' }}">
+                        <i class="fas fa-hotel"></i>
+                        <span>Hotels</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.umrah.pricing.index') }}" class="{{ request()->routeIs('manager.umrah.pricing.*') ? 'active' : '' }}">
+                        <i class="fas fa-tags"></i>
+                        <span>Pricing</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.umrah-bookings.index') }}" class="{{ request()->routeIs('manager.umrah-bookings.*') ? 'active' : '' }}">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Bookings</span>
                     </a>
                 </li>
                 @endfeature
 
                 @feature('visas')
+                <li class="wp-nav-label">Visa Management</li>
                 <li class="wp-nav-item">
                     <a href="{{ route('manager.visa-pricing.index') }}" class="{{ request()->routeIs('manager.visa-pricing.*') ? 'active' : '' }}">
                         <i class="fas fa-passport"></i>

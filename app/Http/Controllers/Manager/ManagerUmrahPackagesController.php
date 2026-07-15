@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\UmrahPackage;
+use App\Models\UmrahCategory;
+use App\Models\UmrahHotel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -41,7 +43,9 @@ class ManagerUmrahPackagesController extends Controller
 
     public function create()
     {
-        return view('manager.umrah-packages.create');
+        $categories = UmrahCategory::where('isActive', 1)->get();
+        $hotels = UmrahHotel::where('isActive', 1)->get();
+        return view('manager.umrah-packages.create', compact('categories', 'hotels'));
     }
 
     public function store(Request $request)
@@ -49,7 +53,16 @@ class ManagerUmrahPackagesController extends Controller
         $validated = $request->validate([
             'title'            => 'required|string|max:255',
             'category'         => 'required|string|in:bus,air',
-            'sub_category'     => 'required|string|in:economy,standard,premium,vip',
+            'sub_category'     => 'nullable|string',
+            'category_id'      => 'nullable|exists:tbl_umrah_categories,id',
+            'mapped_hotels'    => 'nullable|array',
+            'airline'          => 'nullable|string',
+            'flight_number'    => 'nullable|string',
+            'departure_airport'=> 'nullable|string',
+            'arrival_airport'  => 'nullable|string',
+            'cabin_class'      => 'nullable|string',
+            'baggage'          => 'nullable|string',
+            'transit_details'  => 'nullable|string',
             'price'            => 'required|numeric|min:0',
             'discount_price'   => 'nullable|numeric|min:0',
             'adult_price'      => 'nullable|numeric|min:0',
@@ -81,10 +94,11 @@ class ManagerUmrahPackagesController extends Controller
             }
         }
 
-        UmrahPackage::create([
+        $package = UmrahPackage::create([
             'title'          => $validated['title'],
             'category'       => $validated['category'],
-            'sub_category'   => $validated['sub_category'],
+            'sub_category'   => $validated['sub_category'] ?? null,
+            'category_id'    => $validated['category_id'] ?? null,
             'price'          => $validated['price'],
             'discount_price' => $validated['discount_price'] ?? null,
             'adult_price'    => $validated['adult_price']    ?? null,
@@ -108,7 +122,18 @@ class ManagerUmrahPackagesController extends Controller
             'status'         => 'active',
             'createdBy'      => auth()->user()?->name ?? 'manager',
             'createdDate'    => now(),
+            'airline'        => $validated['airline'] ?? null,
+            'flight_number'  => $validated['flight_number'] ?? null,
+            'departure_airport' => $validated['departure_airport'] ?? null,
+            'arrival_airport' => $validated['arrival_airport'] ?? null,
+            'cabin_class'    => $validated['cabin_class'] ?? null,
+            'baggage'        => $validated['baggage'] ?? null,
+            'transit_details'=> $validated['transit_details'] ?? null,
         ]);
+
+        if ($request->has('mapped_hotels')) {
+            $package->mapped_hotels()->sync($validated['mapped_hotels']);
+        }
 
         return redirect()->route('manager.umrah-packages.index')
             ->with('success', 'Package created successfully.');
@@ -117,7 +142,9 @@ class ManagerUmrahPackagesController extends Controller
     public function edit($id)
     {
         $package = UmrahPackage::findOrFail($id);
-        return view('manager.umrah-packages.edit', compact('package'));
+        $categories = UmrahCategory::where('isActive', 1)->get();
+        $hotels = UmrahHotel::where('isActive', 1)->get();
+        return view('manager.umrah-packages.edit', compact('package', 'categories', 'hotels'));
     }
 
     public function update(Request $request, $id)
@@ -127,7 +154,16 @@ class ManagerUmrahPackagesController extends Controller
         $validated = $request->validate([
             'title'            => 'required|string|max:255',
             'category'         => 'required|string|in:bus,air',
-            'sub_category'     => 'required|string|in:economy,standard,premium,vip',
+            'sub_category'     => 'nullable|string',
+            'category_id'      => 'nullable|exists:tbl_umrah_categories,id',
+            'mapped_hotels'    => 'nullable|array',
+            'airline'          => 'nullable|string',
+            'flight_number'    => 'nullable|string',
+            'departure_airport'=> 'nullable|string',
+            'arrival_airport'  => 'nullable|string',
+            'cabin_class'      => 'nullable|string',
+            'baggage'          => 'nullable|string',
+            'transit_details'  => 'nullable|string',
             'price'            => 'required|numeric|min:0',
             'discount_price'   => 'nullable|numeric|min:0',
             'adult_price'      => 'nullable|numeric|min:0',
@@ -172,7 +208,8 @@ class ManagerUmrahPackagesController extends Controller
         $package->update([
             'title'          => $validated['title'],
             'category'       => $validated['category'],
-            'sub_category'   => $validated['sub_category'],
+            'sub_category'   => $validated['sub_category'] ?? null,
+            'category_id'    => $validated['category_id'] ?? null,
             'price'          => $validated['price'],
             'discount_price' => $validated['discount_price'] ?? null,
             'adult_price'    => $validated['adult_price']    ?? null,
@@ -194,10 +231,39 @@ class ManagerUmrahPackagesController extends Controller
             'sortOrder'      => $validated['sortOrder'] ?? 0,
             'modifiedBy'     => auth()->user()?->name ?? 'manager',
             'modifiedDate'   => now(),
+            'airline'        => $validated['airline'] ?? null,
+            'flight_number'  => $validated['flight_number'] ?? null,
+            'departure_airport' => $validated['departure_airport'] ?? null,
+            'arrival_airport' => $validated['arrival_airport'] ?? null,
+            'cabin_class'    => $validated['cabin_class'] ?? null,
+            'baggage'        => $validated['baggage'] ?? null,
+            'transit_details'=> $validated['transit_details'] ?? null,
         ]);
+
+        if ($request->has('mapped_hotels')) {
+            $package->mapped_hotels()->sync($validated['mapped_hotels']);
+        } else {
+            $package->mapped_hotels()->sync([]);
+        }
 
         return redirect()->route('manager.umrah-packages.index')
             ->with('success', 'Package updated successfully.');
+    }
+
+    public function duplicate($id)
+    {
+        $package = UmrahPackage::findOrFail($id);
+        $newPackage = $package->replicate();
+        $newPackage->title = $newPackage->title . ' (Copy)';
+        $newPackage->isActive = 0;
+        $newPackage->status = 'disabled';
+        $newPackage->push();
+
+        // Sync mapped hotels
+        $newPackage->mapped_hotels()->sync($package->mapped_hotels->pluck('id'));
+
+        return redirect()->route('manager.umrah-packages.edit', $newPackage->id)
+            ->with('success', 'Package duplicated. Please update the details and publish.');
     }
 
     public function destroy($id)

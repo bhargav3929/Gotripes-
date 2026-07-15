@@ -45,7 +45,7 @@ body, main { font-family: 'Outfit', sans-serif; }
     min-width: 240px;
 }
 .ud-hero-price-card .from-label { font-size: 11px; color: #aaa; }
-.ud-hero-price-card .price { font-size: 34px; color: #FFD700; font-weight: 800; }
+.ud-hero-price-card .ud-price { font-size: 34px; color: #FFD700; font-weight: 800; }
 
 /* ─── Layout: Main grid ─────────────────────────────────────────────── */
 .ud-content-row { display: grid; grid-template-columns: 1fr 400px; gap: 32px; align-items: start; }
@@ -440,12 +440,12 @@ body, main { font-family: 'Outfit', sans-serif; }
                 <div class="col-lg-4">
                     <div class="ud-hero-price-card">
                         <span class="from-label">Starting from</span>
-                        <div class="price">
-                            @if($package->discount_price && $package->discount_price < $package->price)
-                                <span style="text-decoration: line-through; font-size: 20px; color: #888; margin-right: 8px;">AED {{ number_format($package->price, 0) }}</span>
-                                AED {{ number_format($package->discount_price, 0) }}
+                        <div class="ud-price">
+                            @if($package->discount_price && $package->discount_price < $package->original_price)
+                                <span style="text-decoration: line-through; font-size: 20px; color: #888; margin-right: 8px;">AED {{ number_format($package->original_price, 0) }}</span>
+                                AED {{ number_format($package->starting_price, 0) }}
                             @else
-                                AED {{ number_format($package->price, 0) }}
+                                AED {{ number_format($package->starting_price, 0) }}
                             @endif
                         </div>
                         <button onclick="scrollToBooking()" class="ud-btn-next w-100 mt-3" style="border-radius:9px;padding:11px;">
@@ -490,6 +490,9 @@ body, main { font-family: 'Outfit', sans-serif; }
                     <div class="ud-tabs">
                         <button class="ud-tab active" onclick="switchTab(this,'tab-overview')">Overview</button>
                         <button class="ud-tab" onclick="switchTab(this,'tab-hotels')">Hotels</button>
+                        @if($package->category === 'air')
+                        <button class="ud-tab" onclick="switchTab(this,'tab-air')">Flight Details</button>
+                        @endif
                         <button class="ud-tab" onclick="switchTab(this,'tab-itinerary')">Itinerary</button>
                         <button class="ud-tab" onclick="switchTab(this,'tab-inclusions')">Inclusions</button>
                         <button class="ud-tab" onclick="switchTab(this,'tab-faq')">FAQs</button>
@@ -510,8 +513,82 @@ body, main { font-family: 'Outfit', sans-serif; }
                     {{-- Hotels --}}
                     <div class="ud-tab-panel" id="tab-hotels">
                         <h4 class="ud-panel-title" style="border:none;padding:0;margin-bottom:14px;font-size:18px;"><i class="bi bi-building"></i>Hotels & Accommodation</h4>
+                        
+                        @if($package->mapped_hotels && $package->mapped_hotels->count() > 0)
+                            <div class="row g-3 mb-3">
+                                @foreach($package->mapped_hotels as $hotel)
+                                <div class="col-md-6">
+                                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 15px; height: 100%;">
+                                        <h5 style="color: #FFD700; margin-bottom: 5px; font-size: 16px;">
+                                            <i class="bi bi-building me-2"></i>{{ $hotel->name }}
+                                        </h5>
+                                        <div style="font-size: 13px; color: #aaa; margin-bottom: 8px;">
+                                            <i class="bi bi-geo-alt-fill me-1 text-danger"></i> {{ $hotel->city }}
+                                        </div>
+                                        <div style="color: #ccc; font-size: 13px;">
+                                            <div class="mb-1"><strong>Star Rating:</strong> {{ $hotel->star_rating }} Stars</div>
+                                            <div class="mb-1"><strong>Distance:</strong> {{ $hotel->distance_to_haram }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        @endif
+
                         <p style="color:#ccc;font-size:14px;line-height:1.75;white-space:pre-line;">{{ $package->hotels ?: 'Hotel details will be confirmed at booking time.' }}</p>
                     </div>
+
+                    @if($package->category === 'air')
+                    {{-- Air Details --}}
+                    <div class="ud-tab-panel" id="tab-air">
+                        <h4 class="ud-panel-title" style="border:none;padding:0;margin-bottom:14px;font-size:18px;"><i class="bi bi-airplane"></i>Flight Details</h4>
+                        
+                        <div class="row g-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 15px; margin: 0;">
+                            @if($package->airline)
+                            <div class="col-sm-6">
+                                <span style="color: #888; font-size: 12px; display: block;">Airline</span>
+                                <strong style="color: #fff;">{{ $package->airline }}</strong>
+                            </div>
+                            @endif
+                            @if($package->flight_number)
+                            <div class="col-sm-6">
+                                <span style="color: #888; font-size: 12px; display: block;">Flight Number</span>
+                                <strong style="color: #fff;">{{ $package->flight_number }}</strong>
+                            </div>
+                            @endif
+                            @if($package->departure_airport)
+                            <div class="col-sm-6">
+                                <span style="color: #888; font-size: 12px; display: block;">Departure</span>
+                                <strong style="color: #fff;">{{ $package->departure_airport }}</strong>
+                            </div>
+                            @endif
+                            @if($package->arrival_airport)
+                            <div class="col-sm-6">
+                                <span style="color: #888; font-size: 12px; display: block;">Arrival</span>
+                                <strong style="color: #fff;">{{ $package->arrival_airport }}</strong>
+                            </div>
+                            @endif
+                            @if($package->cabin_class)
+                            <div class="col-sm-6">
+                                <span style="color: #888; font-size: 12px; display: block;">Cabin Class</span>
+                                <strong style="color: #fff;">{{ $package->cabin_class }}</strong>
+                            </div>
+                            @endif
+                            @if($package->baggage)
+                            <div class="col-sm-6">
+                                <span style="color: #888; font-size: 12px; display: block;">Baggage</span>
+                                <strong style="color: #fff;">{{ $package->baggage }}</strong>
+                            </div>
+                            @endif
+                            @if($package->transit_details)
+                            <div class="col-12 mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.08);">
+                                <span style="color: #888; font-size: 12px; display: block;">Transit Details</span>
+                                <strong style="color: #fff;">{{ $package->transit_details }}</strong>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
 
                     {{-- Itinerary --}}
                     <div class="ud-tab-panel" id="tab-itinerary">
@@ -670,9 +747,9 @@ body, main { font-family: 'Outfit', sans-serif; }
                                 <div class="ud-rel-footer">
                                     <div>
                                         <span class="ud-rel-from">From</span>
-                                        <span class="ud-rel-price">AED {{ number_format($rp->price, 0) }}</span>
+                                        <span class="ud-rel-price">AED {{ number_format($rp->starting_price, 0) }}</span>
                                     </div>
-                                    <a href="{{ route('umrah-visas.show', $rp->id) }}" class="ud-btn-next" style="font-size:12px;padding:8px 16px;border-radius:7px;display:inline-block;">View</a>
+                                    <a href="{{ route('umrah-visas.show', $rp->id) }}" class="ud-btn-next" style="font-size:12px;padding:8px 16px;border-radius:7px;display:inline-block;flex:none !important;width:auto !important;text-decoration:none;">View</a>
                                 </div>
                             </div>
                         </div>
@@ -691,11 +768,11 @@ body, main { font-family: 'Outfit', sans-serif; }
                         <h3 class="ud-bk-title">Book Your Pilgrimage</h3>
                         <div>
                             <div class="ud-bk-price">
-                                @if($package->discount_price && $package->discount_price < $package->price)
-                                    <span style="text-decoration: line-through; font-size: 13px; color: #888; margin-right: 4px;">AED {{ number_format($package->price, 0) }}</span>
-                                    AED {{ number_format($package->discount_price, 0) }}
+                                @if($package->discount_price && $package->discount_price < $package->original_price)
+                                    <span style="text-decoration: line-through; font-size: 13px; color: #888; margin-right: 4px;">AED {{ number_format($package->original_price, 0) }}</span>
+                                    AED {{ number_format($package->starting_price, 0) }}
                                 @else
-                                    AED {{ number_format($package->price, 0) }}
+                                    AED {{ number_format($package->starting_price, 0) }}
                                 @endif
                                 <small>per person</small>
                             </div>
@@ -873,7 +950,11 @@ body, main { font-family: 'Outfit', sans-serif; }
                                     <div class="ud-review-row"><span>Category</span><span class="rv" style="text-transform:capitalize;">{{ $package->category }}</span></div>
                                     <div class="ud-review-row"><span>Departure</span><span class="rv" id="rv-date">—</span></div>
                                     <div class="ud-review-row"><span>Hotel</span><span class="rv">{{ $package->hotels ? Str::limit($package->hotels, 40) : '—' }}</span></div>
+                                    @if($package->category === 'air')
+                                    <div class="ud-review-row"><span>Airline</span><span class="rv">{{ $package->airline ?: '—' }}</span></div>
+                                    @else
                                     <div class="ud-review-row"><span>Transport</span><span class="rv">{{ $package->transport ? Str::limit($package->transport, 40) : '—' }}</span></div>
+                                    @endif
                                     <div class="ud-review-row"><span>Visa</span><span class="rv" style="color:#22c55e;">✓ Included</span></div>
                                     <div class="ud-review-row"><span>Adults</span><span class="rv" id="rv-adults">1</span></div>
                                     <div class="ud-review-row"><span>Children</span><span class="rv" id="rv-children">0</span></div>
@@ -906,7 +987,11 @@ body, main { font-family: 'Outfit', sans-serif; }
                             <div class="ud-sum-row"><span>Category</span><span class="val" style="text-transform:capitalize;">{{ $package->category }}</span></div>
                             <div class="ud-sum-row"><span>Departure</span><span class="val" id="sum-date">Not selected</span></div>
                             <div class="ud-sum-row"><span>Hotel</span><span class="val">{{ $package->hotels ? Str::limit($package->hotels, 30) : '—' }}</span></div>
+                            @if($package->category === 'air')
+                            <div class="ud-sum-row"><span>Airline</span><span class="val">{{ $package->airline ?: '—' }}</span></div>
+                            @else
                             <div class="ud-sum-row"><span>Transport</span><span class="val">{{ $package->transport ? Str::limit($package->transport, 30) : '—' }}</span></div>
+                            @endif
                             <div class="ud-sum-row"><span>Visa</span><span class="val" style="color:#22c55e;">Included ✓</span></div>
                             <div class="ud-sum-row"><span>Adults</span><span class="val" id="sum-adults">1</span></div>
                             <div class="ud-sum-row"><span>Children</span><span class="val" id="sum-children">0</span></div>
@@ -940,11 +1025,11 @@ body, main { font-family: 'Outfit', sans-serif; }
 <div class="ud-mobile-cta">
     <div class="ud-mobile-price">
         <div class="mprice">
-            @if($package->discount_price && $package->discount_price < $package->price)
-                <span style="text-decoration: line-through; font-size: 12px; color: #888; margin-right: 4px;">AED {{ number_format($package->price, 0) }}</span>
-                AED {{ number_format($package->discount_price, 0) }}
+            @if($package->discount_price && $package->discount_price < $package->original_price)
+                <span style="text-decoration: line-through; font-size: 12px; color: #888; margin-right: 4px;">AED {{ number_format($package->original_price, 0) }}</span>
+                AED {{ number_format($package->starting_price, 0) }}
             @else
-                AED {{ number_format($package->price, 0) }}
+                AED {{ number_format($package->starting_price, 0) }}
             @endif
         </div>
         <div class="mlabel">per person · <span id="mob-date-label">No date selected</span></div>

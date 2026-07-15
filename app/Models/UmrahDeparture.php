@@ -14,6 +14,8 @@ class UmrahDeparture extends Model
         'seats_available',
         'seats_booked',
         'status',
+        'seats_total',
+        'booking_cutoff',
     ];
 
     protected $casts = [
@@ -30,5 +32,10 @@ class UmrahDeparture extends Model
     public function scopeAvailable($query)
     {
         return $query->where('status', 'available');
+    }
+
+    public function getSeatsRemainingAttribute()
+    {
+        return max(0, $this->seats_total - $this->seats_booked);
     }
 }

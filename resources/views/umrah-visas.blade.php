@@ -11,17 +11,17 @@
     </section>
 
     <!-- Tab Navigation -->
-    <section class="tab-section" style="background: #050505; border-bottom: 1px solid #1a1a1a; position: sticky; top: 0; z-index: 100;">
+    <section class="tab-section" style="background: #050505; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 100; padding: 0;">
         <div class="container">
-            <div class="d-flex justify-content-center" style="gap: 15px; padding: 15px 0;">
-                <button type="button" class="tab-btn active" onclick="switchTab('bus-tab')" style="background: none; border: none; color: #aaa; font-size: 16px; font-weight: 600; padding: 10px 20px; cursor: pointer; transition: all 0.3s ease; border-radius: 8px;">
-                    🚌 Umrah by Bus
+            <div class="premium-nav-tabs">
+                <button type="button" class="tab-btn active" onclick="switchTab('bus-tab')">
+                    <i class="bi bi-bus-front-fill"></i> Umrah by Bus
                 </button>
-                <button type="button" class="tab-btn" onclick="switchTab('air-tab')" style="background: none; border: none; color: #aaa; font-size: 16px; font-weight: 600; padding: 10px 20px; cursor: pointer; transition: all 0.3s ease; border-radius: 8px;">
-                    ✈️ Umrah by Air
+                <button type="button" class="tab-btn" onclick="switchTab('air-tab')">
+                    <i class="bi bi-airplane-engines-fill"></i> Umrah by Air
                 </button>
-                <button type="button" class="tab-btn" onclick="switchTab('visa-tab')" style="background: none; border: none; color: #aaa; font-size: 16px; font-weight: 600; padding: 10px 20px; cursor: pointer; transition: all 0.3s ease; border-radius: 8px;">
-                    🛂 Saudi Visas
+                <button type="button" class="tab-btn" onclick="switchTab('visa-tab')">
+                    <i class="bi bi-file-earmark-person-fill"></i> Saudi Visas
                 </button>
             </div>
         </div>
@@ -35,20 +35,26 @@
             <!-- Filter Categories -->
             <div class="d-flex flex-wrap justify-content-center mb-4" style="gap: 10px;">
                 <button type="button" class="filter-btn active" onclick="filterCategory('all')">All Packages</button>
-                <button type="button" class="filter-btn" onclick="filterCategory('economy')">Economy</button>
-                <button type="button" class="filter-btn" onclick="filterCategory('standard')">Standard</button>
-                <button type="button" class="filter-btn" onclick="filterCategory('premium')">Premium</button>
-                <button type="button" class="filter-btn" onclick="filterCategory('vip')">VIP</button>
+                @if(isset($categories))
+                    @foreach($categories as $cat)
+                        <button type="button" class="filter-btn" onclick="filterCategory('{{ strtolower(str_replace(' ', '-', $cat->name)) }}')">{{ $cat->name }}</button>
+                    @endforeach
+                @else
+                    <button type="button" class="filter-btn" onclick="filterCategory('economy')">Economy</button>
+                    <button type="button" class="filter-btn" onclick="filterCategory('standard')">Standard</button>
+                    <button type="button" class="filter-btn" onclick="filterCategory('premium')">Premium</button>
+                    <button type="button" class="filter-btn" onclick="filterCategory('vip')">VIP</button>
+                @endif
             </div>
 
-            @if(isset($packages) && $packages->count() > 0)
+            @if(isset($packagesBus) && $packagesBus->count() > 0)
             <div class="row g-4">
-                @foreach($packages as $pkg)
-                <div class="col-md-6 col-lg-4 package-item" data-category="{{ strtolower($pkg->category) }}">
+                @foreach($packagesBus as $pkg)
+                <div class="col-md-6 col-lg-4 package-item" data-category="{{ $pkg->umrahCategory ? strtolower(str_replace(' ', '-', $pkg->umrahCategory->name)) : 'uncategorized' }}">
                     <div class="package-card" style="background: #0b0b0b; border: 1px solid #1a1a1a; border-radius: 18px; overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: all 0.3s ease;">
                         <div class="package-img-wrap" style="position: relative; height: 220px; background: url('{{ asset($pkg->image) }}') center center / cover no-repeat;">
                             <span class="category-badge" style="position: absolute; top: 15px; left: 15px; background: #FFD700; color: #000; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 50px; text-transform: uppercase;">
-                                {{ $pkg->category }}
+                                {{ $pkg->umrahCategory ? $pkg->umrahCategory->name : 'Package' }}
                             </span>
                             @if($pkg->tag)
                             <span class="tag-badge" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.7); color: #FFD700; border: 1px solid #FFD700; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 50px;">
@@ -75,11 +81,11 @@
                             <div style="border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: auto; display: flex; align-items: center; justify-content: space-between;">
                                 <div class="price-box">
                                     <span style="font-size: 12px; color: #888; display: block;">Starting From</span>
-                                    @if($pkg->discount_price && $pkg->discount_price < $pkg->price)
-                                        <span style="text-decoration: line-through; font-size: 13px; color: #888; margin-right: 4px;">AED {{ number_format($pkg->price, 0) }}</span>
-                                        <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->discount_price, 0) }}</strong>
+                                    @if($pkg->discount_price && $pkg->discount_price < $pkg->original_price)
+                                        <span style="text-decoration: line-through; font-size: 13px; color: #888; margin-right: 4px;">AED {{ number_format($pkg->original_price, 0) }}</span>
+                                        <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->starting_price, 0) }}</strong>
                                     @else
-                                        <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->price, 0) }}</strong>
+                                        <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->starting_price, 0) }}</strong>
                                     @endif
                                 </div>
                                 <a href="{{ route('umrah-visas.show', $pkg->id) }}" class="btn-book-now" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-weight: 700; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; transition: all 0.2s;">
@@ -102,14 +108,78 @@
 
         <!-- ✈️ Umrah by Air Section -->
         <section id="air-tab" class="tab-content d-none">
-            <div class="text-center py-5" style="max-width: 600px; margin: 0 auto;">
-                <i class="bi bi-airplane" style="font-size: 60px; color: #FFD700; display: block; margin-bottom: 20px; animation: float 3s ease-in-out infinite;"></i>
-                <h2 style="font-weight: 800; margin-bottom: 15px;">Umrah by Air — Coming Soon</h2>
-                <p style="color: #aaa; line-height: 1.6; font-size: 15px; margin-bottom: 25px;">
-                    We are currently structuring our premium air pilgrimage packages. Offering premium direct flights from Dubai, Sharjah, and Abu Dhabi airports directly to Jeddah/Medina, including luxury transfers and 5-star hotel bookings.
-                </p>
-                <a href="/contact-us" class="btn btn-outline-warning rounded-pill px-4 py-2" style="font-weight: 700;">Enquire for Custom Bookings</a>
+            <!-- Filter Categories -->
+            <div class="d-flex flex-wrap justify-content-center mb-4" style="gap: 10px;">
+                <button type="button" class="filter-btn active" onclick="filterCategory('all', 'air')">All Packages</button>
+                @if(isset($categories))
+                    @foreach($categories as $cat)
+                        <button type="button" class="filter-btn" onclick="filterCategory('{{ strtolower(str_replace(' ', '-', $cat->name)) }}', 'air')">{{ $cat->name }}</button>
+                    @endforeach
+                @else
+                    <button type="button" class="filter-btn" onclick="filterCategory('economy', 'air')">Economy</button>
+                    <button type="button" class="filter-btn" onclick="filterCategory('standard', 'air')">Standard</button>
+                    <button type="button" class="filter-btn" onclick="filterCategory('premium', 'air')">Premium</button>
+                    <button type="button" class="filter-btn" onclick="filterCategory('vip', 'air')">VIP</button>
+                @endif
             </div>
+
+            @if(isset($packagesAir) && $packagesAir->count() > 0)
+            <div class="row g-4" id="air-packages-container">
+                @foreach($packagesAir as $pkg)
+                <div class="col-md-6 col-lg-4 package-item-air" data-category="{{ $pkg->umrahCategory ? strtolower(str_replace(' ', '-', $pkg->umrahCategory->name)) : 'uncategorized' }}">
+                    <div class="package-card" style="background: #0b0b0b; border: 1px solid #1a1a1a; border-radius: 18px; overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: all 0.3s ease;">
+                        <div class="package-img-wrap" style="position: relative; height: 220px; background: url('{{ asset($pkg->image) }}') center center / cover no-repeat;">
+                            <span class="category-badge" style="position: absolute; top: 15px; left: 15px; background: #FFD700; color: #000; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 50px; text-transform: uppercase;">
+                                {{ $pkg->umrahCategory ? $pkg->umrahCategory->name : 'Package' }}
+                            </span>
+                            @if($pkg->tag)
+                            <span class="tag-badge" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.7); color: #FFD700; border: 1px solid #FFD700; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 50px;">
+                                {{ $pkg->tag }}
+                            </span>
+                            @endif
+                        </div>
+                        <div class="package-body" style="padding: 25px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 10px; color: #fff;">{{ $pkg->title }}</h3>
+                                <p style="color: #888; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">{{ Str::limit($pkg->description, 120) }}</p>
+                                
+                                <div class="pkg-meta mb-3" style="font-size: 13px; color: #ccc;">
+                                    <div class="mb-2"><i class="bi bi-clock-history text-warning me-2"></i><strong>Duration:</strong> {{ $pkg->duration }}</div>
+                                    @if($pkg->airline)
+                                    <div class="mb-2"><i class="bi bi-airplane text-warning me-2"></i><strong>Airline:</strong> {{ $pkg->airline }}</div>
+                                    @endif
+                                    @if($pkg->hotels)
+                                    <div class="mb-2"><i class="bi bi-building text-warning me-2"></i><strong>Hotels:</strong> {{ Str::limit($pkg->hotels, 40) }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <div style="border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: auto; display: flex; align-items: center; justify-content: space-between;">
+                                <div class="price-box">
+                                    <span style="font-size: 12px; color: #888; display: block;">Starting From</span>
+                                    @if($pkg->discount_price && $pkg->discount_price < $pkg->original_price)
+                                        <span style="text-decoration: line-through; font-size: 13px; color: #888; margin-right: 4px;">AED {{ number_format($pkg->original_price, 0) }}</span>
+                                        <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->starting_price, 0) }}</strong>
+                                    @else
+                                        <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->starting_price, 0) }}</strong>
+                                    @endif
+                                </div>
+                                <a href="{{ route('umrah-visas.show', $pkg->id) }}" class="btn-book-now" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-weight: 700; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; transition: all 0.2s;">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @else
+            <div class="text-center py-5">
+                <i class="bi bi-airplane" style="font-size: 48px; color: #FFD700;"></i>
+                <h4 class="mt-3">No Umrah by Air Packages Available</h4>
+                <p style="color: #666;">Please check back later or contact us for custom packages.</p>
+            </div>
+            @endif
         </section>
 
         <!-- 🛂 Saudi Visas Section -->
@@ -184,17 +254,80 @@
 </main>
 
 <style>
+    .premium-nav-tabs {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .premium-nav-tabs::-webkit-scrollbar {
+        display: none;
+    }
     .tab-btn {
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        padding: 18px 24px !important;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         outline: none;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+    .tab-btn i {
+        font-size: 17px;
+        transition: transform 0.3s ease;
+    }
+    .tab-btn:hover {
+        color: #fff !important;
+        border-bottom-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    .tab-btn:hover i {
+        transform: translateY(-2px);
     }
     .tab-btn.active {
-        background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%) !important;
-        color: #000 !important;
-        box-shadow: 0 4px 15px rgba(255,215,0,0.2);
+        color: #FFD700 !important;
+        border-bottom-color: #FFD700 !important;
+        font-weight: 800 !important;
     }
-    .tab-btn:hover:not(.active) {
-        color: #fff !important;
-        background: #111 !important;
+    .tab-btn.active i {
+        color: #FFD700;
+        transform: scale(1.1);
+    }
+    .tab-section {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    .tab-content {
+        padding-top: 25px !important;
+        padding-bottom: 60px !important;
+    }
+    html[data-theme="light"] .tab-btn {
+        color: rgba(0, 0, 0, 0.6) !important;
+    }
+    html[data-theme="light"] .tab-btn:hover {
+        color: #000 !important;
+        border-bottom-color: rgba(0, 0, 0, 0.15) !important;
+    }
+    html[data-theme="light"] .tab-btn.active {
+        color: #D4AF37 !important;
+        border-bottom-color: #D4AF37 !important;
+    }
+    html[data-theme="light"] .tab-section {
+        background: #f8f9fa !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
     }
     .filter-btn {
         background: #111;
@@ -253,15 +386,17 @@ function switchTab(tabId) {
     event.currentTarget.classList.add('active');
 }
 
-function filterCategory(cat) {
-    // Highlight active filter button
-    document.querySelectorAll('.filter-btn').forEach(btn => {
+function filterCategory(cat, type = 'bus') {
+    // Highlight active filter button in current tab
+    const tabSection = type === 'air' ? document.getElementById('air-tab') : document.getElementById('bus-tab');
+    tabSection.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.currentTarget.classList.add('active');
     
     // Filter packages
-    document.querySelectorAll('.package-item').forEach(item => {
+    const selector = type === 'air' ? '.package-item-air' : '.package-item';
+    tabSection.querySelectorAll(selector).forEach(item => {
         if (cat === 'all' || item.getAttribute('data-category') === cat) {
             item.style.display = 'block';
         } else {

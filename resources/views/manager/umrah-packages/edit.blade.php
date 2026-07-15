@@ -93,18 +93,17 @@
                                              </select>
                                          </div>
                                      </div>
-                                     <div class="col-6 col-sm-3">
+                                     <div class="col-6 col-sm-4">
                                          <div class="mb-3 mb-md-4">
-                                             <label for="sub_category" class="form-label fw-semibold text-gold d-flex align-items-center">
+                                             <label for="category_id" class="form-label fw-semibold text-gold d-flex align-items-center">
                                                  <i class="fas fa-layer-group me-2 d-none d-sm-inline"></i>
-                                                 <span>Tier</span>
-                                                 <span class="text-danger ms-1">*</span>
+                                                 <span>Category</span>
                                              </label>
-                                             <select class="form-control form-control-mobile" id="sub_category" name="sub_category" required>
-                                                 <option value="economy"  {{ old('sub_category', $package->sub_category) == 'economy'  ? 'selected' : '' }}>Economy</option>
-                                                 <option value="standard" {{ old('sub_category', $package->sub_category) == 'standard' ? 'selected' : '' }}>Standard</option>
-                                                 <option value="premium"  {{ old('sub_category', $package->sub_category) == 'premium'  ? 'selected' : '' }}>Premium</option>
-                                                 <option value="vip"      {{ old('sub_category', $package->sub_category) == 'vip'      ? 'selected' : '' }}>VIP</option>
+                                             <select class="form-control form-control-mobile" id="category_id" name="category_id">
+                                                 <option value="">Select Category</option>
+                                                 @foreach(\App\Models\UmrahCategory::all() as $cat)
+                                                     <option value="{{ $cat->id }}" {{ old('category_id', $package->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                                 @endforeach
                                              </select>
                                          </div>
                                      </div>
@@ -126,6 +125,39 @@
                                          </div>
                                      </div>
                                  </div>
+
+                                <!-- Air Details Section (Hidden by Default) -->
+                                <div class="row g-2 g-sm-3 mt-1" id="airDetailsSection" style="display: {{ old('category', $package->category) === 'air' ? 'flex' : 'none' }};">
+                                    <h5 class="text-gold"><i class="fas fa-plane"></i> Air Package Details</h5>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Airline</label>
+                                        <input type="text" name="airline" class="form-control form-control-mobile" value="{{ old('airline', $package->airline) }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Flight Number</label>
+                                        <input type="text" name="flight_number" class="form-control form-control-mobile" value="{{ old('flight_number', $package->flight_number) }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Departure Airport</label>
+                                        <input type="text" name="departure_airport" class="form-control form-control-mobile" value="{{ old('departure_airport', $package->departure_airport) }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Arrival Airport</label>
+                                        <input type="text" name="arrival_airport" class="form-control form-control-mobile" value="{{ old('arrival_airport', $package->arrival_airport) }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Cabin Class</label>
+                                        <input type="text" name="cabin_class" class="form-control form-control-mobile" value="{{ old('cabin_class', $package->cabin_class) }}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Baggage</label>
+                                        <input type="text" name="baggage" class="form-control form-control-mobile" value="{{ old('baggage', $package->baggage) }}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>Transit Details</label>
+                                        <input type="text" name="transit_details" class="form-control form-control-mobile" value="{{ old('transit_details', $package->transit_details) }}">
+                                    </div>
+                                </div>
 
                                  <!-- Discount + Passenger Pricing -->
                                  <div class="row g-2 g-sm-3">
@@ -245,6 +277,21 @@
                                                  <span>Hotels Description</span>
                                              </label>
                                              <input type="text" class="form-control form-control-mobile" id="hotels" name="hotels" value="{{ old('hotels', $package->hotels) }}" placeholder="e.g., 3 Nights Makkah + 4 Nights Medina">
+                                         </div>
+                                     </div>
+                                     </div>
+                                     <div class="col-sm-12 mt-3">
+                                         <div class="mb-3 mb-md-4">
+                                             <label class="form-label fw-semibold text-gold d-flex align-items-center">
+                                                 <i class="fas fa-hotel me-2 d-none d-sm-inline"></i>
+                                                 <span>Map Hotels</span>
+                                             </label>
+                                             <select class="form-select form-control-mobile" name="mapped_hotels[]" multiple style="height: 100px;">
+                                                 @foreach(\App\Models\UmrahHotel::all() as $hotel)
+                                                     <option value="{{ $hotel->id }}" {{ in_array($hotel->id, old('mapped_hotels', $package->mapped_hotels->pluck('id')->toArray())) ? 'selected' : '' }}>{{ $hotel->name }} ({{ $hotel->city }})</option>
+                                                 @endforeach
+                                             </select>
+                                             <small class="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</small>
                                          </div>
                                      </div>
                                  </div>
@@ -389,6 +436,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('packageForm');
     const submitBtn = document.getElementById('submitBtn');
     const dropZone = document.getElementById('dropZone');
+
+    const categorySelect = document.getElementById('category');
+    const airDetailsSection = document.getElementById('airDetailsSection');
+    
+    function toggleAirDetails() {
+        if (categorySelect && categorySelect.value === 'air') {
+            airDetailsSection.style.display = 'flex';
+        } else if(airDetailsSection) {
+            airDetailsSection.style.display = 'none';
+        }
+    }
+    
+    if(categorySelect) {
+        categorySelect.addEventListener('change', toggleAirDetails);
+        // Initial state is handled by blade {{ ... === 'air' ? 'flex' : 'none' }}
+    }
 
     form.addEventListener('submit', function() {
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Updating...';
