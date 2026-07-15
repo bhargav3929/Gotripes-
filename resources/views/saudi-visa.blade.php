@@ -400,6 +400,20 @@
         font-family: 'Outfit', sans-serif !important;
         font-size: 15px !important;
     }
+    .ts-control input {
+        color: #fff !important;
+        font-family: inherit !important;
+        font-size: 15px !important;
+    }
+    .ts-control .item {
+        color: #fff !important;
+    }
+    html[data-theme="light"] .ts-control input {
+        color: var(--gt-text) !important;
+    }
+    html[data-theme="light"] .ts-control .item {
+        color: var(--gt-text) !important;
+    }
     .ts-dropdown {
         background: var(--c-card-bg) !important;
         border: 1px solid var(--c-input-border) !important;
@@ -407,13 +421,25 @@
         border-radius: 10px !important;
         box-shadow: 0 20px 50px rgba(0,0,0,0.6) !important;
     }
+    html[data-theme="light"] .ts-dropdown {
+        background: var(--gt-surface) !important;
+        border: 1px solid var(--gt-border-strong) !important;
+        color: var(--gt-text) !important;
+    }
     .ts-dropdown .option {
         padding: 10px 16px !important;
+        color: var(--gt-text-secondary) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .option {
         color: var(--gt-text-secondary) !important;
     }
     .ts-dropdown .active {
         background: var(--gt-gold-soft) !important;
         color: var(--c-gold) !important;
+    }
+    html[data-theme="light"] .ts-dropdown .active {
+        background: var(--gt-gold-soft) !important;
+        color: var(--gt-gold) !important;
     }
 
     /* Scan Result Card */

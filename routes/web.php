@@ -80,6 +80,48 @@ Route::prefix('/')->group(function () {
     Route::post('umrah-visas/{id}/checkout', [\App\Http\Controllers\UmrahController::class, 'checkout'])->name('umrah-visas.checkout');
     Route::get('saudi-visas', [\App\Http\Controllers\SaudiVisaController::class, 'index'])->name('saudi-visa.index');
     Route::post('saudi-visa/submit', [\App\Http\Controllers\SaudiVisaController::class, 'submit'])->name('saudi-visa.submit');
+    Route::get('seed-saudi-visas', function() {
+        $company = \App\Models\Company::where('slug', 'gotrips')->first();
+        $companyId = $company ? $company->id : 1;
+
+        \Illuminate\Support\Facades\DB::table('tbl_saudi_visa_types')->insertOrIgnore([
+            [
+                'company_id' => $companyId,
+                'name' => 'Tourist Visa',
+                'price' => 500.00,
+                'isActive' => 1,
+                'description' => 'Standard tourist entry visa to the Kingdom of Saudi Arabia, valid for entry and stays up to 90 days.',
+                'required_documents' => json_encode(['Passport Copy', 'Passport Photo']),
+                'processing_days' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Umrah Visa',
+                'price' => 380.00,
+                'isActive' => 1,
+                'description' => 'Specific visa for pilgrims visiting Saudi Arabia to perform Umrah. Valid for entry via any airport.',
+                'required_documents' => json_encode(['Passport Copy', 'Passport Photo']),
+                'processing_days' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => '1-Year Multiple Entry Visa',
+                'price' => 800.00,
+                'isActive' => 1,
+                'description' => 'Multiple entry visa valid for 1 year, permitting multiple entries with stay up to 90 days per visit.',
+                'required_documents' => json_encode(['Passport Copy', 'Passport Photo', 'Proof of Travel/Accommodation']),
+                'processing_days' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        ]);
+
+        return 'Seeded successfully! Please delete this temporary route now.';
+    });
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
     Route::get('banner0', fn() => view('banner0'));
     Route::get('countriestour', fn() => view('countriestour'))->middleware('tenant.feature:tours');
