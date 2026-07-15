@@ -319,6 +319,13 @@
             opacity: 1; visibility: visible; pointer-events: auto;
             transform: translateX(-50%) translateY(0);
         }
+        .gt-dd-menu.gt-dd-menu-right {
+            left: auto; right: 0; transform: translateY(10px); min-width: 180px;
+        }
+        .gt-dropdown:hover .gt-dd-menu.gt-dd-menu-right,
+        .gt-dropdown:focus-within .gt-dd-menu.gt-dd-menu-right {
+            transform: translateY(0);
+        }
         .gt-dd-item {
             display: flex; align-items: center; gap: 8px;
             padding: 10px 14px; border-radius: 9px;
@@ -1354,7 +1361,7 @@
                             <button type="button" class="gt-dd-toggle gt-nav-link {{ Request::is('umrah-visas*') ? 'active' : '' }}">
                                 Umrah Packages{!! $gtBadge('hajj_umrah') !!} <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
                             </button>
-                            <div class="gt-dd-menu">
+                            <div class="gt-dd-menu gt-dd-menu-right">
                                 <a href="/umrah-visas" class="gt-dd-item {{ Request::is('umrah-visas') ? 'active' : '' }}">
                                     <i class="bi bi-bus-front text-warning"></i>
                                     <span>Umrah Bus Packages</span>
