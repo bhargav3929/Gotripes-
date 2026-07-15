@@ -122,6 +122,87 @@ Route::prefix('/')->group(function () {
 
         return 'Seeded successfully! Please delete this temporary route now.';
     });
+
+    Route::get('seed-umrah-packages', function() {
+        $company = \App\Models\Company::where('slug', 'gotrips')->first();
+        $companyId = $company ? $company->id : 1;
+
+        $package = \App\Models\UmrahPackage::updateOrCreate(
+            ['title' => '10 Days Premium Umrah Bus Package', 'company_id' => $companyId],
+            [
+                'category' => 'bus',
+                'sub_category' => 'premium',
+                'price' => 1199.00,
+                'adult_price' => 1199.00,
+                'child_price' => 899.00,
+                'infant_price' => 499.00,
+                'description' => 'A complete 10-day Umrah bus pilgrimage package featuring luxury AC transport, 4-star hotel stay, and guided tours.',
+                'duration' => '10 Days',
+                'transport' => 'Premium Volvo AC Coach with reclining seats',
+                'hotels' => json_encode([
+                    'makkah' => 'Le Meridien Towers Makkah (4 Nights with Shuttle Service)',
+                    'madinah' => 'Alaqeeq Madinah Hotel (3 Nights near Haram)'
+                ]),
+                'inclusions' => json_encode([
+                    'Border taxes & Visa fee included',
+                    'Daily shuttle from hotel to Haram',
+                    'Mecca & Medina historical sights guiding',
+                    'Refreshments on board the bus'
+                ]),
+                'exclusions' => json_encode([
+                    'Meals and personal shopping',
+                    'Extra luggage charges (beyond 30kg)'
+                ]),
+                'itinerary' => json_encode([
+                    ['day' => 1, 'title' => 'Departure from UAE', 'description' => 'Assemble in Abu Dhabi/Dubai and travel via luxury bus towards Ghuwaifat border.'],
+                    ['day' => 2, 'title' => 'Arrival in Mecca', 'description' => 'Border clearing and check-in to Mecca hotel. Proceed to Haram for Umrah.'],
+                    ['day' => 3, 'title' => 'Makkah Stay & Prayers', 'description' => 'Free day for prayers and individual worship in Makkah Haram.'],
+                    ['day' => 4, 'title' => 'Makkah Ziyarats', 'description' => 'Morning tour of Jabal al-Nour, Mina, Muzdalifah and Arafat.'],
+                    ['day' => 5, 'title' => 'Transfer to Medina', 'description' => 'Check out of Makkah and travel to Medina. Check-in to hotel.'],
+                    ['day' => 6, 'title' => 'Medina Stay', 'description' => 'Free day for prayers in Prophet\'s Mosque (Al-Masjid an-Nabawi).'],
+                    ['day' => 7, 'title' => 'Medina Ziyarats', 'description' => 'Tour of Masjid al-Quba, Mount Uhud, and Qiblatain Mosque.'],
+                    ['day' => 8, 'title' => 'Return Journey', 'description' => 'Check out after Zuhr prayers and start return bus journey back to UAE.'],
+                    ['day' => 9, 'title' => 'Arrival in UAE', 'description' => 'Arrive in Dubai/Abu Dhabi in the evening. Service ends.']
+                ]),
+                'isActive' => 1,
+                'status' => 'active'
+            ]
+        );
+
+        // Add 3 departures (dates in the near future)
+        \Illuminate\Support\Facades\DB::table('tbl_umrah_departures')->delete();
+        \Illuminate\Support\Facades\DB::table('tbl_umrah_departures')->insert([
+            [
+                'umrah_package_id' => $package->id,
+                'departure_date' => now()->addDays(5)->format('Y-m-d'),
+                'seats_available' => 45,
+                'seats_booked' => 5,
+                'status' => 'available',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'umrah_package_id' => $package->id,
+                'departure_date' => now()->addDays(12)->format('Y-m-d'),
+                'seats_available' => 50,
+                'seats_booked' => 0,
+                'status' => 'available',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'umrah_package_id' => $package->id,
+                'departure_date' => now()->addDays(19)->format('Y-m-d'),
+                'seats_available' => 3,
+                'seats_booked' => 47,
+                'status' => 'available',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        ]);
+
+        return 'Umrah packages and departures seeded successfully!';
+    });
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
     Route::get('banner0', fn() => view('banner0'));
     Route::get('countriestour', fn() => view('countriestour'))->middleware('tenant.feature:tours');
