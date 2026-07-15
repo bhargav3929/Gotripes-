@@ -45,7 +45,7 @@ body, main { font-family: 'Outfit', sans-serif; }
     min-width: 240px;
 }
 .ud-hero-price-card .from-label { font-size: 11px; color: #aaa; }
-.ud-hero-price-card .price { font-size: 34px; color: #FFD700; font-weight: 800; }
+.ud-hero-price-card .ud-price { font-size: 34px; color: #FFD700; font-weight: 800; }
 
 /* ─── Layout: Main grid ─────────────────────────────────────────────── */
 .ud-content-row { display: grid; grid-template-columns: 1fr 400px; gap: 32px; align-items: start; }
@@ -440,7 +440,7 @@ body, main { font-family: 'Outfit', sans-serif; }
                 <div class="col-lg-4">
                     <div class="ud-hero-price-card">
                         <span class="from-label">Starting from</span>
-                        <div class="price">
+                        <div class="ud-price">
                             @if($package->discount_price && $package->discount_price < $package->price)
                                 <span style="text-decoration: line-through; font-size: 20px; color: #888; margin-right: 8px;">AED {{ number_format($package->price, 0) }}</span>
                                 AED {{ number_format($package->discount_price, 0) }}
