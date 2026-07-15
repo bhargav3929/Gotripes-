@@ -327,14 +327,17 @@
             transform: translateY(0);
         }
         .gt-dd-compact {
-            min-width: 190px !important; 
-            padding: 4px !important;
-            border-radius: 10px !important;
+            min-width: 0 !important; 
+            width: max-content !important;
+            padding: 2px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255, 215, 0, 0.3) !important;
         }
         .gt-dd-compact .gt-dd-item {
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 13px;
+            padding: 5px 10px !important;
+            border-radius: 5px !important;
+            font-size: 12px !important;
+            gap: 6px !important;
         }
         .gt-dd-item {
             display: flex; align-items: center; gap: 8px;
