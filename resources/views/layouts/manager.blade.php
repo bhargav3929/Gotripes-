@@ -443,6 +443,27 @@
             border-color: var(--wp-primary-hover) !important;
             color: #1a1a1a !important;
         }
+
+        /* ── Scrollbars and select multiple styling for dark mode ── */
+        select[multiple] {
+            background-color: var(--wp-body-bg) !important;
+            color: var(--wp-text) !important;
+        }
+        select[multiple] option {
+            background-color: var(--wp-body-bg) !important;
+            color: var(--wp-text) !important;
+        }
+        select[multiple]::-webkit-scrollbar {
+            width: 8px;
+            background-color: var(--wp-body-bg);
+        }
+        select[multiple]::-webkit-scrollbar-thumb {
+            background-color: var(--wp-sidebar-hover);
+            border-radius: 4px;
+        }
+        select[multiple]::-webkit-scrollbar-track {
+            background-color: var(--wp-body-bg);
+        }
     </style>
     @stack('styles')
 </head>
