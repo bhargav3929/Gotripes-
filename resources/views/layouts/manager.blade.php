@@ -388,6 +388,61 @@
         /* ── Utilities ──────────────────────────── */
         .text-muted-wp { color: var(--wp-text-muted); }
         .text-secondary-wp { color: var(--wp-text-secondary); }
+
+        /* ── Bootstrap standard component overrides for dark mode ── */
+        .card {
+            background-color: var(--wp-white) !important;
+            border: 1px solid var(--wp-border) !important;
+            color: var(--wp-text) !important;
+        }
+        .card-header {
+            background-color: rgba(255, 215, 0, 0.05) !important;
+            border-bottom: 1px solid var(--wp-border-light) !important;
+        }
+        .card-title {
+            color: var(--wp-primary) !important;
+        }
+        .form-control, .form-select, .form-control:focus, .form-select:focus {
+            background-color: var(--wp-body-bg) !important;
+            border: 1px solid var(--wp-border) !important;
+            color: var(--wp-text) !important;
+        }
+        .form-control::placeholder {
+            color: var(--wp-text-muted) !important;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--wp-primary) !important;
+            box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25) !important;
+        }
+        .form-control:disabled, .form-select:disabled,
+        .form-control[readonly] {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: var(--wp-text-muted) !important;
+        }
+        .text-gold {
+            color: var(--wp-primary) !important;
+        }
+        .text-muted {
+            color: var(--wp-text-muted) !important;
+        }
+        .btn-outline-primary {
+            color: var(--wp-primary) !important;
+            border-color: var(--wp-primary) !important;
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--wp-primary) !important;
+            color: #1a1a1a !important;
+        }
+        .btn-primary {
+            background-color: var(--wp-primary) !important;
+            border-color: var(--wp-primary) !important;
+            color: #1a1a1a !important;
+        }
+        .btn-primary:hover {
+            background-color: var(--wp-primary-hover) !important;
+            border-color: var(--wp-primary-hover) !important;
+            color: #1a1a1a !important;
+        }
     </style>
     @stack('styles')
 </head>

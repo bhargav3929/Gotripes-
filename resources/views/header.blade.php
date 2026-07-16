@@ -319,6 +319,26 @@
             opacity: 1; visibility: visible; pointer-events: auto;
             transform: translateX(-50%) translateY(0);
         }
+        .gt-dd-menu.gt-dd-menu-right {
+            left: auto; right: 0; transform: translateY(10px);
+        }
+        .gt-dropdown:hover .gt-dd-menu.gt-dd-menu-right,
+        .gt-dropdown:focus-within .gt-dd-menu.gt-dd-menu-right {
+            transform: translateY(0);
+        }
+        .gt-dd-compact {
+            min-width: 0 !important; 
+            width: max-content !important;
+            padding: 2px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255, 215, 0, 0.3) !important;
+        }
+        .gt-dd-compact .gt-dd-item {
+            padding: 5px 10px !important;
+            border-radius: 5px !important;
+            font-size: 12px !important;
+            gap: 6px !important;
+        }
         .gt-dd-item {
             display: flex; align-items: center; gap: 8px;
             padding: 10px 14px; border-radius: 9px;
@@ -1354,7 +1374,7 @@
                             <button type="button" class="gt-dd-toggle gt-nav-link {{ Request::is('umrah-visas*') ? 'active' : '' }}">
                                 Umrah Packages{!! $gtBadge('hajj_umrah') !!} <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
                             </button>
-                            <div class="gt-dd-menu">
+                            <div class="gt-dd-menu gt-dd-menu-right gt-dd-compact">
                                 <a href="/umrah-visas" class="gt-dd-item {{ Request::is('umrah-visas') ? 'active' : '' }}">
                                     <i class="bi bi-bus-front text-warning"></i>
                                     <span>Umrah Bus Packages</span>
