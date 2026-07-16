@@ -956,7 +956,7 @@
     <div class="row justify-content-center">
       <div class="col-lg-7 text-center">
         <h1 class="premium-section-title">
-          UMRAH
+          HAJJ & UMRAH
         </h1>
       </div>
     </div>

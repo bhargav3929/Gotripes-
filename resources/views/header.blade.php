@@ -1377,7 +1377,7 @@
                             <div class="gt-dd-menu gt-dd-menu-right gt-dd-compact">
                                 <a href="/umrah-visas" class="gt-dd-item {{ Request::is('umrah-visas') ? 'active' : '' }}">
                                     <i class="bi bi-bus-front text-warning"></i>
-                                    <span>Umrah Bus Packages</span>
+                                    <span>Hajj & Umrah Bus Packages</span>
                                 </a>
                             </div>
                         </div>
@@ -1467,7 +1467,7 @@
                     <a href="{{ $gtSoon('medical-tours') }}" class="gt-macc-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
                     @feature('activities')<a href="/activities" class="gt-macc-item">Activities</a>@endfeature
                     @feature('hajj_umrah')
-                    <a href="/umrah-visas" class="gt-macc-item">Umrah Bus Packages</a>
+                    <a href="/umrah-visas" class="gt-macc-item">Hajj & Umrah Bus Packages</a>
 
                     @endfeature
                 </div>

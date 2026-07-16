@@ -15,10 +15,10 @@
         <div class="container">
             <div class="premium-nav-tabs">
                 <button type="button" class="tab-btn active" onclick="switchTab('bus-tab')">
-                    <i class="bi bi-bus-front-fill"></i> Umrah by Bus
+                    <i class="bi bi-bus-front-fill"></i> Hajj & Umrah by Bus
                 </button>
                 <button type="button" class="tab-btn" onclick="switchTab('air-tab')">
-                    <i class="bi bi-airplane-engines-fill"></i> Umrah by Air
+                    <i class="bi bi-airplane-engines-fill"></i> Hajj & Umrah by Air
                 </button>
                 <button type="button" class="tab-btn" onclick="switchTab('visa-tab')">
                     <i class="bi bi-file-earmark-person-fill"></i> Saudi Visas
@@ -176,7 +176,7 @@
             @else
             <div class="text-center py-5">
                 <i class="bi bi-airplane" style="font-size: 48px; color: #FFD700;"></i>
-                <h4 class="mt-3">No Umrah by Air Packages Available</h4>
+                <h4 class="mt-3">No Hajj & Umrah by Air Packages Available</h4>
                 <p style="color: #666;">Please check back later or contact us for custom packages.</p>
             </div>
             @endif
