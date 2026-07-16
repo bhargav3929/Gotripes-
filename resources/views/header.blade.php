@@ -1370,17 +1370,7 @@
                         @feature('visas')<a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">UAE Visa Services{!! $gtBadge('visa_services') !!}</a>@endfeature
                         @feature('tours')<a href="/tour-packages" class="gt-nav-link {{ Request::is('tour-packages') ? 'active' : '' }}">Tour Packages{!! $gtBadge('tour_packages') !!}</a>@endfeature
                         @feature('hajj_umrah')
-                        <div class="gt-dropdown">
-                            <button type="button" class="gt-dd-toggle gt-nav-link {{ Request::is('umrah-visas*') ? 'active' : '' }}">
-                                Hajj & Umrah{!! $gtBadge('hajj_umrah') !!} <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
-                            </button>
-                            <div class="gt-dd-menu gt-dd-menu-right gt-dd-compact">
-                                <a href="/umrah-visas" class="gt-dd-item {{ Request::is('umrah-visas') ? 'active' : '' }}">
-                                    <i class="bi bi-bus-front text-warning"></i>
-                                    <span>Hajj & Umrah Bus Packages</span>
-                                </a>
-                            </div>
-                        </div>
+                        <a href="/umrah-visas" class="gt-nav-link {{ Request::is('umrah-visas*') ? 'active' : '' }}">Hajj & Umrah{!! $gtBadge('hajj_umrah') !!}</a>
                         @endfeature
                     </div>
                     <div class="gt-nav-row gt-nav-secondary">
@@ -1467,7 +1457,7 @@
                     <a href="{{ $gtSoon('medical-tours') }}" class="gt-macc-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
                     @feature('activities')<a href="/activities" class="gt-macc-item">Activities</a>@endfeature
                     @feature('hajj_umrah')
-                    <a href="/umrah-visas" class="gt-macc-item">Hajj & Umrah Bus Packages</a>
+                    <a href="/umrah-visas" class="gt-macc-item">Hajj & Umrah</a>
 
                     @endfeature
                 </div>

@@ -44,8 +44,8 @@ body, main { font-family: 'Outfit', sans-serif; }
     padding: 22px 24px; border-radius: 16px; backdrop-filter: blur(12px);
     min-width: 240px;
 }
-.ud-hero-price-card .from-label { font-size: 11px; color: #aaa; }
-.ud-hero-price-card .ud-price { font-size: 34px; color: #FFD700; font-weight: 800; }
+.ud-hero-price-card .from-label { font-size: 13.5px; color: #aaa; font-weight: 600; letter-spacing: 0.5px; }
+.ud-hero-price-card .ud-price { font-size: 40px; color: #FFD700; font-weight: 800; }
 
 /* ─── Layout: Main grid ─────────────────────────────────────────────── */
 .ud-content-row { display: grid; grid-template-columns: 1fr 400px; gap: 32px; align-items: start; }
@@ -183,9 +183,9 @@ body, main { font-family: 'Outfit', sans-serif; }
     border-bottom: 1px solid #1e1e1e; padding: 20px 22px;
     display: flex; justify-content: space-between; align-items: center;
 }
-.ud-bk-title { font-size: 20px; font-weight: 800; color: #fff; margin: 0; letter-spacing: 0.5px; }
-.ud-bk-price { font-size: 20px; font-weight: 800; color: #FFD700; }
-.ud-bk-price small { font-size: 12px; color: #888; font-weight: 400; display: block; text-align: right; }
+.ud-bk-title { font-size: 22px; font-weight: 800; color: #fff; margin: 0; letter-spacing: 0.5px; }
+.ud-bk-price { font-size: 24px; font-weight: 800; color: #FFD700; }
+.ud-bk-price small { font-size: 13.5px; color: #888; font-weight: 400; display: block; text-align: right; }
 
 /* Quick Feat Strip */
 .ud-feat-strip {
@@ -194,8 +194,8 @@ body, main { font-family: 'Outfit', sans-serif; }
 }
 .ud-feat-strip-item { padding: 11px 4px; border-right: 1px solid #171717; }
 .ud-feat-strip-item:last-child { border-right: none; }
-.ud-feat-strip-item i { font-size: 17px; color: #FFD700; display: block; margin-bottom: 3px; }
-.ud-feat-strip-item span { font-size: 9.5px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; display: block; }
+.ud-feat-strip-item i { font-size: 20px; color: #FFD700; display: block; margin-bottom: 3px; }
+.ud-feat-strip-item span { font-size: 11.5px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; display: block; }
 
 /* Step Progress */
 .ud-steps { display: flex; align-items: center; padding: 14px 22px 0; gap: 0; }
@@ -216,17 +216,17 @@ body, main { font-family: 'Outfit', sans-serif; }
 }
 .ud-step.done .ud-step-dot { background: #22c55e; border-color: #22c55e; color: #fff; }
 .ud-step.active .ud-step-dot { background: #FFD700; border-color: #FFD700; color: #000; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
-.ud-step-label { font-size: 10.5px; color: #666; margin-top: 5px; font-weight: 600; }
+.ud-step-label { font-size: 12px; color: #666; margin-top: 5px; font-weight: 600; }
 .ud-step.active .ud-step-label { color: #FFD700; }
 .ud-step.done .ud-step-label  { color: #22c55e; }
 
 /* Form body */
 .ud-bk-body { padding: 18px 22px 22px; }
 
-.ud-field-label { font-size: 13px; color: #888; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.6px; display: block; }
+.ud-field-label { font-size: 15px; color: #888; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.6px; display: block; }
 
 /* Calendar */
-.ud-cal-hint { font-size: 12.5px; color: #888; padding: 10px 14px; background: rgba(255,215,0,0.04); border: 1px solid rgba(255,215,0,0.1); border-radius: 8px; margin-bottom: 12px; line-height: 1.55; }
+.ud-cal-hint { font-size: 13.5px; color: #888; padding: 10px 14px; background: rgba(255,215,0,0.04); border: 1px solid rgba(255,215,0,0.1); border-radius: 8px; margin-bottom: 12px; line-height: 1.55; }
 .ud-calendar { background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 14px; }
 .ud-cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .ud-cal-nav-btn { background: none; border: 1px solid #2a2a2a; color: #FFD700; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.2s; }
@@ -415,27 +415,29 @@ body, main { font-family: 'Outfit', sans-serif; }
 
 /* Back to Packages Button Style */
 .ud-back-btn {
-    color: #FFD700 !important;
+    color: #000 !important;
     text-decoration: none;
-    font-weight: 700;
-    font-size: 14.5px;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px 22px;
+    font-weight: 800;
+    font-size: 16px;
+    background: #FFD700;
+    padding: 12px 28px;
     border-radius: 50px;
-    border: 1.5px solid rgba(255, 215, 0, 0.35);
-    backdrop-filter: blur(8px);
+    border: 2px solid #FFD700;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.35);
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     transition: all 0.25s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .ud-back-btn:hover {
-    background: rgba(255, 215, 0, 0.15) !important;
+    background: #000 !important;
+    color: #FFD700 !important;
     border-color: #FFD700 !important;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
-    transform: translateY(-1px);
-    color: #fff !important;
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.5);
+    transform: translateY(-2px);
 }
 
 /* Light theme override */
