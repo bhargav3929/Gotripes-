@@ -734,7 +734,7 @@ body, main { font-family: 'Outfit', sans-serif; }
                 {{-- ── Related Packages ── --}}
                 @if(isset($relatedPackages) && count($relatedPackages))
                 <div class="ud-panel mt-4">
-                    <h4 class="ud-panel-title"><i class="bi bi-kaaba"></i>Other Umrah Packages</h4>
+                    <h4 class="ud-panel-title"><i class="bi bi-kaaba"></i>Other Hajj & Umrah Packages</h4>
                     <div class="ud-related-grid">
                         @foreach($relatedPackages as $rp)
                         <div class="ud-rel-card">

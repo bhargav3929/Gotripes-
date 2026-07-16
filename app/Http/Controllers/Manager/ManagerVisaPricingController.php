@@ -19,17 +19,18 @@ class ManagerVisaPricingController extends Controller
             ->get();
 
         $emirates = Emirates::orderBy('emiratesName')->get();
-        $packages = UAEVisaPackage::with('emirate')->where('isActive', 1)->orderBy('name')->get();
-        $prices = UAEVisaPrice::with('package')->where('isActive', 1)->get();
+        $packages = UAEVisaPackage::with('emirate')->orderBy('name')->get();
+        $prices = UAEVisaPrice::with('package')->get();
 
         $company = current_company();
         $hotelFee  = $company?->getSetting('visa_hotel_booking_fee', 25) ?? 25;
         $ticketFee = $company?->getSetting('visa_ticket_booking_fee', 25) ?? 25;
+        $supplierEmail = $company?->getSetting('visa_supplier_email', '') ?? '';
 
         // Global markup applied to every Fluxir e-Visa (the /e-visa storefront).
         $evisaMarkup = EvisaSetting::markupPercent();
 
-        return view('manager.visa-pricing.index', compact('visas', 'emirates', 'packages', 'prices', 'hotelFee', 'ticketFee', 'evisaMarkup'));
+        return view('manager.visa-pricing.index', compact('visas', 'emirates', 'packages', 'prices', 'hotelFee', 'ticketFee', 'evisaMarkup', 'supplierEmail'));
     }
 
     /** Update the global e-Visa (Fluxir) markup percentage. */
@@ -49,6 +50,7 @@ class ManagerVisaPricingController extends Controller
         $validated = $request->validate([
             'visa_hotel_booking_fee'  => 'required|numeric|min:0',
             'visa_ticket_booking_fee' => 'required|numeric|min:0',
+            'visa_supplier_email'     => 'nullable|email|max:255',
         ]);
 
         $company = current_company();
@@ -56,11 +58,12 @@ class ManagerVisaPricingController extends Controller
         $settings = $company->settings ?? [];
         $settings['visa_hotel_booking_fee']  = (float) $validated['visa_hotel_booking_fee'];
         $settings['visa_ticket_booking_fee'] = (float) $validated['visa_ticket_booking_fee'];
+        $settings['visa_supplier_email']     = $validated['visa_supplier_email'] ? trim($validated['visa_supplier_email']) : null;
         $company->settings = $settings;
         $company->save();
 
-        return redirect()->route('manager.visa-pricing.index')
-            ->with('success', 'Service fees updated.');
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'settings'])
+            ->with('success', 'Visa settings updated.');
     }
 
     public function store(Request $request)
@@ -78,7 +81,7 @@ class ManagerVisaPricingController extends Controller
             'createdDate'     => now(),
         ]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'legacy'])
             ->with('success', 'Visa price added.');
     }
 
@@ -98,7 +101,7 @@ class ManagerVisaPricingController extends Controller
             'modifiedDate'    => now(),
         ]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'legacy'])
             ->with('success', 'Visa price updated.');
     }
 
@@ -112,7 +115,7 @@ class ManagerVisaPricingController extends Controller
             'modifiedDate' => now(),
         ]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'legacy'])
             ->with('success', 'Visa price removed.');
     }
 
@@ -135,7 +138,7 @@ class ManagerVisaPricingController extends Controller
             'createdDate'         => now(),
         ]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'emirates'])
             ->with('success', 'Emirate added successfully.');
     }
 
@@ -159,7 +162,7 @@ class ManagerVisaPricingController extends Controller
             'modifiedDate'        => now(),
         ]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'emirates'])
             ->with('success', 'Emirate updated successfully.');
     }
 
@@ -172,7 +175,7 @@ class ManagerVisaPricingController extends Controller
             'modifiedDate' => now(),
         ]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'emirates'])
             ->with('success', 'Emirate deactivated.');
     }
 
@@ -192,7 +195,7 @@ class ManagerVisaPricingController extends Controller
             'isActive'    => 1,
         ]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'packages'])
             ->with('success', 'Visa Package added successfully.');
     }
 
@@ -209,7 +212,7 @@ class ManagerVisaPricingController extends Controller
 
         $package->update($validated);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'packages'])
             ->with('success', 'Visa Package updated successfully.');
     }
 
@@ -218,7 +221,7 @@ class ManagerVisaPricingController extends Controller
         $package = UAEVisaPackage::findOrFail($id);
         $package->update(['isActive' => 0]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'packages'])
             ->with('success', 'Visa Package removed.');
     }
 
@@ -242,7 +245,7 @@ class ManagerVisaPricingController extends Controller
             'isActive'        => 1,
         ]);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
             ->with('success', 'Pricing row added successfully.');
     }
 
@@ -261,8 +264,34 @@ class ManagerVisaPricingController extends Controller
 
         $price->update($validated);
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
             ->with('success', 'Pricing row updated successfully.');
+    }
+
+    public function bulkUpdatePriceRow(Request $request)
+    {
+        $validated = $request->validate([
+            'prices' => 'required|array',
+            'prices.*.entry_type' => 'required|string|max:100',
+            'prices.*.duration' => 'required|string|max:100',
+            'prices.*.traveller_type' => 'required|string|max:100',
+            'prices.*.price' => 'required|numeric|min:0',
+            'prices.*.isActive' => 'required|boolean',
+        ]);
+
+        foreach ($validated['prices'] as $id => $data) {
+            $price = UAEVisaPrice::findOrFail($id);
+            $price->update([
+                'entry_type'     => $data['entry_type'],
+                'duration'       => $data['duration'],
+                'traveller_type' => $data['traveller_type'],
+                'price'          => $data['price'],
+                'isActive'       => $data['isActive'],
+            ]);
+        }
+
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
+            ->with('success', 'Pricing matrix updated successfully.');
     }
 
     public function destroyPriceRow($id)
@@ -270,7 +299,7 @@ class ManagerVisaPricingController extends Controller
         $price = UAEVisaPrice::findOrFail($id);
         $price->delete();
 
-        return redirect()->route('manager.visa-pricing.index')
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
             ->with('success', 'Pricing row deleted.');
     }
 }

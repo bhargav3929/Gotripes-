@@ -901,15 +901,24 @@
                         </div>
                     </div>
 
-                    {{-- ROW 3: Email, WhatsApp --}}
-                    <div class="form-grid" style="margin-top: 12px;">
-                        <div class="form-field">
-                            <label class="field-label">Email Address</label>
-                            <input type="email" class="field-input" name="email" placeholder="name@example.com" required>
+                    {{-- Universal Applicant Section --}}
+                    <div id="universalApplicantSection" style="margin-top: 12px;">
+                        <div class="section-label" id="applicantSectionLabel" style="display: none; margin-bottom: 8px;">
+                            <i class="bi bi-person-fill"></i> Applicant Details
                         </div>
-                        <div class="form-field">
-                            <label class="field-label">WhatsApp Number</label>
-                            <input type="tel" id="phoneInput" class="field-input" name="phone" placeholder="50 000 0000" required>
+                        <div class="form-grid" id="applicantGrid">
+                            <div class="form-field" id="applicantNameField" style="display: none;">
+                                <label class="field-label">Full Name <span style="color: var(--c-gold);">*</span></label>
+                                <input type="text" class="field-input" name="applicant_name" id="applicantNameInput" placeholder="Enter applicant's full name">
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Email Address <span style="color: var(--c-gold);">*</span></label>
+                                <input type="email" class="field-input" name="email" placeholder="name@example.com" required>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">WhatsApp Number <span style="color: var(--c-gold);">*</span></label>
+                                <input type="tel" id="phoneInput" class="field-input" name="phone" placeholder="50 000 0000" required>
+                            </div>
                         </div>
                     </div>
 
@@ -1133,6 +1142,7 @@
         function generateApplicants(adults, children, infants) {
             applicantsContainer.innerHTML = '';
             const total = adults + children + infants;
+            const isSharjah = selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah';
             for (let i = 0; i < total; i++) {
                 let label, ageField = '';
                 if (i < adults) {
@@ -1164,14 +1174,14 @@
                         <div class="applicant-header">
                             <span><i class="bi bi-person-fill"></i> ${label}</span>
                         </div>
-                        <div class="form-grid" style="margin-bottom: 12px;">
+                        <div class="form-grid" style="margin-bottom: 12px; ${isSharjah ? 'display: none;' : ''}">
                             <div class="form-field">
                                 <label class="field-label">First Name (Given Names)</label>
-                                <input type="text" name="first_name[]" class="field-input app-first-name" placeholder="As in passport" required>
+                                <input type="text" name="first_name[]" class="field-input app-first-name" placeholder="As in passport" ${isSharjah ? '' : 'required'}>
                             </div>
                             <div class="form-field">
                                 <label class="field-label">Last Name (Surname)</label>
-                                <input type="text" name="last_name[]" class="field-input app-last-name" placeholder="As in passport" required>
+                                <input type="text" name="last_name[]" class="field-input app-last-name" placeholder="As in passport" ${isSharjah ? '' : 'required'}>
                             </div>
                         </div>
                         <div class="form-grid-3" style="margin-bottom: 12px;">
@@ -1434,8 +1444,32 @@
             updatePrice();
         }
 
+        function updateApplicantSectionVisibility() {
+            const isSharjah = selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah';
+            const nameField = document.getElementById('applicantNameField');
+            const nameInput = document.getElementById('applicantNameInput');
+            const grid = document.getElementById('applicantGrid');
+            const sectionLabel = document.getElementById('applicantSectionLabel');
+            
+            if (isSharjah) {
+                if (nameField) nameField.style.display = 'block';
+                if (nameInput) nameInput.required = true;
+                if (grid) grid.className = 'form-grid-3';
+                if (sectionLabel) sectionLabel.style.display = 'block';
+            } else {
+                if (nameField) nameField.style.display = 'none';
+                if (nameInput) {
+                    nameInput.required = false;
+                    nameInput.value = '';
+                }
+                if (grid) grid.className = 'form-grid';
+                if (sectionLabel) sectionLabel.style.display = 'none';
+            }
+        }
+
         function refreshForm() {
             generateApplicants(getAdults(), getChildren(), getInfants());
+            updateApplicantSectionVisibility();
             updatePrice();
         }
 
@@ -1537,7 +1571,7 @@
             }
 
             populatePackages();
-            updatePrice();
+            refreshForm();
         });
 
         // Ask the visitor to choose an emirate as soon as the page settles.

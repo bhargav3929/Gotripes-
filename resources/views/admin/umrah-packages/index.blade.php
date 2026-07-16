@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Manage Umrah Packages')
+@section('title', 'Manage Hajj & Umrah Packages')
 
-@section('page-title', 'Manage Umrah Packages')
+@section('page-title', 'Manage Hajj & Umrah Packages')
 
 @section('content')
     <div class="row justify-content-center">
@@ -11,7 +11,7 @@
                 <div class="card-header">
                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                         <h3 class="card-title">
-                            <i class="fas fa-kaaba me-2"></i>Manage Umrah Packages
+                            <i class="fas fa-kaaba me-2"></i>Manage Hajj & Umrah Packages
                         </h3>
                         <div class="card-tools d-flex align-items-center gap-2">
                             @if(isset($packages) && $packages->count() > 0)
@@ -182,7 +182,7 @@
                 <i class="fas fa-kaaba"></i>
             </div>
             <div class="delete-modal-text">
-                Are you sure you want to delete this Umrah package?
+                Are you sure you want to delete this Hajj & Umrah package?
             </div>
             <div class="delete-modal-announcement" id="packageToDelete">
                 Package Title Will Appear Here

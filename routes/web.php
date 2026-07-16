@@ -474,6 +474,7 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::delete('visa-packages/{id}',       [ManagerVisaPricingController::class, 'destroyPackage'])->name('visa-packages.destroy');
 
     Route::post('visa-prices',                [ManagerVisaPricingController::class, 'storePriceRow'])->name('visa-prices.store');
+    Route::post('visa-prices/bulk',           [ManagerVisaPricingController::class, 'bulkUpdatePriceRow'])->name('visa-prices.bulk-update');
     Route::put('visa-prices/{id}',            [ManagerVisaPricingController::class, 'updatePriceRow'])->name('visa-prices.update');
     Route::delete('visa-prices/{id}',         [ManagerVisaPricingController::class, 'destroyPriceRow'])->name('visa-prices.destroy');
 

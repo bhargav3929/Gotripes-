@@ -634,7 +634,7 @@
 
                 @feature('hajj_umrah')
                 <div class="wp-nav-separator"></div>
-                <li class="wp-nav-label">Umrah Management</li>
+                <li class="wp-nav-label">Hajj & Umrah</li>
                 <li class="wp-nav-item">
                     <a href="{{ route('manager.umrah-packages.index') }}" class="{{ request()->routeIs('manager.umrah-packages.*') ? 'active' : '' }}">
                         <i class="fas fa-kaaba"></i>

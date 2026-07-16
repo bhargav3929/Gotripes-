@@ -1372,7 +1372,7 @@
                         @feature('hajj_umrah')
                         <div class="gt-dropdown">
                             <button type="button" class="gt-dd-toggle gt-nav-link {{ Request::is('umrah-visas*') ? 'active' : '' }}">
-                                Umrah Packages{!! $gtBadge('hajj_umrah') !!} <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+                                Hajj & Umrah{!! $gtBadge('hajj_umrah') !!} <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
                             </button>
                             <div class="gt-dd-menu gt-dd-menu-right gt-dd-compact">
                                 <a href="/umrah-visas" class="gt-dd-item {{ Request::is('umrah-visas') ? 'active' : '' }}">

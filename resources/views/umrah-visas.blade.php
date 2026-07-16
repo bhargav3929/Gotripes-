@@ -6,7 +6,7 @@
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65);"></div>
         <div class="container" style="position: relative; z-index: 2;">
             <h1 style="font-size: clamp(28px, 6vw, 54px); font-weight: 800; letter-spacing: 2px; background: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8960C 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; margin-bottom: 15px;">Umrah & Saudi Visas</h1>
-            <p style="font-size: clamp(14px, 2vw, 18px); color: #ccc; max-width: 700px; margin: 0 auto; line-height: 1.6;">Experience a sacred pilgrimage of a lifetime with our admin-driven, high-quality Umrah packages and Saudi Visa services.</p>
+            <p style="font-size: clamp(14px, 2vw, 18px); color: #ccc; max-width: 700px; margin: 0 auto; line-height: 1.6;">Experience a sacred pilgrimage of a lifetime with our admin-driven, high-quality Hajj & Umrah packages and Saudi Visa services.</p>
         </div>
     </section>
 
@@ -100,7 +100,7 @@
             @else
             <div class="text-center py-5">
                 <i class="bi bi-calendar2-x" style="font-size: 48px; color: #FFD700;"></i>
-                <h4 class="mt-3">No Umrah Packages Available</h4>
+                <h4 class="mt-3">No Hajj & Umrah Packages Available</h4>
                 <p style="color: #666;">Please check back later or contact us for custom packages.</p>
             </div>
             @endif

@@ -1814,7 +1814,7 @@
                     <li class="nav-item">
                         <a href="{{ route('admin.umrah-packages.index') }}" class="nav-link {{ request()->routeIs('admin.umrah-packages.*') ? 'active' : '' }}">
                             <i class="fas fa-kaaba"></i>
-                            <span>Umrah Packages</span>
+                            <span>Hajj & Umrah</span>
                         </a>
                     </li>
                 @endif
