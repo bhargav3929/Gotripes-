@@ -464,6 +464,29 @@
         select[multiple]::-webkit-scrollbar-track {
             background-color: var(--wp-body-bg);
         }
+
+        /* ── Bootstrap table overrides for dark mode ── */
+        .table {
+            background-color: var(--wp-white) !important;
+            color: var(--wp-text) !important;
+            border-color: var(--wp-border-light) !important;
+        }
+        .table th, .table td {
+            background-color: var(--wp-white) !important;
+            color: var(--wp-text) !important;
+            border-color: var(--wp-border-light) !important;
+        }
+        .table-light, .table-light th, .table-light td {
+            background-color: rgba(255, 215, 0, 0.1) !important;
+            color: var(--wp-primary) !important;
+            border-color: var(--wp-border) !important;
+        }
+        .table-bordered {
+            border-color: var(--wp-border) !important;
+        }
+        .text-gray-800 {
+            color: var(--wp-text) !important;
+        }
     </style>
     @stack('styles')
 </head>
