@@ -1185,7 +1185,7 @@
                         <div class="applicant-header">
                             <span><i class="bi bi-person-fill"></i> ${label}</span>
                         </div>
-                        <div class="form-grid" style="margin-bottom: 12px; ${isSharjah ? 'display: none;' : ''}">
+                        <div class="form-grid app-name-grid" style="margin-bottom: 12px; ${isSharjah ? 'display: none;' : ''}">
                             <div class="form-field">
                                 <label class="field-label">First Name (Given Names)</label>
                                 <input type="text" name="first_name[]" class="field-input app-first-name" placeholder="As in passport" ${isSharjah ? '' : 'required'}>
@@ -1493,6 +1493,28 @@
             });
         }
 
+        // Reveal (and require) one applicant's name fields — used when OCR cannot
+        // read a passport, so the customer supplies the missing name instead of a
+        // placeholder being saved. Sharjah hides these by default; other emirates
+        // already show them, so this is a no-op there.
+        window.revealNameFields = function (index, message) {
+            const card = document.getElementById(`applicant-box-${index}`);
+            if (!card) return;
+            const grid = card.querySelector('.app-name-grid');
+            if (grid) grid.style.display = '';
+            const fn = card.querySelector('.app-first-name');
+            const ln = card.querySelector('.app-last-name');
+            if (fn) fn.required = true;
+            if (ln) ln.required = true;
+            if (message && grid && !card.querySelector('.app-name-note')) {
+                const note = document.createElement('div');
+                note.className = 'app-name-note';
+                note.style.cssText = 'color:#FFB020;font-size:12.5px;margin:2px 0 10px;display:flex;align-items:center;gap:6px;';
+                note.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i><span>' + message + '</span>';
+                grid.parentNode.insertBefore(note, grid);
+            }
+        };
+
         // Handle automated OCR scan on individual passport copy file uploads
         window.handlePassportUpload = function(input, index) {
             if (!input.files || input.files.length === 0) return;
@@ -1552,11 +1574,20 @@
                     if (index === 0 && f.nationality) {
                         selectNationality(f);
                     }
+
+                    // OCR ran but could not read a name — let the customer type it.
+                    if (firstNameInput && !firstNameInput.value.trim()) {
+                        revealNameFields(index, "We couldn't read the name on this passport — please enter it below.");
+                    }
+                } else {
+                    // OCR returned no usable data.
+                    revealNameFields(index, "We couldn't read this passport — please enter the traveller's name below.");
                 }
             })
             .catch(err => {
                 headerText.innerHTML = originalHTML;
                 console.error('Passport OCR error:', err);
+                revealNameFields(index, "Passport scan is unavailable — please enter the traveller's name below.");
             });
         };
 
@@ -1632,6 +1663,30 @@
                 if (typeof window.showEmirateSelector === 'function') window.showEmirateSelector();
                 alert('Please select which Emirate visa you need before continuing.');
                 return;
+            }
+
+            // Sharjah hides the per-applicant name fields and fills them from passport
+            // OCR. If OCR did not populate a traveller's name, reveal the fields and
+            // stop here so the customer can enter it — never submit a blank name that
+            // the server would otherwise reject (applicant #0 is covered by the
+            // required universal Full Name field).
+            if (selectedEmirateName.toLowerCase() === 'sharjah') {
+                const total = getAdults() + getChildren() + getInfants();
+                const missing = [];
+                for (let i = 1; i < total; i++) {
+                    const card = document.getElementById(`applicant-box-${i}`);
+                    const fn = card ? card.querySelector('.app-first-name') : null;
+                    if (fn && !fn.value.trim()) {
+                        revealNameFields(i, "We couldn't read this passport — please enter the traveller's name.");
+                        missing.push(i);
+                    }
+                }
+                if (missing.length) {
+                    alert('Please enter the traveller name for applicant #' + missing.map(x => x + 1).join(', #') + '.');
+                    const firstCard = document.getElementById(`applicant-box-${missing[0]}`);
+                    if (firstCard) firstCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
             }
 
             const btn = document.getElementById('submitBtn');
