@@ -628,13 +628,22 @@ class NomodController extends Controller
             $record->items ?? []
         );
 
-        if ($review['success'] ?? false) {
+        $submitted = $review['success'] ?? false;
+
+        if ($submitted) {
             $record->update([
                 'state'         => $review['data']['state'] ?? 'ReadyForReview',
                 'status'        => 'submitted',
                 'last_response' => $review['data'] ?? null,
             ]);
         } else {
+            // The customer has paid but Fluxir has not accepted the application,
+            // so nobody is processing their visa. Record it as such rather than
+            // leaving the order looking merely 'paid'.
+            $record->update([
+                'status'        => 'submit_failed',
+                'last_response' => $review['data'] ?? null,
+            ]);
             Log::error('Fluxir submitForReview failed after Nomod payment', [
                 'order_id' => $orderId,
                 'error'    => $review['error'] ?? null,
@@ -651,9 +660,14 @@ class NomodController extends Controller
             );
             if (!empty($recipients)) {
                 Mail::to($recipients)->send(new BookingNotificationMail(
-                    heading: 'New e-Visa application — PAID',
-                    intro: 'A customer paid for an e-Visa. The application has been submitted to Fluxir for processing.',
-                    rows: [
+                    heading: $submitted
+                        ? 'New e-Visa application — PAID'
+                        : 'e-Visa SUBMISSION FAILED — action required',
+                    intro: $submitted
+                        ? 'A customer paid for an e-Visa. The application has been submitted to Fluxir for processing.'
+                        : 'A customer paid for an e-Visa but the application was REJECTED by Fluxir and is not being '
+                          . 'processed. Submit it manually or refund the customer.',
+                    rows: array_filter([
                         'Applicant'   => trim(($record->first_name ?? '') . ' ' . ($record->last_name ?? '')),
                         'Email'       => $record->email,
                         'Phone'       => $record->phone,
@@ -661,7 +675,8 @@ class NomodController extends Controller
                         'Destination' => $record->destination_code,
                         'Arrival'     => optional($record->arrival_date)->format('d M Y'),
                         'Amount'      => 'USD ' . $record->amount,
-                    ],
+                        'Error'       => $submitted ? null : ($review['error'] ?? 'Unknown'),
+                    ]),
                     reference: $orderId,
                     replyToAddress: $record->email,
                 ));
