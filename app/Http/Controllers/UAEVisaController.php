@@ -129,6 +129,55 @@ class UAEVisaController extends Controller
         $depositAmount = $isSharjah ? 5000.00 : 0.00;
         $refundAmount = $isSharjah ? 5000.00 : 0.00;
 
+        // Resolve every traveller's name up front.
+        //
+        // Sharjah's simplified form hides the per-applicant name fields and relies
+        // on passport OCR (plus one universal "Full Name" for the primary
+        // applicant) to supply them. If OCR fails and a name is left blank we must
+        // NOT persist a placeholder like "Applicant 2"/"Guest" — reject instead so
+        // the customer can enter it. Other emirates keep their long-standing
+        // behaviour unchanged (names are required in their form; the historical
+        // fallback is preserved so nothing about Dubai/etc. is affected).
+        $resolvedNames = [];
+        $missingNames = [];
+        for ($i = 0; $i < $visaCount; $i++) {
+            $isChildRow = $i >= $adultCount;
+            $label = $isChildRow ? ('Child ' . ($i - $adultCount + 1)) : ('Applicant ' . ($i + 1));
+
+            $first = trim((string) $request->input("first_name.$i"));
+            $last  = trim((string) $request->input("last_name.$i"));
+
+            if ($isSharjah) {
+                if ($i === 0 && $first === '' && $last === '' && !empty($request->input('applicant_name'))) {
+                    $parts = preg_split('/\s+/', trim($request->input('applicant_name')), 2);
+                    $first = $parts[0] ?? '';
+                    $last  = $parts[1] ?? '';
+                }
+
+                if ($first === '') {
+                    $missingNames[] = $label;
+                } elseif ($last === '') {
+                    // A single-word legal name is valid; mirror it rather than fabricate a surname.
+                    $last = $first;
+                }
+            } else {
+                // Historical fallback — unchanged behaviour for non-Sharjah emirates.
+                $first = $first !== '' ? $first : $label;
+                $last  = $last !== '' ? $last : ($isChildRow ? 'Child' : 'Guest');
+            }
+
+            $resolvedNames[$i] = ['first' => $first, 'last' => $last];
+        }
+
+        if ($isSharjah && !empty($missingNames)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'We could not read the passport name for: ' . implode(', ', $missingNames)
+                    . '. Please enter the traveller name to continue.',
+                'missing_names' => $missingNames,
+            ], 422);
+        }
+
         for ($i = 0; $i < $visaCount; $i++) {
             // Handle Files
             $passportCopyPath = null;
@@ -155,18 +204,9 @@ class UAEVisaController extends Controller
             $travellerType = $isChild ? 'Child' : 'Adult';
             $unitPrice = $isChild ? $childPrice : $adultPrice;
 
-            // Extracted/input details per applicant
-            $firstName = $request->input("first_name.$i");
-            $lastName = $request->input("last_name.$i");
-
-            if ($isSharjah && $i === 0 && empty($firstName) && empty($lastName) && !empty($request->input('applicant_name'))) {
-                $parts = explode(' ', trim($request->input('applicant_name')), 2);
-                $firstName = $parts[0];
-                $lastName = isset($parts[1]) ? $parts[1] : 'Guest';
-            }
-
-            $firstName = $firstName ?: $applicantLabel;
-            $lastName = $lastName ?: ($isChild ? 'Child' : 'Guest');
+            // Names were resolved and validated before this loop.
+            $firstName = $resolvedNames[$i]['first'];
+            $lastName  = $resolvedNames[$i]['last'];
             $passportNumber = $request->input("passport_number.$i");
             $dob = $request->input("dob.$i");
             $gender = $request->input("gender.$i");
