@@ -728,12 +728,17 @@
     <div class="visa-wrapper">
 
         {{-- Page Header --}}
-        <div class="visa-header">
-            <div class="visa-header-icon">🇸🇦</div>
-            <div class="visa-header-text">
-                <h1 class="visa-title">Saudi Visa</h1>
-                <span class="visa-subtitle">Standalone Application</span>
+        <div class="visa-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div class="visa-header-icon">🇸🇦</div>
+                <div class="visa-header-text">
+                    <h1 class="visa-title">Saudi Visa</h1>
+                    <span class="visa-subtitle">Standalone Application</span>
+                </div>
             </div>
+            <a href="/umrah-visas" class="btn btn-outline-warning" style="font-weight: 700; border-radius: 8px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--c-gold); color: var(--c-gold); padding: 8px 16px; text-decoration: none; transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Back to Hajj & Umrah
+            </a>
         </div>
 
         {{-- Two-Column Layout --}}

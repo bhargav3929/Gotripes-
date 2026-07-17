@@ -20,9 +20,9 @@
                 <button type="button" class="tab-btn" onclick="switchTab('air-tab')">
                     <i class="bi bi-airplane-engines-fill"></i> Hajj & Umrah by Air
                 </button>
-                <button type="button" class="tab-btn" onclick="switchTab('visa-tab')">
+                <a href="/saudi-visas" class="tab-btn">
                     <i class="bi bi-file-earmark-person-fill"></i> Saudi Visas
-                </button>
+                </a>
             </div>
         </div>
     </section>
