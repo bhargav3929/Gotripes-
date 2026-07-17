@@ -526,6 +526,8 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::get('/activities/{booking}',        [OrdersController::class, 'activityDetail'])->name('activities.show');
         Route::get('/esim',                        [OrdersController::class, 'esim'])->name('esim');
         Route::get('/esim/{order}',                [OrdersController::class, 'esimDetail'])->name('esim.show');
+        Route::post('/esim/{order}/resend-qr',     [OrdersController::class, 'resendEsimQr'])->name('esim.resend-qr');
+        Route::post('/esim/{order}/retry',         [OrdersController::class, 'retryEsimProvisioning'])->name('esim.retry');
         Route::get('/visa',                        [OrdersController::class, 'visa'])->name('visa');
         Route::get('/visa/{application}',          [OrdersController::class, 'visaDetail'])->name('visa.show');
         Route::get('/saudi-visa',                  [OrdersController::class, 'saudiVisa'])->name('saudi-visa');

@@ -9,6 +9,8 @@ use App\Models\NomodTransaction;
 use App\Models\UAEActivity;
 use App\Models\UAEVApplication;
 use App\Models\SaudiVisaApplication;
+use App\Services\EsimProvisioningService;
+use App\Services\MontyEsimService;
 use Illuminate\Http\Request;
 
 /**
@@ -68,6 +70,42 @@ class OrdersController extends Controller
     public function esimDetail(EsimOrder $order)
     {
         return view('manager.orders.esim-detail', compact('order'));
+    }
+
+    /**
+     * Ask MontyeSIM to re-send the invoice + QR code email to the customer.
+     * Only possible once the order has been assigned, since the provider keys
+     * the email off its own order ID.
+     */
+    public function resendEsimQr(EsimOrder $order)
+    {
+        if (!$order->monty_order_id) {
+            return back()->withErrors('This order has not been provisioned yet, so there is no QR code to resend. Use "Retry provisioning" first.');
+        }
+
+        $result = (new MontyEsimService())->resendEmail($order->monty_order_id);
+
+        if ($result['success'] ?? false) {
+            return back()->with('success', "QR code email resent to {$order->customer_email}.");
+        }
+
+        return back()->withErrors('Could not resend the QR code email: ' . ($result['error'] ?? 'Unknown error'));
+    }
+
+    /**
+     * Re-attempt provisioning for a paid order that MontyeSIM rejected.
+     * Reuses the original order_reference, and the service refuses to run if
+     * the order already has a MontyeSIM ID — so this cannot double-charge.
+     */
+    public function retryEsimProvisioning(EsimOrder $order)
+    {
+        $result = (new EsimProvisioningService())->provision($order);
+
+        if ($result['success'] ?? false) {
+            return back()->with('success', "eSIM provisioned successfully. The QR code has been emailed to {$order->customer_email}.");
+        }
+
+        return back()->withErrors('Provisioning failed: ' . ($result['error'] ?? 'Unknown error'));
     }
 
     // ─── Visa Applications ──────────────────────────────────────────
