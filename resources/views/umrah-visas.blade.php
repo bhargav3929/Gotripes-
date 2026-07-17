@@ -14,14 +14,26 @@
     <section class="tab-section" style="background: #050505; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 100; padding: 0;">
         <div class="container">
             <div class="premium-nav-tabs">
+                <a href="/saudi-visas" class="tab-btn">
+                    <i class="bi bi-file-earmark-person-fill"></i> Saudi Visa
+                </a>
+                <a href="{{ url('/coming-soon/transport') }}" class="tab-btn">
+                    <i class="bi bi-car-front-fill"></i> Transport
+                </a>
+                <a href="{{ url('/coming-soon/hotels') }}" class="tab-btn">
+                    <i class="bi bi-building"></i> Hotels
+                </a>
                 <button type="button" class="tab-btn active" onclick="switchTab('bus-tab')">
                     <i class="bi bi-bus-front-fill"></i> Hajj & Umrah by Bus
                 </button>
                 <button type="button" class="tab-btn" onclick="switchTab('air-tab')">
                     <i class="bi bi-airplane-engines-fill"></i> Hajj & Umrah by Air
                 </button>
-                <a href="/saudi-visas" class="tab-btn">
-                    <i class="bi bi-file-earmark-person-fill"></i> Saudi Visas
+                <a href="{{ url('/coming-soon/land-packages') }}" class="tab-btn">
+                    <i class="bi bi-map-fill"></i> Land Packages
+                </a>
+                <a href="{{ url('/coming-soon/catering') }}" class="tab-btn">
+                    <i class="bi bi-cup-hot-fill"></i> Catering Services
                 </a>
             </div>
         </div>
@@ -256,7 +268,12 @@
 <style>
     .premium-nav-tabs {
         display: flex;
-        justify-content: center;
+        /* "safe center" keeps the tabs centred when they fit, but falls back to
+           left-aligned once they overflow — otherwise centring clips the first
+           tab off the left edge where horizontal scrolling can't reach it.
+           Unsupported browsers ignore the value and default to flex-start,
+           which is the same safe behaviour. */
+        justify-content: safe center;
         align-items: center;
         gap: 0;
         overflow-x: auto;
