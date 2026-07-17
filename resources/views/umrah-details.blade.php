@@ -183,9 +183,9 @@ body, main { font-family: 'Outfit', sans-serif; }
     border-bottom: 1px solid #1e1e1e; padding: 20px 22px;
     display: flex; justify-content: space-between; align-items: center;
 }
-.ud-bk-title { font-size: 22px; font-weight: 800; color: #fff; margin: 0; letter-spacing: 0.5px; }
-.ud-bk-price { font-size: 24px; font-weight: 800; color: #FFD700; }
-.ud-bk-price small { font-size: 13.5px; color: #888; font-weight: 400; display: block; text-align: right; }
+.ud-bk-title { font-size: 26px; font-weight: 800; color: #fff; margin: 0; letter-spacing: 0.5px; }
+.ud-bk-price { font-size: 30px; font-weight: 800; color: #FFD700; }
+.ud-bk-price small { font-size: 15px; color: #888; font-weight: 400; display: block; text-align: right; }
 
 /* Quick Feat Strip */
 .ud-feat-strip {
@@ -195,7 +195,7 @@ body, main { font-family: 'Outfit', sans-serif; }
 .ud-feat-strip-item { padding: 11px 4px; border-right: 1px solid #171717; }
 .ud-feat-strip-item:last-child { border-right: none; }
 .ud-feat-strip-item i { font-size: 20px; color: #FFD700; display: block; margin-bottom: 3px; }
-.ud-feat-strip-item span { font-size: 11.5px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; display: block; }
+.ud-feat-strip-item span { font-size: 13px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; display: block; }
 
 /* Step Progress */
 .ud-steps { display: flex; align-items: center; padding: 14px 22px 0; gap: 0; }
@@ -216,14 +216,14 @@ body, main { font-family: 'Outfit', sans-serif; }
 }
 .ud-step.done .ud-step-dot { background: #22c55e; border-color: #22c55e; color: #fff; }
 .ud-step.active .ud-step-dot { background: #FFD700; border-color: #FFD700; color: #000; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
-.ud-step-label { font-size: 12px; color: #666; margin-top: 5px; font-weight: 600; }
+.ud-step-label { font-size: 14px; color: #666; margin-top: 5px; font-weight: 600; }
 .ud-step.active .ud-step-label { color: #FFD700; }
 .ud-step.done .ud-step-label  { color: #22c55e; }
 
 /* Form body */
 .ud-bk-body { padding: 18px 22px 22px; }
 
-.ud-field-label { font-size: 15px; color: #888; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.6px; display: block; }
+.ud-field-label { font-size: 17px; color: #888; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.6px; display: block; }
 
 /* Calendar */
 .ud-cal-hint { font-size: 13.5px; color: #888; padding: 10px 14px; background: rgba(255,215,0,0.04); border: 1px solid rgba(255,215,0,0.1); border-radius: 8px; margin-bottom: 12px; line-height: 1.55; }

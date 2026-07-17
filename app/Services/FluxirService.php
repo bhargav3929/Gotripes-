@@ -132,9 +132,8 @@ class FluxirService
      */
     protected function send(string $method, string $endpoint, callable $dispatch, callable $decorate): array
     {
-        $token = $this->getToken();
-
-        $build = function () use (&$token, $decorate) {
+        $build = function () use ($decorate) {
+            $token = $this->getToken();
             $req = Http::timeout($this->timeout)
                 ->withToken($token)
                 ->withHeaders([
@@ -153,7 +152,6 @@ class FluxirService
 
             if (in_array($response->status(), [401, 403])) {
                 Cache::forget('fluxir_access_token');
-                $token    = $this->authenticate();
                 $response = $dispatch($build());
             }
 

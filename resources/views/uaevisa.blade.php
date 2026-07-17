@@ -735,11 +735,11 @@
     .emirate-active-badge {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
-        background: rgba(255, 215, 0, 0.1);
-        border: 1px solid rgba(255, 215, 0, 0.35);
+        gap: 12px;
+        background: rgba(255, 215, 0, 0.05);
+        border: 1px solid rgba(255, 215, 0, 0.22);
         border-radius: 10px;
-        padding: 8px 16px;
+        padding: 5px 6px 5px 14px;
         font-size: 14px;
         font-weight: 700;
         color: #FFD700;
@@ -748,33 +748,44 @@
         font-family: 'Outfit', sans-serif;
     }
     .emirate-active-badge button {
-        background: transparent;
+        background: #dc3545;
         border: none;
-        color: #fff;
+        color: #fff !important;
         cursor: pointer;
-        text-decoration: underline;
-        font-size: 12px;
-        padding: 0 0 0 8px;
+        font-size: 13px;
+        padding: 6px 14px;
         font-family: 'Outfit', sans-serif;
-        font-weight: 600;
-        opacity: 0.8;
-        transition: opacity 0.2s ease;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 6px;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.35);
     }
     .emirate-active-badge button:hover {
-        opacity: 1;
+        background: #bd2130;
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+        transform: translateY(-1px);
+    }
+    .emirate-active-badge button:active {
+        transform: translateY(0);
     }
 
     /* Light Theme active badge overrides */
     html[data-theme="light"] .emirate-active-badge {
         background: var(--gt-gold-soft) !important;
-        border: 1px solid var(--gt-gold-border) !important;
+        border: 1px solid var(--gt-border-strong) !important;
         color: var(--gt-gold) !important;
     }
     html[data-theme="light"] .emirate-active-badge button {
-        color: var(--gt-text-body) !important;
+        background: #dc3545 !important;
+        color: #fff !important;
     }
     html[data-theme="light"] .emirate-active-badge button:hover {
-        color: var(--gt-text) !important;
+        background: #bd2130 !important;
     }
 </style>
 
@@ -787,7 +798,7 @@
                 <div id="emirateActiveBadge" class="emirate-active-badge" style="display: none;">
                     <span class="badge-icon"></span>
                     <span class="badge-text">Dubai Processing</span>
-                    <button type="button" onclick="window.showEmirateSelector()">Change</button>
+                    <button type="button" onclick="window.showEmirateSelector()"><i class="bi bi-pencil-square"></i> Change</button>
                 </div>
             </div>
         </div>
@@ -1236,16 +1247,7 @@
                                 </div>
                             </div>
                             ${ageField}
-                            <div class="form-field">
-                                <label class="field-label">Additional Documents</label>
-                                <div class="file-input-wrapper">
-                                    <input type="file" name="supporting_document[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" onchange="updateFileName(this)">
-                                    <div class="file-input-custom">
-                                        <span class="file-name">Upload documents (if any)...</span>
-                                        <i class="bi bi-paperclip file-icon"></i>
-                                    </div>
-                                </div>
-                            </div>
+
                         </div>
                     </div>`;
                 applicantsContainer.insertAdjacentHTML('beforeend', html);
