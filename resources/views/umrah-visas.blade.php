@@ -80,7 +80,9 @@
                                 <p style="color: #888; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">{{ Str::limit($pkg->description, 120) }}</p>
                                 
                                 <div class="pkg-meta mb-3" style="font-size: 13px; color: #ccc;">
+                                    @if($pkg->duration)
                                     <div class="mb-2"><i class="bi bi-clock-history text-warning me-2"></i><strong>Duration:</strong> {{ $pkg->duration }}</div>
+                                    @endif
                                     @if($pkg->hotels)
                                     <div class="mb-2"><i class="bi bi-building text-warning me-2"></i><strong>Hotels:</strong> {{ Str::limit($pkg->hotels, 40) }}</div>
                                     @endif
@@ -156,7 +158,9 @@
                                 <p style="color: #888; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">{{ Str::limit($pkg->description, 120) }}</p>
                                 
                                 <div class="pkg-meta mb-3" style="font-size: 13px; color: #ccc;">
+                                    @if($pkg->duration)
                                     <div class="mb-2"><i class="bi bi-clock-history text-warning me-2"></i><strong>Duration:</strong> {{ $pkg->duration }}</div>
+                                    @endif
                                     @if($pkg->airline)
                                     <div class="mb-2"><i class="bi bi-airplane text-warning me-2"></i><strong>Airline:</strong> {{ $pkg->airline }}</div>
                                     @endif
