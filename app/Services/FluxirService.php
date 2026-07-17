@@ -245,10 +245,16 @@ class FluxirService
      * VERIFIED live: the tripContext.items MUST use the system.* keys below to
      * scope by destination — otherwise the endpoint tries to return the entire
      * catalog and fails with 414 RequestUriTooLong.
+     *
+     * VERIFIED live: the singular `serviceType` is REQUIRED. Sending only
+     * `serviceTypesFilter` is rejected with 400 "the ServiceType field is
+     * required unless ServiceIntentKeysFilter is provided", which made every
+     * visa search fail. The filter alone is not a substitute.
      */
     public function getServiceIntents(array $trip, array $serviceTypes = ['Visa']): array
     {
         return $this->request('POST', 'api/app/travel-services/service-intents', [
+            'serviceType'         => $serviceTypes[0] ?? config('fluxir.service_type', 'Visa'),
             'serviceTypesFilter'  => $serviceTypes,
             'inputRestrictionMode' => 'ByPassOnMissing',
             'continuationToken'   => '',
