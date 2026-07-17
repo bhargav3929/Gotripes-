@@ -104,6 +104,7 @@
                                 <tr>
                                     <th>Emirate</th>
                                     <th>Package Name</th>
+                                    <th>Description</th>
                                     <th>Status</th>
                                     <th style="width: 200px;">Actions</th>
                                 </tr>
@@ -120,6 +121,9 @@
                                         </td>
                                         <td>
                                             <input type="text" class="wp-input" name="name" value="{{ $p->name }}" form="pkg-update-{{ $p->id }}" required>
+                                        </td>
+                                        <td>
+                                            <textarea class="wp-input" name="description" form="pkg-update-{{ $p->id }}" rows="2" maxlength="1000" placeholder="Short details about processing speed or requirements...">{{ $p->description }}</textarea>
                                         </td>
                                         <td>
                                             <select class="wp-input" name="isActive" form="pkg-update-{{ $p->id }}">
@@ -140,7 +144,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center py-4">No visa packages configured yet. Use the form on the left.</td>
+                                        <td colspan="5" class="text-center py-4">No visa packages configured yet. Use the form on the left.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
