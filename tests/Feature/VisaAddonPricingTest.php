@@ -211,7 +211,12 @@ class VisaAddonPricingTest extends TestCase
         ]);
 
         $company = \App\Models\Company::first() ?: \App\Models\Company::create(['name' => 'Test Company', 'subdomain' => 'test']);
-        
+
+        // Sharjah deposit is now admin-configured (no hardcoded default). Set it
+        // so this test exercises the deposit calculation at 5000/applicant.
+        $company->settings = array_merge($company->settings ?? [], ['visa_sharjah_deposit' => 5000]);
+        $company->save();
+
         $emirate = \App\Models\Emirates::create([
             'emiratesName' => 'Sharjah',
             'isActive' => 1,

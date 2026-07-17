@@ -399,6 +399,11 @@
                                 <input type="email" class="wp-input" name="visa_supplier_email" value="{{ old('visa_supplier_email', $supplierEmail) }}" placeholder="e.g. supplier@example.com">
                                 <p class="wp-form-help">Emails for guest UAE visa applications will be copied to this supplier address.</p>
                             </div>
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Sharjah Security Deposit — per applicant (AED)</label>
+                                <input type="number" class="wp-input" name="visa_sharjah_deposit" value="{{ old('visa_sharjah_deposit', $sharjahDeposit ?: '') }}" step="0.01" min="0" placeholder="e.g. 5000">
+                                <p class="wp-form-help">Refundable deposit shown and charged per applicant for Sharjah visas. Leave blank for no deposit — the storefront then shows a generic message with no amount and charges nothing.</p>
+                            </div>
                             <button type="submit" class="wp-btn wp-btn-primary w-100">
                                 <i class="fas fa-save"></i> Save UAE Visa Settings
                             </button>

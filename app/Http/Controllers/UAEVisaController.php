@@ -126,8 +126,12 @@ class UAEVisaController extends Controller
 
         // Determine if Sharjah Visa processing is selected
         $isSharjah = strtolower($emirateName) === 'sharjah';
-        $depositAmount = $isSharjah ? 5000.00 : 0.00;
-        $refundAmount = $isSharjah ? 5000.00 : 0.00;
+        // Refundable deposit per applicant — admin-configured. Defaults to 0
+        // (no deposit) until a manager sets a positive amount.
+        $sharjahDeposit = current_company()?->getSetting('visa_sharjah_deposit', 0);
+        $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0.0;
+        $depositAmount = $isSharjah ? $sharjahDeposit : 0.00;
+        $refundAmount = $isSharjah ? $sharjahDeposit : 0.00;
 
         // Resolve every traveller's name up front.
         //
@@ -286,7 +290,7 @@ class UAEVisaController extends Controller
         $baseVisaTotal = ($adultPrice * $adultCount) + ($childPrice * $childrenCount) + ($infantPrice * $infantsCount);
         $ticketCost = $request->boolean('ticket_booking') ? $ticketRate * $persons : 0.0;
         $hotelCost  = $request->boolean('hotel_booking')  ? $this->hotelFeeForVisas($persons, $hotelBase) : 0.0;
-        $depositTotal = $isSharjah ? (5000.00 * $persons) : 0.0;
+        $depositTotal = $isSharjah ? ($sharjahDeposit * $persons) : 0.0;
 
         // Nomod Payment
         $totalAmount = round($baseVisaTotal + $ticketCost + $hotelCost + $depositTotal, 2);
