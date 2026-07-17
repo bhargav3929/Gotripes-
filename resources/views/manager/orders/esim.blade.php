@@ -35,6 +35,17 @@
                  : ($s === 'failed' ? 'badge-failed' : 'badge-default'));
             return '<span class="badge '.$cls.'">'.e(ucfirst($s)).'</span>';
         }],
+        ['label' => 'eSIM', 'html' => true, 'render' => function($o) {
+            // A paid order with no MontyeSIM ID means the customer paid and got
+            // nothing — surface it here so it doesn't sit unnoticed.
+            if ($o->payment_status === 'paid' && ! $o->monty_order_id) {
+                return '<span class="badge badge-failed"><i class="fas fa-exclamation-triangle"></i> Not issued</span>';
+            }
+            if ($o->monty_order_id) {
+                return '<span class="badge badge-paid">Issued</span>';
+            }
+            return '<span class="badge badge-default">—</span>';
+        }],
         ['label' => 'Date',      'render' => fn($o) => $o->created_at?->format('d M Y') ?: '—'],
         ['label' => '', 'html' => true, 'render' => fn($o) =>
             '<a href="'.route('manager.orders.esim.show', $o).'" class="orders-btn orders-btn-ghost orders-btn-sm"><i class="fas fa-eye"></i> View</a>'

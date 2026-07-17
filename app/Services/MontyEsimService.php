@@ -281,16 +281,20 @@ class MontyEsimService
     }
 
     /**
-     * Reserve a bundle (step 1 of 2-step purchase flow).
-     * Locks the eSIM and deducts from wallet.
+     * Assign a bundle to a customer — the whole purchase, in one call.
+     * Deducts from the reseller wallet and triggers the QR code email
+     * MontyeSIM sends to the customer. There is no separate confirmation
+     * step, so a successful response means the eSIM is already provisioned.
      */
-    public function reserveBundle(string $bundleCode, string $email, string $name, string $orderReference): array
+    public function assignBundle(string $bundleCode, string $email, string $name, string $orderReference): array
     {
-        $result = $this->request('POST', 'Bundles/Reserve', [
+        // order_reference is capped at 30 chars by the provider; a longer one
+        // is rejected outright rather than truncated.
+        $result = $this->request('POST', 'Bundles', [
             'bundle_code' => $bundleCode,
             'email' => $email,
             'name' => $name,
-            'order_reference' => $orderReference,
+            'order_reference' => substr($orderReference, 0, 30),
         ]);
 
         if ($result['success']) {
@@ -306,19 +310,20 @@ class MontyEsimService
 
         return [
             'success' => false,
-            'error' => $result['error'] ?? 'Failed to reserve bundle',
+            'error' => $result['error'] ?? 'Failed to assign bundle',
             'data' => $result['data'] ?? [],
         ];
     }
 
     /**
-     * Complete a reserved bundle (step 2 of 2-step flow).
-     * Triggers QR code email from MontyeSIM to customer.
+     * Refund an assigned order. The provider restricts this to SuperAdmin
+     * accounts, so a reseller token gets 403 — treat failure as expected and
+     * fall back to refunding the customer through the payment provider.
      */
-    public function completeBundle(string $orderReference): array
+    public function refundOrder(string $orderId): array
     {
-        $result = $this->request('POST', 'Bundles/Complete', [
-            'order_reference' => $orderReference,
+        $result = $this->request('POST', 'Orders/Refund', [
+            'order_id' => $orderId,
         ]);
 
         if ($result['success']) {
@@ -330,30 +335,7 @@ class MontyEsimService
 
         return [
             'success' => false,
-            'error' => $result['error'] ?? 'Failed to complete bundle',
-            'data' => $result['data'] ?? [],
-        ];
-    }
-
-    /**
-     * Cancel a reserved bundle. Refunds wallet balance.
-     */
-    public function cancelBundle(string $orderReference): array
-    {
-        $result = $this->request('POST', 'Bundles/Cancel', [
-            'order_reference' => $orderReference,
-        ]);
-
-        if ($result['success']) {
-            return [
-                'success' => true,
-                'data' => $result['data'],
-            ];
-        }
-
-        return [
-            'success' => false,
-            'error' => $result['error'] ?? 'Failed to cancel bundle',
+            'error' => $result['error'] ?? 'Failed to refund order',
             'data' => $result['data'] ?? [],
         ];
     }

@@ -4,11 +4,45 @@
 @section('page-title', 'eSIM Order ' . ($order->order_reference ?: '#'.$order->id))
 
 @section('content')
+@php
+    $needsProvisioning = $order->payment_status === 'paid' && ! $order->monty_order_id;
+@endphp
+
 <div class="orders-toolbar">
     <a href="{{ route('manager.orders.esim') }}" class="orders-btn orders-btn-ghost">
         <i class="fas fa-arrow-left"></i> Back to eSIM orders
     </a>
+
+    @if($order->monty_order_id)
+        <form method="POST" action="{{ route('manager.orders.esim.resend-qr', $order->id) }}" class="d-inline">
+            @csrf
+            <button type="submit" class="orders-btn">
+                <i class="fas fa-envelope"></i> Resend QR code email
+            </button>
+        </form>
+    @endif
+
+    @if($needsProvisioning)
+        <form method="POST" action="{{ route('manager.orders.esim.retry', $order->id) }}" class="d-inline"
+              onsubmit="return confirm('Retry provisioning for {{ $order->customer_email }}? This charges the reseller wallet and emails the customer their QR code.');">
+            @csrf
+            <button type="submit" class="orders-btn">
+                <i class="fas fa-rotate-right"></i> Retry provisioning
+            </button>
+        </form>
+    @endif
 </div>
+
+@if($needsProvisioning)
+    <div class="wp-notice wp-notice-error">
+        <span>
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>This customer has paid but has no eSIM.</strong>
+            Provisioning {{ $order->reservation_status === 'pending' ? 'has not run' : 'failed ('.e($order->reservation_status).')' }},
+            so no QR code was sent. Use <strong>Retry provisioning</strong> above.
+        </span>
+    </div>
+@endif
 
 <div class="orders-detail-grid">
     <div class="orders-card orders-detail-card">

@@ -16,7 +16,7 @@ use App\Mail\CustomerPaymentConfirmationMail;
 use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\BookingNotificationMail;
 use App\Services\NomodService;
-use App\Services\MontyEsimService;
+use App\Services\EsimProvisioningService;
 use App\Services\ReferralService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -590,63 +590,12 @@ class NomodController extends Controller
                         ]);
                     }
 
-                    // Reserve + Complete with MontyeSIM
-                    try {
-                        $montyService = new MontyEsimService();
-                        $reservation = $montyService->reserveBundle(
-                            $esimOrder->bundle_code,
-                            $esimOrder->customer_email,
-                            $esimOrder->customer_name,
-                            $esimOrder->order_reference
-                        );
-
-                        if ($reservation['success'] ?? false) {
-                            $esimOrder->update([
-                                'monty_order_id' => $reservation['order_id'] ?? null,
-                                'monty_iccid' => $reservation['iccid'] ?? null,
-                                'reservation_status' => 'reserved',
-                                'monty_response' => $reservation['data'] ?? $reservation,
-                            ]);
-
-                            // Complete — triggers QR code email from MontyeSIM
-                            $completion = $montyService->completeBundle($esimOrder->order_reference);
-
-                            if ($completion['success'] ?? false) {
-                                $esimOrder->update([
-                                    'reservation_status' => 'completed',
-                                    'monty_response' => $completion['data'] ?? $completion,
-                                ]);
-                                Log::info('eSIM order completed successfully', [
-                                    'esim_order_id' => $esimOrder->id,
-                                    'order_reference' => $esimOrder->order_reference,
-                                ]);
-                            } else {
-                                $esimOrder->update([
-                                    'reservation_status' => 'complete_failed',
-                                    'monty_response' => $completion['data'] ?? $completion,
-                                ]);
-                                Log::error('MontyeSIM complete failed after reserve', [
-                                    'esim_order_id' => $esimOrder->id,
-                                    'error' => $completion['error'] ?? 'Unknown',
-                                ]);
-                            }
-                        } else {
-                            $esimOrder->update([
-                                'reservation_status' => 'reserve_failed',
-                                'monty_response' => $reservation['data'] ?? $reservation,
-                            ]);
-                            Log::error('MontyeSIM reservation failed after payment', [
-                                'esim_order_id' => $esimOrder->id,
-                                'error' => $reservation['error'] ?? 'Unknown',
-                            ]);
-                        }
-                    } catch (\Exception $e) {
-                        $esimOrder->update(['reservation_status' => 'error']);
-                        Log::error('MontyeSIM API error after payment', [
-                            'error' => $e->getMessage(),
-                            'esim_order_id' => $esimOrder->id,
-                        ]);
-                    }
+                    // Provision with MontyeSIM. A successful assign both charges
+                    // the reseller wallet and sends the customer their QR code,
+                    // so this is the point of no return for the order. On
+                    // failure the service alerts the team and the order can be
+                    // retried from the manager portal.
+                    (new EsimProvisioningService())->provision($esimOrder);
                 } else {
                     $esimOrder->update(['payment_status' => 'failed']);
                 }
