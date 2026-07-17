@@ -162,6 +162,9 @@ Route::prefix('/')->group(function () {
             'local-tours'       => ['title' => 'Local Tours',             'icon' => 'bi-geo-alt',       'tagline' => 'Curated local experiences and city tours — coming soon.',                        'img' => asset('assets/coming-soon/local-tours.jpg')],
             'festival-tours'    => ['title' => 'Festival Tours',          'icon' => 'bi-stars',         'tagline' => 'Travel built around the world\'s best festivals — launching soon.',              'img' => asset('assets/coming-soon/festival-tours.jpg')],
             'medical-tours'     => ['title' => 'Medical Tours',           'icon' => 'bi-heart-pulse',   'tagline' => 'Trusted medical travel and wellness journeys — arriving shortly.',               'img' => asset('assets/coming-soon/medical-tours.jpg')],
+            'hotels'            => ['title' => 'Hotels',                  'icon' => 'bi-building',      'tagline' => 'Handpicked Makkah & Madinah hotels close to the Haram — coming soon.',            'img' => asset('assets/coming-soon/holiday-homes.jpg')],
+            'land-packages'     => ['title' => 'Land Packages',           'icon' => 'bi-map',           'tagline' => 'Complete land-based Hajj & Umrah packages — coming soon.',                        'img' => asset('assets/coming-soon/local-tours.jpg')],
+            'catering'          => ['title' => 'Catering Services',       'icon' => 'bi-cup-hot',       'tagline' => 'Full-board halal catering for your pilgrimage — coming soon.',                    'img' => asset('assets/coming-soon/events.jpg')],
         ];
 
         abort_unless(isset($services[$slug]), 404);
