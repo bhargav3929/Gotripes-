@@ -735,11 +735,11 @@
     .emirate-active-badge {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
-        background: rgba(255, 215, 0, 0.1);
-        border: 1px solid rgba(255, 215, 0, 0.35);
+        gap: 12px;
+        background: rgba(255, 215, 0, 0.05);
+        border: 1px solid rgba(255, 215, 0, 0.22);
         border-radius: 10px;
-        padding: 8px 16px;
+        padding: 5px 6px 5px 14px;
         font-size: 14px;
         font-weight: 700;
         color: #FFD700;
@@ -748,33 +748,44 @@
         font-family: 'Outfit', sans-serif;
     }
     .emirate-active-badge button {
-        background: transparent;
+        background: #dc3545;
         border: none;
-        color: #fff;
+        color: #fff !important;
         cursor: pointer;
-        text-decoration: underline;
-        font-size: 12px;
-        padding: 0 0 0 8px;
+        font-size: 13px;
+        padding: 6px 14px;
         font-family: 'Outfit', sans-serif;
-        font-weight: 600;
-        opacity: 0.8;
-        transition: opacity 0.2s ease;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 6px;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.35);
     }
     .emirate-active-badge button:hover {
-        opacity: 1;
+        background: #bd2130;
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+        transform: translateY(-1px);
+    }
+    .emirate-active-badge button:active {
+        transform: translateY(0);
     }
 
     /* Light Theme active badge overrides */
     html[data-theme="light"] .emirate-active-badge {
         background: var(--gt-gold-soft) !important;
-        border: 1px solid var(--gt-gold-border) !important;
+        border: 1px solid var(--gt-border-strong) !important;
         color: var(--gt-gold) !important;
     }
     html[data-theme="light"] .emirate-active-badge button {
-        color: var(--gt-text-body) !important;
+        background: #dc3545 !important;
+        color: #fff !important;
     }
     html[data-theme="light"] .emirate-active-badge button:hover {
-        color: var(--gt-text) !important;
+        background: #bd2130 !important;
     }
 </style>
 
@@ -787,7 +798,7 @@
                 <div id="emirateActiveBadge" class="emirate-active-badge" style="display: none;">
                     <span class="badge-icon"></span>
                     <span class="badge-text">Dubai Processing</span>
-                    <button type="button" onclick="window.showEmirateSelector()">Change</button>
+                    <button type="button" onclick="window.showEmirateSelector()"><i class="bi bi-pencil-square"></i> Change</button>
                 </div>
             </div>
         </div>
@@ -901,15 +912,24 @@
                         </div>
                     </div>
 
-                    {{-- ROW 3: Email, WhatsApp --}}
-                    <div class="form-grid" style="margin-top: 12px;">
-                        <div class="form-field">
-                            <label class="field-label">Email Address</label>
-                            <input type="email" class="field-input" name="email" placeholder="name@example.com" required>
+                    {{-- Universal Applicant Section --}}
+                    <div id="universalApplicantSection" style="margin-top: 12px;">
+                        <div class="section-label" id="applicantSectionLabel" style="display: none; margin-bottom: 8px;">
+                            <i class="bi bi-person-fill"></i> Applicant Details
                         </div>
-                        <div class="form-field">
-                            <label class="field-label">WhatsApp Number</label>
-                            <input type="tel" id="phoneInput" class="field-input" name="phone" placeholder="50 000 0000" required>
+                        <div class="form-grid" id="applicantGrid">
+                            <div class="form-field" id="applicantNameField" style="display: none;">
+                                <label class="field-label">Full Name <span style="color: var(--c-gold);">*</span></label>
+                                <input type="text" class="field-input" name="applicant_name" id="applicantNameInput" placeholder="Enter applicant's full name">
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Email Address <span style="color: var(--c-gold);">*</span></label>
+                                <input type="email" class="field-input" name="email" placeholder="name@example.com" required>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">WhatsApp Number <span style="color: var(--c-gold);">*</span></label>
+                                <input type="tel" id="phoneInput" class="field-input" name="phone" placeholder="50 000 0000" required>
+                            </div>
                         </div>
                     </div>
 
@@ -1133,6 +1153,7 @@
         function generateApplicants(adults, children, infants) {
             applicantsContainer.innerHTML = '';
             const total = adults + children + infants;
+            const isSharjah = selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah';
             for (let i = 0; i < total; i++) {
                 let label, ageField = '';
                 if (i < adults) {
@@ -1164,14 +1185,14 @@
                         <div class="applicant-header">
                             <span><i class="bi bi-person-fill"></i> ${label}</span>
                         </div>
-                        <div class="form-grid" style="margin-bottom: 12px;">
+                        <div class="form-grid" style="margin-bottom: 12px; ${isSharjah ? 'display: none;' : ''}">
                             <div class="form-field">
                                 <label class="field-label">First Name (Given Names)</label>
-                                <input type="text" name="first_name[]" class="field-input app-first-name" placeholder="As in passport" required>
+                                <input type="text" name="first_name[]" class="field-input app-first-name" placeholder="As in passport" ${isSharjah ? '' : 'required'}>
                             </div>
                             <div class="form-field">
                                 <label class="field-label">Last Name (Surname)</label>
-                                <input type="text" name="last_name[]" class="field-input app-last-name" placeholder="As in passport" required>
+                                <input type="text" name="last_name[]" class="field-input app-last-name" placeholder="As in passport" ${isSharjah ? '' : 'required'}>
                             </div>
                         </div>
                         <div class="form-grid-3" style="margin-bottom: 12px;">
@@ -1226,16 +1247,7 @@
                                 </div>
                             </div>
                             ${ageField}
-                            <div class="form-field">
-                                <label class="field-label">Additional Documents</label>
-                                <div class="file-input-wrapper">
-                                    <input type="file" name="supporting_document[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" onchange="updateFileName(this)">
-                                    <div class="file-input-custom">
-                                        <span class="file-name">Upload documents (if any)...</span>
-                                        <i class="bi bi-paperclip file-icon"></i>
-                                    </div>
-                                </div>
-                            </div>
+
                         </div>
                     </div>`;
                 applicantsContainer.insertAdjacentHTML('beforeend', html);
@@ -1434,8 +1446,32 @@
             updatePrice();
         }
 
+        function updateApplicantSectionVisibility() {
+            const isSharjah = selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah';
+            const nameField = document.getElementById('applicantNameField');
+            const nameInput = document.getElementById('applicantNameInput');
+            const grid = document.getElementById('applicantGrid');
+            const sectionLabel = document.getElementById('applicantSectionLabel');
+            
+            if (isSharjah) {
+                if (nameField) nameField.style.display = 'block';
+                if (nameInput) nameInput.required = true;
+                if (grid) grid.className = 'form-grid-3';
+                if (sectionLabel) sectionLabel.style.display = 'block';
+            } else {
+                if (nameField) nameField.style.display = 'none';
+                if (nameInput) {
+                    nameInput.required = false;
+                    nameInput.value = '';
+                }
+                if (grid) grid.className = 'form-grid';
+                if (sectionLabel) sectionLabel.style.display = 'none';
+            }
+        }
+
         function refreshForm() {
             generateApplicants(getAdults(), getChildren(), getInfants());
+            updateApplicantSectionVisibility();
             updatePrice();
         }
 
@@ -1537,7 +1573,7 @@
             }
 
             populatePackages();
-            updatePrice();
+            refreshForm();
         });
 
         // Ask the visitor to choose an emirate as soon as the page settles.

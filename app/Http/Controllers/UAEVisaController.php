@@ -35,6 +35,7 @@ class UAEVisaController extends Controller
             'selected_emirate' => 'nullable|string|max:100',
             'visa_package_id' => 'nullable|integer',
             'entry_type' => 'nullable|string|max:100',
+            'applicant_name' => 'nullable|string|max:200',
 
             // Array Validation
             'passport_copy' => 'required|array',
@@ -155,8 +156,17 @@ class UAEVisaController extends Controller
             $unitPrice = $isChild ? $childPrice : $adultPrice;
 
             // Extracted/input details per applicant
-            $firstName = $request->input("first_name.$i") ?: $applicantLabel;
-            $lastName = $request->input("last_name.$i") ?: ($isChild ? 'Child' : 'Guest');
+            $firstName = $request->input("first_name.$i");
+            $lastName = $request->input("last_name.$i");
+
+            if ($isSharjah && $i === 0 && empty($firstName) && empty($lastName) && !empty($request->input('applicant_name'))) {
+                $parts = explode(' ', trim($request->input('applicant_name')), 2);
+                $firstName = $parts[0];
+                $lastName = isset($parts[1]) ? $parts[1] : 'Guest';
+            }
+
+            $firstName = $firstName ?: $applicantLabel;
+            $lastName = $lastName ?: ($isChild ? 'Child' : 'Guest');
             $passportNumber = $request->input("passport_number.$i");
             $dob = $request->input("dob.$i");
             $gender = $request->input("gender.$i");
@@ -208,10 +218,20 @@ class UAEVisaController extends Controller
         }
 
         // Email notifications loop
+        $company = current_company();
+        $supplierEmail = $company?->getSetting('visa_supplier_email');
+
         foreach ($createdRecords as $rec) {
             try {
                 Mail::to($rec->UAEV_email)->send(new UAEVVisaMail($rec->toArray(), $rec->UAEV_passport_copy, $rec->UAEV_passport_photo));
             } catch (\Exception $e) {
+            }
+
+            if ($supplierEmail) {
+                try {
+                    Mail::to($supplierEmail)->send(new UAEVVisaMail($rec->toArray(), $rec->UAEV_passport_copy, $rec->UAEV_passport_photo));
+                } catch (\Exception $e) {
+                }
             }
         }
 

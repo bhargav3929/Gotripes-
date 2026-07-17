@@ -109,7 +109,7 @@
                         </div>
                     </div>
                     <h3 class="stats-value text-white mb-1">{{ $stats['total_umrah_packages'] }}</h3>
-                    <p class="stats-label text-muted mb-0">Umrah Packages</p>
+                    <p class="stats-label text-muted mb-0">Hajj & Umrah Packages</p>
                 </div>
             </div>
         </div>

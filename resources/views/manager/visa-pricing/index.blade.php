@@ -164,7 +164,7 @@
                                 <label class="wp-form-label">Visa Package <span class="required">*</span></label>
                                 <select class="wp-input" name="visa_package_id" required>
                                     <option value="">Select Package...</option>
-                                    @foreach($packages as $p)
+                                    @foreach($packages->where('isActive', 1) as $p)
                                         <option value="{{ $p->id }}">{{ $p->emirate->emiratesName }} — {{ $p->name }}</option>
                                     @endforeach
                                 </select>
@@ -205,71 +205,89 @@
             <div class="col-lg-8">
                 <div class="wp-card">
                     <div class="wp-card-header"><i class="fas fa-list text-secondary-wp"></i> Active Price Grid Matrix</div>
-                    <div class="table-responsive">
-                        <table class="wp-table">
-                            <thead>
-                                <tr>
-                                    <th>Visa Package</th>
-                                    <th>Entry Type</th>
-                                    <th>Duration</th>
-                                    <th>Traveller</th>
-                                    <th>Price (AED)</th>
-                                    <th style="width: 150px;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($prices as $pr)
+                    <form action="{{ route('manager.visa-prices.bulk-update') }}" method="POST">
+                        @csrf
+                        <div class="table-responsive">
+                            <table class="wp-table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <span style="font-weight:600;">{{ $pr->package->emirate->emiratesName }}</span><br>
-                                            <span class="text-secondary-wp" style="font-size:12px;">{{ $pr->package->name }}</span>
-                                            <input type="hidden" name="visa_package_id" value="{{ $pr->visa_package_id }}" form="pr-update-{{ $pr->id }}">
-                                        </td>
-                                        <td>
-                                            <select class="wp-input" name="entry_type" form="pr-update-{{ $pr->id }}" required>
-                                                <option value="Single Entry" {{ $pr->entry_type === 'Single Entry' ? 'selected' : '' }}>Single Entry</option>
-                                                <option value="Multiple Entry" {{ $pr->entry_type === 'Multiple Entry' ? 'selected' : '' }}>Multiple Entry</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select class="wp-input" name="duration" form="pr-update-{{ $pr->id }}" required>
-                                                <option value="30 Days" {{ $pr->duration === '30 Days' ? 'selected' : '' }}>30 Days</option>
-                                                <option value="60 Days" {{ $pr->duration === '60 Days' ? 'selected' : '' }}>60 Days</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select class="wp-input" name="traveller_type" form="pr-update-{{ $pr->id }}" required>
-                                                <option value="Adult" {{ $pr->traveller_type === 'Adult' ? 'selected' : '' }}>Adult</option>
-                                                <option value="Child" {{ $pr->traveller_type === 'Child' ? 'selected' : '' }}>Child</option>
-                                                <option value="Infant" {{ $pr->traveller_type === 'Infant' ? 'selected' : '' }}>Infant</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="wp-input" name="price" value="{{ $pr->price }}" form="pr-update-{{ $pr->id }}" step="0.01" min="0" required style="width:100px;">
-                                            <input type="hidden" name="isActive" value="1" form="pr-update-{{ $pr->id }}">
-                                        </td>
-                                        <td>
-                                            <form id="pr-update-{{ $pr->id }}" action="{{ route('manager.visa-prices.update', $pr->id) }}" method="POST" style="display:inline;">
-                                                @csrf @method('PUT')
-                                                <button type="submit" class="wp-btn wp-btn-secondary wp-btn-sm"><i class="fas fa-save"></i></button>
-                                            </form>
-                                            <form action="{{ route('manager.visa-prices.destroy', $pr->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Remove this price configuration row?');">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="wp-btn wp-btn-danger wp-btn-sm"><i class="fas fa-trash"></i></button>
-                                            </form>
-                                        </td>
+                                        <th>Visa Package</th>
+                                        <th>Entry Type</th>
+                                        <th>Duration</th>
+                                        <th>Traveller</th>
+                                        <th>Price (AED)</th>
+                                        <th>Status</th>
+                                        <th style="width: 100px;">Actions</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center py-4">No pricing grid configuration entries found.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    @forelse($prices as $pr)
+                                        <tr>
+                                            <td>
+                                                <span style="font-weight:600;">{{ $pr->package->emirate->emiratesName }}</span><br>
+                                                <span class="text-secondary-wp" style="font-size:12px;">{{ $pr->package->name }}</span>
+                                                @if(!$pr->package->isActive)
+                                                    <span class="wp-badge wp-badge-red ms-1" style="font-size: 10px;">Inactive Pkg</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <select class="wp-input" name="prices[{{ $pr->id }}][entry_type]" required>
+                                                    <option value="Single Entry" {{ $pr->entry_type === 'Single Entry' ? 'selected' : '' }}>Single Entry</option>
+                                                    <option value="Multiple Entry" {{ $pr->entry_type === 'Multiple Entry' ? 'selected' : '' }}>Multiple Entry</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="wp-input" name="prices[{{ $pr->id }}][duration]" required>
+                                                    <option value="30 Days" {{ $pr->duration === '30 Days' ? 'selected' : '' }}>30 Days</option>
+                                                    <option value="60 Days" {{ $pr->duration === '60 Days' ? 'selected' : '' }}>60 Days</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="wp-input" name="prices[{{ $pr->id }}][traveller_type]" required>
+                                                    <option value="Adult" {{ $pr->traveller_type === 'Adult' ? 'selected' : '' }}>Adult</option>
+                                                    <option value="Child" {{ $pr->traveller_type === 'Child' ? 'selected' : '' }}>Child</option>
+                                                    <option value="Infant" {{ $pr->traveller_type === 'Infant' ? 'selected' : '' }}>Infant</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" class="wp-input" name="prices[{{ $pr->id }}][price]" value="{{ $pr->price }}" step="0.01" min="0" required style="width:100px;">
+                                            </td>
+                                            <td>
+                                                <select class="wp-input" name="prices[{{ $pr->id }}][isActive]" style="width:100px;">
+                                                    <option value="1" {{ $pr->isActive ? 'selected' : '' }}>Active</option>
+                                                    <option value="0" {{ !$pr->isActive ? 'selected' : '' }}>Inactive</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="wp-btn wp-btn-danger wp-btn-sm" onclick="if(confirm('Remove this price configuration row?')) document.getElementById('delete-pr-{{ $pr->id }}').submit();">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center py-4">No pricing grid configuration entries found.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        @if($prices->isNotEmpty())
+                            <div class="wp-card-footer text-end">
+                                <button type="submit" class="wp-btn wp-btn-primary">
+                                    <i class="fas fa-save me-1"></i> Save Pricing Matrix
+                                </button>
+                            </div>
+                        @endif
+                    </form>
                 </div>
             </div>
         </div>
+        @foreach($prices as $pr)
+            <form id="delete-pr-{{ $pr->id }}" action="{{ route('manager.visa-prices.destroy', $pr->id) }}" method="POST" style="display:none;">
+                @csrf @method('DELETE')
+            </form>
+        @endforeach
     </div>
 
     {{-- ==================== TAB 3: EMIRATES ==================== --}}
@@ -358,7 +376,7 @@
         <div class="row">
             <div class="col-lg-6">
                 <div class="wp-card">
-                    <div class="wp-card-header"><i class="fas fa-concierge-bell text-secondary-wp"></i> Add-On Service Fees</div>
+                    <div class="wp-card-header"><i class="fas fa-cog text-secondary-wp"></i> UAE Visa Settings & Service Fees</div>
                     <div class="wp-card-body">
                         <form action="{{ route('manager.visa-pricing.service-fees.update') }}" method="POST">
                             @csrf @method('PUT')
@@ -372,8 +390,13 @@
                                 <input type="number" class="wp-input" name="visa_ticket_booking_fee" value="{{ old('visa_ticket_booking_fee', $ticketFee) }}" step="0.01" min="0" required>
                                 <p class="wp-form-help">Charged when a customer selects ticket booking assistance.</p>
                             </div>
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Supplier Email Address</label>
+                                <input type="email" class="wp-input" name="visa_supplier_email" value="{{ old('visa_supplier_email', $supplierEmail) }}" placeholder="e.g. supplier@example.com">
+                                <p class="wp-form-help">Emails for guest UAE visa applications will be copied to this supplier address.</p>
+                            </div>
                             <button type="submit" class="wp-btn wp-btn-primary w-100">
-                                <i class="fas fa-save"></i> Save Add-On Fees
+                                <i class="fas fa-save"></i> Save UAE Visa Settings
                             </button>
                         </form>
                     </div>
@@ -475,4 +498,19 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Activate tab based on URL query parameter ?tab=xxx
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab) {
+            const tabBtn = document.getElementById(tab + '-tab');
+            if (tabBtn) {
+                const bsTab = new bootstrap.Tab(tabBtn);
+                bsTab.show();
+            }
+        }
+    });
+</script>
 @endsection

@@ -1,7 +1,7 @@
 @extends('layouts.manager')
 
-@section('title', 'Umrah Packages')
-@section('page-title', 'Umrah & Saudi Packages')
+@section('title', 'Hajj & Umrah Packages')
+@section('page-title', 'Hajj & Umrah & Saudi Packages')
 
 @section('content')
 

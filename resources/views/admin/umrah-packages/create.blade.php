@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Create Umrah Package')
+@section('title', 'Create Hajj & Umrah Package')
 
-@section('page-title', 'Create New Umrah Package')
+@section('page-title', 'Create New Hajj & Umrah Package')
 
 @section('content')
 <div class="container-fluid px-2 px-md-4">
@@ -12,7 +12,7 @@
                 <div class="card-header">
                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                         <h3 class="card-title">
-                            <i class="fas fa-kaaba me-2"></i>Create New Umrah Package
+                            <i class="fas fa-kaaba me-2"></i>Create New Hajj & Umrah Package
                         </h3>
                         <a href="{{ route('admin.umrah-packages.index') }}"
                            class="btn btn-outline-primary btn-sm">

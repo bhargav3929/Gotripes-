@@ -44,8 +44,8 @@ body, main { font-family: 'Outfit', sans-serif; }
     padding: 22px 24px; border-radius: 16px; backdrop-filter: blur(12px);
     min-width: 240px;
 }
-.ud-hero-price-card .from-label { font-size: 11px; color: #aaa; }
-.ud-hero-price-card .ud-price { font-size: 34px; color: #FFD700; font-weight: 800; }
+.ud-hero-price-card .from-label { font-size: 13.5px; color: #aaa; font-weight: 600; letter-spacing: 0.5px; }
+.ud-hero-price-card .ud-price { font-size: 40px; color: #FFD700; font-weight: 800; }
 
 /* ─── Layout: Main grid ─────────────────────────────────────────────── */
 .ud-content-row { display: grid; grid-template-columns: 1fr 400px; gap: 32px; align-items: start; }
@@ -183,9 +183,9 @@ body, main { font-family: 'Outfit', sans-serif; }
     border-bottom: 1px solid #1e1e1e; padding: 20px 22px;
     display: flex; justify-content: space-between; align-items: center;
 }
-.ud-bk-title { font-size: 18px; font-weight: 800; color: #fff; margin: 0; }
-.ud-bk-price { font-size: 17px; font-weight: 800; color: #FFD700; }
-.ud-bk-price small { font-size: 11px; color: #888; font-weight: 400; display: block; text-align: right; }
+.ud-bk-title { font-size: 26px; font-weight: 800; color: #fff; margin: 0; letter-spacing: 0.5px; }
+.ud-bk-price { font-size: 30px; font-weight: 800; color: #FFD700; }
+.ud-bk-price small { font-size: 15px; color: #888; font-weight: 400; display: block; text-align: right; }
 
 /* Quick Feat Strip */
 .ud-feat-strip {
@@ -194,8 +194,8 @@ body, main { font-family: 'Outfit', sans-serif; }
 }
 .ud-feat-strip-item { padding: 11px 4px; border-right: 1px solid #171717; }
 .ud-feat-strip-item:last-child { border-right: none; }
-.ud-feat-strip-item i { font-size: 17px; color: #FFD700; display: block; margin-bottom: 3px; }
-.ud-feat-strip-item span { font-size: 9.5px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; display: block; }
+.ud-feat-strip-item i { font-size: 20px; color: #FFD700; display: block; margin-bottom: 3px; }
+.ud-feat-strip-item span { font-size: 13px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; display: block; }
 
 /* Step Progress */
 .ud-steps { display: flex; align-items: center; padding: 14px 22px 0; gap: 0; }
@@ -216,17 +216,17 @@ body, main { font-family: 'Outfit', sans-serif; }
 }
 .ud-step.done .ud-step-dot { background: #22c55e; border-color: #22c55e; color: #fff; }
 .ud-step.active .ud-step-dot { background: #FFD700; border-color: #FFD700; color: #000; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
-.ud-step-label { font-size: 9px; color: #666; margin-top: 4px; font-weight: 600; }
+.ud-step-label { font-size: 14px; color: #666; margin-top: 5px; font-weight: 600; }
 .ud-step.active .ud-step-label { color: #FFD700; }
 .ud-step.done .ud-step-label  { color: #22c55e; }
 
 /* Form body */
 .ud-bk-body { padding: 18px 22px 22px; }
 
-.ud-field-label { font-size: 12px; color: #888; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+.ud-field-label { font-size: 17px; color: #888; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.6px; display: block; }
 
 /* Calendar */
-.ud-cal-hint { font-size: 11.5px; color: #888; padding: 9px 12px; background: rgba(255,215,0,0.04); border: 1px solid rgba(255,215,0,0.1); border-radius: 8px; margin-bottom: 10px; line-height: 1.5; }
+.ud-cal-hint { font-size: 13.5px; color: #888; padding: 10px 14px; background: rgba(255,215,0,0.04); border: 1px solid rgba(255,215,0,0.1); border-radius: 8px; margin-bottom: 12px; line-height: 1.55; }
 .ud-calendar { background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 14px; }
 .ud-cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .ud-cal-nav-btn { background: none; border: 1px solid #2a2a2a; color: #FFD700; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.2s; }
@@ -282,8 +282,8 @@ body, main { font-family: 'Outfit', sans-serif; }
 /* Inputs */
 .ud-input {
     background: #111 !important; border: 1px solid #222 !important;
-    color: #fff !important; padding: 10px 13px !important;
-    border-radius: 9px !important; font-size: 13.5px; width: 100%;
+    color: #fff !important; padding: 11px 14px !important;
+    border-radius: 9px !important; font-size: 14.5px; width: 100%;
     font-family: 'Outfit', sans-serif; outline: none; transition: border-color 0.2s;
 }
 .ud-input:focus { border-color: rgba(255,215,0,0.5) !important; box-shadow: 0 0 0 3px rgba(255,215,0,0.07) !important; }
@@ -294,7 +294,7 @@ body, main { font-family: 'Outfit', sans-serif; }
 .ud-gw-label input { display: none; }
 .ud-gw-btn {
     background: #111; border: 1px solid #222; color: #aaa;
-    padding: 10px 6px; border-radius: 9px; font-size: 12px; font-weight: 700;
+    padding: 11px 8px; border-radius: 9px; font-size: 13.5px; font-weight: 700;
     text-align: center; cursor: pointer; transition: all 0.2s;
 }
 .ud-gw-label input:checked + .ud-gw-btn {
@@ -322,14 +322,14 @@ body, main { font-family: 'Outfit', sans-serif; }
 .ud-nav-row { display: flex; gap: 8px; margin-top: 16px; }
 .ud-btn-back {
     background: #1a1a1a; border: 1px solid #2a2a2a; color: #bbb;
-    padding: 11px 16px; border-radius: 9px; font-size: 13.5px; font-weight: 700;
+    padding: 11px 16px; border-radius: 9px; font-size: 14px; font-weight: 700;
     cursor: pointer; transition: background 0.2s; flex-shrink: 0;
 }
 .ud-btn-back:hover { background: #242424; }
 .ud-btn-next {
     flex: 1; background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
     border: none; color: #000; padding: 12px; border-radius: 9px;
-    font-size: 14px; font-weight: 800; cursor: pointer; transition: opacity 0.2s;
+    font-size: 15px; font-weight: 800; cursor: pointer; transition: opacity 0.2s;
 }
 .ud-btn-next:hover { opacity: 0.9; }
 .ud-btn-next:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -343,18 +343,18 @@ body, main { font-family: 'Outfit', sans-serif; }
 .ud-btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* Booking summary rows */
-.ud-sum-row { display: flex; justify-content: space-between; font-size: 12.5px; color: #888; margin-bottom: 9px; }
+.ud-sum-row { display: flex; justify-content: space-between; font-size: 13.5px; color: #888; margin-bottom: 10px; }
 .ud-sum-row .val { color: #fff; font-weight: 600; text-align: right; max-width: 55%; }
 .ud-sum-divider { border: none; border-top: 1px solid #1e1e1e; margin: 12px 0; }
 .ud-sum-total { display: flex; justify-content: space-between; align-items: center; }
-.ud-sum-total .tlabel { font-size: 15px; font-weight: 700; color: #fff; }
-.ud-sum-total .tval   { font-size: 22px; font-weight: 800; color: #FFD700; }
+.ud-sum-total .tlabel { font-size: 16px; font-weight: 700; color: #fff; }
+.ud-sum-total .tval   { font-size: 25px; font-weight: 800; color: #FFD700; }
 
 /* Trust strip (below card) */
 .ud-trust-list { list-style: none; padding: 0; margin: 0; }
 .ud-trust-list li {
     display: flex; align-items: center; gap: 10px;
-    font-size: 12.5px; color: #aaa; padding: 9px 0;
+    font-size: 13.5px; color: #aaa; padding: 9px 0;
     border-bottom: 1px solid #141414;
 }
 .ud-trust-list li:last-child { border-bottom: none; }
@@ -413,6 +413,33 @@ body, main { font-family: 'Outfit', sans-serif; }
 }
 .ud-modal-handle { width: 40px; height: 4px; background: #333; border-radius: 4px; margin: 0 auto 18px; }
 
+/* Back to Packages Button Style */
+.ud-back-btn {
+    color: #000 !important;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 16px;
+    background: #FFD700;
+    padding: 12px 28px;
+    border-radius: 50px;
+    border: 2px solid #FFD700;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    transition: all 0.25s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.ud-back-btn:hover {
+    background: #000 !important;
+    color: #FFD700 !important;
+    border-color: #FFD700 !important;
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.5);
+    transform: translateY(-2px);
+}
+
 /* Light theme override */
 @media(prefers-color-scheme: light) {
     /* Respect system default but keep dark explicitly since GoTrips is dark-first */
@@ -424,7 +451,7 @@ body, main { font-family: 'Outfit', sans-serif; }
     {{-- ───────────────── HERO ───────────────── --}}
     <section class="ud-hero">
         <div class="container" style="position:relative;z-index:2;">
-            <a href="{{ route('umrah-visas.index') }}" style="color:#FFD700;text-decoration:none;font-weight:600;font-size:13px;background:rgba(0,0,0,0.6);padding:7px 15px;border-radius:50px;border:1px solid rgba(255,215,0,0.2);backdrop-filter:blur(5px);display:inline-flex;align-items:center;gap:7px;margin-bottom:20px;">
+            <a href="{{ route('umrah-visas.index') }}" class="ud-back-btn">
                 <i class="bi bi-arrow-left"></i> Back to Packages
             </a>
             <div class="row align-items-end g-4">
@@ -507,6 +534,42 @@ body, main { font-family: 'Outfit', sans-serif; }
                             <div class="ud-feat-item"><div class="ud-feat-icon"><i class="bi bi-bus-front"></i></div><div><p class="ud-feat-label">AC Coach</p><p class="ud-feat-desc">Round-trip luxury air-conditioned coach from UAE.</p></div></div>
                             <div class="ud-feat-item"><div class="ud-feat-icon"><i class="bi bi-building"></i></div><div><p class="ud-feat-label">Hotel Stay</p><p class="ud-feat-desc">Comfortable stays in Medina & Makkah close to Harams.</p></div></div>
                             <div class="ud-feat-item"><div class="ud-feat-icon"><i class="bi bi-compass"></i></div><div><p class="ud-feat-label">Ziyarat Tours</p><p class="ud-feat-desc">Historical guided visits across Medina & Makkah.</p></div></div>
+                        </div>
+
+                        <!-- Service Order Workflow -->
+                        <div style="margin-top: 35px; border-top: 1px solid #1e1e1e; padding-top: 25px;">
+                            <h5 style="color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.8px;">
+                                <i class="bi bi-arrow-right-circle text-warning me-2"></i>Logical Service Booking Order
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div style="background: rgba(255,215,0,0.02); border: 1.5px solid rgba(255,215,0,0.15); border-radius: 12px; padding: 18px; position: relative; height: 100%;">
+                                        <div style="position: absolute; top: -12px; left: 16px; background: #FFD700; color: #000; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px;">STEP 1</div>
+                                        <h6 style="color: #FFD700; font-size: 14.5px; font-weight: 700; margin-top: 4px; margin-bottom: 8px;">
+                                            <i class="bi bi-file-earmark-person-fill me-2"></i>1. Visa Approval
+                                        </h6>
+                                        <p style="font-size: 12px; color: #aaa; margin: 0; line-height: 1.5;">We verify passports and process your Saudi tourist or Umrah visa with absolute priority.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; position: relative; height: 100%;">
+                                        <div style="position: absolute; top: -12px; left: 16px; background: #222; color: #aaa; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px;">STEP 2</div>
+                                        <h6 style="color: #fff; font-size: 14.5px; font-weight: 700; margin-top: 4px; margin-bottom: 8px;">
+                                            <i class="bi bi-bus-front-fill me-2 text-warning"></i>2. Transport Booking
+                                        </h6>
+                                        <p style="font-size: 12px; color: #aaa; margin: 0; line-height: 1.5;">We reserve your seat in our luxury air-conditioned transport coach (or flight bookings).</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; position: relative; height: 100%;">
+                                        <div style="position: absolute; top: -12px; left: 16px; background: #222; color: #aaa; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px;">STEP 3</div>
+                                        <h6 style="color: #fff; font-size: 14.5px; font-weight: 700; margin-top: 4px; margin-bottom: 8px;">
+                                            <i class="bi bi-building-fill me-2 text-warning"></i>3. Hotel Confirmation
+                                        </h6>
+                                        <p style="font-size: 12px; color: #aaa; margin: 0; line-height: 1.5;">We finalize your comfortable rooms in Medina & Makkah close to both Harams.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -734,7 +797,7 @@ body, main { font-family: 'Outfit', sans-serif; }
                 {{-- ── Related Packages ── --}}
                 @if(isset($relatedPackages) && count($relatedPackages))
                 <div class="ud-panel mt-4">
-                    <h4 class="ud-panel-title"><i class="bi bi-kaaba"></i>Other Umrah Packages</h4>
+                    <h4 class="ud-panel-title"><i class="bi bi-kaaba"></i>Other Hajj & Umrah Packages</h4>
                     <div class="ud-related-grid">
                         @foreach($relatedPackages as $rp)
                         <div class="ud-rel-card">

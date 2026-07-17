@@ -42,7 +42,7 @@
     <!-- Umrah Packages Section (Dynamic) -->
     <section style="padding: clamp(40px, 8vw, 80px) 0; background: #000;">
         <div class="container">
-            <h2 class="section-title">UMRAH PACKAGES</h2>
+            <h2 class="section-title">HAJJ & UMRAH PACKAGES</h2>
 
             @if(isset($umrahPackages) && $umrahPackages->count() > 0)
             <div class="row g-4 mt-4">

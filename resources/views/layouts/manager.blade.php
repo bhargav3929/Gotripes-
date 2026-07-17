@@ -443,6 +443,50 @@
             border-color: var(--wp-primary-hover) !important;
             color: #1a1a1a !important;
         }
+
+        /* ── Scrollbars and select multiple styling for dark mode ── */
+        select[multiple] {
+            background-color: var(--wp-body-bg) !important;
+            color: var(--wp-text) !important;
+        }
+        select[multiple] option {
+            background-color: var(--wp-body-bg) !important;
+            color: var(--wp-text) !important;
+        }
+        select[multiple]::-webkit-scrollbar {
+            width: 8px;
+            background-color: var(--wp-body-bg);
+        }
+        select[multiple]::-webkit-scrollbar-thumb {
+            background-color: var(--wp-sidebar-hover);
+            border-radius: 4px;
+        }
+        select[multiple]::-webkit-scrollbar-track {
+            background-color: var(--wp-body-bg);
+        }
+
+        /* ── Bootstrap table overrides for dark mode ── */
+        .table {
+            background-color: var(--wp-white) !important;
+            color: var(--wp-text) !important;
+            border-color: var(--wp-border-light) !important;
+        }
+        .table th, .table td {
+            background-color: var(--wp-white) !important;
+            color: var(--wp-text) !important;
+            border-color: var(--wp-border-light) !important;
+        }
+        .table-light, .table-light th, .table-light td {
+            background-color: rgba(255, 215, 0, 0.1) !important;
+            color: var(--wp-primary) !important;
+            border-color: var(--wp-border) !important;
+        }
+        .table-bordered {
+            border-color: var(--wp-border) !important;
+        }
+        .text-gray-800 {
+            color: var(--wp-text) !important;
+        }
     </style>
     @stack('styles')
 </head>
@@ -590,7 +634,7 @@
 
                 @feature('hajj_umrah')
                 <div class="wp-nav-separator"></div>
-                <li class="wp-nav-label">Umrah Management</li>
+                <li class="wp-nav-label">Hajj & Umrah</li>
                 <li class="wp-nav-item">
                     <a href="{{ route('manager.umrah-packages.index') }}" class="{{ request()->routeIs('manager.umrah-packages.*') ? 'active' : '' }}">
                         <i class="fas fa-kaaba"></i>
