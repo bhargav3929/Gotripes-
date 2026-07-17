@@ -452,7 +452,7 @@ body, main { font-family: 'Outfit', sans-serif; }
     <section class="ud-hero">
         <div class="container" style="position:relative;z-index:2;">
             <a href="{{ route('umrah-visas.index') }}" class="ud-back-btn">
-                <i class="bi bi-arrow-left"></i> Back to Packages
+                <i class="bi bi-arrow-left"></i> Back to Hajj & Umrah
             </a>
             <div class="row align-items-end g-4">
                 <div class="col-lg-8">

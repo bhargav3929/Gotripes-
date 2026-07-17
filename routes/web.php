@@ -379,8 +379,12 @@ Route::get('/uaevisa', function () {
     $company = current_company();
     $hotelFee  = $company?->getSetting('visa_hotel_booking_fee', 25) ?? 25;
     $ticketFee = $company?->getSetting('visa_ticket_booking_fee', 25) ?? 25;
+    // Sharjah deposit per applicant. Defaults to 0 (no deposit → generic
+    // message, nothing charged) until a manager configures a positive amount.
+    $sharjahDeposit = $company?->getSetting('visa_sharjah_deposit', 0);
+    $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0;
 
-    return view('uaevisa', compact('activeEmirates', 'pricingData', 'visaData', 'hotelFee', 'ticketFee'));
+    return view('uaevisa', compact('activeEmirates', 'pricingData', 'visaData', 'hotelFee', 'ticketFee', 'sharjahDeposit'));
 })->middleware('tenant.feature:visas');
 
 

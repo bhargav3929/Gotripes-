@@ -26,11 +26,16 @@ class ManagerVisaPricingController extends Controller
         $hotelFee  = $company?->getSetting('visa_hotel_booking_fee', 25) ?? 25;
         $ticketFee = $company?->getSetting('visa_ticket_booking_fee', 25) ?? 25;
         $supplierEmail = $company?->getSetting('visa_supplier_email', '') ?? '';
+        // Sharjah refundable security deposit per applicant. Defaults to 0 (no
+        // deposit) until a manager configures an amount — the storefront then
+        // shows a generic message and charges nothing.
+        $sharjahDeposit = $company?->getSetting('visa_sharjah_deposit', 0);
+        $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0;
 
         // Global markup applied to every Fluxir e-Visa (the /e-visa storefront).
         $evisaMarkup = EvisaSetting::markupPercent();
 
-        return view('manager.visa-pricing.index', compact('visas', 'emirates', 'packages', 'prices', 'hotelFee', 'ticketFee', 'evisaMarkup', 'supplierEmail'));
+        return view('manager.visa-pricing.index', compact('visas', 'emirates', 'packages', 'prices', 'hotelFee', 'ticketFee', 'evisaMarkup', 'supplierEmail', 'sharjahDeposit'));
     }
 
     /** Update the global e-Visa (Fluxir) markup percentage. */
@@ -51,6 +56,7 @@ class ManagerVisaPricingController extends Controller
             'visa_hotel_booking_fee'  => 'required|numeric|min:0',
             'visa_ticket_booking_fee' => 'required|numeric|min:0',
             'visa_supplier_email'     => 'nullable|email|max:255',
+            'visa_sharjah_deposit'    => 'nullable|numeric|min:0',
         ]);
 
         $company = current_company();
@@ -59,6 +65,11 @@ class ManagerVisaPricingController extends Controller
         $settings['visa_hotel_booking_fee']  = (float) $validated['visa_hotel_booking_fee'];
         $settings['visa_ticket_booking_fee'] = (float) $validated['visa_ticket_booking_fee'];
         $settings['visa_supplier_email']     = $validated['visa_supplier_email'] ? trim($validated['visa_supplier_email']) : null;
+        // Blank or 0 = no deposit: the storefront shows a generic message and
+        // charges nothing. Any positive amount is shown and charged per applicant.
+        $settings['visa_sharjah_deposit']    = ($validated['visa_sharjah_deposit'] ?? '') !== ''
+            ? (float) $validated['visa_sharjah_deposit']
+            : 0.0;
         $company->settings = $settings;
         $company->save();
 

@@ -969,7 +969,11 @@
                         </div>
                         <div style="background: rgba(255, 215, 0, 0.03); border: 1px solid rgba(255, 215, 0, 0.1); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
                             <p style="color: #FFD700; font-size: 13px; font-weight: 500; margin: 0 0 12px 0; line-height: 1.4;">
-                                A security deposit of <strong>AED 5,000 per applicant</strong> is required for Sharjah Visa processing. Please provide the bank details where the deposit should be refunded after departure.
+                                @if(($sharjahDeposit ?? 0) > 0)
+                                    A security deposit of <strong>AED {{ number_format($sharjahDeposit, 0) }} per applicant</strong> is required for Sharjah Visa processing. Please provide the bank details where the deposit should be refunded after departure.
+                                @else
+                                    A refundable security deposit per applicant is required for Sharjah Visa processing. Please provide the bank details where the deposit should be refunded after departure.
+                                @endif
                             </p>
                             <div class="form-grid">
                                 <div class="form-field">
@@ -1256,6 +1260,7 @@
 
         const HOTEL_BASE = {{ $hotelFee ?? 25 }};   // hotel fee for 1–2 visas
         const TICKET_RATE = {{ $ticketFee ?? 25 }}; // air-ticket assistance fee PER visa
+        const SHARJAH_DEPOSIT = {{ $sharjahDeposit ?? 0 }}; // refundable deposit per applicant (admin-configured; 0 = none)
 
         // Hotel fee steps up with the number of visas (all applicants):
         // 1–2 → base (25), 3–4 → 50, 5–6 → 60, then +10 per extra pair of visas.
@@ -1317,7 +1322,7 @@
 
             // Sharjah specific calculations
             const isSharjah = (selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah');
-            const depositUnit = isSharjah ? 5000.00 : 0;
+            const depositUnit = isSharjah ? SHARJAH_DEPOSIT : 0;
             const depositCost = depositUnit * totalPersons;
             const refundCost = depositCost;
 
