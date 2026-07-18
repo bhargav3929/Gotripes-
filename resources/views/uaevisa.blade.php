@@ -1799,7 +1799,11 @@
         const sel = document.getElementById('nationality');
         if (!sel) return null;
         const cands = [fields.issuing_country, fields.nationality].filter(Boolean);
-        const opts = Array.from(sel.options);
+        // Skip the empty "Select Nationality" placeholder. The fuzzy test below
+        // includes `c.includes(option.value)`, and every string contains "" —
+        // so the placeholder would always win, blanking the field and making a
+        // real country (e.g. "REPUBLIC OF INDIA") look unmatched.
+        const opts = Array.from(sel.options).filter(o => o.value && o.value.trim() !== '');
         for (let raw of cands) {
             let c = String(raw).trim().toLowerCase();
             if (NAT_MAP[c]) c = NAT_MAP[c].toLowerCase();
