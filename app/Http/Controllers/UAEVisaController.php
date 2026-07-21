@@ -10,6 +10,7 @@ use App\Mail\UAEVVisaMail;
 use App\Services\NomodService;
 use App\Models\UAEVisaPackage;
 use App\Models\UAEVisaPrice;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class UAEVisaController extends Controller
@@ -266,15 +267,28 @@ class UAEVisaController extends Controller
         $supplierEmail = $company?->getSetting('visa_supplier_email');
 
         foreach ($createdRecords as $rec) {
+            // Never let a mail failure break the booking — but never swallow it
+            // silently either. These were previously empty catch blocks, which is
+            // why undelivered confirmations went unnoticed.
             try {
                 Mail::to($rec->UAEV_email)->send(new UAEVVisaMail($rec->toArray(), $rec->UAEV_passport_copy, $rec->UAEV_passport_photo));
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                Log::error('UAE visa customer email failed', [
+                    'application_id' => $rec->id,
+                    'to'             => $rec->UAEV_email,
+                    'error'          => $e->getMessage(),
+                ]);
             }
 
             if ($supplierEmail) {
                 try {
                     Mail::to($supplierEmail)->send(new UAEVVisaMail($rec->toArray(), $rec->UAEV_passport_copy, $rec->UAEV_passport_photo));
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
+                    Log::error('UAE visa supplier email failed', [
+                        'application_id' => $rec->id,
+                        'to'             => $supplierEmail,
+                        'error'          => $e->getMessage(),
+                    ]);
                 }
             }
         }

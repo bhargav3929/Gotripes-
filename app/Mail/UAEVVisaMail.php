@@ -5,6 +5,8 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class UAEVVisaMail extends Mailable
 {
@@ -34,14 +36,37 @@ class UAEVVisaMail extends Mailable
                      ->from(config('mail.from.address'), 'UAEV Visa')
                      ->with('data', $this->data);
 
-        if ($this->passportCopyPath) {
-            $mail->attach(storage_path('app/public/' . $this->passportCopyPath), [
-                'as' => 'passport_copy.' . pathinfo($this->passportCopyPath, PATHINFO_EXTENSION),
-            ]);
-        }
-        if ($this->passportPhotoPath) {
-            $mail->attach(storage_path('app/public/' . $this->passportPhotoPath), [
-                'as' => 'passport_photo.' . pathinfo($this->passportPhotoPath, PATHINFO_EXTENSION),
+        // Attach only files that are actually on disk. A missing upload used to
+        // make attach() throw, which killed the whole message — the customer and
+        // the supplier then silently received nothing at all. The application
+        // details matter more than the attachment, so skip what we can't read
+        // and log it instead of losing the email.
+        $attachments = [
+            'passport_copy'  => $this->passportCopyPath,
+            'passport_photo' => $this->passportPhotoPath,
+        ];
+
+        foreach ($attachments as $label => $path) {
+            if (!$path) {
+                continue;
+            }
+
+            // Resolve through the disk rather than assuming storage/app/public.
+            // This host points the "public" disk at public/storage (symlink() is
+            // disabled on Hostinger), so a hardcoded path looked in the wrong
+            // directory and every attachment failed.
+            $fullPath = Storage::disk('public')->path($path);
+
+            if (!is_file($fullPath) || !is_readable($fullPath)) {
+                Log::warning('Visa email attachment missing — sending without it', [
+                    'attachment' => $label,
+                    'path'       => $fullPath,
+                ]);
+                continue;
+            }
+
+            $mail->attach($fullPath, [
+                'as' => $label . '.' . pathinfo($path, PATHINFO_EXTENSION),
             ]);
         }
 
