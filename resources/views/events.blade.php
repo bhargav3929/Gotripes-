@@ -3,7 +3,7 @@
 @php
     $level9Wa = current_company()?->getSetting('level9_whatsapp', '');
     $trending = (current_company()?->getSetting('menu_flash', [])['events'] ?? false);
-    $waMsg = rawurlencode("Hi LEVEL9 — I'm interested in the FIFA World Cup 2026 luxury experience. Please share package details.");
+    $waMsg = rawurlencode("Hi LEVEL9 — I'm interested in your luxury events experience. Please share package details.");
     $waLink = $level9Wa ? "https://wa.me/{$level9Wa}?text={$waMsg}" : url('/contact-us');
 @endphp
 
@@ -109,8 +109,8 @@
         @else
         <span class="evt-kicker">Signature event</span>
         @endif
-        <h1>FIFA World Cup 2026<br><span class="hl">The Luxury Experience</span></h1>
-        <p class="sub">VIP tickets, private jets, penthouse suites, chauffeurs and exclusive after-parties — the World Cup, done the right way. Curated end-to-end by LEVEL9 CONCIERGERIE across the United States, Mexico and Canada.</p>
+        <h1>Signature Events<br><span class="hl">The Luxury Experience</span></h1>
+        <p class="sub">VIP access, private jets, penthouse suites, chauffeurs and exclusive after-parties — the world's biggest events, done the right way. Curated end-to-end by LEVEL9 CONCIERGERIE.</p>
         <div class="evt-cta-row">
             <a href="{{ $waLink }}" target="_blank" rel="noopener" class="evt-btn evt-btn-primary"><i class="bi bi-whatsapp"></i> Enquire on WhatsApp</a>
             <a href="#evt-included" class="evt-btn evt-btn-ghost">See what's included</a>

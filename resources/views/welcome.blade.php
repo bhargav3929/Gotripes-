@@ -2,86 +2,116 @@
 <!-- START HOME -->
 @include('banner')
 
-{{-- ════ FIFA World Cup 2026 promo (gotrips.ai only, seasonal toggle) ════ --}}
+{{-- ════ Study Abroad promo (gotrips.ai only) ════ --}}
 @platformOnly
-@if(current_company()?->getSetting('fifa_promo_enabled', false))
-@php
-    $fifaWa = current_company()?->getSetting('level9_whatsapp', '');
-    $fifaMsg = rawurlencode("Hi LEVEL9 — I'm interested in the FIFA World Cup 2026 luxury experience. Please share package details.");
-    $fifaWaLink = $fifaWa ? "https://wa.me/{$fifaWa}?text={$fifaMsg}" : url('/contact-us');
-@endphp
 <style>
-    .home-fifa {
+    .home-study {
         font-family: 'Outfit', system-ui, sans-serif;
         position: relative; overflow: hidden;
         padding: 64px 24px;
         background:
-            radial-gradient(900px 360px at 85% -20%, rgba(255,170,0,0.16), transparent 60%),
+            radial-gradient(900px 360px at 85% -20%, rgba(255,215,0,0.14), transparent 60%),
             linear-gradient(135deg, #080808 0%, #141414 100%);
         border-top: 1px solid #1c1c1c; border-bottom: 1px solid #1c1c1c;
     }
-    .home-fifa-inner {
+    .home-study-inner {
         max-width: 1140px; margin: 0 auto;
         display: flex; align-items: stretch; justify-content: space-between; gap: 32px; flex-wrap: wrap;
     }
-    .home-fifa-copy { flex: 1 1 480px; display: flex; flex-direction: column; justify-content: center; }
-    .home-fifa-kicker {
-        display: inline-flex; align-items: center; gap: 8px;
+    .home-study-copy { flex: 1 1 460px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+    .home-study-kicker {
+        display: inline-flex; align-items: center; gap: 8px; align-self: flex-start;
         font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
         color: #FFD700; border: 1px solid rgba(255,215,0,0.3); border-radius: 999px; padding: 6px 14px; margin-bottom: 18px;
     }
-    .home-fifa-kicker .d { width: 7px; height: 7px; border-radius: 50%; background: #FFD700; animation: homeFifaPulse 1.6s infinite; }
-    @keyframes homeFifaPulse { 0%{box-shadow:0 0 0 0 rgba(255,170,0,.6)} 70%{box-shadow:0 0 0 8px rgba(255,170,0,0)} 100%{box-shadow:0 0 0 0 rgba(255,170,0,0)} }
-    .home-fifa h2 {
+    .home-study-kicker .d { width: 7px; height: 7px; border-radius: 50%; background: #FFD700; animation: homeStudyPulse 1.6s infinite; }
+    @keyframes homeStudyPulse { 0%{box-shadow:0 0 0 0 rgba(255,215,0,.6)} 70%{box-shadow:0 0 0 8px rgba(255,215,0,0)} 100%{box-shadow:0 0 0 0 rgba(255,215,0,0)} }
+    .home-study h2 {
         color: #fff; font-size: clamp(1.8rem, 4vw, 2.9rem); font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; margin: 0 0 14px;
     }
-    .home-fifa h2 .hl { background: linear-gradient(135deg,#FFD700,#FF8A00); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .home-fifa p { color: #9a9a9a; font-weight: 300; font-size: 1.05rem; line-height: 1.6; margin: 0 0 26px; max-width: 560px; }
-    .home-fifa-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .home-fifa-btn { display: inline-flex; align-items: center; gap: 9px; padding: 14px 28px; border-radius: 12px; font-weight: 700; font-size: 0.98rem; text-decoration: none; transition: transform .14s ease, box-shadow .14s ease; }
-    .home-fifa-primary { background: linear-gradient(135deg,#FFD700,#FF8A00); color: #111; box-shadow: 0 10px 30px rgba(255,138,0,.25); }
-    .home-fifa-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,138,0,.35); color:#111; }
-    .home-fifa-ghost { background: transparent; color: #eee; border: 1px solid #2a2a2a; }
-    .home-fifa-ghost:hover { border-color: #FFD700; color: #FFD700; }
-    .home-fifa-panel {
-        flex: 0 0 320px; display: flex; flex-direction: column; justify-content: space-between;
-        padding: 26px 28px; border: 1px solid rgba(255,215,0,0.25); border-radius: 18px;
-        background: rgba(255,215,0,0.04);
+    .home-study h2 .hl { background: linear-gradient(135deg,#FFD700,#D4AF37); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .home-study p { color: #9a9a9a; font-weight: 300; font-size: 1.05rem; line-height: 1.6; margin: 0 0 22px; max-width: 560px; }
+    .home-study-points { list-style: none; margin: 0 0 26px; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 22px; }
+    .home-study-points li { display: flex; align-items: center; gap: 9px; color: #e2e2e2; font-size: 0.94rem; font-weight: 500; }
+    .home-study-points li i { color: #FFD700; font-size: 1rem; flex: none; }
+    .home-study-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .home-study-btn { display: inline-flex; align-items: center; gap: 9px; padding: 14px 28px; border-radius: 12px; font-weight: 700; font-size: 0.98rem; text-decoration: none; transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease, color .14s ease; }
+    .home-study-primary { background: linear-gradient(135deg,#FFD700,#D4AF37); color: #111; box-shadow: 0 10px 30px rgba(255,215,0,.22); }
+    .home-study-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,215,0,.32); color:#111; }
+    .home-study-ghost { background: transparent; color: #eee; border: 1px solid #2a2a2a; }
+    .home-study-ghost:hover { border-color: #FFD700; color: #FFD700; }
+
+    /* Banner image panel */
+    .home-study-media {
+        flex: 0 0 420px; position: relative; border-radius: 18px; overflow: hidden;
+        border: 1px solid rgba(255,215,0,0.25); min-height: 300px; background: #0d0d0d;
     }
-    .home-fifa-panel .yr { font-size: 2.4rem; font-weight: 800; color: #FFD700; line-height: 1; letter-spacing: -0.03em; }
-    .home-fifa-panel .lb { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #8a8a8a; margin-top: 6px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,215,0,0.14); }
-    .home-fifa-list { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; justify-content: space-between; flex: 1; gap: 14px; }
-    .home-fifa-list li { display: flex; align-items: center; gap: 11px; color: #e2e2e2; font-size: 0.94rem; font-weight: 500; }
-    .home-fifa-list li i { color: #FFD700; font-size: 1rem; width: 20px; text-align: center; flex: none; }
-    @media (max-width: 760px) { .home-fifa-panel { flex: 1 1 100%; } }
+    .home-study-media img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
+    .home-study-media::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.28) 45%, rgba(0,0,0,0.05) 100%);
+    }
+    .home-study-badge {
+        position: absolute; top: 16px; left: 16px; z-index: 2;
+        background: rgba(255,215,0,0.94); color: #111;
+        font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+        padding: 6px 12px; border-radius: 999px;
+    }
+    .home-study-caption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 20px 22px; }
+    .home-study-caption .t { color: #fff; font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
+    .home-study-caption .s { color: #cfcfcf; font-size: 0.85rem; font-weight: 400; margin-top: 4px; }
+
+    @media (max-width: 900px) { .home-study-media { flex: 1 1 100%; min-height: 260px; } }
+    @media (max-width: 575.98px) {
+        .home-study { padding: 44px 16px; }
+        .home-study-media { min-height: 210px; }
+        .home-study-points { gap: 8px 16px; }
+        .home-study-btn { padding: 12px 20px; font-size: 0.92rem; }
+        .home-study-actions .home-study-btn { flex: 1 1 100%; justify-content: center; }
+    }
+
+    /* Light theme — kept inline so removing this section leaves no orphaned CSS */
+    html[data-theme="light"] .home-study {
+        background: radial-gradient(900px 360px at 85% -20%, rgba(212,175,55,0.12), transparent 60%), var(--gt-surface, #ffffff);
+        border-top-color: var(--gt-border-strong, #e5e5e5); border-bottom-color: var(--gt-border-strong, #e5e5e5);
+    }
+    html[data-theme="light"] .home-study h2 { color: var(--gt-text, #111); }
+    html[data-theme="light"] .home-study p { color: var(--gt-text-muted, #555); }
+    html[data-theme="light"] .home-study-points li { color: var(--gt-text, #222); }
+    html[data-theme="light"] .home-study h2 .hl { background: linear-gradient(135deg,#D4AF37,#B8860B); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    html[data-theme="light"] .home-study-kicker { color: var(--gt-gold-deep, #B8860B); border-color: var(--gt-gold-border, rgba(184,134,11,0.35)); }
+    html[data-theme="light"] .home-study-kicker .d { background: var(--gt-gold-deep, #B8860B); }
+    html[data-theme="light"] .home-study-ghost { color: var(--gt-text, #222); border-color: var(--gt-border-strong, #ddd); }
+    html[data-theme="light"] .home-study-ghost:hover { border-color: var(--gt-gold-deep, #B8860B); color: var(--gt-gold-deep, #B8860B); }
 </style>
-<section class="home-fifa">
-    <div class="home-fifa-inner">
-        <div class="home-fifa-copy">
-            <span class="home-fifa-kicker"><span class="d"></span> Trending · Limited availability</span>
-            <h2>FIFA World Cup 2026<br><span class="hl">The Luxury Experience</span></h2>
-            <p>VIP tickets, private jets, penthouse suites, chauffeurs and exclusive after-parties across the US, Mexico &amp; Canada — curated end-to-end by LEVEL9 CONCIERGERIE.</p>
-            <div class="home-fifa-actions">
-                <a href="{{ url('/events') }}" class="home-fifa-btn home-fifa-primary"><i class="bi bi-trophy"></i> Explore packages</a>
-                <a href="{{ $fifaWaLink }}" target="_blank" rel="noopener" class="home-fifa-btn home-fifa-ghost"><i class="bi bi-whatsapp"></i> Enquire on WhatsApp</a>
+<section class="home-study">
+    <div class="home-study-inner">
+        <div class="home-study-copy">
+            <span class="home-study-kicker"><span class="d"></span> Coming soon · 2026 intakes</span>
+            <h2>Study Abroad<br><span class="hl">Your Future, Without Borders</span></h2>
+            <p>University admissions, student visas and end-to-end guidance for studying overseas — from choosing the right course to landing on campus.</p>
+            <ul class="home-study-points">
+                <li><i class="bi bi-mortarboard"></i> University admissions</li>
+                <li><i class="bi bi-file-earmark-text"></i> Student visa support</li>
+                <li><i class="bi bi-globe2"></i> UK · Europe · Australia · Canada</li>
+                <li><i class="bi bi-people"></i> One-to-one counselling</li>
+            </ul>
+            <div class="home-study-actions">
+                <a href="{{ url('/coming-soon/study-abroad') }}" class="home-study-btn home-study-primary"><i class="bi bi-mortarboard"></i> Explore Programs</a>
+                <a href="{{ url('/contact-us?enquiry=Study Abroad') }}" class="home-study-btn home-study-ghost"><i class="bi bi-chat-dots"></i> Talk to an Advisor</a>
             </div>
         </div>
-        <div class="home-fifa-panel">
-            <div>
-                <div class="yr">2026</div>
-                <div class="lb">USA · Mexico · Canada</div>
+        <div class="home-study-media">
+            <img src="{{ asset('assets/index_files/study-overseas-educational-consultancy.jpg') }}"
+                 alt="International students celebrating graduation" loading="lazy">
+            <span class="home-study-badge">Coming Soon</span>
+            <div class="home-study-caption">
+                <div class="t">Study at world-ranked universities</div>
+                <div class="s">Guidance from application to arrival</div>
             </div>
-            <ul class="home-fifa-list">
-                <li><i class="bi bi-ticket-perforated"></i> VIP match tickets</li>
-                <li><i class="bi bi-airplane-engines"></i> Private jets</li>
-                <li><i class="bi bi-building"></i> Penthouse suites</li>
-                <li><i class="bi bi-car-front"></i> Chauffeur service</li>
-                <li><i class="bi bi-stars"></i> Exclusive after-parties</li>
-            </ul>
         </div>
     </div>
 </section>
-@endif
 @endplatformOnly
 
 {{-- E-SIM Partner CTA banner (homepage) --}}
@@ -520,7 +550,7 @@
       <!-- Service Card 21: Study Abroad -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="{{ url('/coming-soon/study-abroad') }}" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/study-overseas-educational-consultancy.jpg" alt="Study Abroad"
                 class="service-card-img">

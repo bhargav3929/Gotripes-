@@ -317,7 +317,7 @@ class SearchController extends Controller
             ['title' => 'GDS Support', 'url' => '/our-services', 'description' => 'Global Distribution System support and training', 'keywords' => 'gds amadeus sabre galileo booking system travelport airline flight reservation'],
             ['title' => 'Business Consultants', 'url' => '/our-services', 'description' => 'Business advisory and strategy consulting', 'keywords' => 'business consultant advisory strategy consulting plan growth help expert advice'],
             ['title' => 'AI, AR, VR Integration', 'url' => '/our-services', 'description' => 'Artificial intelligence and virtual reality solutions', 'keywords' => 'ai artificial intelligence ar vr virtual reality augmented technology innovation smart digital'],
-            ['title' => 'Study Abroad', 'url' => '/our-services', 'description' => 'Overseas education and university programs', 'keywords' => 'study abroad education overseas university college learn program degree school admission scholarship'],
+            ['title' => 'Study Abroad', 'url' => '/coming-soon/study-abroad', 'description' => 'Overseas education and university programs', 'keywords' => 'study abroad education overseas university college learn program degree school admission scholarship'],
         ];
 
         $scored = $this->scoredSearch($services, $query, $words, 6);

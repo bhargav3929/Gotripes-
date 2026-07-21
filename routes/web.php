@@ -165,6 +165,7 @@ Route::prefix('/')->group(function () {
             'hotels'            => ['title' => 'Hotels',                  'icon' => 'bi-building',      'tagline' => 'Handpicked Makkah & Madinah hotels close to the Haram — coming soon.',            'img' => asset('assets/coming-soon/holiday-homes.jpg')],
             'land-packages'     => ['title' => 'Land Packages',           'icon' => 'bi-map',           'tagline' => 'Complete land-based Hajj & Umrah packages — coming soon.',                        'img' => asset('assets/coming-soon/local-tours.jpg')],
             'catering'          => ['title' => 'Catering Services',       'icon' => 'bi-cup-hot',       'tagline' => 'Full-board halal catering for your pilgrimage — coming soon.',                    'img' => asset('assets/coming-soon/events.jpg')],
+            'study-abroad'      => ['title' => 'Study Abroad',            'icon' => 'bi-mortarboard',   'tagline' => 'University admissions, student visas and guidance for studying overseas — coming soon.', 'img' => asset('assets/index_files/study-overseas-educational-consultancy.jpg')],
         ];
 
         abort_unless(isset($services[$slug]), 404);
@@ -184,8 +185,11 @@ Route::get('/uaeactivities', fn() => redirect()->route('emirates.index'));
 Route::get('/uaeactivities/{any}', fn() => redirect()->route('emirates.index'))->where('any', '.*');
 Route::get('/api/emirates', [EmiratesController::class, 'getEmiratesJson'])->name('api.emirates');
 
-// FIFA World Cup 2026 tickets — public listing + customer request form (shared, not tenant-gated).
-Route::get('/fifa-world-cup-2026', [FifaTicketsController::class, 'index'])->name('fifa.index');
+// FIFA World Cup 2026 — public page retired; the storefront now promotes Study Abroad.
+// The GET listing redirects home so old links and search results do not 404. The POST
+// endpoints, controller, models and manager screens are deliberately left in place so
+// existing ticket requests and any in-flight ORDFIFA* payments can still be settled.
+Route::get('/fifa-world-cup-2026', fn () => redirect('/', 302))->name('fifa.index');
 Route::post('/fifa-world-cup-2026/request', [FifaTicketsController::class, 'submitRequest'])->name('fifa.request');
 Route::post('/fifa-world-cup-2026/checkout', [FifaTicketsController::class, 'checkout'])->name('fifa.checkout');
 // Live World Cup scores (JSON) — polled by the FIFA page.
