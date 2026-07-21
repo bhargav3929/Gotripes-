@@ -557,22 +557,8 @@ html[data-theme="light"] .wp-input::placeholder { color: var(--gt-text-muted) !i
 html[data-theme="light"] .wp-select option { background: var(--gt-surface) !important; color: var(--gt-text-body) !important; }
 
 /* ===== Homepage (welcome + banners + carousel) ===== */
-html[data-theme="light"] .home-fifa {
-  background: radial-gradient(900px 360px at 85% -20%, rgba(184,134,11,0.10), transparent 60%), linear-gradient(135deg, var(--gt-bg) 0%, var(--gt-bg-alt) 100%);
-  border-top: 1px solid var(--gt-border);
-  border-bottom: 1px solid var(--gt-border);
-}
-html[data-theme="light"] .home-fifa-kicker { color: var(--gt-gold-deep); border-color: var(--gt-gold-border); background: var(--gt-gold-soft); }
-html[data-theme="light"] .home-fifa-kicker .d { background: var(--gt-gold); }
-html[data-theme="light"] .home-fifa h2 { color: var(--gt-text); }
-html[data-theme="light"] .home-fifa p { color: var(--gt-text-muted); }
-html[data-theme="light"] .home-fifa-ghost { background: var(--gt-surface); color: var(--gt-text-body); border: 1px solid var(--gt-border-strong); }
-html[data-theme="light"] .home-fifa-ghost:hover { border-color: var(--gt-gold); color: var(--gt-gold); }
-html[data-theme="light"] .home-fifa-panel { border: 1px solid var(--gt-gold-border); background: var(--gt-gold-soft); }
-html[data-theme="light"] .home-fifa-panel .yr { color: var(--gt-gold-deep); }
-html[data-theme="light"] .home-fifa-panel .lb { color: var(--gt-text-muted); border-bottom: 1px solid var(--gt-gold-border); }
-html[data-theme="light"] .home-fifa-list li { color: var(--gt-text-body); }
-html[data-theme="light"] .home-fifa-list li i { color: var(--gt-gold); }
+/* The homepage promo section (.home-study) keeps its light-theme rules inline in
+   welcome.blade.php, so there is nothing for it here. */
 html[data-theme="light"] .home-epcb-inner { background: linear-gradient(135deg, var(--gt-gold-soft) 0%, var(--gt-surface-2) 100%); border: 1px solid var(--gt-gold-border); box-shadow: var(--gt-shadow-sm); }
 html[data-theme="light"] .home-epcb-eyebrow { color: var(--gt-gold-deep); }
 html[data-theme="light"] .home-epcb-title { color: var(--gt-text); }

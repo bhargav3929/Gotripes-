@@ -1323,7 +1323,7 @@
 
         /* The fixed header sits at z-index 9999. Bootstrap modals default to
            ~1055, so the header would paint OVER an open modal and clip its top
-           (e.g. the FIFA "Request Tickets" modal). Lift modals above the header. */
+           (e.g. any "Request" / enquiry modal). Lift modals above the header. */
         .modal { z-index: 10060 !important; }
         .modal-backdrop { z-index: 10050 !important; }
 
@@ -1392,9 +1392,9 @@
                 <div class="gt-nav-side gt-nav-side-right">
                     <div class="gt-nav-row gt-nav-primary">
                         <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our Services</a>
-                        @platformOnly<a href="/fifa-world-cup-2026" class="gt-nav-link {{ Request::is('fifa-world-cup-2026') ? 'active' : '' }}">FIFA WC 2026 <i class="bi bi-lightning-charge-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
                         @feature('shop')<a href="/shopnow" class="gt-nav-link {{ Request::is('shopnow') ? 'active' : '' }}">Shop Online</a>@endfeature
                         @feature('pay_online')<a href="/payonline" class="gt-nav-link {{ Request::is('payonline') ? 'active' : '' }}">Pay Online</a>@endfeature
+                        @platformOnly<a href="{{ $gtSoon('study-abroad') }}" class="gt-nav-link {{ Request::is('coming-soon/study-abroad') ? 'active' : '' }}">Study Abroad <i class="bi bi-mortarboard-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
                         @feature('careers')<a href="/lookingforajob" class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>@endfeature
                         <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact Us</a>
                         <button type="button" class="gt-theme-toggle" id="gtThemeToggle" aria-label="Toggle light / dark mode" title="Toggle light / dark mode">
@@ -1475,8 +1475,6 @@
 
             @platformOnly<a href="{{ $gtSoon('events') }}" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
 
-            @platformOnly<a href="/fifa-world-cup-2026" class="gt-mobile-nav-link">FIFA WC 2026 <i class="bi bi-lightning-charge-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
-
             {{-- More --}}
             <div class="gt-macc">
                 <button type="button" class="gt-mobile-nav-link gt-macc-toggle">More <i class="bi bi-chevron-down"></i></button>
@@ -1486,6 +1484,7 @@
                     <a href="{{ $gtSoon('business-tourism') }}" class="gt-macc-item">Business Tourism (MICE){!! $gtBadge('mice') !!}</a>
                     @feature('shop')<a href="/shopnow" class="gt-macc-item">Shop Online</a>@endfeature
                     @feature('pay_online')<a href="/payonline" class="gt-macc-item">Pay Online</a>@endfeature
+                    @platformOnly<a href="{{ $gtSoon('study-abroad') }}" class="gt-macc-item">Study Abroad <i class="bi bi-mortarboard-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
                     @feature('careers')<a href="/lookingforajob" class="gt-macc-item">Careers</a>@endfeature
                 </div>
             </div>

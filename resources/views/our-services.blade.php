@@ -39,7 +39,7 @@
                         ['title' => 'GDS SUPPORT', 'img' => 'assets/index_files/service_gds_1767533146390.png', 'link' => '/'],
                         ['title' => 'BUSINESS CONSULTANTS', 'img' => 'assets/index_files/service_business_consultants_1767533163259.png', 'link' => '/'],
                         ['title' => 'AI, AR, VR INTEGRATION', 'img' => 'assets/index_files/service_ai_ar_vr_1767533181726.png', 'link' => '/'],
-                        ['title' => 'STUDY ABROAD', 'img' => 'assets/index_files/study-overseas-educational-consultancy.jpg', 'link' => '/']
+                        ['title' => 'STUDY ABROAD', 'img' => 'assets/index_files/study-overseas-educational-consultancy.jpg', 'link' => '/coming-soon/study-abroad']
                     ];
                 @endphp
 
