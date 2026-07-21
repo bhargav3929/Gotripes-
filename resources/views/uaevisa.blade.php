@@ -855,7 +855,7 @@
                             <select id="nationality" name="nationality" class="field-input" required>
                                 <option value="">Select Nationality</option>
                                 @foreach(\App\Support\CountryCodes::all() as $c)
-                                    <option value="{{ $c['name'] }}">{{ $c['name'] }}</option>
+                                    <option value="{{ $c['name'] }}" data-iso2="{{ strtolower($c['iso'] ?? '') }}">{{ $c['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -1116,12 +1116,42 @@
         const countrySelects = [document.getElementById('nationality')].filter(Boolean);
         let nationalitySelect = null;
         const natEl = document.getElementById('nationality');
+        // Build a value→iso2 lookup from the <select>'s option[data-iso2] attributes
+        // so flags work regardless of how TomSelect exposes custom data attributes.
+        function buildIsoMap(selectEl) {
+            var map = {};
+            if (!selectEl) return map;
+            Array.prototype.forEach.call(selectEl.querySelectorAll('option[data-iso2]'), function(opt) {
+                var iso = opt.getAttribute('data-iso2');
+                if (opt.value && iso) map[opt.value] = iso.toLowerCase();
+            });
+            return map;
+        }
+
+        function makeFlagHtml(iso) {
+            if (!iso || iso.length !== 2) return '';
+            return '<img src="https://flagcdn.com/w40/' + iso + '.png"'
+                + ' style="width:20px;height:14px;margin-right:8px;vertical-align:middle;'
+                + 'object-fit:cover;border-radius:2px;flex-shrink:0;" alt="" loading="lazy"'
+                + ' onerror="this.style.display=\'none\'">';
+        }
+
         if (natEl && typeof TomSelect !== 'undefined') {
+            var natIsoMap = buildIsoMap(natEl);
+            var renderCountryRow = function(data, escape) {
+                var iso = natIsoMap[data.value] || data.iso2 || '';
+                return '<div style="display:flex;align-items:center;gap:0;">'
+                    + makeFlagHtml(iso)
+                    + '<span>' + escape(data.text) + '</span>'
+                    + '</div>';
+            };
             nationalitySelect = new TomSelect(natEl, {
                 create: false,
                 placeholder: 'Select Nationality',
                 controlInput: '<input>',
                 render: {
+                    option: renderCountryRow,
+                    item: renderCountryRow,
                     no_results: function(data, escape) {
                         return '<div class="no-results" style="padding: 8px 14px; color: #888;">No nationality found for "' + escape(data.input) + '"</div>';
                     }
