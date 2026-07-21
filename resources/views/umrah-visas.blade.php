@@ -23,15 +23,15 @@
                 <a href="{{ url('/coming-soon/hotels') }}" class="tab-btn">
                     <i class="bi bi-building"></i> Hotels
                 </a>
+                <a href="{{ url('/coming-soon/land-packages') }}" class="tab-btn">
+                    <i class="bi bi-map-fill"></i> Land Packages
+                </a>
                 <button type="button" class="tab-btn active" onclick="switchTab('bus-tab')">
                     <i class="bi bi-bus-front-fill"></i> Hajj & Umrah by Bus
                 </button>
                 <button type="button" class="tab-btn" onclick="switchTab('air-tab')">
                     <i class="bi bi-airplane-engines-fill"></i> Hajj & Umrah by Air
                 </button>
-                <a href="{{ url('/coming-soon/land-packages') }}" class="tab-btn">
-                    <i class="bi bi-map-fill"></i> Land Packages
-                </a>
                 <a href="{{ url('/coming-soon/catering') }}" class="tab-btn">
                     <i class="bi bi-cup-hot-fill"></i> Catering Services
                 </a>
@@ -62,7 +62,7 @@
             @if(isset($packagesBus) && $packagesBus->count() > 0)
             <div class="row g-4">
                 @foreach($packagesBus as $pkg)
-                <div class="col-md-6 col-lg-4 package-item" data-category="{{ $pkg->umrahCategory ? strtolower(str_replace(' ', '-', $pkg->umrahCategory->name)) : 'uncategorized' }}">
+                <div class="col-12 col-md-6 col-lg-3 package-item" data-category="{{ $pkg->umrahCategory ? strtolower(str_replace(' ', '-', $pkg->umrahCategory->name)) : 'uncategorized' }}">
                     <div class="package-card" style="background: #0b0b0b; border: 1px solid #1a1a1a; border-radius: 18px; overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: all 0.3s ease;">
                         <div class="package-img-wrap" style="position: relative; height: 220px; background: url('{{ asset($pkg->image) }}') center center / cover no-repeat;">
                             <span class="category-badge" style="position: absolute; top: 15px; left: 15px; background: #FFD700; color: #000; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 50px; text-transform: uppercase;">
@@ -92,7 +92,7 @@
                                 </div>
                             </div>
                             
-                            <div style="border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: auto; display: flex; align-items: center; justify-content: space-between;">
+                            <div class="package-footer" style="border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: auto; display: flex; align-items: center; justify-content: space-between;">
                                 <div class="price-box">
                                     <span style="font-size: 12px; color: #888; display: block;">Starting From</span>
                                     @if($pkg->discount_price && $pkg->discount_price < $pkg->original_price)
@@ -140,7 +140,7 @@
             @if(isset($packagesAir) && $packagesAir->count() > 0)
             <div class="row g-4" id="air-packages-container">
                 @foreach($packagesAir as $pkg)
-                <div class="col-md-6 col-lg-4 package-item-air" data-category="{{ $pkg->umrahCategory ? strtolower(str_replace(' ', '-', $pkg->umrahCategory->name)) : 'uncategorized' }}">
+                <div class="col-12 col-md-6 col-lg-3 package-item-air" data-category="{{ $pkg->umrahCategory ? strtolower(str_replace(' ', '-', $pkg->umrahCategory->name)) : 'uncategorized' }}">
                     <div class="package-card" style="background: #0b0b0b; border: 1px solid #1a1a1a; border-radius: 18px; overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: all 0.3s ease;">
                         <div class="package-img-wrap" style="position: relative; height: 220px; background: url('{{ asset($pkg->image) }}') center center / cover no-repeat;">
                             <span class="category-badge" style="position: absolute; top: 15px; left: 15px; background: #FFD700; color: #000; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 50px; text-transform: uppercase;">
@@ -170,7 +170,7 @@
                                 </div>
                             </div>
                             
-                            <div style="border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: auto; display: flex; align-items: center; justify-content: space-between;">
+                            <div class="package-footer" style="border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: auto; display: flex; align-items: center; justify-content: space-between;">
                                 <div class="price-box">
                                     <span style="font-size: 12px; color: #888; display: block;">Starting From</span>
                                     @if($pkg->discount_price && $pkg->discount_price < $pkg->original_price)
@@ -382,6 +382,36 @@
     @keyframes float {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-10px); }
+    }
+
+    /* =========================================================
+       PACKAGE GRID — 4-up on desktop (col-lg-3)
+       Cards narrow to ~215px at the bottom of the lg range, so the
+       price + button footer is stacked there to stop "Starting From"
+       and "View Details" breaking mid-phrase.
+       ========================================================= */
+    .package-card .price-box span,
+    .package-card .price-box strong,
+    .package-card .btn-book-now {
+        white-space: nowrap;
+    }
+
+    @media (min-width: 992px) and (max-width: 1399.98px) {
+        .package-card .package-body {
+            padding: 20px !important;
+        }
+        .package-card .package-footer {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 12px;
+        }
+        .package-card .btn-book-now {
+            text-align: center;
+            padding: 10px 12px !important;
+        }
+        .package-card .package-body h3 {
+            font-size: 18px !important;
+        }
     }
 </style>
 
