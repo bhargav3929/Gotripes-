@@ -40,11 +40,10 @@
         background: linear-gradient(145deg, #111111 0%, #0d0d0d 100%);
         border: 1px solid rgba(255, 215, 0, 0.22);
         border-radius: 20px;
-        padding: 24px 24px 22px;
-        width: min(860px, 96vw);
-        /* CRITICAL: No overflow-y auto on desktop — layout fits the viewport */
-        max-height: 88vh;
-        overflow: hidden;
+        padding: 32px 30px 28px;
+        width: min(680px, 94vw);
+        max-height: 92vh;
+        overflow-y: auto;
         position: relative;
         box-shadow:
             0 0 0 1px rgba(255,215,0,0.06),
@@ -54,9 +53,37 @@
         transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         font-family: 'Outfit', sans-serif;
         text-align: center;
+        /* Firefox */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 215, 0, 0.35) transparent;
     }
     .emirate-overlay.active .emirate-modal {
         transform: scale(1) translateY(0);
+    }
+
+    /* Dark gold scrollbar — Chrome/Edge/Safari */
+    .emirate-modal::-webkit-scrollbar {
+        width: 8px;
+    }
+    .emirate-modal::-webkit-scrollbar-track {
+        background: transparent;
+        margin: 12px 0;
+    }
+    .emirate-modal::-webkit-scrollbar-thumb {
+        background: rgba(255, 215, 0, 0.3);
+        border-radius: 8px;
+    }
+    .emirate-modal::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 215, 0, 0.5);
+    }
+    /* Kill the classic Windows arrow buttons */
+    .emirate-modal::-webkit-scrollbar-button {
+        display: none;
+        height: 0;
+        width: 0;
+    }
+    .emirate-modal::-webkit-scrollbar-corner {
+        background: transparent;
     }
 
     /* Header area */
@@ -106,10 +133,10 @@
 
     .emirate-title {
         color: #FFD700;
-        font-size: 17px;
+        font-size: 26px;
         font-weight: 800;
-        margin: 0 0 16px;
-        letter-spacing: 0.2px;
+        margin: 0 0 22px;
+        letter-spacing: 0.3px;
         line-height: 1.3;
         text-shadow: 0 0 30px rgba(255,215,0,0.2);
     }
@@ -124,102 +151,68 @@
     }
 
     /* =============================================
-       GRID — 4 columns desktop, 3 tablet, 2 mobile
+       GRID — 2x2 gold cards
     ============================================= */
     .emirate-cards-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
     }
 
     /* =============================================
-       CARD — compact image card
+       CARD — gold gradient card, image + name
     ============================================= */
     .emirate-card {
         position: relative;
-        background: transparent;
-        border: 2px solid rgba(255, 215, 0, 0.18);
-        border-radius: 12px;
-        padding: 0;
+        background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+        border: none;
+        border-radius: 18px;
+        padding: 12px 12px 18px;
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 12px;
         cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-        color: #fff;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        color: #1a1400;
         font-family: 'Outfit', sans-serif;
         width: 100%;
-        overflow: hidden;
-        aspect-ratio: 4 / 3.2;
-        /* Fixed height per card — no variation */
+        box-shadow: 0 10px 26px -8px rgba(255, 215, 0, 0.35);
     }
 
-    /* Image fills card */
+    /* Image sits inside the card, above the name.
+       Height tracks viewport height so all 4 cards fit without scrolling. */
     .emirate-card .emirate-flag-img {
-        position: absolute;
-        inset: 0;
         width: 100%;
-        height: 100%;
+        height: clamp(120px, 26vh, 240px);
         object-fit: cover;
-        border-radius: 10px;
-        transition: transform 0.4s ease;
+        border-radius: 12px;
         display: block;
     }
 
-    /* Dark gradient overlay at bottom */
-    .emirate-card::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            to top,
-            rgba(0,0,0,0.82) 0%,
-            rgba(0,0,0,0.30) 50%,
-            rgba(0,0,0,0.05) 100%
-        );
-        border-radius: 10px;
-        transition: background 0.25s ease;
-        z-index: 1;
-    }
-
-    /* Gold border glow on hover */
     .emirate-card:hover {
-        border-color: #FFD700;
-        box-shadow:
-            0 0 0 1px rgba(255,215,0,0.3),
-            0 12px 32px -6px rgba(255,215,0,0.25);
-        transform: translateY(-3px) scale(1.02);
-    }
-    .emirate-card:hover .emirate-flag-img {
-        transform: scale(1.06);
-    }
-    .emirate-card:hover::after {
-        background: linear-gradient(
-            to top,
-            rgba(0,0,0,0.90) 0%,
-            rgba(0,0,0,0.35) 50%,
-            rgba(0,0,0,0.08) 100%
-        );
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px -8px rgba(255, 215, 0, 0.5);
+        filter: brightness(1.04);
     }
 
     /* Selected state */
     .emirate-card.selected,
     .emirate-card[aria-pressed="true"] {
-        border-color: #FFD700;
         box-shadow:
-            0 0 0 3px rgba(255,215,0,0.45),
-            0 8px 24px -4px rgba(255,215,0,0.3);
+            0 0 0 3px rgba(26, 20, 0, 0.55),
+            0 16px 40px -8px rgba(255, 215, 0, 0.5);
     }
     .emirate-card.selected::before {
         content: '✓';
         position: absolute;
-        top: 7px;
-        right: 8px;
+        top: 10px;
+        right: 12px;
         z-index: 3;
         width: 22px;
         height: 22px;
-        background: #FFD700;
-        color: #000;
+        background: #1a1400;
+        color: #FFD700;
         border-radius: 50%;
         font-size: 12px;
         font-weight: 900;
@@ -228,42 +221,34 @@
         justify-content: center;
     }
 
-    /* Name badge at bottom */
+    /* Name below the image, dark on gold */
     .emirate-card-name {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 2;
-        font-size: 11px;
+        font-size: 20px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: #FFD700;
-        text-align: center;
-        padding: 6px 4px 8px;
-        line-height: 1.2;
+        letter-spacing: 1px;
+        line-height: 1.3;
     }
 
     /* Fallback icon when no image */
     .emirate-card-icon {
-        position: absolute;
-        inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 1;
+        width: 100%;
+        height: clamp(120px, 26vh, 240px);
+        border-radius: 12px;
         background: linear-gradient(135deg, #1a1400, #2a2000);
     }
 
-    /* Gold "Apply" hint on hover */
+    /* "Select" hint on hover */
     .emirate-card-hover-hint {
         position: absolute;
-        top: 8px;
-        left: 8px;
+        top: 20px;
+        left: 20px;
         z-index: 3;
-        background: rgba(255, 215, 0, 0.9);
-        color: #000;
+        background: rgba(26, 20, 0, 0.88);
+        color: #FFD700;
         font-size: 9px;
         font-weight: 800;
         text-transform: uppercase;
@@ -283,45 +268,100 @@
        RESPONSIVE BREAKPOINTS
     ============================================= */
 
-    /* Large tablet: 3 columns */
-    @media (max-width: 860px) {
+    /* Short viewports: compress header chrome so the 2x2 grid still fits */
+    @media (max-height: 780px) {
+        .emirate-modal {
+            padding: 20px 24px 20px;
+        }
+        .emirate-logo {
+            height: 30px;
+        }
+        .emirate-title {
+            font-size: 21px;
+            margin: 0 0 14px;
+        }
+        .emirate-divider {
+            margin: 0 auto 12px;
+        }
         .emirate-cards-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 9px;
+            gap: 14px;
+        }
+        .emirate-card {
+            padding: 10px 10px 14px;
+            gap: 8px;
+        }
+        .emirate-card-name {
+            font-size: 17px;
         }
     }
 
-    /* Tablet: 3 columns (tight) */
+    @media (max-height: 620px) {
+        .emirate-modal {
+            padding: 14px 18px 16px;
+        }
+        .emirate-logo {
+            height: 24px;
+        }
+        .emirate-title {
+            font-size: 17px;
+            margin: 0 0 10px;
+        }
+        .emirate-cards-grid {
+            gap: 10px;
+        }
+        .emirate-card {
+            padding: 8px 8px 10px;
+            gap: 6px;
+        }
+        .emirate-card-name {
+            font-size: 14px;
+        }
+    }
+
+    /* Tablet: keep 2x2, tighten spacing */
+    @media (max-width: 860px) {
+        .emirate-cards-grid {
+            gap: 14px;
+        }
+    }
+
     @media (max-width: 640px) {
         .emirate-modal {
             padding: 18px 14px 16px;
             border-radius: 16px;
         }
         .emirate-title {
-            font-size: 15px;
-            margin-bottom: 12px;
+            font-size: 18px;
+            margin-bottom: 16px;
         }
         .emirate-logo {
             height: 32px;
         }
         .emirate-cards-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 12px;
+        }
+        .emirate-card .emirate-flag-img,
+        .emirate-card-icon {
+            height: 130px;
         }
         .emirate-card-name {
-            font-size: 10px;
+            font-size: 16px;
             letter-spacing: 0.8px;
         }
     }
 
-    /* Mobile: 2 columns */
-    @media (max-width: 380px) {
+    /* Small mobile: single column, matching the original */
+    @media (max-width: 575.98px) {
         .emirate-cards-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 7px;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .emirate-card .emirate-flag-img,
+        .emirate-card-icon {
+            height: 150px;
         }
         .emirate-card-name {
-            font-size: 9.5px;
+            font-size: 18px;
         }
     }
 
