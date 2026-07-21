@@ -1606,8 +1606,8 @@
                     }
                     
                     // If it is the first applicant, prefill nationality too
-                    if (index === 0 && f.nationality) {
-                        selectNationality(f);
+                    if (index === 0 && f.nationality && typeof window.selectNationality === 'function') {
+                        window.selectNationality(f);
                     }
 
                     // OCR ran but could not read a name — let the customer type it.
@@ -1850,6 +1850,12 @@
         }
         return null;
     }
+
+    // window.handlePassportUpload (the per-applicant passport copy field) lives
+    // outside this IIFE and calls selectNationality, so it has to be reachable
+    // globally — otherwise that call throws ReferenceError and the caller's
+    // catch reports "Passport scan is unavailable" for a scan that succeeded.
+    window.selectNationality = selectNationality;
 
     function runScan(file) {
         if (!file) return;
