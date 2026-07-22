@@ -404,6 +404,11 @@
                                 <input type="number" class="wp-input" name="visa_sharjah_deposit" value="{{ old('visa_sharjah_deposit', $sharjahDeposit ?: '') }}" step="0.01" min="0" placeholder="e.g. 5000">
                                 <p class="wp-form-help">Refundable deposit shown and charged per applicant for Sharjah visas. Leave blank for no deposit — the storefront then shows a generic message with no amount and charges nothing.</p>
                             </div>
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Admin / Processing Fee — per applicant (AED)</label>
+                                <input type="number" class="wp-input" name="visa_sharjah_deposit_admin_fee" value="{{ old('visa_sharjah_deposit_admin_fee', $sharjahAdminFee ?: '') }}" step="0.01" min="0" placeholder="e.g. 150">
+                                <p class="wp-form-help">Non-refundable amount deducted from the deposit when it is returned, so the applicant gets back <strong>deposit − fee</strong>. Leave blank for no fee — the whole deposit is then refundable and the fee row is hidden from customers. Cannot exceed the deposit.</p>
+                            </div>
                             <button type="submit" class="wp-btn wp-btn-primary w-100">
                                 <i class="fas fa-save"></i> Save UAE Visa Settings
                             </button>

@@ -126,7 +126,52 @@ class NomodController extends Controller
             'status_message' => $orderStatus !== 'Success' ? ($responseData['status_message'] ?? 'Payment was not completed.') : null,
         ];
 
+        // Sharjah visas carry a refundable security deposit. Surface the refund
+        // breakdown on the acknowledgment page so the customer can see what comes
+        // back to them, rather than only the lump sum they were charged.
+        $response = array_merge($response, $this->sharjahRefundBreakdown($referenceId));
+
         return view('payment.status')->with('response', $response);
+    }
+
+    /**
+     * Build the Sharjah security-deposit refund breakdown for the acknowledgment
+     * page, from the values persisted on the application at submit time.
+     *
+     * Figures are per applicant: group submissions create one row per traveller
+     * and nothing links them back to a single order, so the first application in
+     * the reference is the reliable source. Returns an empty array for any order
+     * that is not a visa, or a visa carrying no deposit (i.e. not Sharjah, or an
+     * unconfigured deposit) — the view then renders nothing extra.
+     */
+    private function sharjahRefundBreakdown(string $referenceId): array
+    {
+        if (stripos($referenceId, 'UAEV') === false) {
+            return [];
+        }
+
+        // Handles both ORDUAEV{id} and the group form ORDUAEV-GRP-{id}-{time}.
+        if (!preg_match('/(\d+)/', str_ireplace(['ORDUAEV', 'GRP'], '', $referenceId), $m)) {
+            return [];
+        }
+
+        $application = UAEVApplication::find((int) $m[1]);
+        if (!$application) {
+            return [];
+        }
+
+        $deposit = (float) ($application->UAEV_deposit_amount ?? 0);
+        if ($deposit <= 0) {
+            return [];
+        }
+
+        $refundable = (float) ($application->UAEV_refund_amount ?? 0);
+
+        return [
+            'deposit_amount'    => $deposit,
+            'deposit_admin_fee' => round(max(0, $deposit - $refundable), 2),
+            'deposit_refundable' => $refundable,
+        ];
     }
 
     /**
