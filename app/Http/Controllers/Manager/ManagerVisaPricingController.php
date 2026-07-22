@@ -31,11 +31,16 @@ class ManagerVisaPricingController extends Controller
         // shows a generic message and charges nothing.
         $sharjahDeposit = $company?->getSetting('visa_sharjah_deposit', 0);
         $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0;
+        // Non-refundable admin/processing fee deducted from the deposit when it is
+        // returned. Defaults to 0, in which case the whole deposit is refundable
+        // and the fee row is hidden everywhere on the frontend.
+        $sharjahAdminFee = $company?->getSetting('visa_sharjah_deposit_admin_fee', 0);
+        $sharjahAdminFee = is_numeric($sharjahAdminFee) ? (float) $sharjahAdminFee : 0;
 
         // Global markup applied to every Fluxir e-Visa (the /e-visa storefront).
         $evisaMarkup = EvisaSetting::markupPercent();
 
-        return view('manager.visa-pricing.index', compact('visas', 'emirates', 'packages', 'prices', 'hotelFee', 'ticketFee', 'evisaMarkup', 'supplierEmail', 'sharjahDeposit'));
+        return view('manager.visa-pricing.index', compact('visas', 'emirates', 'packages', 'prices', 'hotelFee', 'ticketFee', 'evisaMarkup', 'supplierEmail', 'sharjahDeposit', 'sharjahAdminFee'));
     }
 
     /** Update the global e-Visa (Fluxir) markup percentage. */
@@ -57,6 +62,9 @@ class ManagerVisaPricingController extends Controller
             'visa_ticket_booking_fee' => 'required|numeric|min:0',
             'visa_supplier_email'     => 'nullable|email|max:255',
             'visa_sharjah_deposit'    => 'nullable|numeric|min:0',
+            'visa_sharjah_deposit_admin_fee' => 'nullable|numeric|min:0|lte:visa_sharjah_deposit',
+        ], [
+            'visa_sharjah_deposit_admin_fee.lte' => 'The admin/processing fee cannot be greater than the security deposit.',
         ]);
 
         $company = current_company();
@@ -69,6 +77,11 @@ class ManagerVisaPricingController extends Controller
         // charges nothing. Any positive amount is shown and charged per applicant.
         $settings['visa_sharjah_deposit']    = ($validated['visa_sharjah_deposit'] ?? '') !== ''
             ? (float) $validated['visa_sharjah_deposit']
+            : 0.0;
+        // Deducted from the deposit at refund time. Blank or 0 = the full deposit
+        // is refundable and the fee row is hidden on the frontend.
+        $settings['visa_sharjah_deposit_admin_fee'] = ($validated['visa_sharjah_deposit_admin_fee'] ?? '') !== ''
+            ? (float) $validated['visa_sharjah_deposit_admin_fee']
             : 0.0;
         $company->settings = $settings;
         $company->save();

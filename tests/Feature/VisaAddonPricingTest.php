@@ -214,7 +214,13 @@ class VisaAddonPricingTest extends TestCase
 
         // Sharjah deposit is now admin-configured (no hardcoded default). Set it
         // so this test exercises the deposit calculation at 5000/applicant.
-        $company->settings = array_merge($company->settings ?? [], ['visa_sharjah_deposit' => 5000]);
+        // The admin/processing fee is pinned to 0 explicitly: the refundable
+        // amount is deposit minus that fee, so leaving it to whatever the
+        // environment happens to have configured would make this test flaky.
+        $company->settings = array_merge($company->settings ?? [], [
+            'visa_sharjah_deposit' => 5000,
+            'visa_sharjah_deposit_admin_fee' => 0,
+        ]);
         $company->save();
 
         $emirate = \App\Models\Emirates::create([

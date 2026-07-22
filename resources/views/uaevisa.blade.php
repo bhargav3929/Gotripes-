@@ -975,6 +975,21 @@
                                     A refundable security deposit per applicant is required for Sharjah Visa processing. Please provide the bank details where the deposit should be refunded after departure.
                                 @endif
                             </p>
+                            @if(($sharjahAdminFee ?? 0) > 0)
+                            <p style="color: #ccc; font-size: 12.5px; margin: 0 0 10px 0; line-height: 1.5;">
+                                A non-refundable admin/processing fee of
+                                <strong style="color: #FFD700;">AED {{ number_format($sharjahAdminFee, 2) }} per applicant</strong>
+                                is deducted from the deposit, so
+                                <strong style="color: #22c55e;">AED {{ number_format(max(0, ($sharjahDeposit ?? 0) - $sharjahAdminFee), 2) }} per applicant</strong>
+                                is returned.
+                            </p>
+                            @endif
+                            {{-- Refund timeline — shown for Sharjah regardless of whether an
+                                 amount is configured, since the process is the same either way. --}}
+                            <p style="color: #9a9a9a; font-size: 12.5px; margin: 0; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;">
+                                <i class="bi bi-clock-history" style="color: #FFD700; flex: none; margin-top: 2px;"></i>
+                                <span>The refundable security deposit will be processed within <strong style="color: #ddd;">5–6 working days</strong> after the applicant's exit stamp is received.</span>
+                            </p>
                             <div class="form-grid">
                                 <div class="form-field">
                                     <label class="field-label">Account Holder Name</label>
@@ -1073,6 +1088,10 @@
                     <div class="summary-row" id="depositRow" style="display: none;">
                         <span class="summary-label" style="color: #FFD700;">Security Deposit</span>
                         <span class="summary-value" id="summaryDeposit" style="color: #FFD700;">AED 0.00</span>
+                    </div>
+                    <div class="summary-row" id="adminFeeRow" style="display: none;">
+                        <span class="summary-label" style="color: #9a9a9a;">Admin / Processing Fee</span>
+                        <span class="summary-value" id="summaryAdminFee" style="color: #9a9a9a;">AED 0.00</span>
                     </div>
                     <div class="summary-row" id="refundRow" style="display: none;">
                         <span class="summary-label" style="color: #22c55e;">Refundable Amount</span>
@@ -1291,6 +1310,9 @@
         const HOTEL_BASE = {{ $hotelFee ?? 25 }};   // hotel fee for 1–2 visas
         const TICKET_RATE = {{ $ticketFee ?? 25 }}; // air-ticket assistance fee PER visa
         const SHARJAH_DEPOSIT = {{ $sharjahDeposit ?? 0 }}; // refundable deposit per applicant (admin-configured; 0 = none)
+        // Non-refundable admin/processing fee per applicant, deducted from the deposit
+        // at refund time (admin-configured; 0 = none, and the row stays hidden).
+        const SHARJAH_ADMIN_FEE = {{ min($sharjahAdminFee ?? 0, $sharjahDeposit ?? 0) }};
 
         // Hotel fee steps up with the number of visas (all applicants):
         // 1–2 → base (25), 3–4 → 50, 5–6 → 60, then +10 per extra pair of visas.
@@ -1354,7 +1376,10 @@
             const isSharjah = (selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah');
             const depositUnit = isSharjah ? SHARJAH_DEPOSIT : 0;
             const depositCost = depositUnit * totalPersons;
-            const refundCost = depositCost;
+            // The admin/processing fee is deducted from the deposit at refund time,
+            // so it never changes what the customer pays now — only what comes back.
+            const adminFeeCost = (isSharjah ? SHARJAH_ADMIN_FEE : 0) * totalPersons;
+            const refundCost = Math.max(0, depositCost - adminFeeCost);
 
             const grandTotal = baseVisaTotal + hotelCost + ticketCost + depositCost;
 
@@ -1377,15 +1402,24 @@
             // Show/hide Sharjah deposit and refund rows
             const depRow = document.getElementById('depositRow');
             const refRow = document.getElementById('refundRow');
+            const feeRow = document.getElementById('adminFeeRow');
             if (depRow && refRow) {
                 if (isSharjah) {
                     depRow.style.display = 'flex';
                     refRow.style.display = 'flex';
                     document.getElementById('summaryDeposit').textContent = 'AED ' + depositCost.toFixed(2);
                     document.getElementById('summaryRefund').textContent = 'AED ' + refundCost.toFixed(2);
+                    // Only surface the fee when one is actually configured.
+                    if (feeRow) {
+                        feeRow.style.display = adminFeeCost > 0 ? 'flex' : 'none';
+                        if (adminFeeCost > 0) {
+                            document.getElementById('summaryAdminFee').textContent = '− AED ' + adminFeeCost.toFixed(2);
+                        }
+                    }
                 } else {
                     depRow.style.display = 'none';
                     refRow.style.display = 'none';
+                    if (feeRow) feeRow.style.display = 'none';
                 }
             }
 

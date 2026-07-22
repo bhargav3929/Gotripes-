@@ -387,8 +387,13 @@ Route::get('/uaevisa', function () {
     // message, nothing charged) until a manager configures a positive amount.
     $sharjahDeposit = $company?->getSetting('visa_sharjah_deposit', 0);
     $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0;
+    // Non-refundable admin/processing fee deducted from the deposit at refund
+    // time. Clamped to the deposit so the refundable amount is never negative.
+    $sharjahAdminFee = $company?->getSetting('visa_sharjah_deposit_admin_fee', 0);
+    $sharjahAdminFee = is_numeric($sharjahAdminFee) ? (float) $sharjahAdminFee : 0;
+    $sharjahAdminFee = max(0, min($sharjahAdminFee, $sharjahDeposit));
 
-    return view('uaevisa', compact('activeEmirates', 'pricingData', 'visaData', 'hotelFee', 'ticketFee', 'sharjahDeposit'));
+    return view('uaevisa', compact('activeEmirates', 'pricingData', 'visaData', 'hotelFee', 'ticketFee', 'sharjahDeposit', 'sharjahAdminFee'));
 })->middleware('tenant.feature:visas');
 
 

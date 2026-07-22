@@ -131,8 +131,17 @@ class UAEVisaController extends Controller
         // (no deposit) until a manager sets a positive amount.
         $sharjahDeposit = current_company()?->getSetting('visa_sharjah_deposit', 0);
         $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0.0;
+        // Non-refundable admin/processing fee deducted from the deposit at refund
+        // time. Clamped to the deposit so the refundable amount can never go
+        // negative even if the setting is edited to an inconsistent value.
+        $sharjahAdminFee = current_company()?->getSetting('visa_sharjah_deposit_admin_fee', 0);
+        $sharjahAdminFee = is_numeric($sharjahAdminFee) ? (float) $sharjahAdminFee : 0.0;
+        $sharjahAdminFee = max(0.0, min($sharjahAdminFee, $sharjahDeposit));
+
         $depositAmount = $isSharjah ? $sharjahDeposit : 0.00;
-        $refundAmount = $isSharjah ? $sharjahDeposit : 0.00;
+        // The customer is charged the full deposit; what comes back later is the
+        // deposit minus the admin fee.
+        $refundAmount = $isSharjah ? round($sharjahDeposit - $sharjahAdminFee, 2) : 0.00;
 
         // Resolve every traveller's name up front.
         //

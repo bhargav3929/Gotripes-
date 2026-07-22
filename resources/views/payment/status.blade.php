@@ -186,6 +186,111 @@
             margin-left: 4px;
         }
 
+        /* Sharjah refundable deposit breakdown */
+        .refund-panel {
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.18);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-top: 14px;
+            text-align: left;
+        }
+
+        .refund-panel-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #22c55e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .refund-panel-note {
+            margin-left: auto;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.6px;
+        }
+
+        .refund-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            padding: 7px 0;
+        }
+
+        .refund-row-total {
+            border-top: 1px solid rgba(34, 197, 94, 0.18);
+            margin-top: 6px;
+            padding-top: 11px;
+        }
+
+        .refund-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.62);
+            font-weight: 500;
+        }
+
+        .refund-row-total .refund-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 700;
+        }
+
+        .refund-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
+        }
+
+        .refund-deduction {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .refund-final {
+            font-size: 18px;
+            font-weight: 900;
+            color: #22c55e;
+        }
+
+        .refund-timeline {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin: 12px 0 0;
+            padding-top: 11px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 12px;
+            line-height: 1.55;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .refund-timeline i {
+            color: #22c55e;
+            flex: none;
+            margin-top: 2px;
+        }
+
+        .refund-timeline strong {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        @media (max-width: 480px) {
+            .refund-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+            }
+            .refund-panel-note {
+                display: none;
+            }
+        }
+
         /* Error info */
         .error-card {
             background: rgba(248, 113, 113, 0.06);
@@ -386,6 +491,44 @@
             <div class="amount-row">
                 <span class="amount-label">Amount</span>
                 <span class="amount-value">{{ number_format((float)($response['amount'] ?? 0), 2) }}<small>{{ $response['currency'] ?? 'AED' }}</small></span>
+            </div>
+            @endif
+
+            {{-- Sharjah security deposit refund breakdown. Only present when the
+                 order is a visa carrying a deposit; all figures are per applicant
+                 and come from the values stored on the application at submit. --}}
+            @if (!empty($response['deposit_amount']))
+            @php
+                $depCurrency = $response['currency'] ?? 'AED';
+                $depFee = (float) ($response['deposit_admin_fee'] ?? 0);
+            @endphp
+            <div class="refund-panel">
+                <div class="refund-panel-title">
+                    <i class="bi bi-arrow-counterclockwise"></i> Refundable Security Deposit
+                    <span class="refund-panel-note">per applicant</span>
+                </div>
+
+                <div class="refund-row">
+                    <span class="refund-label">Security Deposit</span>
+                    <span class="refund-value">{{ $depCurrency }} {{ number_format((float) $response['deposit_amount'], 2) }}</span>
+                </div>
+
+                @if ($depFee > 0)
+                <div class="refund-row">
+                    <span class="refund-label">Admin / Processing Fee</span>
+                    <span class="refund-value refund-deduction">− {{ $depCurrency }} {{ number_format($depFee, 2) }}</span>
+                </div>
+                @endif
+
+                <div class="refund-row refund-row-total">
+                    <span class="refund-label">Final Refundable Amount</span>
+                    <span class="refund-value refund-final">{{ $depCurrency }} {{ number_format((float) ($response['deposit_refundable'] ?? 0), 2) }}</span>
+                </div>
+
+                <p class="refund-timeline">
+                    <i class="bi bi-clock-history"></i>
+                    <span>The refundable security deposit will be processed within <strong>5–6 working days</strong> after the applicant's exit stamp is received.</span>
+                </p>
             </div>
             @endif
         </div>
