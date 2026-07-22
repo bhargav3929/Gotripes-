@@ -1,3 +1,23 @@
+@php
+    /*
+     |--------------------------------------------------------------------------
+     | Transport option toggle
+     |--------------------------------------------------------------------------
+     | Customers currently book tickets only, so the transport dropdown is
+     | hidden. Nothing else was removed: the <select> still ships in the DOM
+     | (the modal JS holds a hard reference to it), the per-emirate transport
+     | prices still come back from /activity/prices, and the controller still
+     | prices and stores `transfer` exactly as before.
+     |
+     | While hidden, the field submits `without_transfer`, which satisfies the
+     | server-side `'transfer' => 'required'` rule and maps to a transport
+     | charge of 0, so totals are unchanged.
+     |
+     | To re-enable: set this to true. No other change is needed.
+     */
+    $transportEnabled = false;
+@endphp
+
 <div class="modal fade" id="activityBookingModal" tabindex="-1" aria-labelledby="activityBookingModalLabel" aria-hidden="true" style="z-index: 10001;">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
@@ -98,16 +118,19 @@
                                         <input type="text" name="address" class="form-control-premium" placeholder="Pick-up Address / Hotel Name">
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                {{-- Transport option — hidden while $transportEnabled is false (see top of file).
+                                     The element stays in the DOM: the modal JS references it by id and would
+                                     throw before modal.show() if it were removed. --}}
+                                <div class="col-12" @unless($transportEnabled) style="display: none;" aria-hidden="true" @endunless>
                                     <div class="input-group-premium">
                                         <i class="bi bi-truck text-warning"></i>
-                                        <select class="form-control-premium" name="transfer" id="modalTransferSelect" required>
+                                        <select class="form-control-premium" name="transfer" id="modalTransferSelect" @if($transportEnabled) required @else tabindex="-1" @endif>
                                             <option value="">-- Select Transport Option --</option>
                                             <option value="abu_dhabi">Transport within Abu Dhabi</option>
                                             <option value="dubai">Transport within Dubai</option>
                                             <option value="abu_dhabi_to_dubai">Abu Dhabi ⇄ Dubai</option>
                                             <option value="any_emirates">Any Emirates</option>
-                                            <option value="without_transfer">Without Transport</option>
+                                            <option value="without_transfer" @unless($transportEnabled) selected @endunless>Without Transport</option>
                                         </select>
                                     </div>
                                 </div>
@@ -911,6 +934,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const bookingForm = document.getElementById('activityBookingForm');
     const transferSelect = document.getElementById('modalTransferSelect');
     const bookBtn = document.getElementById('modalBookNowBtn');
+
+    // Transport toggle (see the @php block at the top of this partial). When the
+    // field is hidden we reset it to 'without_transfer' rather than '' so the
+    // required rule on the server still passes and transport costs stay at 0.
+    const TRANSPORT_ENABLED = @json($transportEnabled);
+    const TRANSFER_DEFAULT = TRANSPORT_ENABLED ? '' : 'without_transfer';
     
     // Open modal and fetch data
     window.openActivityBookingModal = function(id, name) {
@@ -918,7 +947,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modalActivityId').value = id;
         document.getElementById('modalActivityName').textContent = name;
         document.getElementById('modalPriceSummary').style.display = 'none';
-        transferSelect.value = '';
+        transferSelect.value = TRANSFER_DEFAULT;
         
         // Reset step indicator to step 1
         updateStepIndicator(1);
