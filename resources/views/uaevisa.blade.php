@@ -826,7 +826,12 @@
                         <div class="pp-scan-actions">
                             <label class="pp-scan-btn pp-scan-btn--primary" id="ppScanBtnLabel">
                                 <i class="bi bi-cloud-arrow-up"></i> <span id="ppScanLabel">Upload</span>
-                                <input type="file" id="ppScanFile" accept="image/jpeg,image/png,image/jpg,image/webp" hidden>
+                                {{-- Broad accept on purpose: with a narrow MIME list iOS may not
+                                     offer the photo library, and it is the broad form that makes
+                                     Safari transcode HEIC to JPEG on pick. HEIC that still slips
+                                     through is converted server-side, or rejected with a clear
+                                     message. Type and size are checked in JS before upload. --}}
+                                <input type="file" id="ppScanFile" accept="image/*,.heic,.heif" hidden>
                             </label>
                             <button type="button" class="pp-scan-btn pp-scan-cam" id="ppCamBtn">
                                 <i class="bi bi-camera"></i> Camera
@@ -1269,7 +1274,7 @@
                             <div class="form-field">
                                 <label class="field-label">Passport Copy</label>
                                 <div class="file-input-wrapper">
-                                    <input type="file" name="passport_copy[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this); if (typeof window.handlePassportUpload === 'function') window.handlePassportUpload(this, ${i});">
+                                    <input type="file" name="passport_copy[]" class="file-input-real" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,image/*" required onchange="updateFileName(this); if (typeof window.handlePassportUpload === 'function') window.handlePassportUpload(this, ${i});">
                                     <div class="file-input-custom">
                                         <span class="file-name">Upload passport (PDF/Image)...</span>
                                         <i class="bi bi-cloud-arrow-up-fill file-icon"></i>
@@ -1588,9 +1593,25 @@
         window.handlePassportUpload = function(input, index) {
             if (!input.files || input.files.length === 0) return;
             const file = input.files[0];
-            
+
             const card = document.getElementById(`applicant-box-${index}`);
             if (!card) return;
+
+            // A PDF is a valid passport *copy* but cannot be scanned, so skip the
+            // scan silently rather than showing an error for a legitimate upload.
+            const isPdf = (file.type || '').toLowerCase() === 'application/pdf'
+                || (file.name || '').toLowerCase().endsWith('.pdf');
+            if (isPdf) return;
+
+            // Same format/size guard as the scan panel, so the customer gets the
+            // real reason instead of a generic failure after a long upload.
+            if (typeof window.passportFileError === 'function') {
+                const preflight = window.passportFileError(file);
+                if (preflight) {
+                    revealNameFields(index, preflight);
+                    return;
+                }
+            }
             
             const firstNameInput = card.querySelector('.app-first-name');
             const lastNameInput = card.querySelector('.app-last-name');
@@ -1649,8 +1670,10 @@
                         revealNameFields(index, "We couldn't read the name on this passport — please enter it below.");
                     }
                 } else {
-                    // OCR returned no usable data.
-                    revealNameFields(index, "We couldn't read this passport — please enter the traveller's name below.");
+                    // OCR returned no usable data. Prefer the server's reason
+                    // (wrong format, too large) over the generic fallback.
+                    revealNameFields(index, data.message
+                        || "We couldn't read this passport — please enter the traveller's name below.");
                 }
             })
             .catch(err => {
@@ -1891,8 +1914,50 @@
     // catch reports "Passport scan is unavailable" for a scan that succeeded.
     window.selectNationality = selectNationality;
 
+    // Shared pre-flight check for both upload paths (this panel and the
+    // per-applicant passport copy field). Catching format and size here means the
+    // customer gets a specific reason instantly, instead of waiting on an upload
+    // that the server was always going to refuse.
+    // Returns null when the file is fine, or a message to show.
+    window.passportFileError = function (file) {
+        if (!file) return null;
+
+        const MAX_BYTES = 15 * 1024 * 1024; // keep in step with MAX_UPLOAD_KB
+        const name = (file.name || '').toLowerCase();
+        const type = (file.type || '').toLowerCase();
+        const ext = name.includes('.') ? name.split('.').pop() : '';
+
+        // PDFs are accepted as a passport *copy* attachment but cannot be scanned.
+        if (type === 'application/pdf' || ext === 'pdf') {
+            return 'PDFs cannot be scanned. Please upload a JPG or PNG photo of the passport page.';
+        }
+
+        const okExt = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+        const looksImage = type.startsWith('image/') || okExt.includes(ext);
+        if (!looksImage) {
+            return 'Please upload a JPG or PNG image.';
+        }
+
+        if (file.size > MAX_BYTES) {
+            const mb = (file.size / (1024 * 1024)).toFixed(1);
+            return `That image is ${mb} MB — too large to scan. Please upload a photo under 15 MB.`;
+        }
+
+        return null;
+    };
+
     function runScan(file) {
         if (!file) return;
+
+        const preflight = window.passportFileError(file);
+        if (preflight) {
+            result.style.display = 'block';
+            result.innerHTML = '<span class="err"><i class="bi bi-x-circle"></i> ' + preflight + '</span>';
+            label.textContent = 'Upload';
+            if (fileInput) fileInput.value = '';
+            return;
+        }
+
         label.textContent = 'Scanning…';
         result.style.display = 'block';
         result.innerHTML = '<span class="warn"><i class="bi bi-hourglass-split"></i> Reading passport…</span>';
@@ -1946,9 +2011,18 @@
                 result.innerHTML = `<span class="err"><i class="bi bi-x-circle"></i> ${d.message || 'Could not read the passport. Try a clearer photo.'}</span>`;
             }
         })
-        .catch(() => {
+        .catch((err) => {
             label.textContent = 'Upload';
-            result.innerHTML = '<span class="err">Network error. Please try again.</span>';
+            // Log it: this catch also swallows any exception thrown inside the
+            // .then chain above, and silently reporting those as "network error"
+            // is how a scope bug once masqueraded as a connectivity problem.
+            console.error('Passport scan failed:', err);
+            const offline = (typeof navigator !== 'undefined' && navigator.onLine === false);
+            result.innerHTML = '<span class="err"><i class="bi bi-x-circle"></i> ' +
+                (offline
+                    ? 'You appear to be offline. Check your connection and try again.'
+                    : 'Could not reach the scanning service. Please try again, or enter the details manually.') +
+                '</span>';
         });
     }
 
@@ -1969,9 +2043,23 @@
     }
     if (camBtn) {
         camBtn.addEventListener('click', function () {
+            result.style.display = 'block';
+
+            // getUserMedia only exists in a secure context. Over plain HTTP the API
+            // is simply absent, which is indistinguishable from "old browser"
+            // unless we check — and in-app browsers (Instagram, Facebook, some
+            // WhatsApp versions) commonly strip it too.
+            if (typeof window.isSecureContext !== 'undefined' && !window.isSecureContext) {
+                result.innerHTML = '<span class="err"><i class="bi bi-x-circle"></i> The camera needs a secure (https) connection. Please use Upload instead.</span>';
+                return;
+            }
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                result.style.display = 'block';
-                result.innerHTML = '<span class="err">Camera not supported on this browser — please use Upload.</span>';
+                const inApp = /FBAN|FBAV|Instagram|Line\/|Twitter/i.test(navigator.userAgent || '');
+                result.innerHTML = '<span class="err"><i class="bi bi-x-circle"></i> ' +
+                    (inApp
+                        ? 'Your in-app browser blocks the camera. Open this page in Chrome or Safari, or use Upload.'
+                        : 'Camera is not supported on this browser — please use Upload.') +
+                    '</span>';
                 return;
             }
             // Prefer the rear camera (phones) but fall back to any camera (desktop webcams).
@@ -1980,11 +2068,27 @@
                 .then(function (s) { stream = s; video.srcObject = s; modal.style.display = 'flex'; })
                 .catch(function (err) {
                     result.style.display = 'block';
-                    const denied = err && (err.name === 'NotAllowedError' || err.name === 'SecurityError');
-                    result.innerHTML = '<span class="err">' +
-                        (denied ? 'Camera permission was blocked. Allow camera access in your browser, or use Upload.'
-                                : 'No camera found — please use Upload instead.') +
-                        '</span>';
+                    console.error('Camera unavailable:', err);
+                    const name = (err && err.name) || '';
+                    let msg;
+                    switch (name) {
+                        case 'NotAllowedError':
+                        case 'SecurityError':
+                            msg = 'Camera permission was blocked. Allow camera access for this site in your browser settings, then try again — or use Upload.';
+                            break;
+                        case 'NotFoundError':
+                        case 'OverconstrainedError':
+                            msg = 'No camera was found on this device — please use Upload instead.';
+                            break;
+                        case 'NotReadableError':
+                        case 'AbortError':
+                            // Windows/Android will not share one camera between apps.
+                            msg = 'The camera is already in use by another app. Close it and try again, or use Upload.';
+                            break;
+                        default:
+                            msg = 'The camera could not be started — please use Upload instead.';
+                    }
+                    result.innerHTML = '<span class="err"><i class="bi bi-x-circle"></i> ' + msg + '</span>';
                 });
         });
         captureBtn.addEventListener('click', function () {
