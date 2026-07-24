@@ -78,6 +78,7 @@ Route::prefix('/')->group(function () {
     Route::get('umrah-visas', [\App\Http\Controllers\UmrahController::class, 'index'])->name('umrah-visas.index');
     Route::get('umrah-visas/{id}', [\App\Http\Controllers\UmrahController::class, 'show'])->name('umrah-visas.show');
     Route::post('umrah-visas/{id}/checkout', [\App\Http\Controllers\UmrahController::class, 'checkout'])->name('umrah-visas.checkout');
+    Route::post('umrah-visas/passport-upload', [\App\Http\Controllers\UmrahController::class, 'uploadPassport'])->name('umrah-visas.passport-upload');
     Route::get('saudi-visas', [\App\Http\Controllers\SaudiVisaController::class, 'index'])->name('saudi-visa.index');
     Route::post('saudi-visa/submit', [\App\Http\Controllers\SaudiVisaController::class, 'submit'])->name('saudi-visa.submit');
 
