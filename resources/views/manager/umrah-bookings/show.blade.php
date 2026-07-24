@@ -116,6 +116,7 @@
                             <th>Nationality</th>
                             <th>Passport No.</th>
                             <th>Date of Birth</th>
+                            <th>Passport Copy</th>
                             <th>Type</th>
                         </tr>
                     </thead>
@@ -125,8 +126,22 @@
                             <td>{{ $i + 1 }}</td>
                             <td>{{ $pax['name'] ?? '—' }}</td>
                             <td>{{ $pax['nationality'] ?? '—' }}</td>
-                            <td><code style="font-size:11px;">{{ $pax['passport_number'] ?? '—' }}</code></td>
+                            {{-- The booking form posts `passport_no`; this column read
+                                 `passport_number` and so showed "—" for every booking
+                                 ever made. Both keys are accepted now so older records
+                                 keep rendering. --}}
+                            <td><code style="font-size:11px;">{{ $pax['passport_no'] ?? $pax['passport_number'] ?? '—' }}</code></td>
                             <td>{{ $pax['dob'] ?? '—' }}</td>
+                            <td>
+                                @if(!empty($pax['passport_copy']))
+                                    <a href="{{ asset('storage/' . $pax['passport_copy']) }}" target="_blank" rel="noopener"
+                                       style="color:var(--wp-primary); font-size:12px;">
+                                        <i class="fas fa-file-arrow-down"></i> View
+                                    </a>
+                                @else
+                                    —
+                                @endif
+                            </td>
                             <td>
                                 <span class="wp-badge" style="font-size:10px; background:rgba(255,215,0,0.1); color:var(--wp-primary);">
                                     {{ ucfirst($pax['type'] ?? 'adult') }}
