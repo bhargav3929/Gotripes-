@@ -181,6 +181,23 @@
   })();
 </script>
 <!--End of Tawk.to Script-->
+
+{{-- Keep the chat bubble clear of the sticky booking bars.
+
+     On phones the widget sits bottom-right at the exact spot where the Umrah
+     "Book Now" and Saudi-visa "Pay" bars put their button, and the chat iframe
+     wins the tap. Customers were pressing the chat bubble while trying to book.
+
+     Tawk positions its iframes with inline styles, so this needs !important. --}}
+<style>
+@media (max-width: 1100px) {
+    iframe[title*="chat" i],
+    iframe[id^="tawk"],
+    .tawk-min-container {
+        bottom: 88px !important;
+    }
+}
+</style>
 @php
     $footerCompanyName = (isset($company) && $company && $company->name) ? $company->name : 'Go Trips';
     $footerLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
