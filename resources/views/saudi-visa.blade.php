@@ -749,80 +749,40 @@
                 <form id="saudiVisaForm" action="{{ route('saudi-visa.submit') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    {{-- Section 1: Applicant Details --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-title">
-                                <span class="section-badge"><i class="bi bi-person-fill"></i></span>
-                                Applicant Details
-                            </div>
-                            <button type="button" class="btn btn-sm btn-outline-warning" id="triggerScanBtn"
-                                style="font-size: 10.5px; padding: 4px 10px; border-radius: 7px; font-weight: 700; letter-spacing: 0.5px;">
-                                <i class="bi bi-camera me-1"></i> Scan Passport
-                            </button>
-                        </div>
-
-                        <input type="file" id="ocrScannerInput" accept="image/*,application/pdf" style="display: none;">
-                        <div class="scan-result-card" id="scanStatusCard"></div>
-
-                        <div class="form-grid">
-                            <div class="form-field">
-                                <label class="field-label">First Name *</label>
-                                <input type="text" name="first_name" id="first_name" class="field-input app-first-name" required placeholder="John">
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Last Name (Surname) *</label>
-                                <input type="text" name="last_name" id="last_name" class="field-input app-last-name" required placeholder="Doe">
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Passport Number *</label>
-                                <input type="text" name="passport_number" id="passport_number" class="field-input app-passport-number" required placeholder="L1234567">
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Date of Birth *</label>
-                                <input type="date" name="dob" id="dob" class="field-input app-dob" required>
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Passport Expiry *</label>
-                                <input type="date" name="passport_expiry" id="passport_expiry" class="field-input" required>
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Gender *</label>
-                                <select name="gender" id="gender" class="field-input app-gender" required>
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Section 2: Contact & Visa Options --}}
+                    {{-- Section 1: Contact & Visa Options --}}
                     <div class="form-section">
                         <div class="section-header">
                             <div class="section-title">
                                 <span class="section-badge"><i class="bi bi-envelope-fill"></i></span>
-                                Contact & Visa Options
+                                Your Details
                             </div>
                         </div>
 
+                        {{-- Passport details are never typed. They are read from the
+                             passport copy uploaded below (and from an optional early
+                             scan), then posted in these hidden fields. Anything the
+                             scan cannot read is filled in server-side after
+                             submission, so a poor photo never blocks a booking. --}}
+                        <input type="hidden" name="first_name" id="first_name">
+                        <input type="hidden" name="last_name" id="last_name">
+                        <input type="hidden" name="passport_number" id="passport_number">
+                        <input type="hidden" name="dob" id="dob">
+                        <input type="hidden" name="passport_expiry" id="passport_expiry">
+                        <input type="hidden" name="gender" id="gender">
+                        <input type="hidden" name="nationality" id="nationality">
+
                         <div class="form-grid">
                             <div class="form-field">
+                                <label class="field-label">Full Name *</label>
+                                <input type="text" name="full_name" id="full_name" class="field-input" required placeholder="John Doe" autocomplete="name">
+                            </div>
+                            <div class="form-field">
                                 <label class="field-label">Email Address *</label>
-                                <input type="email" name="email" id="email" class="field-input" required placeholder="john.doe@example.com">
+                                <input type="email" name="email" id="email" class="field-input" required placeholder="john.doe@example.com" autocomplete="email">
                             </div>
                             <div class="form-field">
                                 <label class="field-label">WhatsApp Number *</label>
-                                <input type="tel" name="phone" id="phone" class="field-input" required>
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Nationality *</label>
-                                <select name="nationality" id="nationality" class="field-input" required>
-                                    <option value="">Select Nationality</option>
-                                    @foreach(\App\Support\CountryCodes::all() as $c)
-                                        <option value="{{ $c['name'] }}">{{ $c['name'] }}</option>
-                                    @endforeach
-                                </select>
+                                <input type="tel" name="phone" id="phone" class="field-input" required autocomplete="tel">
                             </div>
                             <div class="form-field">
                                 <label class="field-label">Visa Type *</label>
@@ -847,7 +807,7 @@
                         </div>
                     </div>
 
-                    {{-- Section 3: Document Uploads --}}
+                    {{-- Section 2: Document Uploads --}}
                     <div class="form-section">
                         <div class="section-header">
                             <div class="section-title">
@@ -856,6 +816,13 @@
                             </div>
                         </div>
 
+                        <p style="color: #9a9a9a; font-size: 12.5px; margin: 0 0 12px; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;">
+                            <i class="bi bi-magic" style="color: var(--c-gold); flex: none; margin-top: 2px;"></i>
+                            <span>Passport details are read automatically from the copy you upload — there is nothing to type in.</span>
+                        </p>
+
+                        <div class="scan-result-card" id="scanStatusCard"></div>
+
                         <div class="file-upload-container">
                             <div class="form-field">
                                 <label class="field-label">Passport Copy *</label>
@@ -863,7 +830,7 @@
                                     <i class="bi bi-file-earmark-pdf-fill file-icon"></i>
                                     <span class="file-text">Passport Copy</span>
                                     <span class="file-sub">PDF or Image, max 4MB</span>
-                                    <input type="file" name="passport_copy" id="passport_copy" required accept="image/*,application/pdf" onchange="updateFileName(this, 'fileBoxPassport')">
+                                    <input type="file" name="passport_copy" id="passport_copy" required accept="image/*,application/pdf" onchange="updateFileName(this, 'fileBoxPassport'); if (typeof window.scanPassportCopy === 'function') window.scanPassportCopy(this);">
                                     <span class="file-name-span" id="span_passport_copy"></span>
                                 </div>
                             </div>
@@ -890,7 +857,7 @@
                         </div>
                     </div>
 
-                    {{-- Section 4: Terms & Conditions --}}
+                    {{-- Section 3: Terms & Conditions --}}
                     <div class="form-section">
                         <div class="section-header">
                             <div class="section-title">
@@ -959,8 +926,8 @@
                             <span class="sum-val" id="summaryVisaType">—</span>
                         </div>
                         <div class="sum-row">
-                            <span class="sum-label">Nationality</span>
-                            <span class="sum-val" id="summaryNationality">—</span>
+                            <span class="sum-label">Applicant</span>
+                            <span class="sum-val" id="summaryApplicant">—</span>
                         </div>
                         <div class="sum-row">
                             <span class="sum-label">Processing</span>
@@ -1040,27 +1007,15 @@
             });
         }
 
-        // Nationality TomSelect
+        // Nationality is no longer asked for — it is read off the passport and
+        // posted in a hidden field.
         const natEl = document.getElementById('nationality');
-        let nationalitySelect = null;
-        if (natEl && typeof TomSelect !== 'undefined') {
-            nationalitySelect = new TomSelect(natEl, {
-                create: false,
-                placeholder: 'Select Nationality',
-                controlInput: '<input>',
-                render: {
-                    no_results: function(data, escape) {
-                        return '<div class="no-results" style="padding: 8px 14px; color: #888;">No nationality found for "' + escape(data.input) + '"</div>';
-                    }
-                }
-            });
-            window.nationalityTomSelect = nationalitySelect;
-        }
+        const fullNameEl = document.getElementById('full_name');
 
         // Pricing Summary fields
         const visaTypeSelect = document.getElementById('saudi_visa_type_id');
         const summaryVisaType = document.getElementById('summaryVisaType');
-        const summaryNationality = document.getElementById('summaryNationality');
+        const summaryApplicant = document.getElementById('summaryApplicant');
         const summaryProcessing = document.getElementById('summaryProcessing');
         const summaryVisaFee = document.getElementById('summaryVisaFee');
         const summaryTotal = document.getElementById('summaryTotal');
@@ -1073,10 +1028,8 @@
 
         function updateSummary() {
             const selectedOpt = visaTypeSelect.options[visaTypeSelect.selectedIndex];
-            
-            // Update Nationality
-            const natVal = natEl.value;
-            summaryNationality.textContent = natVal || '—';
+
+            summaryApplicant.textContent = (fullNameEl && fullNameEl.value.trim()) || '—';
 
             if (selectedOpt && selectedOpt.value !== '') {
                 const visaName = selectedOpt.text.split('(')[0].trim();
@@ -1116,120 +1069,95 @@
         }
 
         if (visaTypeSelect) visaTypeSelect.addEventListener('change', updateSummary);
-        if (natEl) {
-            if (nationalitySelect) {
-                nationalitySelect.on('change', updateSummary);
-            } else {
-                natEl.addEventListener('change', updateSummary);
-            }
-        }
+        if (fullNameEl) fullNameEl.addEventListener('input', updateSummary);
 
-        // OCR Scanning logic
-        const triggerScanBtn = document.getElementById('triggerScanBtn');
-        const ocrScannerInput = document.getElementById('ocrScannerInput');
+        // Read the passport details straight off the uploaded copy. The customer
+        // never types them, so a failed scan is not an error they have to fix —
+        // the server reads the same file again after submission.
         const scanStatusCard = document.getElementById('scanStatusCard');
 
-        if (triggerScanBtn && ocrScannerInput) {
-            triggerScanBtn.addEventListener('click', function () {
-                ocrScannerInput.click();
-            });
-
-            ocrScannerInput.addEventListener('change', function () {
-                if (!ocrScannerInput.files || ocrScannerInput.files.length === 0) return;
-                const file = ocrScannerInput.files[0];
-
-                // Show scanning status
-                scanStatusCard.className = 'scan-result-card scanning';
-                scanStatusCard.style.display = 'block';
-                scanStatusCard.innerHTML = '<span><i class="bi bi-hourglass-split"></i> Scanning passport image...</span>';
-
-                const token = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
-                const fd = new FormData();
-                fd.append('passport', file);
-                fd.append('_token', token);
-
-                fetch("{{ route('passport.extract') }}", {
-                    method: 'POST',
-                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
-                    body: fd
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.fields) {
-                        const f = data.fields;
-                        
-                        // Fill name
-                        const first_name = document.getElementById('first_name');
-                        const last_name = document.getElementById('last_name');
-                        if (first_name && (f.given_names || f.full_name)) {
-                            first_name.value = f.given_names || f.full_name;
-                        }
-                        if (last_name && f.surname) {
-                            last_name.value = f.surname;
-                        }
-
-                        // Passport number
-                        const passport_number = document.getElementById('passport_number');
-                        if (passport_number && f.passport_number) {
-                            passport_number.value = f.passport_number;
-                        }
-
-                        // Date of Birth
-                        const dob = document.getElementById('dob');
-                        if (dob && f.date_of_birth) {
-                            dob.value = f.date_of_birth;
-                        }
-
-                        // Expiry Date
-                        const passport_expiry = document.getElementById('passport_expiry');
-                        if (passport_expiry && f.date_of_expiry) {
-                            passport_expiry.value = f.date_of_expiry;
-                        }
-
-                        // Gender
-                        const gender = document.getElementById('gender');
-                        if (gender && f.sex) {
-                            const sex = String(f.sex).toLowerCase();
-                            if (sex.startsWith('m')) gender.value = 'Male';
-                            else if (sex.startsWith('f')) gender.value = 'Female';
-                        }
-
-                        // Nationality
-                        if (f.nationality) {
-                            const cands = [f.issuing_country, f.nationality].filter(Boolean);
-                            const opts = Array.from(natEl.options);
-                            let foundNat = null;
-                            for (let raw of cands) {
-                                let c = String(raw).trim().toLowerCase();
-                                if (NAT_MAP[c]) c = NAT_MAP[c].toLowerCase();
-                                let opt = opts.find(o => o.value.toLowerCase() === c);
-                                if (!opt) opt = opts.find(o => o.value.toLowerCase().includes(c));
-                                if (opt) {
-                                    natEl.value = opt.value;
-                                    if (nationalitySelect) {
-                                        nationalitySelect.setValue(opt.value);
-                                    }
-                                    foundNat = opt.value;
-                                    break;
-                                }
-                            }
-                        }
-
-                        scanStatusCard.className = 'scan-result-card success';
-                        scanStatusCard.innerHTML = '<span><i class="bi bi-check-circle-fill"></i> Passport scanned successfully! Fields auto-filled.</span>';
-                        updateSummary();
-                    } else {
-                        scanStatusCard.className = 'scan-result-card error';
-                        scanStatusCard.innerHTML = '<span><i class="bi bi-exclamation-triangle-fill"></i> OCR scan failed. Please type details manually.</span>';
-                    }
-                })
-                .catch(err => {
-                    scanStatusCard.className = 'scan-result-card error';
-                    scanStatusCard.innerHTML = '<span><i class="bi bi-exclamation-triangle-fill"></i> Scanning error. Please enter details manually.</span>';
-                    console.error('OCR Error:', err);
-                });
-            });
+        function setScanStatus(state, icon, message) {
+            if (!scanStatusCard) return;
+            scanStatusCard.className = 'scan-result-card ' + state;
+            scanStatusCard.style.display = 'block';
+            scanStatusCard.innerHTML = '<span><i class="bi bi-' + icon + '"></i> ' + message + '</span>';
         }
+
+        window.scanPassportCopy = function (input) {
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
+
+            // A PDF is a valid passport copy but cannot be scanned in the browser.
+            // The server reads it after submission, so say so rather than warn.
+            const isPdf = (file.type || '').toLowerCase() === 'application/pdf'
+                || (file.name || '').toLowerCase().endsWith('.pdf');
+            if (isPdf) {
+                setScanStatus('scanning', 'info-circle-fill', 'We will read the passport details from your PDF after you submit.');
+                return;
+            }
+
+            setScanStatus('scanning', 'hourglass-split', 'Reading passport details…');
+
+            const token = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+            const fd = new FormData();
+            fd.append('passport', file);
+            fd.append('_token', token);
+
+            fetch("{{ route('passport.extract') }}", {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                body: fd
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.fields) {
+                    setScanStatus('scanning', 'info-circle-fill', 'We will read the passport details after you submit.');
+                    return;
+                }
+
+                const f = data.fields;
+                const set = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el && value) el.value = value;
+                };
+
+                set('first_name', f.given_names || f.full_name);
+                set('last_name', f.surname || f.given_names || f.full_name);
+                set('passport_number', f.passport_number);
+                set('dob', f.date_of_birth);
+                set('passport_expiry', f.date_of_expiry);
+
+                if (f.sex) {
+                    const sex = String(f.sex).toLowerCase();
+                    if (sex.startsWith('m')) set('gender', 'Male');
+                    else if (sex.startsWith('f')) set('gender', 'Female');
+                }
+
+                // Nationality is stored as free text now that the dropdown is gone.
+                // Map the common adjective forms so the portal shows a country.
+                const rawNat = f.nationality || f.issuing_country;
+                if (rawNat && natEl) {
+                    const key = String(rawNat).trim().toLowerCase();
+                    natEl.value = NAT_MAP[key]
+                        ? NAT_MAP[key].replace(/\b\w/g, c => c.toUpperCase())
+                        : String(rawNat).trim();
+                }
+
+                // Offer the scanned name when the customer has not typed one yet.
+                const scannedName = f.full_name
+                    || [f.given_names, f.surname].filter(Boolean).join(' ');
+                if (fullNameEl && !fullNameEl.value.trim() && scannedName) {
+                    fullNameEl.value = scannedName;
+                }
+
+                setScanStatus('success', 'check-circle-fill', 'Passport details read successfully.');
+                updateSummary();
+            })
+            .catch(err => {
+                console.error('Passport scan failed:', err);
+                setScanStatus('scanning', 'info-circle-fill', 'We will read the passport details after you submit.');
+            });
+        };
 
         // Submitting form: intercept, send via fetch, then redirect to checkout URL
         const form = document.getElementById('saudiVisaForm');
