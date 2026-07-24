@@ -917,15 +917,15 @@
                         </div>
                     </div>
 
-                    {{-- Universal Applicant Section --}}
+                    {{-- Booking contact — the only details the customer types. --}}
                     <div id="universalApplicantSection" style="margin-top: 12px;">
-                        <div class="section-label" id="applicantSectionLabel" style="display: none; margin-bottom: 8px;">
-                            <i class="bi bi-person-fill"></i> Applicant Details
+                        <div class="section-label" id="applicantSectionLabel" style="margin-bottom: 8px;">
+                            <i class="bi bi-person-fill"></i> Booking Contact
                         </div>
-                        <div class="form-grid" id="applicantGrid">
-                            <div class="form-field" id="applicantNameField" style="display: none;">
+                        <div class="form-grid-3" id="applicantGrid">
+                            <div class="form-field" id="applicantNameField">
                                 <label class="field-label">Full Name <span style="color: var(--c-gold);">*</span></label>
-                                <input type="text" class="field-input" name="applicant_name" id="applicantNameInput" placeholder="Enter applicant's full name">
+                                <input type="text" class="field-input" name="applicant_name" id="applicantNameInput" placeholder="Lead traveller's full name" autocomplete="name" required>
                             </div>
                             <div class="form-field">
                                 <label class="field-label">Email Address <span style="color: var(--c-gold);">*</span></label>
@@ -960,6 +960,11 @@
                     <div class="section-label">
                         <i class="bi bi-cloud-arrow-up-fill"></i> Document Uploads
                     </div>
+
+                    <p style="color: #9a9a9a; font-size: 12.5px; margin: -4px 0 12px; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;">
+                        <i class="bi bi-magic" style="color: var(--c-gold); flex: none; margin-top: 2px;"></i>
+                        <span>Passport details for every traveller are read automatically from the copies you upload — there is nothing to type in.</span>
+                    </p>
 
                     <!-- APPLICANTS CONTAINER -->
                     <div id="applicantsContainer">
@@ -1211,7 +1216,6 @@
         function generateApplicants(adults, children, infants) {
             applicantsContainer.innerHTML = '';
             const total = adults + children + infants;
-            const isSharjah = selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah';
             for (let i = 0; i < total; i++) {
                 let label, ageField = '';
                 if (i < adults) {
@@ -1243,33 +1247,15 @@
                         <div class="applicant-header">
                             <span><i class="bi bi-person-fill"></i> ${label}</span>
                         </div>
-                        <div class="form-grid app-name-grid" style="margin-bottom: 12px; ${isSharjah ? 'display: none;' : ''}">
-                            <div class="form-field">
-                                <label class="field-label">First Name (Given Names)</label>
-                                <input type="text" name="first_name[]" class="field-input app-first-name" placeholder="As in passport" ${isSharjah ? '' : 'required'}>
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Last Name (Surname)</label>
-                                <input type="text" name="last_name[]" class="field-input app-last-name" placeholder="As in passport" ${isSharjah ? '' : 'required'}>
-                            </div>
-                        </div>
-                        <div class="form-grid-3" style="margin-bottom: 12px;">
-                            <div class="form-field">
-                                <label class="field-label">Passport Number</label>
-                                <input type="text" name="passport_number[]" class="field-input app-passport-number" placeholder="Enter passport number" required>
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Gender</label>
-                                <select name="gender[]" class="field-input app-gender" required>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                            <div class="form-field">
-                                <label class="field-label">Date of Birth</label>
-                                <input type="date" name="dob[]" class="field-input app-dob" required>
-                            </div>
-                        </div>
+                        <!-- Passport details are never typed. They are read from the
+                             passport copy uploaded below and posted in these hidden
+                             fields; whatever the browser scan cannot read is filled
+                             in server-side after submission. -->
+                        <input type="hidden" name="first_name[]" class="app-first-name">
+                        <input type="hidden" name="last_name[]" class="app-last-name">
+                        <input type="hidden" name="passport_number[]" class="app-passport-number">
+                        <input type="hidden" name="gender[]" class="app-gender">
+                        <input type="hidden" name="dob[]" class="app-dob">
                         <div class="form-grid-3">
                             <div class="form-field">
                                 <label class="field-label">Passport Copy</label>
@@ -1307,6 +1293,7 @@
                             ${ageField}
 
                         </div>
+                        <div class="app-scan-note" style="display: none;"></div>
                     </div>`;
                 applicantsContainer.insertAdjacentHTML('beforeend', html);
             }
@@ -1520,32 +1507,8 @@
             updatePrice();
         }
 
-        function updateApplicantSectionVisibility() {
-            const isSharjah = selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah';
-            const nameField = document.getElementById('applicantNameField');
-            const nameInput = document.getElementById('applicantNameInput');
-            const grid = document.getElementById('applicantGrid');
-            const sectionLabel = document.getElementById('applicantSectionLabel');
-            
-            if (isSharjah) {
-                if (nameField) nameField.style.display = 'block';
-                if (nameInput) nameInput.required = true;
-                if (grid) grid.className = 'form-grid-3';
-                if (sectionLabel) sectionLabel.style.display = 'block';
-            } else {
-                if (nameField) nameField.style.display = 'none';
-                if (nameInput) {
-                    nameInput.required = false;
-                    nameInput.value = '';
-                }
-                if (grid) grid.className = 'form-grid';
-                if (sectionLabel) sectionLabel.style.display = 'none';
-            }
-        }
-
         function refreshForm() {
             generateApplicants(getAdults(), getChildren(), getInfants());
-            updateApplicantSectionVisibility();
             updatePrice();
         }
 
@@ -1567,26 +1530,19 @@
             });
         }
 
-        // Reveal (and require) one applicant's name fields — used when OCR cannot
-        // read a passport, so the customer supplies the missing name instead of a
-        // placeholder being saved. Sharjah hides these by default; other emirates
-        // already show them, so this is a no-op there.
-        window.revealNameFields = function (index, message) {
+        // Report on one applicant card how the passport read went. Nothing here is
+        // ever blocking: the customer types no passport details, so a scan that
+        // fails is simply deferred to the server rather than handed back to them.
+        window.setApplicantScanNote = function (index, tone, icon, message) {
             const card = document.getElementById(`applicant-box-${index}`);
             if (!card) return;
-            const grid = card.querySelector('.app-name-grid');
-            if (grid) grid.style.display = '';
-            const fn = card.querySelector('.app-first-name');
-            const ln = card.querySelector('.app-last-name');
-            if (fn) fn.required = true;
-            if (ln) ln.required = true;
-            if (message && grid && !card.querySelector('.app-name-note')) {
-                const note = document.createElement('div');
-                note.className = 'app-name-note';
-                note.style.cssText = 'color:#FFB020;font-size:12.5px;margin:2px 0 10px;display:flex;align-items:center;gap:6px;';
-                note.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i><span>' + message + '</span>';
-                grid.parentNode.insertBefore(note, grid);
-            }
+            const note = card.querySelector('.app-scan-note');
+            if (!note) return;
+
+            const colours = { ok: '#22c55e', info: '#9a9a9a', warn: '#FFB020' };
+            note.style.cssText = 'font-size:12.5px;margin-top:10px;display:flex;align-items:center;gap:6px;color:'
+                + (colours[tone] || colours.info) + ';';
+            note.innerHTML = '<i class="bi bi-' + icon + '"></i><span>' + message + '</span>';
         };
 
         // Handle automated OCR scan on individual passport copy file uploads
@@ -1597,22 +1553,26 @@
             const card = document.getElementById(`applicant-box-${index}`);
             if (!card) return;
 
-            // A PDF is a valid passport *copy* but cannot be scanned, so skip the
-            // scan silently rather than showing an error for a legitimate upload.
+            // A PDF is a valid passport *copy* but cannot be scanned in the
+            // browser. The server reads it after submission, so say so.
             const isPdf = (file.type || '').toLowerCase() === 'application/pdf'
                 || (file.name || '').toLowerCase().endsWith('.pdf');
-            if (isPdf) return;
+            if (isPdf) {
+                setApplicantScanNote(index, 'info', 'info-circle-fill',
+                    'We will read the passport details from your PDF after you submit.');
+                return;
+            }
 
-            // Same format/size guard as the scan panel, so the customer gets the
-            // real reason instead of a generic failure after a long upload.
+            // Same format/size guard as the scan panel, so an image the server was
+            // always going to refuse is not uploaded twice over a phone connection.
             if (typeof window.passportFileError === 'function') {
                 const preflight = window.passportFileError(file);
                 if (preflight) {
-                    revealNameFields(index, preflight);
+                    setApplicantScanNote(index, 'warn', 'exclamation-triangle-fill', preflight);
                     return;
                 }
             }
-            
+
             const firstNameInput = card.querySelector('.app-first-name');
             const lastNameInput = card.querySelector('.app-last-name');
             const passportNumInput = card.querySelector('.app-passport-number');
@@ -1638,12 +1598,12 @@
                 headerText.innerHTML = originalHTML;
                 if (data.success && data.fields) {
                     const f = data.fields;
-                    
+
                     if (firstNameInput && (f.given_names || f.full_name)) {
                         firstNameInput.value = f.given_names || f.full_name;
                     }
-                    if (lastNameInput && f.surname) {
-                        lastNameInput.value = f.surname;
+                    if (lastNameInput && (f.surname || f.given_names || f.full_name)) {
+                        lastNameInput.value = f.surname || f.given_names || f.full_name;
                     }
                     if (passportNumInput && f.passport_number) {
                         passportNumInput.value = f.passport_number;
@@ -1659,27 +1619,40 @@
                             genderInput.value = 'Female';
                         }
                     }
-                    
+
                     // If it is the first applicant, prefill nationality too
                     if (index === 0 && f.nationality && typeof window.selectNationality === 'function') {
                         window.selectNationality(f);
                     }
 
-                    // OCR ran but could not read a name — let the customer type it.
-                    if (firstNameInput && !firstNameInput.value.trim()) {
-                        revealNameFields(index, "We couldn't read the name on this passport — please enter it below.");
+                    // Offer the scanned name as the booking contact when the lead
+                    // traveller's passport is the one being read and the customer
+                    // has not typed a name yet.
+                    const nameInput = document.getElementById('applicantNameInput');
+                    const scannedName = f.full_name
+                        || [f.given_names, f.surname].filter(Boolean).join(' ');
+                    if (index === 0 && nameInput && !nameInput.value.trim() && scannedName) {
+                        nameInput.value = scannedName;
                     }
+
+                    const readName = firstNameInput && firstNameInput.value.trim();
+                    setApplicantScanNote(index, readName ? 'ok' : 'info',
+                        readName ? 'check-circle-fill' : 'info-circle-fill',
+                        readName
+                            ? 'Passport details read successfully.'
+                            : 'We will finish reading this passport after you submit.');
                 } else {
-                    // OCR returned no usable data. Prefer the server's reason
-                    // (wrong format, too large) over the generic fallback.
-                    revealNameFields(index, data.message
-                        || "We couldn't read this passport — please enter the traveller's name below.");
+                    // OCR returned no usable data. The customer types nothing here,
+                    // so this is informational — the server retries on the same file.
+                    setApplicantScanNote(index, 'info', 'info-circle-fill',
+                        'We will read the passport details after you submit.');
                 }
             })
             .catch(err => {
                 headerText.innerHTML = originalHTML;
                 console.error('Passport OCR error:', err);
-                revealNameFields(index, "Passport scan is unavailable — please enter the traveller's name below.");
+                setApplicantScanNote(index, 'info', 'info-circle-fill',
+                    'We will read the passport details after you submit.');
             });
         };
 
@@ -1755,30 +1728,6 @@
                 if (typeof window.showEmirateSelector === 'function') window.showEmirateSelector();
                 alert('Please select which Emirate visa you need before continuing.');
                 return;
-            }
-
-            // Sharjah hides the per-applicant name fields and fills them from passport
-            // OCR. If OCR did not populate a traveller's name, reveal the fields and
-            // stop here so the customer can enter it — never submit a blank name that
-            // the server would otherwise reject (applicant #0 is covered by the
-            // required universal Full Name field).
-            if (selectedEmirateName.toLowerCase() === 'sharjah') {
-                const total = getAdults() + getChildren() + getInfants();
-                const missing = [];
-                for (let i = 1; i < total; i++) {
-                    const card = document.getElementById(`applicant-box-${i}`);
-                    const fn = card ? card.querySelector('.app-first-name') : null;
-                    if (fn && !fn.value.trim()) {
-                        revealNameFields(i, "We couldn't read this passport — please enter the traveller's name.");
-                        missing.push(i);
-                    }
-                }
-                if (missing.length) {
-                    alert('Please enter the traveller name for applicant #' + missing.map(x => x + 1).join(', #') + '.');
-                    const firstCard = document.getElementById(`applicant-box-${missing[0]}`);
-                    if (firstCard) firstCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    return;
-                }
             }
 
             const btn = document.getElementById('submitBtn');

@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\UAEVApplication;
 use App\Models\UAEVisaMaster;
 use App\Models\NomodTransaction;
+use App\Jobs\BackfillPassportDetails;
 use App\Mail\UAEVVisaMail;
 use App\Services\NomodService;
+use App\Services\PassportOcrService;
 use App\Models\UAEVisaPackage;
 use App\Models\UAEVisaPrice;
 use Illuminate\Support\Facades\Log;
@@ -46,7 +48,11 @@ class UAEVisaController extends Controller
             'supporting_document' => 'nullable|array',
             'supporting_document.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
 
-            // Sharjah visa OCR and bank details validation
+            // Passport details are no longer typed by the customer. They arrive
+            // from the browser passport scan (hidden fields) and, for anything it
+            // could not read, from BackfillPassportDetails after the response.
+            // Every rule here is therefore optional — a booking must never be
+            // rejected because a passport could not be read.
             'first_name' => 'nullable|array',
             'first_name.*' => 'nullable|string|max:100',
             'last_name' => 'nullable|array',
@@ -145,50 +151,41 @@ class UAEVisaController extends Controller
 
         // Resolve every traveller's name up front.
         //
-        // Sharjah's simplified form hides the per-applicant name fields and relies
-        // on passport OCR (plus one universal "Full Name" for the primary
-        // applicant) to supply them. If OCR fails and a name is left blank we must
-        // NOT persist a placeholder like "Applicant 2"/"Guest" — reject instead so
-        // the customer can enter it. Other emirates keep their long-standing
-        // behaviour unchanged (names are required in their form; the historical
-        // fallback is preserved so nothing about Dubai/etc. is affected).
-        $resolvedNames = [];
-        $missingNames = [];
-        for ($i = 0; $i < $visaCount; $i++) {
-            $isChildRow = $i >= $adultCount;
-            $label = $isChildRow ? ('Child ' . ($i - $adultCount + 1)) : ('Applicant ' . ($i + 1));
+        // The form no longer asks customers to type passport details for any
+        // emirate: names arrive from the browser passport scan in hidden fields,
+        // and the one name still typed is the lead traveller's, which stands in
+        // for applicant #1. Anything the scan could not read is stored blank and
+        // filled in by BackfillPassportDetails once the response has been sent —
+        // never with a fabricated placeholder like "Applicant 2"/"Guest", which
+        // is indistinguishable from a real name in the operations portal.
+        [$leadFirst, $leadLast] = PassportOcrService::splitFullName(
+            (string) ($validated['applicant_name'] ?? '')
+        );
 
+        $resolvedNames = [];
+        for ($i = 0; $i < $visaCount; $i++) {
             $first = trim((string) $request->input("first_name.$i"));
             $last  = trim((string) $request->input("last_name.$i"));
 
-            if ($isSharjah) {
-                if ($i === 0 && $first === '' && $last === '' && !empty($request->input('applicant_name'))) {
-                    $parts = preg_split('/\s+/', trim($request->input('applicant_name')), 2);
-                    $first = $parts[0] ?? '';
-                    $last  = $parts[1] ?? '';
-                }
+            if ($i === 0 && $first === '' && $last === '') {
+                $first = $leadFirst;
+                $last  = $leadLast;
+            }
 
-                if ($first === '') {
-                    $missingNames[] = $label;
-                } elseif ($last === '') {
-                    // A single-word legal name is valid; mirror it rather than fabricate a surname.
-                    $last = $first;
-                }
-            } else {
-                // Historical fallback — unchanged behaviour for non-Sharjah emirates.
-                $first = $first !== '' ? $first : $label;
-                $last  = $last !== '' ? $last : ($isChildRow ? 'Child' : 'Guest');
+            if ($first !== '' && $last === '') {
+                // A single-word legal name is valid; mirror it rather than fabricate a surname.
+                $last = $first;
             }
 
             $resolvedNames[$i] = ['first' => $first, 'last' => $last];
         }
 
-        if ($isSharjah && !empty($missingNames)) {
+        // The lead traveller is the one person we must be able to name — the
+        // booking confirmation and the payment record are addressed to them.
+        if ($resolvedNames[0]['first'] === '') {
             return response()->json([
                 'success' => false,
-                'message' => 'We could not read the passport name for: ' . implode(', ', $missingNames)
-                    . '. Please enter the traveller name to continue.',
-                'missing_names' => $missingNames,
+                'message' => "Please enter the lead traveller's full name to continue.",
             ], 422);
         }
 
@@ -269,6 +266,23 @@ class UAEVisaController extends Controller
             if (!$firstId)
                 $firstId = $uaev->id;
             $createdRecords[] = $uaev;
+
+            // Read anything the browser scan missed off the uploaded copy. Runs
+            // after the response so the customer reaches checkout immediately.
+            if ($passportCopyPath) {
+                BackfillPassportDetails::dispatch(
+                    UAEVApplication::class,
+                    $uaev->id,
+                    $passportCopyPath,
+                    [
+                        'first_name'      => 'UAEV_first_name',
+                        'last_name'       => 'UAEV_last_name',
+                        'passport_number' => 'UAEV_passport_number',
+                        'dob'             => 'UAEV_dob',
+                        'gender'          => 'UAEV_gender',
+                    ],
+                )->afterResponse();
+            }
         }
 
         // Email notifications loop

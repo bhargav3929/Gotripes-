@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\BackfillPassportDetails;
 use App\Models\SaudiVisaType;
 use App\Models\SaudiVisaApplication;
 use App\Models\NomodTransaction;
 use App\Services\NomodService;
+use App\Services\PassportOcrService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -21,20 +23,39 @@ class SaudiVisaController extends Controller
     public function submit(Request $request)
     {
         $validated = $request->validate([
-            'first_name'          => 'required|string|max:255',
-            'last_name'           => 'required|string|max:255',
+            // Booking and contact details — the only things the customer types.
+            'full_name'           => 'required|string|max:255',
             'email'               => 'required|email|max:255',
             'phone'               => 'required|string|max:30',
-            'nationality'         => 'required|string|max:100',
-            'passport_number'     => 'required|string|max:50',
-            'passport_expiry'     => 'required|date',
-            'dob'                 => 'required|date',
-            'gender'              => 'required|string|max:20',
             'saudi_visa_type_id'  => 'required|exists:tbl_saudi_visa_types,id',
+
+            // Required documents.
             'passport_copy'       => 'required|file|mimes:pdf,jpg,jpeg,png|max:4096',
             'passport_photo'      => 'required|file|mimes:jpg,jpeg,png|max:4096',
             'additional_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+
+            // Passport details are read from the uploaded passport, not typed:
+            // the browser scan posts them in hidden fields and
+            // BackfillPassportDetails fills whatever it could not read. All
+            // optional — an unreadable passport must never block a booking.
+            'first_name'          => 'nullable|string|max:255',
+            'last_name'           => 'nullable|string|max:255',
+            'nationality'         => 'nullable|string|max:100',
+            'passport_number'     => 'nullable|string|max:50',
+            'passport_expiry'     => 'nullable|date',
+            'dob'                 => 'nullable|date',
+            'gender'              => 'nullable|string|max:20',
         ]);
+
+        // Prefer the scanned given/surname split; fall back to splitting the name
+        // the customer typed so the applicant is always identifiable.
+        $first = trim((string) ($validated['first_name'] ?? ''));
+        $last  = trim((string) ($validated['last_name'] ?? ''));
+        if ($first === '') {
+            [$first, $last] = PassportOcrService::splitFullName($validated['full_name']);
+        } elseif ($last === '') {
+            $last = $first;
+        }
 
         $visaType = SaudiVisaType::where('isActive', 1)->findOrFail($validated['saudi_visa_type_id']);
         $price = $visaType->price;
@@ -62,16 +83,18 @@ class SaudiVisaController extends Controller
             $application = SaudiVisaApplication::create([
                 'company_id'          => current_company()?->id,
                 'saudi_visa_type_id'  => $visaType->id,
-                'full_name'           => $validated['first_name'] . ' ' . $validated['last_name'],
-                'first_name'          => $validated['first_name'],
-                'last_name'           => $validated['last_name'],
+                'full_name'           => $validated['full_name'],
+                'first_name'          => $first,
+                'last_name'           => $last,
                 'email'               => $validated['email'],
                 'phone'               => $validated['phone'],
-                'nationality'         => $validated['nationality'],
-                'passport_number'     => $validated['passport_number'],
-                'passport_expiry'     => $validated['passport_expiry'],
-                'dob'                 => $validated['dob'],
-                'gender'              => $validated['gender'],
+                // `nationality` is NOT NULL on this table; blank means "not read
+                // from the passport yet" and is filled by the backfill job.
+                'nationality'         => $validated['nationality'] ?? '',
+                'passport_number'     => $validated['passport_number'] ?? null,
+                'passport_expiry'     => $validated['passport_expiry'] ?? null,
+                'dob'                 => $validated['dob'] ?? null,
+                'gender'              => $validated['gender'] ?? null,
                 'passport_path'       => $passportPath,
                 'photo_path'          => $photoPath,
                 'additional_doc_path' => $additionalDocPath,
@@ -81,13 +104,30 @@ class SaudiVisaController extends Controller
                 'order_id'            => $orderId,
             ]);
 
+            // Read anything the browser scan missed off the uploaded passport
+            // copy, after the response so checkout is not held up.
+            if ($passportPath !== '') {
+                BackfillPassportDetails::dispatch(
+                    SaudiVisaApplication::class,
+                    $application->id,
+                    $passportPath,
+                    [
+                        'passport_number' => 'passport_number',
+                        'passport_expiry' => 'passport_expiry',
+                        'dob'             => 'dob',
+                        'gender'          => 'gender',
+                        'nationality'     => 'nationality',
+                    ],
+                )->afterResponse();
+            }
+
             // Call Nomod hosted checkout
             $nomodService = new NomodService();
             $checkout = $nomodService->createCheckout([
                 'amount' => $price,
                 'currency' => 'AED',
                 'order_id' => $orderId,
-                'description' => "Saudi Visa Application: {$visaType->name} ({$validated['first_name']} {$validated['last_name']})",
+                'description' => "Saudi Visa Application: {$visaType->name} ({$validated['full_name']})",
                 'customer' => [
                     'email' => $validated['email'],
                     'phone' => $validated['phone'],

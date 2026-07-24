@@ -44,12 +44,15 @@ class SaudiVisaTest extends TestCase
             'isActive' => true,
         ]);
 
+        // The form posts the contact details the customer typed plus whatever the
+        // browser passport scan managed to read, in hidden fields.
         $payload = [
-            'first_name' => 'John',
-            'last_name' => 'Doe',
+            'full_name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'phone' => '+971501234567',
             'nationality' => 'India',
+            'first_name' => 'John',
+            'last_name' => 'Doe',
             'passport_number' => 'P9876543',
             'passport_expiry' => '2030-05-15',
             'dob' => '1995-10-10',
