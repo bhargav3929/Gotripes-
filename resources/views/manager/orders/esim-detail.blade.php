@@ -6,6 +6,13 @@
 @section('content')
 @php
     $needsProvisioning = $order->payment_status === 'paid' && ! $order->monty_order_id;
+
+    // Reason the provider gave for refusing to issue the eSIM. Without this an
+    // agent sees "assign_failed" and has to go digging through laravel.log to
+    // find out whether it was a funding problem, a dead bundle, or an outage.
+    $failure = is_array($order->monty_response ?? null) && ($order->monty_response['failed'] ?? false)
+        ? $order->monty_response
+        : null;
 @endphp
 
 <div class="orders-toolbar">
@@ -42,6 +49,21 @@
             so no QR code was sent. Use <strong>Retry provisioning</strong> above.
         </span>
     </div>
+
+    @if($failure)
+        <div class="wp-notice wp-notice-error">
+            <span>
+                <i class="fas fa-circle-info me-2"></i>
+                <strong>MontyeSIM said:</strong> {{ $failure['error'] }}
+                @if(!empty($failure['failed_at']))
+                    <span style="opacity:.75;">({{ \Carbon\Carbon::parse($failure['failed_at'])->diffForHumans() }})</span>
+                @endif
+                @if(str_contains(strtolower($failure['error']), 'insufficient balance'))
+                    <br><em>Top up the reseller wallet in the MontyeSIM portal, then retry.</em>
+                @endif
+            </span>
+        </div>
+    @endif
 @endif
 
 <div class="orders-detail-grid">

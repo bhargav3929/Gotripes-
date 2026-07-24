@@ -45,7 +45,10 @@ class EsimProvisioningService
                 $order->order_reference
             );
         } catch (\Exception $e) {
-            $order->update(['reservation_status' => 'error']);
+            $order->update([
+                'reservation_status' => 'error',
+                'monty_response' => $this->failureRecord($e->getMessage()),
+            ]);
             Log::error('MontyeSIM API error while provisioning', [
                 'esim_order_id' => $order->id,
                 'error' => $e->getMessage(),
@@ -73,12 +76,17 @@ class EsimProvisioningService
             return ['success' => true];
         }
 
+        $error = $assignment['error'] ?? 'Unknown';
+
+        // Keep the reason ON the order, not just in the log. The provider
+        // returns an empty body on some failures, and storing that verbatim
+        // (as this did) left the manager portal showing a failed order with no
+        // explanation — which is exactly what happened to orders 37–39 when the
+        // reseller wallet ran dry.
         $order->update([
             'reservation_status' => 'assign_failed',
-            'monty_response' => $assignment['data'] ?? $assignment,
+            'monty_response' => $this->failureRecord($error, $assignment),
         ]);
-
-        $error = $assignment['error'] ?? 'Unknown';
 
         // The customer has paid but has no eSIM — this needs a human.
         Log::error('MontyeSIM assign failed after payment', [
@@ -90,6 +98,24 @@ class EsimProvisioningService
         $this->notifyFailure($order, $error);
 
         return ['success' => false, 'error' => $error];
+    }
+
+    /**
+     * A readable record of why provisioning failed, stored on the order so the
+     * manager portal can show it without anyone opening a log file.
+     *
+     * @param  array<string, mixed>  $assignment  Raw result from the assign call.
+     * @return array<string, mixed>
+     */
+    private function failureRecord(string $error, array $assignment = []): array
+    {
+        return array_filter([
+            'failed'            => true,
+            'error'             => $error,
+            'failed_at'         => now()->toIso8601String(),
+            'provider_status'   => $assignment['status'] ?? null,
+            'provider_response' => $assignment['data'] ?? null,
+        ], fn ($v) => $v !== null && $v !== []);
     }
 
     /**

@@ -176,9 +176,21 @@ class MontyEsimService
                 'body' => $response->body(),
             ]);
 
+            // The provider puts its reason in `detail` ("Insufficient Balance",
+            // "Bundle not found"). Surface that rather than the whole JSON blob,
+            // and hand the parsed body back so callers can persist it — a paid
+            // order that was never provisioned is useless to an agent if the
+            // reason only exists in a log file.
+            $body = $response->json();
+            $reason = is_array($body)
+                ? ($body['detail'] ?? $body['message'] ?? $body['title'] ?? null)
+                : null;
+
             return [
                 'success' => false,
-                'error' => 'MontyeSIM API error: ' . ($response->json('message') ?? $response->body()),
+                'error' => 'MontyeSIM API error: ' . ($reason ?? $response->body()),
+                'status' => $response->status(),
+                'data' => is_array($body) ? $body : ['raw' => $response->body()],
             ];
 
         } catch (\Exception $e) {
@@ -311,6 +323,7 @@ class MontyEsimService
         return [
             'success' => false,
             'error' => $result['error'] ?? 'Failed to assign bundle',
+            'status' => $result['status'] ?? null,
             'data' => $result['data'] ?? [],
         ];
     }
@@ -337,6 +350,38 @@ class MontyEsimService
             'success' => false,
             'error' => $result['error'] ?? 'Failed to refund order',
             'data' => $result['data'] ?? [],
+        ];
+    }
+
+    /**
+     * List the orders MontyeSIM holds for this reseller account.
+     *
+     * The provider is the system of record for what was actually issued, so
+     * this is how a GoTrips order gets reconciled against their portal without
+     * anyone logging in and reading the screen.
+     *
+     * @return array{success: bool, orders: array, total: int, error?: string}
+     */
+    public function listOrders(): array
+    {
+        $result = $this->request('GET', 'Orders');
+
+        if (!($result['success'] ?? false)) {
+            return [
+                'success' => false,
+                'orders'  => [],
+                'total'   => 0,
+                'error'   => $result['error'] ?? 'Failed to list orders',
+            ];
+        }
+
+        $data = $result['data'] ?? [];
+
+        return [
+            'success' => true,
+            // An empty account answers with a "No Data" envelope rather than 204.
+            'orders'  => $data['orders'] ?? [],
+            'total'   => (int) ($data['total_orders_count'] ?? count($data['orders'] ?? [])),
         ];
     }
 
