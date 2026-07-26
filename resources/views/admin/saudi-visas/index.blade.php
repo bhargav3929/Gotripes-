@@ -26,6 +26,8 @@
                             <tr>
                                 <th>Visa Name</th>
                                 <th>Price (AED)</th>
+                                <th>Company Email</th>
+                                <th>Supplier Email</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -41,6 +43,12 @@
                                     </td>
                                     <td>
                                         <input type="number" name="price" value="{{ $visa->price }}" class="form-control form-control-sm" required min="0" step="0.01">
+                                    </td>
+                                    <td>
+                                        <input type="email" name="company_email" value="{{ $visa->company_email }}" class="form-control form-control-sm" placeholder="company@example.com">
+                                    </td>
+                                    <td>
+                                        <input type="email" name="supplier_email" value="{{ $visa->supplier_email }}" class="form-control form-control-sm" placeholder="supplier@example.com">
                                     </td>
                                     <td>
                                         <select name="isActive" class="form-select form-select-sm" onchange="this.form.submit()">
@@ -60,7 +68,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted py-4">No Saudi Visa Types defined.</td>
+                                <td colspan="6" class="text-center text-muted py-4">No Saudi Visa Types defined.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -96,6 +104,16 @@
                     <div class="mb-3">
                         <label class="form-label">Price (AED) <span class="text-danger">*</span></label>
                         <input type="number" name="price" class="form-control" placeholder="e.g. 450" required min="0" step="0.01" value="{{ old('price') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Company Email</label>
+                        <input type="email" name="company_email" class="form-control" placeholder="company@example.com" value="{{ old('company_email') }}">
+                        <small class="text-muted">Receives a copy of each paid application (with documents).</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Supplier Email</label>
+                        <input type="email" name="supplier_email" class="form-control" placeholder="supplier@example.com" value="{{ old('supplier_email') }}">
+                        <small class="text-muted">Receives the full application and uploaded documents.</small>
                     </div>
                     <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus me-1"></i>Add Visa Type</button>
                 </form>
