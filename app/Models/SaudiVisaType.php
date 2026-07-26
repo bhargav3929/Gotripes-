@@ -18,6 +18,8 @@ class SaudiVisaType extends Model
         'required_documents',
         'processing_days',
         'price',
+        'company_email',
+        'supplier_email',
         'isActive',
     ];
 

@@ -15,6 +15,7 @@ use App\Mail\SupplierBookingMail;
 use App\Mail\CustomerPaymentConfirmationMail;
 use App\Mail\AdminPaymentNotificationMail;
 use App\Mail\BookingNotificationMail;
+use App\Mail\SaudiVisaMail;
 use App\Services\NomodService;
 use App\Services\EsimProvisioningService;
 use App\Services\ReferralService;
@@ -971,6 +972,7 @@ class NomodController extends Controller
 
     private function notifySaudiVisaApplication(\App\Models\SaudiVisaApplication $application): void
     {
+        // Existing tenant-wide business notification — left untouched.
         try {
             $recipients = booking_recipients(service_notification_emails('visas', $application->company));
             if (!empty($recipients)) {
@@ -991,6 +993,47 @@ class NomodController extends Controller
             }
         } catch (\Throwable $e) {
             Log::error('Saudi Visa booking notification failed', ['order_id' => $application->order_id, 'error' => $e->getMessage()]);
+        }
+
+        // Per-visa-type supplier + company inboxes: the full application with the
+        // uploaded documents attached (mirrors the UAE visa supplier flow). Each
+        // recipient is optional — an empty address is simply skipped — and each
+        // send is isolated so one failure never blocks the other or the booking.
+        $visaType = $application->visaType;
+        $supplierEmail = trim((string) ($visaType->supplier_email ?? ''));
+        $companyEmail  = trim((string) ($visaType->company_email ?? ''));
+
+        if ($supplierEmail === '' && $companyEmail === '') {
+            return;
+        }
+
+        $mailData = array_merge($application->toArray(), [
+            'visa_type' => $visaType->name ?? 'Saudi Visa',
+        ]);
+
+        $makeMail = fn () => new SaudiVisaMail(
+            $mailData,
+            $application->passport_path,
+            $application->photo_path,
+            $application->additional_doc_path,
+        );
+
+        if ($supplierEmail !== '') {
+            try {
+                Mail::to($supplierEmail)->send($makeMail());
+                Log::info('Saudi visa supplier email sent', ['order_id' => $application->order_id, 'to' => $supplierEmail]);
+            } catch (\Throwable $e) {
+                Log::error('Saudi visa supplier email failed', ['order_id' => $application->order_id, 'to' => $supplierEmail, 'error' => $e->getMessage()]);
+            }
+        }
+
+        if ($companyEmail !== '') {
+            try {
+                Mail::to($companyEmail)->send($makeMail());
+                Log::info('Saudi visa company email sent', ['order_id' => $application->order_id, 'to' => $companyEmail]);
+            } catch (\Throwable $e) {
+                Log::error('Saudi visa company email failed', ['order_id' => $application->order_id, 'to' => $companyEmail, 'error' => $e->getMessage()]);
+            }
         }
     }
 }

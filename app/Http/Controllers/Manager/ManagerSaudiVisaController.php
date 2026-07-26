@@ -22,6 +22,8 @@ class ManagerSaudiVisaController extends Controller
             'description'        => 'nullable|string|max:1000',
             'required_documents' => 'nullable|string',
             'processing_days'    => 'nullable|integer|min:1|max:90',
+            'company_email'      => 'nullable|email|max:255',
+            'supplier_email'     => 'nullable|email|max:255',
         ]);
 
         SaudiVisaType::create([
@@ -31,6 +33,8 @@ class ManagerSaudiVisaController extends Controller
             'description'         => $validated['description'] ?? null,
             'required_documents'  => $this->parseDocuments($request->required_documents),
             'processing_days'     => $validated['processing_days'] ?? 3,
+            'company_email'       => $validated['company_email'] ?? null,
+            'supplier_email'      => $validated['supplier_email'] ?? null,
             'isActive'            => true,
         ]);
 
@@ -49,6 +53,8 @@ class ManagerSaudiVisaController extends Controller
             'description'        => 'nullable|string|max:1000',
             'required_documents' => 'nullable|string',
             'processing_days'    => 'nullable|integer|min:1|max:90',
+            'company_email'      => 'nullable|email|max:255',
+            'supplier_email'     => 'nullable|email|max:255',
         ]);
 
         $visaType->update([
@@ -58,6 +64,8 @@ class ManagerSaudiVisaController extends Controller
             'description'        => $validated['description'] ?? null,
             'required_documents' => $this->parseDocuments($request->required_documents),
             'processing_days'    => $validated['processing_days'] ?? 3,
+            'company_email'      => $validated['company_email'] ?? null,
+            'supplier_email'     => $validated['supplier_email'] ?? null,
         ]);
 
         return redirect()->route('manager.saudi-visas.index')

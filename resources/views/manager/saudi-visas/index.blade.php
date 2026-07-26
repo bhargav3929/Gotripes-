@@ -112,6 +112,16 @@
                             <textarea name="required_documents" class="wp-input" rows="3"
                                       placeholder="Valid Passport&#10;UAE Residence Visa&#10;Passport Photo">{{ $visa->required_documents ? implode("\n", $visa->required_documents) : '' }}</textarea>
                         </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-sm-6">
+                                <label style="font-size:11px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; display:block; margin-bottom:5px;">Company Email</label>
+                                <input type="email" name="company_email" class="wp-input" value="{{ $visa->company_email }}" placeholder="company@example.com">
+                            </div>
+                            <div class="col-sm-6">
+                                <label style="font-size:11px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; display:block; margin-bottom:5px;">Supplier Email</label>
+                                <input type="email" name="supplier_email" class="wp-input" value="{{ $visa->supplier_email }}" placeholder="supplier@example.com">
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label style="font-size:11px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; display:block; margin-bottom:5px;">Status</label>
                             <select name="isActive" class="wp-select">
@@ -174,6 +184,16 @@
                         <textarea name="required_documents" class="wp-input" rows="4"
                                   placeholder="One per line, e.g.:&#10;Valid Passport (6+ months)&#10;UAE Residence Visa&#10;Passport-size Photo&#10;Return Flight Ticket">{{ old('required_documents') }}</textarea>
                         <small style="font-size:11px; color:var(--wp-text-muted);">Enter each document on a new line</small>
+                    </div>
+                    <div style="margin-bottom:13px;">
+                        <label style="font-size:11px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">Company Email</label>
+                        <input type="email" name="company_email" class="wp-input" placeholder="company@example.com" value="{{ old('company_email') }}">
+                        <small style="font-size:11px; color:var(--wp-text-muted);">Receives a copy of each paid application (with documents).</small>
+                    </div>
+                    <div style="margin-bottom:18px;">
+                        <label style="font-size:11px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">Supplier Email</label>
+                        <input type="email" name="supplier_email" class="wp-input" placeholder="supplier@example.com" value="{{ old('supplier_email') }}">
+                        <small style="font-size:11px; color:var(--wp-text-muted);">Receives the full application and uploaded documents.</small>
                     </div>
                     <button type="submit" class="wp-btn wp-btn-primary w-100">
                         <i class="fas fa-plus me-2"></i> Add Visa Type
