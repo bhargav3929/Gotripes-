@@ -3,27 +3,42 @@
 namespace App\Console\Commands;
 
 use App\Models\EsimOrder;
+use App\Services\EsimProvisioningService;
 use App\Services\MontyEsimService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 /**
- * Compare GoTrips eSIM orders against what MontyeSIM actually issued.
+ * Reconcile GoTrips eSIM orders against what MontyeSIM actually issued.
  *
- * Read-only: it never assigns a bundle or spends the wallet. Written after
- * orders 37-39 were taken as paid but never provisioned ("Insufficient
- * Balance"), which nobody noticed because the two systems were only ever
- * compared by hand.
+ * Written after orders 37-39 were taken as paid but never provisioned
+ * ("Insufficient Balance"), which nobody noticed because the two systems were
+ * only ever compared by hand. It used to only report; reporting does not help
+ * at 2am, so it now repairs what it safely can:
+ *
+ *   - paid but never assigned      -> provision (guarded against double-charge)
+ *   - assigned but no QR emailed   -> send the QR
+ *   - issued upstream, unknown here -> adopt the provider's order onto ours
+ *
+ * The last case is real: ORDESIM40 was Successful and Active at MontyeSIM
+ * while our row still said "unpaid, pending" — the wallet had been charged for
+ * an eSIM our own records did not know existed.
+ *
+ * Every repair is idempotent. --dry-run reports without touching anything.
  */
 class EsimReconcile extends Command
 {
-    protected $signature = 'esim:reconcile {--all : Include unpaid and pending orders}';
+    protected $signature = 'esim:reconcile
+                            {--all : Include unpaid and pending orders}
+                            {--dry-run : Report differences without repairing them}';
 
-    protected $description = 'Compare local eSIM orders with the MontyeSIM reseller portal';
+    protected $description = 'Reconcile eSIM orders with MontyeSIM and repair what is safely repairable';
 
     public function handle(MontyEsimService $monty): int
     {
-        $this->info('Fetching orders from MontyeSIM…');
+        $dry = (bool) $this->option('dry-run');
 
+        $this->info('Fetching orders from MontyeSIM…');
         $remote = $monty->listOrders();
 
         if (!$remote['success']) {
@@ -33,67 +48,145 @@ class EsimReconcile extends Command
 
         $this->line("MontyeSIM reports <options=bold>{$remote['total']}</> order(s) on this reseller account.");
 
-        // Index the provider's orders by both id and our reference so either side
-        // of the match works, whichever field their payload happens to carry.
+        // Index the provider's orders by both id and our reference so either
+        // side of the match works, whichever field their payload carries.
         $remoteById = [];
+        $remoteByReference = [];
         foreach ($remote['orders'] as $o) {
-            foreach (['order_id', 'id', 'order_reference'] as $key) {
+            foreach (['order_id', 'id'] as $key) {
                 if (!empty($o[$key])) {
                     $remoteById[(string) $o[$key]] = $o;
                 }
             }
+            if (!empty($o['order_reference'])) {
+                $remoteByReference[(string) $o['order_reference']] = $o;
+            }
         }
 
         $local = EsimOrder::withoutCompanyScope()
-            ->when(!$this->option('all'), fn ($q) => $q->where('payment_status', 'paid'))
+            ->when(!$this->option('all'), fn ($q) => $q->where(function ($w) {
+                // Anything that could need repair: paid orders, and any order
+                // the provider might have issued behind our back.
+                $w->where('payment_status', 'paid')->orWhereNotNull('monty_order_id');
+            }))
             ->orderBy('id')
             ->get();
 
-        if ($local->isEmpty()) {
-            $this->warn('No local orders to compare.');
-            return self::SUCCESS;
-        }
+        // Orders the provider issued against a reference we have no local row
+        // for at all — money spent with nothing to show for it locally.
+        $localReferences = EsimOrder::withoutCompanyScope()->pluck('order_reference')->all();
+        $orphans = array_diff(array_keys($remoteByReference), $localReferences);
 
         $rows = [];
-        $mismatches = 0;
+        $repaired = 0;
+        $problems = 0;
+        $provisioner = new EsimProvisioningService();
 
         foreach ($local as $order) {
             $matched = $order->monty_order_id && isset($remoteById[(string) $order->monty_order_id]);
+            $upstream = $remoteByReference[(string) $order->order_reference] ?? null;
 
-            if ($order->payment_status === 'paid' && !$order->monty_order_id) {
-                $verdict = 'PAID, NOT ISSUED';
-                $mismatches++;
-            } elseif ($order->monty_order_id && !$matched) {
-                $verdict = 'NOT IN PORTAL';
-                $mismatches++;
-            } elseif ($matched) {
-                $verdict = 'in sync';
-            } else {
-                $verdict = 'not paid yet';
+            // 1. The provider issued this order but our row never recorded it.
+            if (!$order->monty_order_id && $upstream) {
+                $problems++;
+                if ($dry) {
+                    $rows[] = [$order->order_reference, $order->payment_status, 'ISSUED UPSTREAM', 'would adopt provider order'];
+                    continue;
+                }
+                $order->update([
+                    'monty_order_id'     => $upstream['order_id'] ?? null,
+                    'monty_iccid'        => $upstream['iccid'] ?? null,
+                    'reservation_status' => 'completed',
+                    'payment_status'     => $order->payment_status === 'paid' ? 'paid' : $order->payment_status,
+                    'monty_response'     => $upstream,
+                ]);
+                Log::warning('eSIM order adopted from provider during reconcile', [
+                    'esim_order_id'  => $order->id,
+                    'monty_order_id' => $upstream['order_id'] ?? null,
+                ]);
+                $repaired++;
+                $rows[] = [$order->order_reference, $order->payment_status, 'ISSUED UPSTREAM', 'ADOPTED'];
+                $order->refresh();
             }
 
-            $rows[] = [
-                $order->order_reference ?: ('#' . $order->id),
-                $order->customer_email,
-                $order->payment_status,
-                $order->reservation_status,
-                $order->monty_order_id ?: '—',
-                $verdict,
-            ];
+            // 2. Paid, but never assigned — the customer has nothing.
+            if ($order->payment_status === 'paid' && !$order->monty_order_id) {
+                $problems++;
+                if ($dry) {
+                    $rows[] = [$order->order_reference, 'paid', 'NOT ISSUED', 'would provision'];
+                    continue;
+                }
+                $result = $provisioner->provision($order);
+                if ($result['success'] ?? false) {
+                    $repaired++;
+                    $rows[] = [$order->order_reference, 'paid', 'NOT ISSUED', 'PROVISIONED'];
+                    $order->refresh();
+                } else {
+                    $rows[] = [$order->order_reference, 'paid', 'NOT ISSUED', 'failed: ' . ($result['error'] ?? '?')];
+                    continue;
+                }
+            }
+
+            // 3. Issued, but the customer was never sent their QR by us.
+            if ($order->monty_order_id && !$order->qr_sent_at && $order->customer_email) {
+                if ($dry) {
+                    $rows[] = [$order->order_reference, $order->payment_status, 'no QR sent', 'would email QR'];
+                    continue;
+                }
+                $sent = $provisioner->sendQrEmail($order);
+                $rows[] = [
+                    $order->order_reference,
+                    $order->payment_status,
+                    'no QR sent',
+                    ($sent['success'] ?? false) ? 'QR EMAILED' : 'QR failed: ' . ($sent['error'] ?? '?'),
+                ];
+                if ($sent['success'] ?? false) {
+                    $repaired++;
+                }
+                continue;
+            }
+
+            // 4. We think it is issued, the provider disagrees.
+            if ($order->monty_order_id && !$matched && !$upstream) {
+                $problems++;
+                $rows[] = [$order->order_reference, $order->payment_status, 'NOT IN PORTAL', 'needs a human'];
+            }
         }
 
-        $this->table(
-            ['Reference', 'Customer', 'Payment', 'Provisioning', 'Monty order', 'Verdict'],
-            $rows
-        );
+        foreach ($orphans as $ref) {
+            $problems++;
+            $o = $remoteByReference[$ref];
+            $rows[] = [$ref, '—', 'NO LOCAL ORDER', 'provider issued ' . ($o['iccid'] ?? '?') . ' — needs a human'];
+        }
 
-        if ($mismatches > 0) {
-            $this->error("{$mismatches} order(s) are out of sync — customers may have paid without receiving an eSIM.");
-            $this->line('Open each in the manager portal and use "Retry provisioning".');
+        if ($rows) {
+            $this->table(['Reference', 'Payment', 'Problem', 'Action'], $rows);
+        }
+
+        // The balance is what decides whether tomorrow's orders can be filled
+        // at all, so surface it every run.
+        $balance = $monty->getWalletBalance();
+        if ($balance !== null) {
+            $this->newLine();
+            $this->line(sprintf('Reseller wallet balance: <options=bold>%.2f</>', $balance));
+            if ($balance < 50) {
+                $this->error('WALLET IS LOW — new eSIM sales will start failing once it is exhausted. Top up now.');
+            }
+        }
+
+        if ($problems === 0) {
+            $this->info('All compared orders are in sync with MontyeSIM.');
+            return self::SUCCESS;
+        }
+
+        $this->newLine();
+        $this->warn("{$problems} problem(s) found, {$repaired} repaired automatically.");
+
+        if ($repaired < $problems) {
+            $this->line('Anything left needs a human — open it in the manager portal.');
             return self::FAILURE;
         }
 
-        $this->info('All compared orders are in sync with MontyeSIM.');
         return self::SUCCESS;
     }
 }

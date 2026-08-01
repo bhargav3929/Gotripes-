@@ -79,19 +79,31 @@ class OrdersController extends Controller
      * Only possible once the order has been assigned, since the provider keys
      * the email off its own order ID.
      */
+    /**
+     * Resend the customer their eSIM.
+     *
+     * Sends GoTrips' own QR email (which we can confirm went out) and also asks
+     * the provider to resend theirs, so a customer chasing a missing eSIM gets
+     * both attempts from one click. Succeeds if either lands.
+     */
     public function resendEsimQr(EsimOrder $order)
     {
         if (!$order->monty_order_id) {
             return back()->withErrors('This order has not been provisioned yet, so there is no QR code to resend. Use "Retry provisioning" first.');
         }
 
-        $result = (new MontyEsimService())->resendEmail($order->monty_order_id);
+        $ours = (new EsimProvisioningService())->sendQrEmail($order);
+        $theirs = (new MontyEsimService())->resendEmail($order->monty_order_id);
 
-        if ($result['success'] ?? false) {
-            return back()->with('success', "QR code email resent to {$order->customer_email}.");
+        if ($ours['success'] ?? false) {
+            return back()->with('success', "eSIM QR code emailed to {$order->customer_email}.");
         }
 
-        return back()->withErrors('Could not resend the QR code email: ' . ($result['error'] ?? 'Unknown error'));
+        if ($theirs['success'] ?? false) {
+            return back()->with('success', "The provider resent the QR code to {$order->customer_email}. (Our own copy could not be sent: " . ($ours['error'] ?? 'unknown') . ')');
+        }
+
+        return back()->withErrors('Could not resend the QR code: ' . ($ours['error'] ?? $theirs['error'] ?? 'Unknown error'));
     }
 
     /**

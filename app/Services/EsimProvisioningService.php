@@ -73,6 +73,8 @@ class EsimProvisioningService
                 'monty_order_id' => $assignment['order_id'] ?? null,
             ]);
 
+            $this->sendQrEmail($order);
+
             return ['success' => true];
         }
 
@@ -98,6 +100,62 @@ class EsimProvisioningService
         $this->notifyFailure($order, $error);
 
         return ['success' => false, 'error' => $error];
+    }
+
+    /**
+     * Send the customer their eSIM, from GoTrips.
+     *
+     * MontyeSIM emails its own QR on assign, but we have no way to confirm it
+     * arrived and it carries their branding. The installation credentials live
+     * on the order detail endpoint (not on the assign response), so we fetch
+     * them and send our own copy. A failure here is logged and surfaced but
+     * never fails the provisioning: the eSIM exists either way, and the QR can
+     * be resent from the manager portal.
+     */
+    public function sendQrEmail(EsimOrder $order): array
+    {
+        if (!$order->monty_order_id) {
+            return ['success' => false, 'error' => 'Order has not been provisioned yet.'];
+        }
+        if (!$order->customer_email) {
+            return ['success' => false, 'error' => 'Order has no customer email.'];
+        }
+
+        try {
+            $detail = (new MontyEsimService())->getOrder($order->monty_order_id);
+
+            if (!($detail['success'] ?? false)) {
+                Log::error('Could not read eSIM activation details for the QR email', [
+                    'esim_order_id' => $order->id,
+                    'error'         => $detail['error'] ?? null,
+                ]);
+                return ['success' => false, 'error' => $detail['error'] ?? 'Could not read activation details'];
+            }
+
+            $d = $detail['data'];
+
+            Mail::to($order->customer_email)->send(new \App\Mail\EsimQrMail(
+                order: $order,
+                activationCode: $d['activation_code'] ?? null,
+                smdpAddress: $d['smdp_address'] ?? null,
+                matchingId: $d['matching_id'] ?? null,
+            ));
+
+            $order->forceFill(['qr_sent_at' => now()])->save();
+
+            Log::info('eSIM QR emailed to customer', [
+                'esim_order_id' => $order->id,
+                'to'            => $order->customer_email,
+            ]);
+
+            return ['success' => true];
+        } catch (\Throwable $e) {
+            Log::error('eSIM QR email failed', [
+                'esim_order_id' => $order->id,
+                'error'         => $e->getMessage(),
+            ]);
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
     }
 
     /**

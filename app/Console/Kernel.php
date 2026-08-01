@@ -29,6 +29,14 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->onOneServer();
 
+        // Repair eSIM orders the provider and we disagree about: paid but never
+        // assigned, assigned but no QR emailed, or issued upstream against an
+        // order we never marked. Every repair is idempotent.
+        $schedule->command('esim:reconcile')
+            ->everyTenMinutes()
+            ->withoutOverlapping()
+            ->onOneServer();
+
         // Keep the Fluxir catalog warm. The storefront builds its country list
         // from a 24h cache; letting it expire on a real visitor costs them a
         // ~12s page load, and an upstream hiccup at that moment shows the whole
