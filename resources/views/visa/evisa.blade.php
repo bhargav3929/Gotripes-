@@ -4,28 +4,10 @@
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
-@php
-if (empty($countries)) {
-    $countries = [];
-    foreach (\App\Support\CountryCodes::all() as $c) {
-        $countries[] = [
-            'code' => $c['iso'],
-            'name' => $c['name'],
-            'flag' => $c['flag'],
-            'types' => 1
-        ];
-    }
-}
-if (empty($nationalities)) {
-    $nationalities = [];
-    foreach (\App\Support\CountryCodes::all() as $c) {
-        $nationalities[] = [
-            'code' => $c['iso'],
-            'name' => $c['name']
-        ];
-    }
-}
-@endphp
+{{-- No hardcoded country fallback here: if the live catalog is empty the page
+     must say the service is unavailable, not list countries nobody can book.
+     (A fake full-country list makes an API outage look like "every visa is
+     sold out", which is far harder to diagnose.) --}}
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
@@ -327,7 +309,7 @@ if (empty($nationalities)) {
         <div id="evisaAlert" class="evisa-alert"></div>
 
         @if(empty($countries))
-            <div class="evisa-card"><p class="evisa-hint-empty">The visa service is being set up. Please check back shortly or contact support.</p></div>
+            <div class="evisa-card"><p class="evisa-hint-empty">The e-Visa service is temporarily unavailable. Please try again in a few minutes or contact support.</p></div>
         @else
         <form id="evisaForm" class="evisa-main" enctype="multipart/form-data" novalidate>
             @csrf
@@ -721,8 +703,17 @@ if (empty($nationalities)) {
             if (d.checkout_url) { window.location.assign(d.checkout_url); return; }
             if (d.redirect) { window.location.assign(d.redirect); return; }
             if (!d.checkout_session_id) { throw new Error('Application submitted but payment could not be started. Please contact support.'); }
-            // Redirect directly to the Stripe-hosted checkout URL — no publishable key needed.
-            window.location.href = 'https://checkout.stripe.com/pay/' + d.checkout_session_id;
+            // A Checkout Session id can only be opened through Stripe.js with
+            // the merchant's (Fluxir's) publishable key. Linking straight to a
+            // session id under Stripe's old hosted-page path is a retired
+            // format and renders their "Something went wrong" page instead.
+            if (!stripePk) {
+                throw new Error('Your application ' + (d.order_id || '') + ' was saved, but online payment is not available right now. Please contact support to complete it.');
+            }
+            return Stripe(stripePk).redirectToCheckout({ sessionId: d.checkout_session_id })
+                .then(function (r) {
+                    if (r && r.error) { throw new Error(r.error.message); }
+                });
         })
         .catch(function (e3) { err(e3.message || 'Something went wrong.'); btn.disabled = false; btn.innerHTML = original; });
     });

@@ -549,7 +549,14 @@
                     <a href="{{ Route::has('manager.orders.visa') ? route('manager.orders.visa') : '#' }}"
                        class="{{ request()->routeIs('manager.orders.visa*') ? 'active' : '' }} {{ Route::has('manager.orders.visa') ? '' : 'wp-nav-coming' }}">
                         <i class="fas fa-passport"></i>
-                        <span>Visa Applications</span>
+                        <span>UAE Visa Applications</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ Route::has('manager.orders.evisa') ? route('manager.orders.evisa') : '#' }}"
+                       class="{{ request()->routeIs('manager.orders.evisa*') ? 'active' : '' }} {{ Route::has('manager.orders.evisa') ? '' : 'wp-nav-coming' }}">
+                        <i class="fas fa-globe"></i>
+                        <span>e-Visa Applications</span>
                     </a>
                 </li>
                 <li class="wp-nav-item">

@@ -288,13 +288,17 @@ use App\Http\Controllers\FluxirVisaController;
 use App\Http\Controllers\FluxirEvisaController;
 
 // Multi-country e-Visa storefront (picker + dynamic, scheme-driven form).
-Route::get('/e-visa',        [FluxirEvisaController::class, 'form'])->name('visa.evisa.form');
-Route::get('/e-visa/types',  [FluxirEvisaController::class, 'types'])->name('visa.evisa.types');
-Route::post('/e-visa/scheme',[FluxirEvisaController::class, 'scheme'])->name('visa.evisa.scheme');
-Route::post('/e-visa/apply', [FluxirEvisaController::class, 'apply'])->name('visa.evisa.apply');
-// Old UAE-only slug now redirects into the multi-country storefront.
-Route::get('/uae-evisa', fn() => redirect()->route('visa.evisa.form'))->name('visa.fluxir.form');
-Route::post('/visa/fluxir/apply',          [FluxirVisaController::class, 'apply'])->name('visa.fluxir.apply');
+// Gated on the same tenant feature as the nav link that advertises it.
+Route::middleware('tenant.feature:visas')->group(function () {
+    Route::get('/e-visa',        [FluxirEvisaController::class, 'form'])->name('visa.evisa.form');
+    Route::get('/e-visa/types',  [FluxirEvisaController::class, 'types'])->name('visa.evisa.types');
+    Route::post('/e-visa/scheme',[FluxirEvisaController::class, 'scheme'])->name('visa.evisa.scheme');
+    Route::post('/e-visa/apply', [FluxirEvisaController::class, 'apply'])->name('visa.evisa.apply');
+    // Old UAE-only slug now redirects into the multi-country storefront.
+    Route::get('/uae-evisa', fn() => redirect()->route('visa.evisa.form'))->name('visa.fluxir.form');
+});
+// Payment-return + status endpoints stay ungated: Stripe redirects land here
+// and must work even if the feature is toggled off mid-flight.
 Route::get('/visa/fluxir/success',         [FluxirVisaController::class, 'success'])->name('visa.fluxir.success');
 Route::get('/visa/fluxir/cancel',          [FluxirVisaController::class, 'cancel'])->name('visa.fluxir.cancel');
 Route::get('/visa/fluxir/status/{orderId}', [FluxirVisaController::class, 'status'])->name('visa.fluxir.status');
@@ -545,6 +549,9 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::get('/esim/{order}',                [OrdersController::class, 'esimDetail'])->name('esim.show');
         Route::post('/esim/{order}/resend-qr',     [OrdersController::class, 'resendEsimQr'])->name('esim.resend-qr');
         Route::post('/esim/{order}/retry',         [OrdersController::class, 'retryEsimProvisioning'])->name('esim.retry');
+        Route::get('/evisa',                       [OrdersController::class, 'evisa'])->name('evisa');
+        Route::get('/evisa/{application}',         [OrdersController::class, 'evisaDetail'])->name('evisa.show');
+        Route::post('/evisa/{application}/retry',  [OrdersController::class, 'retryEvisaSubmission'])->name('evisa.retry');
         Route::get('/visa',                        [OrdersController::class, 'visa'])->name('visa');
         Route::get('/visa/{application}',          [OrdersController::class, 'visaDetail'])->name('visa.show');
         Route::get('/saudi-visa',                  [OrdersController::class, 'saudiVisa'])->name('saudi-visa');

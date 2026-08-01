@@ -27,6 +27,7 @@ class FluxirVisaApplication extends Model
         'status',                   // local: draft|awaiting_payment|paid|submitted|failed
         'is_paid',
         'notified_at',              // business notification sent at (dedupe guard)
+        'customer_notified_at',     // customer confirmation sent at (dedupe guard)
         'checkout_session_id',      // Stripe cs_* id
         'checkout_url',
         // Traveller snapshot
@@ -55,8 +56,9 @@ class FluxirVisaApplication extends Model
     ];
 
     protected $casts = [
-        'is_paid'         => 'boolean',
-        'notified_at'     => 'datetime',
+        'is_paid'              => 'boolean',
+        'notified_at'          => 'datetime',
+        'customer_notified_at' => 'datetime',
         'passport_expiry' => 'date',
         'date_of_birth'   => 'date',
         'arrival_date'    => 'date',

@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityBooking;
 use App\Models\EsimOrder;
+use App\Models\FluxirVisaApplication;
 use App\Models\NomodTransaction;
 use App\Models\UAEActivity;
 use App\Models\UAEVApplication;
 use App\Models\SaudiVisaApplication;
 use App\Services\EsimProvisioningService;
+use App\Services\FluxirService;
 use App\Services\MontyEsimService;
 use Illuminate\Http\Request;
 
@@ -106,6 +108,68 @@ class OrdersController extends Controller
         }
 
         return back()->withErrors('Provisioning failed: ' . ($result['error'] ?? 'Unknown error'));
+    }
+
+    // ─── e-Visa Applications (Fluxir) ───────────────────────────────
+    // Distinct from the UAE visa module below: these are processed by the
+    // Fluxir API rather than by staff, so the useful states here are the
+    // provider's, not ours.
+    public function evisa(Request $request)
+    {
+        $applications = FluxirVisaApplication::query()
+            ->when($request->q, fn ($q, $s) => $q->where(function ($w) use ($s) {
+                $w->where('first_name', 'like', "%{$s}%")
+                  ->orWhere('last_name', 'like', "%{$s}%")
+                  ->orWhere('email', 'like', "%{$s}%")
+                  ->orWhere('order_id', 'like', "%{$s}%");
+            }))
+            ->when($request->status, fn ($q, $s) => $q->where('status', $s))
+            ->orderByDesc('id')
+            ->paginate(25)
+            ->withQueryString();
+
+        return view('manager.orders.evisa', compact('applications'));
+    }
+
+    public function evisaDetail(FluxirVisaApplication $application)
+    {
+        return view('manager.orders.evisa-detail', compact('application'));
+    }
+
+    /**
+     * Re-submit a paid application the provider refused the first time.
+     *
+     * Only valid for `submit_failed` records — the customer's money is already
+     * taken and nothing is processing their visa, so this is the recovery path.
+     */
+    public function retryEvisaSubmission(FluxirVisaApplication $application, FluxirService $fluxir)
+    {
+        if ($application->status !== 'submit_failed') {
+            return back()->withErrors('This application is not in a failed-submission state.');
+        }
+
+        if (!$application->fluxir_service_application_id) {
+            return back()->withErrors('This application was never created on the provider — it cannot be re-submitted.');
+        }
+
+        $review = $fluxir->submitForReview(
+            $application->fluxir_service_application_id,
+            $application->items ?? []
+        );
+
+        if ($review['success'] ?? false) {
+            $application->update([
+                'status'        => 'submitted',
+                'state'         => $review['data']['state'] ?? 'ReadyForReview',
+                'last_response' => $review['data'] ?? null,
+            ]);
+
+            return back()->with('success', 'Application re-submitted to the provider successfully.');
+        }
+
+        $application->update(['last_response' => $review['data'] ?? null]);
+
+        return back()->withErrors('Re-submission failed: ' . ($review['error'] ?? 'Unknown error'));
     }
 
     // ─── Visa Applications ──────────────────────────────────────────
