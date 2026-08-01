@@ -15,9 +15,12 @@
                     <strong>{{ $order->country_name }}</strong> is active and ready to install.
                 </p>
 
-                @if($qrUrl)
+                @if($qrPng)
+                    {{-- Embedded, not hotlinked: survives remote-image blocking
+                         and cannot break if a third-party service disappears. --}}
                     <div style="text-align:center;margin:22px 0;">
-                        <img src="{{ $qrUrl }}" alt="eSIM QR code" width="240" height="240"
+                        <img src="{{ $message->embedData($qrPng, 'esim-qr.png', 'image/png') }}"
+                             alt="eSIM QR code" width="240" height="240"
                              style="border:1px solid #e5e7eb;border-radius:8px;display:inline-block;">
                         <div style="font-size:12px;color:#6b7280;margin-top:8px;">
                             Scan this from another device

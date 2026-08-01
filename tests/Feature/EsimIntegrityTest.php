@@ -141,7 +141,7 @@ class EsimIntegrityTest extends TestCase
         ))->render();
 
         $this->assertStringContainsString($order->order_reference, $rendered);
-        $this->assertStringContainsString('example.rsp.com', $rendered);
+        $this->assertStringContainsString("example.rsp.com", $rendered);
         $this->assertStringContainsString('2D29D-314C0-9FDC8-5038B', $rendered);
         // Manual install must always be possible, not just the QR image.
         $this->assertStringContainsString('892200650000117237', $rendered);
