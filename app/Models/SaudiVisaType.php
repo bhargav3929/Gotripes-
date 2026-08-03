@@ -34,4 +34,24 @@ class SaudiVisaType extends Model
     {
         return $query->where('isActive', 1);
     }
+
+    /**
+     * Whether this visa type asks the applicant for an Emirates ID or GCC
+     * residence copy.
+     *
+     * Driven off the manager-editable `required_documents` list rather than a
+     * hardcoded visa-type id, so adding or removing the requirement stays a
+     * portal edit. Matches "Emirates ID", "GCC Residence", "Emirates ID or GCC
+     * Residence" and similar wording.
+     */
+    public function requiresEmiratesId(): bool
+    {
+        foreach ((array) $this->required_documents as $doc) {
+            if (preg_match('/emirates\s*id|gcc/i', (string) $doc)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

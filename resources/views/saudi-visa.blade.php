@@ -303,16 +303,72 @@
         border-right: 1px solid var(--c-input-border) !important;
         border-radius: 9px 0 0 9px !important;
     }
+    /* The country list is rendered by the plugin on a white background. Colours
+       are set explicitly rather than inherited: when they were left to inherit,
+       white page text landed on the plugin's white list and the country names
+       were invisible — only the flag and dial code could be read. */
+    /* The dropdown sizes itself to its widest country name and spills out over
+       the column beside it. Pin it to the width of the phone field instead. */
+    /* Sized explicitly, not as a percentage: the dropdown lives inside the
+       narrow flag button, so 100% would collapse it to the flag's width. Left
+       to itself it grows to its longest country name and spills over the
+       column beside it. */
+    .iti__dropdown-content {
+        width: max-content !important;
+        min-width: 280px !important;
+        max-width: min(360px, 88vw) !important;
+        box-sizing: border-box !important;
+    }
     .iti__country-list {
-        background: var(--c-card-bg) !important;
-        border: 1px solid var(--c-input-border) !important;
-        color: var(--gt-text) !important;
+        background: #0d0d0d !important;
+        border: 1px solid #2a2a2a !important;
+        border-radius: 10px !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7) !important;
+        max-height: 260px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
+    /* Flag, name, then dial code pinned right — the default float leaves the
+       dial codes at a different x on every row, which reads as broken. */
+    .iti__country {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        padding: 8px 12px !important;
+        color: #eee !important;
+    }
+    .iti__country-name {
+        color: #eee !important;
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .iti__dial-code {
+        color: #8f8f8f !important;
+        margin-left: auto;
+        font-variant-numeric: tabular-nums;
+    }
+    .iti__country.iti__highlight,
     .iti__country:hover {
-        background: var(--gt-gold-soft) !important;
-        color: var(--c-gold) !important;
+        background: rgba(255, 215, 0, 0.12) !important;
     }
+    .iti__country.iti__highlight .iti__country-name,
+    .iti__country:hover .iti__country-name,
+    .iti__country.iti__highlight .iti__dial-code,
+    .iti__country:hover .iti__dial-code { color: var(--c-gold) !important; }
+    .iti__divider { border-bottom: 1px solid #2a2a2a !important; }
     .iti input { height: 42px !important; }
+
+    html[data-theme="light"] .iti__country-list {
+        background: #ffffff !important;
+        border-color: #e0e0e0 !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18) !important;
+    }
+    html[data-theme="light"] .iti__country,
+    html[data-theme="light"] .iti__country-name { color: #1a1a1a !important; }
+    html[data-theme="light"] .iti__dial-code { color: #666 !important; }
+    html[data-theme="light"] .iti__divider { border-bottom-color: #e0e0e0 !important; }
 
     /* ================================================
        TomSelect Theme overrides
@@ -782,14 +838,19 @@
                             </div>
                             <div class="form-field">
                                 <label class="field-label">WhatsApp Number *</label>
-                                <input type="tel" name="phone" id="phone" class="field-input" required autocomplete="tel">
+                                {{-- data-no-intl: this page builds its own intl-tel-input below with
+                                     its own preferred countries. Without the opt-out the global
+                                     partials/intl-tel-init upgrades it first and this page then wraps
+                                     the widget a second time, stacking two dial-code badges over the
+                                     number and breaking the country dropdown. --}}
+                                <input type="tel" name="phone" id="phone" class="field-input" required autocomplete="tel" data-no-intl>
                             </div>
                             <div class="form-field">
                                 <label class="field-label">Visa Type *</label>
                                 <select name="saudi_visa_type_id" id="saudi_visa_type_id" class="field-input" required>
                                     <option value="">Select Visa Type</option>
                                     @foreach($visaTypes as $vt)
-                                        <option value="{{ $vt->id }}" data-price="{{ $vt->price }}" data-days="{{ $vt->processing_days }}" data-desc="{{ $vt->description }}" data-docs="{{ json_encode($vt->required_documents) }}">
+                                        <option value="{{ $vt->id }}" data-price="{{ $vt->price }}" data-days="{{ $vt->processing_days }}" data-desc="{{ $vt->description }}" data-docs="{{ json_encode($vt->required_documents) }}" data-requires-emirates-id="{{ $vt->requiresEmiratesId() ? '1' : '0' }}">
                                             {{ $vt->name }} (AED {{ number_format($vt->price, 0) }})
                                         </option>
                                     @endforeach
@@ -844,6 +905,25 @@
                                     <span class="file-name-span" id="span_passport_photo"></span>
                                 </div>
                             </div>
+                            {{-- Emirates ID / GCC residence.
+                                 Only some visa types ask for this (the 1-Year Multiple Entry
+                                 does), so the field is revealed by the visa-type picker and
+                                 required to match. `data-requires-emirates-id` on each option
+                                 is derived from the manager-editable required documents list,
+                                 and the server re-checks it in SaudiVisaController::submit. --}}
+                            <div class="form-field" id="emiratesIdField" style="display: none;">
+                                <label class="field-label">Emirates ID / GCC Residence *</label>
+                                <div class="file-box" id="fileBoxEmiratesId">
+                                    <i class="bi bi-person-vcard-fill file-icon"></i>
+                                    <span class="file-text">Emirates ID or GCC Residence</span>
+                                    <span class="file-sub">Both sides, PDF or Image, max 4MB</span>
+                                    <input type="file" name="emirates_id" id="emirates_id" accept="image/*,application/pdf" onchange="updateFileName(this, 'fileBoxEmiratesId')">
+                                    <span class="file-name-span" id="span_emirates_id"></span>
+                                </div>
+                            </div>
+                            @error('emirates_id')
+                                <div class="form-field full" style="color:#ff8a8a; font-size:13px; margin-top:-6px;">{{ $message }}</div>
+                            @enderror
                             <div class="form-field full">
                                 <label class="field-label">Additional Documents (Optional)</label>
                                 <div class="file-box" id="fileBoxAdditional">
@@ -999,12 +1079,15 @@
         const phoneEl = document.getElementById('phone');
         let iti = null;
         if (phoneEl) {
-            iti = window.intlTelInput(phoneEl, {
+            // Reuse an existing instance if one somehow got attached already —
+            // initialising twice nests one widget inside the other.
+            iti = phoneEl.__iti || (phoneEl.closest('.iti') ? null : window.intlTelInput(phoneEl, {
                 separateDialCode: true,
                 initialCountry: "ae",
                 preferredCountries: ["ae", "sa", "qa", "in", "pk"],
                 utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js"
-            });
+            }));
+            if (iti) phoneEl.__iti = iti;
         }
 
         // Nationality is no longer asked for — it is read off the passport and
@@ -1025,6 +1108,27 @@
         const metaVisaDesc = document.getElementById('metaVisaDesc');
         const metaVisaDocsList = document.getElementById('metaVisaDocsList');
         const metaVisaDocsContainer = document.getElementById('metaVisaDocsContainer');
+
+        // Emirates ID / GCC residence upload — only shown for the visa types that
+        // ask for it. Kept in step with the requirement so the customer is never
+        // told to provide a document with nowhere to attach it.
+        const emiratesIdField = document.getElementById('emiratesIdField');
+        const emiratesIdInput = document.getElementById('emirates_id');
+
+        function setEmiratesIdRequired(required) {
+            if (!emiratesIdField || !emiratesIdInput) return;
+            emiratesIdField.style.display = required ? '' : 'none';
+            emiratesIdInput.required = required;
+            if (!required) {
+                // Clear it, or a file picked for one visa type would silently
+                // travel with a switch to a type that never asked for it.
+                emiratesIdInput.value = '';
+                const span = document.getElementById('span_emirates_id');
+                if (span) span.textContent = '';
+                const box = document.getElementById('fileBoxEmiratesId');
+                if (box) box.classList.remove('has-file');
+            }
+        }
 
         function updateSummary() {
             const selectedOpt = visaTypeSelect.options[visaTypeSelect.selectedIndex];
@@ -1056,6 +1160,8 @@
                     metaVisaDocsContainer.style.display = 'none';
                 }
                 metaContainer.style.display = 'block';
+
+                setEmiratesIdRequired(selectedOpt.getAttribute('data-requires-emirates-id') === '1');
             } else {
                 summaryVisaType.textContent = '—';
                 summaryProcessing.textContent = '—';
@@ -1065,6 +1171,7 @@
                 if (mobileTot2) mobileTot2.textContent = 'AED 0.00';
 
                 metaContainer.style.display = 'none';
+                setEmiratesIdRequired(false);
             }
         }
 

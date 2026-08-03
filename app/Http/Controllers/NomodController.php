@@ -1033,6 +1033,7 @@ class NomodController extends Controller
             $application->passport_path,
             $application->photo_path,
             $application->additional_doc_path,
+            $application->emirates_id_path,
         );
 
         if ($supplierEmail !== '') {

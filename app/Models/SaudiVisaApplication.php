@@ -26,6 +26,7 @@ class SaudiVisaApplication extends Model
         'gender',
         'passport_path',
         'photo_path',
+        'emirates_id_path',
         'additional_doc_path',
         'price',
         'payment_status',
