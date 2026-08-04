@@ -1,4 +1,5 @@
-# Client Call — Amer Ali / Bhargav K / Chaithanya K
+#
+ Client Call — Amer Ali / Bhargav K / Chaithanya K
 
 **Date captured:** 2026-08-04
 **Duration:** ~49 min
@@ -19,7 +20,7 @@
 
 | # | Change | Status |
 |---|---|---|
-| A1 | Post-purchase QR email must ALSO contain activation instructions: iPhone steps, Samsung/Android steps, and manual SM-DP+ install steps. Client wants these as **small images / pictorial steps**, not a wall of text — "he's in holiday mode and not in the mood to read all our instructions". | ✅ **↩ needs Amer** — iPhone / Samsung / manual SM-DP+ steps now ship inside the QR email as numbered, colour-coded blocks. Rendered and checked at qty 1 and qty 3. Written as typographic steps rather than screenshots because Amer's WhatsApp images were not in the repo — send them and I will swap them in. |
+| A1 | Post-purchase QR email must ALSO contain activation instructions: iPhone steps, Samsung/Android steps, and manual SM-DP+ install steps. Client wants these as **small images / pictorial steps**, not a wall of text — "he's in holiday mode and not in the mood to read all our instructions". | ✅ **↩ needs Amer** — iPhone / Samsung / manual SM-DP+ steps now ship inside the QR email as numbered, colour-coded blocks. Rendered and checked at qty 1 and qty 3. **Amer's own steps are now used verbatim** (supplied 4 Aug): connect to Wi-Fi first, Cellular/Mobile Data on iPhone, Network & Internet as the Pixel alternative, the restart-if-no-network fallback, preferred-data-SIM wording on Android, and ICCID inside the manual block beside SM-DP+ and the activation code. Still rendered as numbered typographic steps rather than screenshots — send the images if you want them swapped in. |
 | A2 | Same instructions published on the **website** as a "How eSIM works / How to install" reference, visible **before** purchase. | ✅ Published on `/esim` as a three-tab section (iPhone / Samsung & Android / Manual entry), sitting under "How to Get Your eSIM". Tab switching verified on production. |
 | A3 | eSIM landing page: the right-hand hero image is **broken / not loading**. Replace with a strong, on-brand contrasting image (travellers + phones + eSIM). Add tagline: **"Your eSIM ready in 2 minutes"** and **"186 countries"**. | ✅ **↩ needs Amer** — root cause: `hero-esim-network.webp` was a **0-byte file** and sat first in `image-set()`, so every webp-capable browser loaded nothing. Regenerated it; hero renders on production. The "180+ Countries" pill now reads **186**. The artwork is still the abstract SIM/landmarks image — a travellers-with-phones photo needs an asset from you. |
 | A4 | eSIM checkout: add a **quantity / bundle selector** (buy 5, 10, 20 …) for tour operators moving groups of 20–30 on a bus. Price must recalculate on quantity, single checkout, and **all QR codes arrive in ONE email**. Today a tour operator would have to check out 50 times. | ✅ Quantity picker (stepper + 1/5/10/20 presets, capped at 50) on checkout. Verified live on production with a real Thailand bundle: AED 17.63 × 20 = **AED 352.60**, and the payload carried `quantity: 20` (intercepted — no order was created). Server re-prices from the provider, so the browser never decides the total. Each eSIM is a separate provider assignment stored in the new `esim_order_units` table; all QRs go out in one email. The wallet check covers the whole order, so a group booking cannot half-provision. |
@@ -39,7 +40,7 @@
 
 | # | Change | Status |
 |---|---|---|
-| C1 | On the Hajj & Umrah landing section the **"Umrah by Air" card title is cropped** on smaller laptop screens — it renders as "Umrah by". Shift the Saudi Visa card left / widen the row so every card title fits. | ✅ Root cause: seven uppercase tabs inside a 1140px Bootstrap container with the scrollbar hidden, so the last one was clipped mid-word with no way to reach it. Now full-width with size-clamped tabs. Verified on production at 1440px: **all seven tabs render, zero overflow**. |
+| C1 | On the Hajj & Umrah landing section the **"Umrah by Air" card title is cropped** on smaller laptop screens — it renders as "Umrah by". Shift the Saudi Visa card left / widen the row so every card title fits. | ✅ **Fixed twice — my first attempt was not enough.** Root cause: seven uppercase tabs inside a 1140px Bootstrap container with the scrollbar hidden, so the last one was clipped mid-word with no way to reach it. I first scaled the font and padding down, which fixed wide screens but **still clipped "Catering Services" by 110px at 1024px** — I had measured that and shipped anyway. The row now **wraps** instead of scrolling, so no label can be clipped at any width or zoom; worst case it takes a second centred line. Verified live at **1024px** (2 rows, 0 clipped), **1280px** (1 row, 49px clearance) and **1512px** (1 row, 0 clipped). |
 
 ### D. Activities
 
