@@ -68,7 +68,11 @@ class EsimQrMail extends Mailable
                 'iccid'       => $unit->monty_iccid,
                 'qrPng'       => $lpa ? $this->qrPng($lpa) : null,
             ];
-        })->filter(fn($e) => $e['qrPng'] || $e['smdpAddress'])->values();
+        // Keep any unit the caller considered sendable. Filtering on
+        // qrPng || smdpAddress silently dropped a unit that had only an
+        // activation_code and whose QR failed to draw — the buyer would count
+        // 19 codes for 20 passengers with nothing saying which was missing.
+        })->filter(fn($e) => $e['qrPng'] || $e['smdpAddress'] || $e['matchingId'] || $e['unit']->activation_code)->values();
 
         return new Content(
             view: 'emails.esim-qr',

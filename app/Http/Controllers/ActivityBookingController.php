@@ -24,8 +24,16 @@ class ActivityBookingController extends Controller
             abort(404, 'Activity not specified.');
         }
 
-        // Fetch main activity and detailed info
-        $activity = DB::table('tbl_UAEActivities')->where('activityID', $activityId)->first();
+        // Fetch main activity and detailed info.
+        // isVisible is filtered here too: the listing and detail pages already
+        // hide a switched-off attraction, but this booking form is reachable by
+        // direct link, and without the guard a closed attraction still takes the
+        // customer's money and still emails the supplier.
+        $activity = DB::table('tbl_UAEActivities')
+            ->where('activityID', $activityId)
+            ->where('isActive', 1)
+            ->where('isVisible', 1)
+            ->first();
         $detail = DB::table('tbl_UAEActivityDetails')->where('activityID', $activityId)->first();
 
         if (!$activity) {
@@ -70,7 +78,13 @@ class ActivityBookingController extends Controller
             return response()->json(['error' => 'Activity ID is required'], 400);
         }
 
-        $activity = DB::table('tbl_UAEActivities')->where('activityID', $activityId)->first();
+        // Same guard as show(): this JSON endpoint would otherwise keep quoting
+        // live prices for an attraction the manager has taken off the site.
+        $activity = DB::table('tbl_UAEActivities')
+            ->where('activityID', $activityId)
+            ->where('isActive', 1)
+            ->where('isVisible', 1)
+            ->first();
         // Log::info("Activity found: " . ($activity ? 'Yes' : 'No'));
 
         // if ($activity) {
@@ -158,9 +172,23 @@ class ActivityBookingController extends Controller
 
             $validated['childrens'] = $validated['childrens'] ?? 0;
 
+            // Re-check visibility at submit time, not just when the form was
+            // rendered. Someone can sit on the booking page while a manager
+            // takes the attraction off the site, and this is the last point
+            // before we charge them and email the supplier.
             $activity = DB::table('tbl_UAEActivities')
                 ->where('activityID', $validated['activityId'])
+                ->where('isActive', 1)
+                ->where('isVisible', 1)
                 ->first();
+
+            if (!$activity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This activity is not available for booking at the moment. Please contact us and we will help you find an alternative.',
+                ], 422);
+            }
+
             $activityName  = $activity ? $activity->activityName : 'N/A';
             $adultPrice    = $activity ? (float)$activity->activityPrice : 0;
             $childPrice    = ($activity && $activity->activityChildPrice && $activity->activityChildPrice > 0)

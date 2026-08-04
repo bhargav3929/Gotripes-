@@ -213,17 +213,24 @@ class EsimProvisioningService
 
             // Orders placed before quantities existed have no unit rows; treat
             // the parent as the single unit so resend keeps working for them.
+            //
+            // Note the re-query rather than wrapping the new row in collect():
+            // collect() builds a base Support\Collection, and the refresh below
+            // is an Eloquent\Collection method. Getting that wrong broke resend
+            // for every pre-existing order, and self-healingly so — the row was
+            // persisted before the throw, so the second click worked and the
+            // first reported a raw PHP error.
             if ($units->isEmpty()) {
-                $units = collect([
-                    $order->units()->firstOrCreate(
-                        ['unit_number' => 1],
-                        [
-                            'monty_order_id'     => $order->monty_order_id,
-                            'monty_iccid'        => $order->monty_iccid,
-                            'reservation_status' => 'completed',
-                        ],
-                    ),
-                ]);
+                $order->units()->firstOrCreate(
+                    ['unit_number' => 1],
+                    [
+                        'monty_order_id'     => $order->monty_order_id,
+                        'monty_iccid'        => $order->monty_iccid,
+                        'reservation_status' => 'completed',
+                    ],
+                );
+
+                $units = $order->units()->whereNotNull('monty_order_id')->get();
             }
 
             foreach ($units as $unit) {
@@ -250,7 +257,9 @@ class EsimProvisioningService
                 ]);
             }
 
-            $units = $units->fresh();
+            // Re-read rather than ->fresh(): same query in both branches, and it
+            // already reflects the ->update() calls in the loop above.
+            $units = $order->units()->whereNotNull('monty_order_id')->get();
 
             // Nothing readable came back for any unit — sending an email with no
             // QR and no manual details would only generate a support call.
