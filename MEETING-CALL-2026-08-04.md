@@ -5,9 +5,10 @@
 **Status legend:** ⬜ not started · 🟨 in progress · ✅ done & deployed · ⏸️ deferred by client · ❓ needs clarification
 
 > **All 14 items below are built, deployed to https://gotrips.ai and verified on production.**
-> Commits `c4a3859` and `43a5548`. Three migrations applied to the live MySQL database.
+> Commits `c4a3859` → `809e662`. Three migrations applied to the live MySQL database.
+> Six further defects were caught while verifying and are fixed too — see §1b.
 > Five items have a follow-up that needs Amer — they are marked **↩ needs Amer** and
-> restated in section 2. Nothing is blocked; those are refinements on top of working code.
+> restated in §2a. Nothing is blocked; those are refinements on top of working code.
 
 ---
 
