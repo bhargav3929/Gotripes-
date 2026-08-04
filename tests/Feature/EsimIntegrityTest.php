@@ -133,11 +133,19 @@ class EsimIntegrityTest extends TestCase
             'payment_status'  => 'paid',
         ]);
 
+        $unit = $order->units()->create([
+            'unit_number'        => 1,
+            'monty_order_id'     => 'MO-TEST-1',
+            'monty_iccid'        => '892200650000117237',
+            'reservation_status' => 'completed',
+            'activation_code'    => 'LPA:1$example.rsp.com$2D29D-314C0-9FDC8-5038B',
+            'smdp_address'       => 'example.rsp.com',
+            'matching_id'        => '2D29D-314C0-9FDC8-5038B',
+        ]);
+
         $rendered = (new \App\Mail\EsimQrMail(
             order: $order,
-            activationCode: 'LPA:1$example.rsp.com$2D29D-314C0-9FDC8-5038B',
-            smdpAddress: 'example.rsp.com',
-            matchingId: '2D29D-314C0-9FDC8-5038B',
+            units: collect([$unit]),
         ))->render();
 
         $this->assertStringContainsString($order->order_reference, $rendered);
@@ -145,6 +153,62 @@ class EsimIntegrityTest extends TestCase
         $this->assertStringContainsString('2D29D-314C0-9FDC8-5038B', $rendered);
         // Manual install must always be possible, not just the QR image.
         $this->assertStringContainsString('892200650000117237', $rendered);
+
+        // The customer is told how to actually switch the thing on. Shipping
+        // credentials with no instructions is what generated the support calls.
+        $this->assertStringContainsString('iPhone', $rendered);
+        $this->assertStringContainsString('Samsung', $rendered);
+        $this->assertStringContainsString('Data Roaming ON', $rendered);
+    }
+
+    /**
+     * A tour operator buys one plan for a coachload and must get every QR in
+     * the one email — otherwise they are stitching twenty messages together at
+     * the airport, which is the whole reason group buying exists.
+     */
+    public function test_group_order_email_carries_every_esim(): void
+    {
+        $order = EsimOrder::create([
+            'company_id'      => 1,
+            'order_reference' => 'ORDESIM-GRP-' . uniqid(),
+            'customer_name'   => 'Test Tour Operator',
+            'customer_email'  => 'ops@example.com',
+            'country_code'    => 'THA',
+            'country_name'    => 'Thailand',
+            'bundle_code'     => 'THA_TEST',
+            'bundle_name'     => 'Thailand 1GB 7 Days',
+            'quantity'        => 3,
+            'data_amount'     => '1 GB',
+            'validity_days'   => 7,
+            'monty_cost_price' => 7.31,
+            'unit_selling_price' => 8.77,
+            'selling_price'   => 26.31,
+            'currency'        => 'AED',
+            'payment_status'  => 'paid',
+        ]);
+
+        $units = collect(range(1, 3))->map(fn ($n) => $order->units()->create([
+            'unit_number'        => $n,
+            'monty_order_id'     => 'MO-GRP-' . $n,
+            'monty_iccid'        => '89220065000011723' . $n,
+            'reservation_status' => 'completed',
+            'smdp_address'       => 'example.rsp.com',
+            'matching_id'        => 'CODE-' . $n,
+        ]));
+
+        $rendered = (new \App\Mail\EsimQrMail(order: $order, units: $units))->render();
+
+        // Every eSIM present, each with its own activation code and ICCID.
+        foreach ([1, 2, 3] as $n) {
+            $this->assertStringContainsString('CODE-' . $n, $rendered);
+            $this->assertStringContainsString('89220065000011723' . $n, $rendered);
+            $this->assertStringContainsString("eSIM {$n} of 3", $rendered);
+        }
+
+        // Three distinct embedded QR images, not the same one repeated.
+        $this->assertSame(3, substr_count($rendered, 'cid:esim-qr-'));
+
+        $this->assertStringContainsString('3 eSIMs are ready', $rendered);
     }
 
     public function test_reconcile_command_is_registered(): void
