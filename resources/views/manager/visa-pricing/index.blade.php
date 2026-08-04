@@ -67,6 +67,14 @@
         margin-top: 0;
     }
 
+    /* Deposit inputs on an existing package row. Shown only for emirates that
+       take a deposit; the JS flips this between 'flex' and 'none'. */
+    .pkg-deposit-row {
+        display: none;
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+
     .pkg-meta {
         font-size: 11px;
         color: var(--wp-text-muted);
@@ -243,7 +251,10 @@
                                             <textarea class="wp-input mb-1" name="description" form="pkg-update-{{ $p->id }}" rows="1" maxlength="1000" placeholder="Description...">{{ $p->description }}</textarea>
                                             <input type="text" class="wp-input mb-1" name="supplier_email" value="{{ $p->supplier_email }}" form="pkg-update-{{ $p->id }}" placeholder="Supplier email(s)">
                                             <input type="text" class="wp-input mb-1" name="company_email" value="{{ $p->company_email }}" form="pkg-update-{{ $p->id }}" placeholder="Our company email">
-                                            <div class="d-flex gap-1 pkg-deposit-row" data-emirate="{{ $p->emirates_id }}">
+                                            {{-- No .d-flex here: Bootstrap declares it !important, which
+                                                 beats the inline display:none the visibility toggle sets.
+                                                 The row lays itself out via .pkg-deposit-row instead. --}}
+                                            <div class="pkg-deposit-row" data-emirate="{{ $p->emirates_id }}">
                                                 <input type="number" class="wp-input" name="security_deposit" value="{{ $p->security_deposit }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Deposit (AED)">
                                                 <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ $p->deposit_admin_fee }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Processing fee">
                                             </div>

@@ -484,13 +484,16 @@
             background-color: var(--wp-body-bg) !important;
             color: var(--wp-text) !important;
         }
+        /* Multi-selects keep a slightly narrower bar than the page, but gold
+           like everything else — this was the last grey thumb left. */
         select[multiple]::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
             background-color: var(--wp-body-bg);
         }
         select[multiple]::-webkit-scrollbar-thumb {
-            background-color: var(--wp-sidebar-hover);
-            border-radius: 4px;
+            background-color: var(--wp-primary);
+            border: 2px solid var(--wp-body-bg);
+            border-radius: 6px;
         }
         select[multiple]::-webkit-scrollbar-track {
             background-color: var(--wp-body-bg);
