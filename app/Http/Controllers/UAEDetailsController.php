@@ -51,7 +51,9 @@ class UAEDetailsController extends Controller
 
         // Redirect old ?id=&emirateId= URLs to clean slugs
         if ($id && $emirateId) {
-            $activity = UAEActivity::find($id);
+            // Hidden activities do not get redirected to a pretty URL either —
+            // they fall through to the 404 below.
+            $activity = UAEActivity::listed()->find($id);
             $emirate = Emirates::where('emiratesID', $emirateId)->where('isActive', 1)->first();
 
             if ($activity && $emirate) {
@@ -69,12 +71,14 @@ class UAEDetailsController extends Controller
         $activityAdultPrice = 0;
 
         if ($id) {
-            $activity = UAEActivity::find($id);
-            $detail = $activity ? $activity->details : null;
+            // listed(), not find(): this legacy ?id= page would otherwise still
+            // show and sell an activity a manager has hidden, because it looks
+            // it up straight by primary key.
+            $activity = UAEActivity::listed()->find($id);
+            abort_unless($activity, 404);
 
-            if ($activity) {
-                $activityAdultPrice = ($activity->activityPrice !== null) ? (float) $activity->activityPrice : 0;
-            }
+            $detail = $activity->details;
+            $activityAdultPrice = ($activity->activityPrice !== null) ? (float) $activity->activityPrice : 0;
 
             if ($detail && !empty($detail->activityImage)) {
                 $activityImages = array_filter(
