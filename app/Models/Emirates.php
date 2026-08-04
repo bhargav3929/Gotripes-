@@ -57,6 +57,7 @@ class Emirates extends Model
                 // are counted alongside the tenant's own activities.
                 $query->withoutGlobalScope(\App\Scopes\CompanyScope::class)
                       ->where('isActive', 1)
+                      ->where('isVisible', 1)
                       ->where(function ($q) use ($companyId) {
                           $q->where('company_id', $companyId)
                             ->orWhereNull('company_id');
@@ -78,6 +79,7 @@ class Emirates extends Model
             ->withCount(['activities' => function ($q) use ($companyId) {
                 $q->withoutGlobalScope(\App\Scopes\CompanyScope::class)
                   ->where('isActive', 1)
+                  ->where('isVisible', 1)
                   ->where(function ($q2) use ($companyId) {
                       $q2->where('company_id', $companyId)->orWhereNull('company_id');
                   });

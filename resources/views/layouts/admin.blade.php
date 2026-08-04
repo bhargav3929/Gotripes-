@@ -129,18 +129,46 @@
             visibility: visible;
         }
 
-        /* Sidebar Scrollbar */
-        .sidebar::-webkit-scrollbar {
-            width: 4px;
+        /* ── Scrollbars ─────────────────────────────
+           Deliberately wide and gold. The default thin grey thumb was
+           invisible against the dark theme, so admins were tabbing
+           down forms instead of scrolling them. */
+        * {
+            scrollbar-width: auto;
+            scrollbar-color: var(--primary-gold) var(--darker-bg);
         }
 
-        .sidebar::-webkit-scrollbar-track {
+        ::-webkit-scrollbar {
+            width: 14px;
+            height: 14px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker-bg);
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gold);
+            border-radius: 8px;
+            border: 3px solid var(--darker-bg);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-gold-hover, #FFA500);
+        }
+
+        ::-webkit-scrollbar-corner {
             background: var(--darker-bg);
         }
 
+        /* Sidebar Scrollbar — same look, narrower so it does not crowd the rail */
+        .sidebar::-webkit-scrollbar {
+            width: 10px;
+        }
+
         .sidebar::-webkit-scrollbar-thumb {
-            background: var(--primary-gold);
-            border-radius: 2px;
+            border-width: 2px;
         }
 
         /* Sidebar Logo */

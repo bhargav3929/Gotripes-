@@ -81,6 +81,10 @@ class UAEVisaController extends Controller
         $infantPrice = 0.0;
         $packageName = null;
         $emirateName = $request->input('selected_emirate');
+        // Hoisted so the deposit and the notification fan-out below can read the
+        // package's own supplier/company addresses and deposit amount. Stays null
+        // on the legacy flat-price path, where the company settings still apply.
+        $package = null;
 
         if ($packageId) {
             $package = UAEVisaPackage::findOrFail($packageId);
@@ -133,16 +137,24 @@ class UAEVisaController extends Controller
 
         // Determine if Sharjah Visa processing is selected
         $isSharjah = strtolower($emirateName) === 'sharjah';
-        // Refundable deposit per applicant — admin-configured. Defaults to 0
-        // (no deposit) until a manager sets a positive amount.
-        $sharjahDeposit = current_company()?->getSetting('visa_sharjah_deposit', 0);
-        $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0.0;
-        // Non-refundable admin/processing fee deducted from the deposit at refund
-        // time. Clamped to the deposit so the refundable amount can never go
-        // negative even if the setting is edited to an inconsistent value.
-        $sharjahAdminFee = current_company()?->getSetting('visa_sharjah_deposit_admin_fee', 0);
-        $sharjahAdminFee = is_numeric($sharjahAdminFee) ? (float) $sharjahAdminFee : 0.0;
-        $sharjahAdminFee = max(0.0, min($sharjahAdminFee, $sharjahDeposit));
+        // Refundable deposit per applicant. Read from the selected package when
+        // there is one — a package can set its own amount, or 0 for no deposit —
+        // and otherwise from the company-wide setting, which is what the legacy
+        // flat-price path has always used. Defaults to 0.
+        if ($package) {
+            $sharjahDeposit  = $package->depositPerApplicant();
+            // Never exceeds the deposit; the model already clamps it.
+            $sharjahAdminFee = $package->depositAdminFee();
+        } else {
+            $sharjahDeposit = current_company()?->getSetting('visa_sharjah_deposit', 0);
+            $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0.0;
+            // Non-refundable admin/processing fee deducted from the deposit at
+            // refund time. Clamped to the deposit so the refundable amount can
+            // never go negative even if the setting is inconsistent.
+            $sharjahAdminFee = current_company()?->getSetting('visa_sharjah_deposit_admin_fee', 0);
+            $sharjahAdminFee = is_numeric($sharjahAdminFee) ? (float) $sharjahAdminFee : 0.0;
+            $sharjahAdminFee = max(0.0, min($sharjahAdminFee, $sharjahDeposit));
+        }
 
         $depositAmount = $isSharjah ? $sharjahDeposit : 0.00;
         // The customer is charged the full deposit; what comes back later is the
@@ -285,16 +297,35 @@ class UAEVisaController extends Controller
             }
         }
 
-        // Email notifications loop
+        // Email notifications loop.
+        //
+        // Three parties are told about every application: the customer, the
+        // supplier who fulfils it, and whoever on our side owns this visa type.
+        // The addresses come off the selected package first so different visa
+        // types can go to different suppliers and different staff, and fall back
+        // to the company-wide settings for the legacy flat-price path.
         $company = current_company();
-        $supplierEmail = $company?->getSetting('visa_supplier_email');
+
+        if ($package) {
+            $supplierEmails = $package->supplierEmails();
+            $companyEmails  = $package->companyEmails();
+        } else {
+            $supplierEmails = parse_emails($company?->getSetting('visa_supplier_email'));
+            $companyEmails  = parse_emails($company?->getSetting('visa_company_email') ?: $company?->email);
+        }
+
+        // A supplier who is also listed as our own address should not get two
+        // identical copies of the same application.
+        $companyEmails = array_values(array_diff($companyEmails, $supplierEmails));
 
         foreach ($createdRecords as $rec) {
+            $mailFor = fn() => new UAEVVisaMail($rec->toArray(), $rec->UAEV_passport_copy, $rec->UAEV_passport_photo);
+
             // Never let a mail failure break the booking — but never swallow it
             // silently either. These were previously empty catch blocks, which is
             // why undelivered confirmations went unnoticed.
             try {
-                Mail::to($rec->UAEV_email)->send(new UAEVVisaMail($rec->toArray(), $rec->UAEV_passport_copy, $rec->UAEV_passport_photo));
+                Mail::to($rec->UAEV_email)->send($mailFor());
             } catch (\Throwable $e) {
                 Log::error('UAE visa customer email failed', [
                     'application_id' => $rec->id,
@@ -303,15 +334,17 @@ class UAEVisaController extends Controller
                 ]);
             }
 
-            if ($supplierEmail) {
-                try {
-                    Mail::to($supplierEmail)->send(new UAEVVisaMail($rec->toArray(), $rec->UAEV_passport_copy, $rec->UAEV_passport_photo));
-                } catch (\Throwable $e) {
-                    Log::error('UAE visa supplier email failed', [
-                        'application_id' => $rec->id,
-                        'to'             => $supplierEmail,
-                        'error'          => $e->getMessage(),
-                    ]);
+            foreach ([['supplier', $supplierEmails], ['company', $companyEmails]] as [$role, $recipients]) {
+                foreach ($recipients as $recipient) {
+                    try {
+                        Mail::to($recipient)->send($mailFor());
+                    } catch (\Throwable $e) {
+                        Log::error("UAE visa {$role} email failed", [
+                            'application_id' => $rec->id,
+                            'to'             => $recipient,
+                            'error'          => $e->getMessage(),
+                        ]);
+                    }
                 }
             }
         }

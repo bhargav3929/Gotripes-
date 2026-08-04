@@ -72,7 +72,38 @@
         }
         .sidebar-overlay.show { opacity: 1; visibility: visible; }
 
-        .wp-sidebar::-webkit-scrollbar { width: 0; }
+        /* ── Scrollbars ─────────────────────────────
+           Deliberately wide and gold. The default 6px grey thumb was
+           invisible against the dark theme, so managers were tabbing
+           down forms instead of scrolling them. */
+        * {
+            scrollbar-width: auto;
+            scrollbar-color: var(--wp-primary) #141414;
+        }
+        ::-webkit-scrollbar {
+            width: 14px;
+            height: 14px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #141414;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--wp-primary);
+            border-radius: 8px;
+            border: 3px solid #141414;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--wp-primary-hover);
+        }
+        ::-webkit-scrollbar-corner {
+            background: #141414;
+        }
+
+        /* The sidebar gets the same treatment, slightly narrower so it
+           does not crowd the 220px rail. */
+        .wp-sidebar::-webkit-scrollbar { width: 10px; }
+        .wp-sidebar::-webkit-scrollbar-thumb { border-width: 2px; }
 
         /* Brand */
         .sidebar-brand {

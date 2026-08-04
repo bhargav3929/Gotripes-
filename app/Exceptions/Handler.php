@@ -44,5 +44,39 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        // A stale CSRF token used to surface to customers as a bare
+        // "CSRF token mismatch" / 419 page part-way through a visa application,
+        // with their form data gone and no idea what to do. The visa form is
+        // long — several applicants, passport scans — so a session can lapse
+        // while it is being filled in.
+        //
+        // AJAX submits (the visa and eSIM forms both post this way) now get a
+        // JSON body carrying a fresh token, so the page can retry silently
+        // instead of dead-ending. Normal page posts bounce back to the form
+        // with an explanation rather than a stack-trace page.
+        //
+        // Matched on the 419 HttpException rather than TokenMismatchException:
+        // Laravel 10 runs prepareException() before the renderable callbacks,
+        // so by this point the token exception has already been converted and a
+        // TokenMismatchException type hint would never fire.
+        $this->renderable(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, $request) {
+            if ($e->getStatusCode() !== 419) {
+                return null;
+            }
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success'   => false,
+                    'csrf'      => true,
+                    'csrf_token' => csrf_token(),
+                    'message'   => 'Your session timed out. Please try again — your details are still on the page.',
+                ], 419);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except($this->dontFlash))
+                ->with('error', 'Your session timed out before the form was submitted. Please check your details and submit again.');
+        });
     }
 }

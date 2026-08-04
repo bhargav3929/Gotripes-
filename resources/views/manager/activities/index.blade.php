@@ -62,6 +62,34 @@
         border-radius: 2px;
         vertical-align: middle;
     }
+
+    /* Storefront visibility — a hidden activity still exists, it just is not
+       being sold right now, so the row is dimmed rather than struck out. */
+    .vis-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        padding: 3px 9px;
+        border-radius: 10px;
+        white-space: nowrap;
+    }
+    .vis-pill-live {
+        background: rgba(0, 163, 42, 0.14);
+        color: #4ade80;
+    }
+    .vis-pill-live .fa-circle {
+        font-size: 6px;
+    }
+    .vis-pill-hidden {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--wp-text-muted);
+    }
+    tr.row-hidden td:not(:last-child):not(:nth-last-child(2)) {
+        opacity: 0.45;
+    }
 </style>
 @endpush
 
@@ -111,12 +139,13 @@
                         <th style="width: 140px;">Emirate</th>
                         <th style="width: 120px;">Location</th>
                         <th style="width: 100px;">Price</th>
-                        <th style="width: 140px;">Actions</th>
+                        <th style="width: 90px;">Website</th>
+                        <th style="width: 190px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($uaeActivities as $index => $activity)
-                    <tr>
+                    <tr @if(!$activity->isVisible) class="row-hidden" @endif>
                         <td style="color: var(--wp-text-muted);">{{ $uaeActivities->firstItem() + $index }}</td>
                         <td>
                             @if($activity->activityImage)
@@ -151,10 +180,14 @@
                             @endif
                         </td>
                         <td>
+                            @include('manager.activities._visibility-badge', ['activity' => $activity])
+                        </td>
+                        <td>
                             <div style="display: flex; gap: 6px;">
                                 <a href="{{ route('manager.activities.edit', $activity->activityID) }}" class="wp-btn wp-btn-secondary wp-btn-sm">
                                     <i class="fas fa-pen"></i> Edit
                                 </a>
+                                @include('manager.activities._visibility-toggle', ['activity' => $activity])
                                 <form action="{{ route('manager.activities.destroy', $activity->activityID) }}" method="POST"
                                       onsubmit="return confirm('Delete this activity?');">
                                     @csrf @method('DELETE')
@@ -167,7 +200,7 @@
                     </tr>
                     @empty
                     <tr class="empty-row">
-                        <td colspan="7">
+                        <td colspan="8">
                             <div style="padding: 20px 0;">
                                 <i class="fas fa-landmark" style="font-size: 28px; color: var(--wp-border); margin-bottom: 8px; display: block;"></i>
                                 No UAE activities yet.
@@ -210,12 +243,13 @@
                         <th>Activity Name</th>
                         <th style="width: 120px;">Location</th>
                         <th style="width: 100px;">Price</th>
-                        <th style="width: 140px;">Actions</th>
+                        <th style="width: 90px;">Website</th>
+                        <th style="width: 190px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($ct['activities'] as $index => $activity)
-                    <tr>
+                    <tr @if(!$activity->isVisible) class="row-hidden" @endif>
                         <td style="color: var(--wp-text-muted);">{{ $ct['activities']->firstItem() + $index }}</td>
                         <td>
                             @if($activity->activityImage)
@@ -243,10 +277,14 @@
                             @endif
                         </td>
                         <td>
+                            @include('manager.activities._visibility-badge', ['activity' => $activity])
+                        </td>
+                        <td>
                             <div style="display: flex; gap: 6px;">
                                 <a href="{{ route('manager.activities.edit', $activity->activityID) }}" class="wp-btn wp-btn-secondary wp-btn-sm">
                                     <i class="fas fa-pen"></i> Edit
                                 </a>
+                                @include('manager.activities._visibility-toggle', ['activity' => $activity])
                                 <form action="{{ route('manager.activities.destroy', $activity->activityID) }}" method="POST"
                                       onsubmit="return confirm('Delete this activity?');">
                                     @csrf @method('DELETE')
@@ -259,7 +297,7 @@
                     </tr>
                     @empty
                     <tr class="empty-row">
-                        <td colspan="6">
+                        <td colspan="7">
                             <div style="padding: 20px 0;">
                                 @if($ct['flagSrc'])
                                     <img src="{{ $ct['flagSrc'] }}" style="width:32px; height:22px; object-fit:cover; border-radius:3px; margin-bottom:8px; display:block; margin-left:auto; margin-right:auto; opacity:0.4;">

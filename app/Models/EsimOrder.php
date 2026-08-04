@@ -31,10 +31,12 @@ class EsimOrder extends Model
         'country_name',
         'bundle_code',
         'bundle_name',
+        'quantity',           // how many eSIMs this one order covers
         'data_amount',
         'validity_days',
-        'monty_cost_price',   // what the bundle costs us, in AED
-        'selling_price',      // what the customer pays, in AED
+        'monty_cost_price',   // what the bundle costs us, in AED (per unit)
+        'selling_price',      // order total the customer pays, in AED
+        'unit_selling_price', // price of a single eSIM, in AED
         'currency',
         'monty_order_id',     // provider order id, set once assigned
         'monty_iccid',
@@ -46,10 +48,24 @@ class EsimOrder extends Model
     ];
 
     protected $casts = [
-        'monty_response'   => 'array',
-        'isActive'         => 'boolean',
-        'monty_cost_price' => 'decimal:2',
-        'selling_price'    => 'decimal:2',
-        'qr_sent_at'       => 'datetime',
+        'monty_response'     => 'array',
+        'isActive'           => 'boolean',
+        'monty_cost_price'   => 'decimal:2',
+        'selling_price'      => 'decimal:2',
+        'unit_selling_price' => 'decimal:2',
+        'quantity'           => 'integer',
+        'qr_sent_at'         => 'datetime',
     ];
+
+    /** The individual eSIMs this order covers, in purchase order. */
+    public function units()
+    {
+        return $this->hasMany(EsimOrderUnit::class, 'esim_order_id')->orderBy('unit_number');
+    }
+
+    /** How many eSIMs this order covers. Older rows predate the column. */
+    public function unitCount(): int
+    {
+        return max(1, (int) ($this->quantity ?: 1));
+    }
 }

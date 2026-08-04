@@ -1753,10 +1753,14 @@
     .esim-checkout-grid {
         display: flex;
         align-items: flex-start;
-        gap: 28px;
-        max-width: 960px;
+        gap: 32px;
+        /* Was 960px, which squeezed the form into a narrow column and pushed
+           the Pay button below the fold on a laptop. Using the horizontal
+           space the page already has brings the whole checkout — details,
+           summary and Pay — into one screen. */
+        max-width: 1320px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 24px;
     }
 
     /* Back button */
@@ -1782,6 +1786,105 @@
 
     .esim-back-btn i {
         font-size: 11px;
+    }
+
+    /* ── Quantity picker ─────────────────────────────────────────
+       A stepper for fine adjustment plus one-tap presets, because the
+       common case is a tour operator typing a round group size. */
+    .esim-qty-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .esim-qty-stepper {
+        display: inline-flex;
+        align-items: stretch;
+        border: 1px solid rgba(255, 215, 0, 0.22);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--c-input-bg, #111);
+    }
+
+    .esim-qty-btn {
+        width: 42px;
+        border: none;
+        background: transparent;
+        color: var(--c-gold);
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .esim-qty-btn:hover:not(:disabled) {
+        background: rgba(255, 215, 0, 0.12);
+    }
+
+    .esim-qty-btn:disabled {
+        color: rgba(255, 255, 255, 0.22);
+        cursor: not-allowed;
+    }
+
+    .esim-qty-input {
+        width: 68px;
+        padding: 12px 0;
+        border: none;
+        border-left: 1px solid rgba(255, 215, 0, 0.16);
+        border-right: 1px solid rgba(255, 215, 0, 0.16);
+        background: transparent;
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        outline: none;
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+
+    .esim-qty-input::-webkit-outer-spin-button,
+    .esim-qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .esim-qty-presets {
+        display: flex;
+        gap: 6px;
+    }
+
+    .esim-qty-preset {
+        min-width: 40px;
+        padding: 9px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.65);
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+    }
+
+    .esim-qty-preset:hover {
+        color: #fff;
+        border-color: rgba(255, 215, 0, 0.35);
+    }
+
+    .esim-qty-preset.active {
+        background: rgba(255, 215, 0, 0.12);
+        border-color: var(--c-gold);
+        color: var(--c-gold);
+    }
+
+    .esim-qty-help {
+        margin: 8px 0 0;
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.45);
     }
 
     /* Order Summary Card - Right Side */
@@ -2216,7 +2319,9 @@
 
     /* Checkout Form Styles - Left Side */
     .esim-checkout-form-side {
-        flex: 1;
+        /* The details form carries more fields than the summary, so it takes
+           the larger share of the widened row rather than an even split. */
+        flex: 1.35;
         min-width: 0;
         background: linear-gradient(180deg, rgba(18, 18, 18, 1) 0%, rgba(12, 12, 12, 1) 100%);
         border: 1px solid rgba(255, 215, 0, 0.12);
@@ -2816,6 +2921,169 @@
         font-weight: 300;
         color: var(--c-text-muted);
         line-height: 1.6;
+    }
+
+    /* ============================================================
+       ACTIVATION INSTRUCTIONS
+       ============================================================ */
+    .esim-install-section {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 96px 24px;
+        text-align: center;
+    }
+
+    .esim-install-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border: 1px solid rgba(255, 215, 0, 0.28);
+        border-radius: 999px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: var(--c-gold);
+        margin-bottom: 18px;
+    }
+
+    .esim-install-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: clamp(28px, 3.4vw, 42px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        color: #fff;
+        margin: 0 0 12px;
+    }
+
+    .esim-install-subtitle {
+        max-width: 560px;
+        margin: 0 auto 40px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        line-height: 1.65;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    .esim-install-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+
+    .esim-install-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 20px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.6);
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .esim-install-tab:hover {
+        color: #fff;
+        border-color: rgba(255, 215, 0, 0.35);
+    }
+
+    .esim-install-tab.active {
+        background: rgba(255, 215, 0, 0.1);
+        border-color: var(--c-gold);
+        color: var(--c-gold);
+    }
+
+    .esim-install-panel {
+        display: none;
+        text-align: left;
+        background: linear-gradient(180deg, rgba(18, 18, 18, 1) 0%, rgba(12, 12, 12, 1) 100%);
+        border: 1px solid rgba(255, 215, 0, 0.12);
+        border-radius: 14px;
+        padding: 32px;
+    }
+
+    .esim-install-panel.active {
+        display: block;
+    }
+
+    .esim-install-note {
+        margin: 0 0 22px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        line-height: 1.65;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .esim-install-note strong,
+    .esim-install-steps strong {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .esim-install-steps {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: esim-step;
+    }
+
+    .esim-install-steps li {
+        counter-increment: esim-step;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+    .esim-install-steps li:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .esim-install-steps li::before {
+        content: counter(esim-step);
+        flex: 0 0 28px;
+        height: 28px;
+        border-radius: 14px;
+        background: rgba(255, 215, 0, 0.12);
+        color: var(--c-gold);
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 28px;
+        text-align: center;
+    }
+
+    .esim-install-footnote {
+        max-width: 620px;
+        margin: 28px auto 0;
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        line-height: 1.6;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.38);
+    }
+
+    @media (max-width: 640px) {
+        .esim-install-section { padding: 64px 18px; }
+        .esim-install-panel { padding: 22px 18px; }
+        .esim-install-tab { padding: 10px 15px; font-size: 13px; }
     }
 
     /* ============================================================
@@ -3841,7 +4109,7 @@
                 </div>
                 <div class="esim-trust-pill">
                     <i class="fa-solid fa-globe"></i>
-                    180+ Countries
+                    186 Countries
                 </div>
                 <div class="esim-trust-pill">
                     <i class="fa-solid fa-shield-check"></i>
@@ -4040,11 +4308,41 @@
                             </div>
                             <span class="esim-error" id="esimPhoneError">Please enter a valid phone number</span>
                         </div>
+
+                        {{-- Group buying. A tour operator moving a coachload cannot
+                             check out once per passenger, so one order covers the
+                             whole group and every QR arrives in the same email. --}}
+                        <div class="esim-form-group">
+                            <label class="esim-label">How many eSIMs?</label>
+                            <div class="esim-qty-row">
+                                <div class="esim-qty-stepper">
+                                    <button type="button" class="esim-qty-btn" id="esimQtyMinus" aria-label="One fewer eSIM">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </button>
+                                    <input type="number" id="esimQty" class="esim-qty-input" value="1" min="1" max="50" step="1"
+                                           inputmode="numeric" aria-label="Number of eSIMs">
+                                    <button type="button" class="esim-qty-btn" id="esimQtyPlus" aria-label="One more eSIM">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="esim-qty-presets">
+                                    <button type="button" class="esim-qty-preset" data-qty="1">1</button>
+                                    <button type="button" class="esim-qty-preset" data-qty="5">5</button>
+                                    <button type="button" class="esim-qty-preset" data-qty="10">10</button>
+                                    <button type="button" class="esim-qty-preset" data-qty="20">20</button>
+                                </div>
+                            </div>
+                            <p class="esim-qty-help" id="esimQtyHelp">
+                                Buying for a group? Set the number of travellers — you pay once and
+                                every QR code arrives in a single email.
+                            </p>
+                            <span class="esim-error" id="esimQtyError">Choose between 1 and 50 eSIMs</span>
+                        </div>
                     </div>
 
                     <div class="esim-checkout-notice">
                         <i class="fa-solid fa-bolt"></i>
-                        <span>Your eSIM QR code will be delivered instantly to your email after payment.</span>
+                        <span id="esimCheckoutNoticeText">Your eSIM QR code will be delivered instantly to your email after payment.</span>
                     </div>
                 </div>
 
@@ -4085,6 +4383,12 @@
                             <!-- Bottom: Pricing & Payment (sticky to bottom) -->
                             <div class="esim-summary-footer">
                                 <div class="esim-summary-pricing">
+                                    {{-- Only shown once more than one eSIM is selected, so a
+                                         single-eSIM buyer sees exactly what they saw before. --}}
+                                    <div class="esim-price-row" id="esimSummaryQtyRow" style="display:none;">
+                                        <span id="esimSummaryQtyLabel">eSIMs</span>
+                                        <span id="esimSummaryQtyValue">1</span>
+                                    </div>
                                     <div class="esim-price-row">
                                         <span>Subtotal</span>
                                         <span id="esimSummarySubtotal">AED 0.00</span>
@@ -4180,6 +4484,77 @@
             <p class="esim-how-card-desc">Complete your secure payment. Your QR code is emailed instantly — activate and start browsing right away!</p>
         </div>
     </div>
+</section>
+
+<!-- ============================================================
+     ACTIVATION INSTRUCTIONS
+     The same steps that ship inside the QR email, published here so a
+     customer can see what installing actually involves before they buy.
+     ============================================================ -->
+<section class="esim-install-section" id="esimInstall">
+    <div class="esim-install-badge esim-reveal">ACTIVATION</div>
+    <h2 class="esim-install-title esim-reveal">Installing Your eSIM</h2>
+    <p class="esim-install-subtitle esim-reveal">
+        Pick your phone. The same steps arrive with your QR code by email — do it
+        before you fly, while you still have Wi-Fi.
+    </p>
+
+    <div class="esim-install-tabs esim-reveal" role="tablist">
+        <button type="button" class="esim-install-tab active" data-panel="iphone" role="tab" aria-selected="true">
+            <i class="fa-brands fa-apple"></i> iPhone
+        </button>
+        <button type="button" class="esim-install-tab" data-panel="android" role="tab" aria-selected="false">
+            <i class="fa-brands fa-android"></i> Samsung &amp; Android
+        </button>
+        <button type="button" class="esim-install-tab" data-panel="manual" role="tab" aria-selected="false">
+            <i class="fa-solid fa-keyboard"></i> Manual entry
+        </button>
+    </div>
+
+    <div class="esim-install-panels">
+        <div class="esim-install-panel active" data-panel="iphone" role="tabpanel">
+            <ol class="esim-install-steps">
+                <li><span>Open <strong>Settings</strong> → <strong>Mobile Service</strong> (or <strong>Cellular</strong>).</span></li>
+                <li><span>Tap <strong>Add eSIM</strong> → <strong>Use QR Code</strong>.</span></li>
+                <li><span>Scan the QR code from your email, opened on a laptop or a second phone.</span></li>
+                <li><span>Name the plan <strong>Travel</strong> so you can tell it apart from your home SIM.</span></li>
+                <li><span>Keep your home number as <strong>Default</strong> for calls; set <strong>Travel</strong> for <strong>Mobile Data</strong>.</span></li>
+                <li><span>Turn <strong>Data Roaming ON</strong> for the Travel plan — the eSIM will not connect without it.</span></li>
+            </ol>
+        </div>
+
+        <div class="esim-install-panel" data-panel="android" role="tabpanel">
+            <ol class="esim-install-steps">
+                <li><span>Open <strong>Settings</strong> → <strong>Connections</strong> → <strong>SIM manager</strong>.</span></li>
+                <li><span>Tap <strong>Add eSIM</strong> → <strong>Scan QR code from service provider</strong>.</span></li>
+                <li><span>Scan the QR code from your email, then tap <strong>Add</strong> and confirm.</span></li>
+                <li><span>Under <strong>Mobile data</strong>, choose the new eSIM.</span></li>
+                <li><span>Turn <strong>Data roaming ON</strong> for it, then restart the phone once.</span></li>
+            </ol>
+        </div>
+
+        <div class="esim-install-panel" data-panel="manual" role="tabpanel">
+            <p class="esim-install-note">
+                No second screen to scan from? Your email also carries an
+                <strong>SM-DP+ address</strong> and an <strong>activation code</strong>.
+                Typing those two in works exactly the same, and needs no app.
+            </p>
+            <ol class="esim-install-steps">
+                <li><span>Go to the same <strong>Add eSIM</strong> screen on your phone.</span></li>
+                <li><span>Choose <strong>Enter details manually</strong>.</span></li>
+                <li><span>Copy the <strong>SM-DP+ address</strong> from your email into the first field.</span></li>
+                <li><span>Copy the <strong>activation code</strong> into the second field.</span></li>
+                <li><span>Leave any "confirmation code" field blank unless your phone insists on one.</span></li>
+                <li><span>Turn <strong>Data roaming ON</strong> for the new plan.</span></li>
+            </ol>
+        </div>
+    </div>
+
+    <p class="esim-install-footnote esim-reveal">
+        Most phones from the last few years support eSIM — iPhone XS and newer,
+        Samsung Galaxy S20 and newer, Google Pixel 3 and newer. Your phone must
+        also be carrier-unlocked.
+    </p>
 </section>
 
 <!-- ============================================================
@@ -4908,16 +5283,125 @@
         }
         document.getElementById('esimSummaryBadges').innerHTML = badgeHtml;
 
-        document.getElementById('esimSummarySubtotal').textContent = fmtPrice(price);
-        document.getElementById('esimSummaryTotal').textContent = fmtPrice(price);
-        document.getElementById('esimSummaryTotalBottom').textContent = fmtPrice(price);
+        // One order can cover a whole group, so the totals are per-unit price
+        // multiplied by the chosen quantity.
+        var qty = getEsimQty();
+        var total = round2(price * qty);
+
+        var qtyRow = document.getElementById('esimSummaryQtyRow');
+        if (qtyRow) {
+            qtyRow.style.display = qty > 1 ? '' : 'none';
+            document.getElementById('esimSummaryQtyLabel').textContent =
+                fmtPrice(price) + ' × ' + qty;
+            document.getElementById('esimSummaryQtyValue').textContent = qty + ' eSIMs';
+        }
+
+        var notice = document.getElementById('esimCheckoutNoticeText');
+        if (notice) {
+            notice.textContent = qty > 1
+                ? 'All ' + qty + ' eSIM QR codes will be delivered instantly to your email in one message after payment.'
+                : 'Your eSIM QR code will be delivered instantly to your email after payment.';
+        }
+
+        document.getElementById('esimSummarySubtotal').textContent = fmtPrice(total);
+        document.getElementById('esimSummaryTotal').textContent = fmtPrice(total);
+        document.getElementById('esimSummaryTotalBottom').textContent = fmtPrice(total);
 
         // Update pay button label with price
-        updatePayBtnLabel(price);
+        updatePayBtnLabel(total);
 
         // Enable pay button
         document.getElementById('esimPayBtn').disabled = false;
     }
+
+    // ── Activation instruction tabs ──────────────────────
+    document.addEventListener('DOMContentLoaded', function () {
+        var tabs = document.querySelectorAll('.esim-install-tab');
+        if (!tabs.length) return;
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var target = tab.dataset.panel;
+
+                tabs.forEach(function (t) {
+                    var on = (t === tab);
+                    t.classList.toggle('active', on);
+                    t.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+
+                document.querySelectorAll('.esim-install-panel').forEach(function (p) {
+                    p.classList.toggle('active', p.dataset.panel === target);
+                });
+            });
+        });
+    });
+
+    // ── Quantity ─────────────────────────────────────────
+    var ESIM_MAX_QTY = 50;
+
+    function round2(n) {
+        return Math.round((Number(n) || 0) * 100) / 100;
+    }
+
+    /** Current quantity, clamped to 1..ESIM_MAX_QTY. */
+    function getEsimQty() {
+        var input = document.getElementById('esimQty');
+        if (!input) return 1;
+        var n = parseInt(input.value, 10);
+        if (isNaN(n) || n < 1) n = 1;
+        if (n > ESIM_MAX_QTY) n = ESIM_MAX_QTY;
+        return n;
+    }
+
+    /** Write the quantity back, refresh the controls, and re-price the order. */
+    function setEsimQty(n) {
+        var input = document.getElementById('esimQty');
+        if (!input) return;
+
+        n = parseInt(n, 10);
+        if (isNaN(n) || n < 1) n = 1;
+        if (n > ESIM_MAX_QTY) n = ESIM_MAX_QTY;
+        input.value = n;
+
+        var minus = document.getElementById('esimQtyMinus');
+        var plus  = document.getElementById('esimQtyPlus');
+        if (minus) minus.disabled = (n <= 1);
+        if (plus)  plus.disabled  = (n >= ESIM_MAX_QTY);
+
+        document.querySelectorAll('.esim-qty-preset').forEach(function (btn) {
+            btn.classList.toggle('active', parseInt(btn.dataset.qty, 10) === n);
+        });
+
+        var err = document.getElementById('esimQtyError');
+        if (err) err.classList.remove('visible');
+
+        if (window.selectedBundle && window.selectedCountry) {
+            updateSummary();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var input = document.getElementById('esimQty');
+        if (!input) return;
+
+        document.getElementById('esimQtyMinus').addEventListener('click', function () {
+            setEsimQty(getEsimQty() - 1);
+        });
+        document.getElementById('esimQtyPlus').addEventListener('click', function () {
+            setEsimQty(getEsimQty() + 1);
+        });
+        document.querySelectorAll('.esim-qty-preset').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                setEsimQty(btn.dataset.qty);
+            });
+        });
+        // Re-clamp on blur rather than on every keystroke, so typing "20"
+        // does not snap to 2 the moment the first digit lands.
+        input.addEventListener('change', function () { setEsimQty(input.value); });
+        input.addEventListener('blur', function () { setEsimQty(input.value); });
+
+        setEsimQty(1);
+    });
 
     // ── Pay Button Label ─────────────────────────────────
     function updatePayBtnLabel(price) {
@@ -5041,7 +5525,10 @@
             })(),
             bundle_code: bundle.bundle_code,
             country_code: country.iso3,
-            country_name: country.name
+            country_name: country.name,
+            // The server re-prices from the provider and multiplies by this,
+            // so the browser never decides what the order costs.
+            quantity: getEsimQty()
         };
 
         console.log('Sending payment request:', payload);

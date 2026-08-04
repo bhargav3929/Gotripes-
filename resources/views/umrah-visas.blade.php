@@ -12,7 +12,11 @@
 
     <!-- Tab Navigation -->
     <section class="tab-section" style="background: #050505; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 100; padding: 0;">
-        <div class="container">
+        {{-- container-fluid, not container: seven uppercase tabs do not fit inside
+             a 1140px container on a 13" laptop, and the last one ("Hajj & Umrah by
+             Air") was being clipped mid-word with the scrollbar hidden, so there
+             was no way to reach it. --}}
+        <div class="container-fluid px-2 px-lg-3">
             <div class="premium-nav-tabs">
                 <a href="/saudi-visas" class="tab-btn">
                     <i class="bi bi-file-earmark-person-fill"></i> Saudi Visa
@@ -293,13 +297,16 @@
         border: none !important;
         border-bottom: 3px solid transparent !important;
         color: rgba(255, 255, 255, 0.6) !important;
-        font-size: 15px !important;
+        /* Scales down between roughly 1100px and 1600px viewports so all seven
+           tabs fit on a laptop instead of the last one being clipped. */
+        font-size: clamp(12.5px, 0.95vw, 15px) !important;
         font-weight: 600 !important;
-        padding: 18px 24px !important;
+        padding: 18px clamp(11px, 1.35vw, 24px) !important;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        flex: 0 0 auto;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         outline: none;
         border-radius: 0 !important;
@@ -308,8 +315,20 @@
         letter-spacing: 0.8px;
     }
     .tab-btn i {
-        font-size: 17px;
+        font-size: clamp(14px, 1.05vw, 17px);
         transition: transform 0.3s ease;
+    }
+    /* If the row still overflows on a very narrow window, fade the right edge
+       so it reads as "there is more here" rather than as a cut-off word. */
+    .premium-nav-tabs {
+        mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    }
+    @media (min-width: 1500px) {
+        .premium-nav-tabs {
+            mask-image: none;
+            -webkit-mask-image: none;
+        }
     }
     .tab-btn:hover {
         color: #fff !important;

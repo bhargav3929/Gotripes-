@@ -37,40 +37,108 @@ class EsimProvisioningService
             return ['success' => false, 'error' => 'Order is already provisioned.', 'skipped' => true];
         }
 
-        try {
-            $assignment = (new MontyEsimService())->assignBundle(
-                $order->bundle_code,
-                $order->customer_email,
-                $order->customer_name,
-                $order->order_reference
+        $quantity = $order->unitCount();
+        $monty    = new MontyEsimService();
+
+        $issued = [];
+        $failed = [];
+
+        for ($n = 1; $n <= $quantity; $n++) {
+            // Each eSIM is a separate assignment at the provider, so each needs
+            // its own reference. A quantity-1 order keeps the plain reference it
+            // has always used, which matters for reconciling existing orders.
+            $reference = $quantity > 1
+                ? $order->order_reference . '-' . $n
+                : $order->order_reference;
+
+            $unit = $order->units()->firstOrCreate(
+                ['unit_number' => $n],
+                ['reservation_status' => 'pending'],
             );
-        } catch (\Exception $e) {
-            $order->update([
-                'reservation_status' => 'error',
-                'monty_response' => $this->failureRecord($e->getMessage()),
-            ]);
-            Log::error('MontyeSIM API error while provisioning', [
-                'esim_order_id' => $order->id,
-                'error' => $e->getMessage(),
-            ]);
 
-            $this->notifyFailure($order, $e->getMessage());
+            // A retry should not re-buy a unit that already came through.
+            if ($unit->monty_order_id) {
+                $issued[] = $unit;
+                continue;
+            }
 
-            return ['success' => false, 'error' => $e->getMessage()];
+            try {
+                $assignment = $monty->assignBundle(
+                    $order->bundle_code,
+                    $order->customer_email,
+                    $order->customer_name,
+                    $reference
+                );
+            } catch (\Exception $e) {
+                $unit->update([
+                    'reservation_status' => 'error',
+                    'monty_response'     => $this->failureRecord($e->getMessage()),
+                ]);
+                Log::error('MontyeSIM API error while provisioning', [
+                    'esim_order_id' => $order->id,
+                    'unit_number'   => $n,
+                    'error'         => $e->getMessage(),
+                ]);
+                $failed[$n] = $e->getMessage();
+                continue;
+            }
+
+            if ($assignment['success'] ?? false) {
+                $unit->update([
+                    'monty_order_id'     => $assignment['order_id'] ?? null,
+                    'monty_iccid'        => $assignment['iccid'] ?? null,
+                    'reservation_status' => 'completed',
+                    'monty_response'     => $assignment['data'] ?? $assignment,
+                ]);
+                $issued[] = $unit;
+                continue;
+            }
+
+            $error = $assignment['error'] ?? 'Unknown';
+
+            // Keep the reason ON the record, not just in the log. The provider
+            // returns an empty body on some failures, and storing that verbatim
+            // (as this did) left the manager portal showing a failed order with
+            // no explanation — which is what happened to orders 37–39 when the
+            // reseller wallet ran dry.
+            $unit->update([
+                'reservation_status' => 'assign_failed',
+                'monty_response'     => $this->failureRecord($error, $assignment),
+            ]);
+            $failed[$n] = $error;
         }
 
-        if ($assignment['success'] ?? false) {
-            $order->update([
-                'monty_order_id' => $assignment['order_id'] ?? null,
-                'monty_iccid' => $assignment['iccid'] ?? null,
-                'reservation_status' => 'completed',
-                'monty_response' => $assignment['data'] ?? $assignment,
-            ]);
+        // Mirror the first issued unit onto the parent. Every existing guard,
+        // manager view and report reads these columns, and for a quantity-1
+        // order the result is byte-for-byte what it was before.
+        $first = $issued[0] ?? null;
 
+        if ($first) {
+            $order->update([
+                'monty_order_id'     => $first->monty_order_id,
+                'monty_iccid'        => $first->monty_iccid,
+                'reservation_status' => $failed ? 'assign_failed' : 'completed',
+                'monty_response'     => $failed
+                    ? $this->failureRecord(
+                        'Issued ' . count($issued) . ' of ' . $quantity . ' eSIMs. Failed units: '
+                        . implode('; ', array_map(fn($k, $v) => "#$k: $v", array_keys($failed), $failed))
+                      )
+                    : $first->monty_response,
+            ]);
+        } else {
+            $error = $failed ? reset($failed) : 'Unknown';
+            $order->update([
+                'reservation_status' => 'assign_failed',
+                'monty_response'     => $this->failureRecord($error),
+            ]);
+        }
+
+        if (empty($failed)) {
             Log::info('eSIM order provisioned successfully', [
-                'esim_order_id' => $order->id,
+                'esim_order_id'   => $order->id,
                 'order_reference' => $order->order_reference,
-                'monty_order_id' => $assignment['order_id'] ?? null,
+                'quantity'        => $quantity,
+                'monty_order_id'  => $first?->monty_order_id,
             ]);
 
             $this->sendQrEmail($order);
@@ -78,28 +146,25 @@ class EsimProvisioningService
             return ['success' => true];
         }
 
-        $error = $assignment['error'] ?? 'Unknown';
-
-        // Keep the reason ON the order, not just in the log. The provider
-        // returns an empty body on some failures, and storing that verbatim
-        // (as this did) left the manager portal showing a failed order with no
-        // explanation — which is exactly what happened to orders 37–39 when the
-        // reseller wallet ran dry.
-        $order->update([
-            'reservation_status' => 'assign_failed',
-            'monty_response' => $this->failureRecord($error, $assignment),
-        ]);
-
-        // The customer has paid but has no eSIM — this needs a human.
+        // The customer has paid but is short of eSIMs — this needs a human.
         Log::error('MontyeSIM assign failed after payment', [
-            'esim_order_id' => $order->id,
+            'esim_order_id'   => $order->id,
             'order_reference' => $order->order_reference,
-            'error' => $error,
+            'issued'          => count($issued),
+            'quantity'        => $quantity,
+            'failures'        => $failed,
         ]);
 
-        $this->notifyFailure($order, $error);
+        // Anything that did come through is still worth sending — a group of 20
+        // that got 18 eSIMs should receive those 18 now, not after the retry.
+        if ($issued) {
+            $this->sendQrEmail($order);
+        }
 
-        return ['success' => false, 'error' => $error];
+        $summary = count($issued) . ' of ' . $quantity . ' eSIMs issued. ' . implode('; ', $failed);
+        $this->notifyFailure($order, $summary);
+
+        return ['success' => false, 'error' => $summary];
     }
 
     /**
@@ -122,23 +187,65 @@ class EsimProvisioningService
         }
 
         try {
-            $detail = (new MontyEsimService())->getOrder($order->monty_order_id);
+            $monty = new MontyEsimService();
 
-            if (!($detail['success'] ?? false)) {
-                Log::error('Could not read eSIM activation details for the QR email', [
-                    'esim_order_id' => $order->id,
-                    'error'         => $detail['error'] ?? null,
+            // Activation details are only on the order detail endpoint, not on
+            // the assign response, so each issued unit is read back here. They
+            // are cached on the unit so a resend does not re-hit the provider
+            // once per eSIM.
+            $units = $order->units()->whereNotNull('monty_order_id')->get();
+
+            // Orders placed before quantities existed have no unit rows; treat
+            // the parent as the single unit so resend keeps working for them.
+            if ($units->isEmpty()) {
+                $units = collect([
+                    $order->units()->firstOrCreate(
+                        ['unit_number' => 1],
+                        [
+                            'monty_order_id'     => $order->monty_order_id,
+                            'monty_iccid'        => $order->monty_iccid,
+                            'reservation_status' => 'completed',
+                        ],
+                    ),
                 ]);
-                return ['success' => false, 'error' => $detail['error'] ?? 'Could not read activation details'];
             }
 
-            $d = $detail['data'];
+            foreach ($units as $unit) {
+                if ($unit->activation_code || ($unit->smdp_address && $unit->matching_id)) {
+                    continue;
+                }
 
+                $detail = $monty->getOrder($unit->monty_order_id);
+
+                if (!($detail['success'] ?? false)) {
+                    Log::error('Could not read eSIM activation details for the QR email', [
+                        'esim_order_id' => $order->id,
+                        'unit_number'   => $unit->unit_number,
+                        'error'         => $detail['error'] ?? null,
+                    ]);
+                    continue;
+                }
+
+                $d = $detail['data'];
+                $unit->update([
+                    'activation_code' => $d['activation_code'] ?? null,
+                    'smdp_address'    => $d['smdp_address'] ?? null,
+                    'matching_id'     => $d['matching_id'] ?? null,
+                ]);
+            }
+
+            $units = $units->fresh();
+
+            // Nothing readable came back for any unit — sending an email with no
+            // QR and no manual details would only generate a support call.
+            if ($units->every(fn($u) => $u->lpaString() === null)) {
+                return ['success' => false, 'error' => 'Could not read activation details'];
+            }
+
+            // One email, every QR — a tour operator gets all of them together.
             Mail::to($order->customer_email)->send(new \App\Mail\EsimQrMail(
                 order: $order,
-                activationCode: $d['activation_code'] ?? null,
-                smdpAddress: $d['smdp_address'] ?? null,
-                matchingId: $d['matching_id'] ?? null,
+                units: $units,
             ));
 
             $order->forceFill(['qr_sent_at' => now()])->save();
@@ -146,6 +253,7 @@ class EsimProvisioningService
             Log::info('eSIM QR emailed to customer', [
                 'esim_order_id' => $order->id,
                 'to'            => $order->customer_email,
+                'qr_count'      => $units->count(),
             ]);
 
             return ['success' => true];

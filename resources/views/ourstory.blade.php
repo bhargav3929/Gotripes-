@@ -26,7 +26,7 @@
                         <h2 class=" golden-heading" >ABOUT US</h2>
                         <p class="" style="">Welcome to Ayn Al Amir Tourism L.L.C, a dynamic and innovative travel agency dedicated to providing unparalleled travel solutions and consultancy services. Established in January 2024 by Mr. Amer Ali Mohammed, our company is committed to excellence and driven by a passion for travel. With over 13 years of industry experience, Mr. Mohammed has built Ayn Al Amir Tourism L.L.C into a trusted partner for individuals and businesses seeking comprehensive travel solutions.</p>
 
-                        <p class="" style="">At Ayn Al Amir Tourism L.L.C, we pride ourselves on our commitment to customer satisfaction, innovation, and continuous improvement. Our strategic partnership with Portway Systems enhances our capabilities, allowing us to offer state-of-the-art Travel Agency Management Software and Travel CRM solutions. This ensures a seamless and efficient travel experience for our clients.</p>
+                        <p class="" style="">At Ayn Al Amir Tourism L.L.C, we pride ourselves on our commitment to customer satisfaction, innovation, and continuous improvement. We build and run our own travel technology: the GoTrips platform brings visas, eSIMs, activities and Hajj &amp; Umrah bookings under one roof, so every request is handled quickly and tracked from enquiry to confirmation.</p>
                         
                         {{-- <div class="mt-35px d-flex flex-wrap" style="">
                             <a href="ourstory#" class="btn btn-large btn-dark-gray btn-hover-animation-switch btn-round-edge btn-box-shadow btn-icon-right me-30px">

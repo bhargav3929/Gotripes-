@@ -21,6 +21,7 @@ class UAEActivity extends Model
 
     protected $fillable = [
         'isActive',
+        'isVisible',
         'createdBy',
         'createdDate',
         'modifiedBy',
@@ -72,7 +73,7 @@ class UAEActivity extends Model
     public static function countriesWithActivities()
     {
         return self::publicVisible()
-            ->where('isActive', 1)
+            ->listed()
             ->get(['country'])
             ->groupBy(fn($a) => ($a->country && trim($a->country) !== '') ? trim($a->country) : 'United Arab Emirates')
             ->map(fn($group, $country) => ['country' => $country, 'activity_count' => $group->count()])
@@ -105,6 +106,16 @@ class UAEActivity extends Model
     public function scopeActive($query)
     {
         return $query->where('isActive', 1);
+    }
+
+    /**
+     * Storefront filter: live (not deleted) AND not temporarily hidden by a
+     * manager. Every visitor-facing query should use this rather than a bare
+     * isActive check, so the manager's hide switch actually takes effect.
+     */
+    public function scopeListed($query)
+    {
+        return $query->where('isActive', 1)->where('isVisible', 1);
     }
 
     // Scope for activities by emirate

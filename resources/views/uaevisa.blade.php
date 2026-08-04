@@ -1789,16 +1789,33 @@
             formData.set('infants_count', String(getInfants()));
             formData.set('selected_emirate', selectedEmirateName);
 
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                }
-            })
-                .then(res => res.json())
-                .then(data => {
+            const action = this.action;
+
+            // Post with the freshest token we have. If the session lapsed while
+            // the form was being filled in, the server hands back a new token
+            // with a 419 and we submit once more — the customer never sees the
+            // "CSRF token mismatch" page and never re-types anything.
+            const postOnce = (token) => {
+                formData.set('_token', token);
+                return fetch(action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(res => res.json().then(data => ({ status: res.status, data })));
+            };
+
+            postOnce(csrfToken())
+                .then(({ status, data }) => {
+                    if (status === 419 && data.csrf_token) {
+                        setCsrfToken(data.csrf_token);
+                        return postOnce(data.csrf_token);
+                    }
+                    return { status, data };
+                })
+                .then(({ data }) => {
                     if (data.success && data.checkout_url) {
                         window.location.href = data.checkout_url;
                     } else {
@@ -1811,6 +1828,42 @@
                     btn.innerHTML = originalText;
                 });
         });
+    });
+
+    /* ── CSRF keep-alive ───────────────────────────────────────────
+       This form is long: several applicants, passport scans, a review
+       step. A customer who starts it, gets interrupted and comes back
+       used to hit a bare 419 "CSRF token mismatch" the moment they
+       pressed submit, losing everything they had typed. Refreshing the
+       token on a timer keeps it valid for as long as the page is open. */
+    function csrfToken() {
+        const input = document.querySelector('input[name="_token"]');
+        return input ? input.value : '{{ csrf_token() }}';
+    }
+
+    function setCsrfToken(token) {
+        if (!token) return;
+        document.querySelectorAll('input[name="_token"]').forEach(i => { i.value = token; });
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) meta.setAttribute('content', token);
+    }
+
+    function refreshCsrfToken() {
+        return fetch('{{ route('csrf.token') }}', {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store',
+            credentials: 'same-origin'
+        })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => { if (d && d.token) setCsrfToken(d.token); })
+            .catch(() => { /* offline or blocked — the retry-on-419 path still covers it */ });
+    }
+
+    // Comfortably inside the default 120-minute session lifetime, and again
+    // whenever the visitor returns to the tab after leaving it open.
+    setInterval(refreshCsrfToken, 15 * 60 * 1000);
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') refreshCsrfToken();
     });
 </script>
 

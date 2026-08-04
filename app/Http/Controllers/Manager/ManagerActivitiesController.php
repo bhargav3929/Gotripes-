@@ -403,4 +403,31 @@ class ManagerActivitiesController extends Controller
         return redirect()->route('manager.activities.index')
                          ->with('success', 'Activity deleted successfully!');
     }
+
+    /**
+     * Flip an activity's storefront visibility without deleting it.
+     *
+     * Used when an attraction closes for maintenance: the record, images and
+     * pricing all stay intact, it just stops appearing on the public site
+     * until it is switched back on.
+     */
+    public function toggleVisibility($id)
+    {
+        $activity = UAEActivity::where('activityID', $id)
+                               ->where('isActive', 1)
+                               ->firstOrFail();
+
+        $activity->update([
+            'isVisible'    => $activity->isVisible ? 0 : 1,
+            'modifiedBy'   => auth()->user()?->name ?? 'manager',
+            'modifiedDate' => now(),
+        ]);
+
+        return back()->with(
+            'success',
+            $activity->isVisible
+                ? "\"{$activity->activityName}\" is live on the website again."
+                : "\"{$activity->activityName}\" is now hidden from the website. Nothing was deleted."
+        );
+    }
 }

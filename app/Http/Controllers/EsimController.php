@@ -13,6 +13,15 @@ use Illuminate\Support\Facades\Validator;
 
 class EsimController extends Controller
 {
+    /**
+     * Most eSIMs one order may cover.
+     *
+     * Sized for a full coach with room to spare. The real constraint is the
+     * prepaid reseller wallet, which is checked against the whole order below —
+     * this cap only stops a mistyped quantity becoming a very large charge.
+     */
+    public const MAX_QUANTITY = 50;
+
     private function tenantMarkup(): ?float
     {
         $company = current_company();
@@ -99,6 +108,9 @@ class EsimController extends Controller
             'bundle_code' => 'required|string|max:200',
             'country_code' => 'required|string|max:5',
             'country_name' => 'required|string|max:100',
+            // Tour operators buy one plan for a whole coach. Capped so a typo
+            // cannot drain the reseller wallet in a single click.
+            'quantity' => 'nullable|integer|min:1|max:' . self::MAX_QUANTITY,
         ]);
 
         if ($validator->fails()) {
@@ -125,8 +137,12 @@ class EsimController extends Controller
                 ], 404);
             }
 
+            $quantity = max(1, (int) $request->input('quantity', 1));
+
             $costPrice = $bundle['cost_price'];
-            $sellingPrice = $bundle['selling_price'];
+            // Per-eSIM price, and the order total the customer is charged.
+            $unitSellingPrice = (float) $bundle['selling_price'];
+            $sellingPrice = round($unitSellingPrice * $quantity, 2);
             $dataAmount = ($bundle['unlimited'] ?? false)
                 ? 'Unlimited'
                 : ($bundle['gprs_limit'] ?? 0) . ' ' . ($bundle['data_unit'] ?? 'GB');
@@ -137,15 +153,23 @@ class EsimController extends Controller
             // Taking the customer's money for a bundle we then cannot buy is
             // the worst outcome available, and the wallet running dry is how
             // orders 37-39 were lost.
-            if (!$montyService->canAfford((float) ($bundle['bundle_price_final'] ?? 0))) {
-                Log::critical('eSIM sale blocked: reseller wallet cannot cover the bundle', [
+            // The whole order is checked, not one unit: a 30-eSIM group booking
+            // costs thirty times as much, and half-provisioning it would leave
+            // paying customers without an eSIM.
+            $orderNetCost = (float) ($bundle['bundle_price_final'] ?? 0) * $quantity;
+
+            if (!$montyService->canAfford($orderNetCost)) {
+                Log::critical('eSIM sale blocked: reseller wallet cannot cover the order', [
                     'bundle_code' => $request->bundle_code,
-                    'net_cost'    => $bundle['bundle_price_final'] ?? null,
+                    'quantity'    => $quantity,
+                    'net_cost'    => $orderNetCost,
                 ]);
 
                 return response()->json([
                     'success' => false,
-                    'error' => 'This plan is temporarily unavailable. Please try again later or contact support.',
+                    'error' => $quantity > 1
+                        ? 'We cannot issue this many eSIMs right now. Please try a smaller quantity or contact support.'
+                        : 'This plan is temporarily unavailable. Please try again later or contact support.',
                 ], 503);
             }
 
@@ -159,10 +183,12 @@ class EsimController extends Controller
                 'country_name' => $request->country_name,
                 'bundle_code' => $request->bundle_code,
                 'bundle_name' => $bundleName,
+                'quantity' => $quantity,
                 'data_amount' => $dataAmount,
                 'validity_days' => $validityDays,
                 'monty_cost_price' => $costPrice,
                 'selling_price' => $sellingPrice,
+                'unit_selling_price' => $unitSellingPrice,
                 'currency' => 'AED',
                 'reservation_status' => 'pending',
                 'payment_status' => 'unpaid',
@@ -178,7 +204,9 @@ class EsimController extends Controller
                 'amount' => $sellingPrice,
                 'currency' => 'AED',
                 'order_id' => $orderReference,
-                'description' => "eSIM: {$bundleName} - {$request->country_name}",
+                'description' => $quantity > 1
+                    ? "eSIM x{$quantity}: {$bundleName} - {$request->country_name}"
+                    : "eSIM: {$bundleName} - {$request->country_name}",
                 'customer' => array_filter([
                     'name' => $request->name,
                     'email' => $request->email,
@@ -188,14 +216,15 @@ class EsimController extends Controller
                     [
                         'item_id' => substr($request->bundle_code, 0, 50),
                         'name' => "{$bundleName} ({$dataAmount}, {$validityDays} days)",
-                        'quantity' => 1,
-                        'unit_amount' => number_format($sellingPrice, 2, '.', ''),
+                        'quantity' => $quantity,
+                        'unit_amount' => number_format($unitSellingPrice, 2, '.', ''),
                     ],
                 ],
                 'metadata' => [
                     'type' => 'esim',
                     'esim_order_id' => (string) $esimOrder->id,
                     'country' => $request->country_name,
+                    'quantity' => (string) $quantity,
                 ],
             ]);
 

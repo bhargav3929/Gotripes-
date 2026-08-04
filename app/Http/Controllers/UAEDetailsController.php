@@ -22,7 +22,7 @@ class UAEDetailsController extends Controller
 
         // Find activity by matching slug against activityName
         $activities = UAEActivity::where('emiratesID', $emirate->emiratesID)
-                                ->where('isActive', 1)
+                                ->listed()
                                 ->get();
 
         $activity = $activities->first(function ($a) use ($activitySlug) {

@@ -30,37 +30,51 @@ class EsimQrMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * @param  \Illuminate\Support\Collection<int, \App\Models\EsimOrderUnit>  $units
+     *         Every eSIM in the order. A single-eSIM order has one; a tour
+     *         operator's group booking has one per passenger, and they all
+     *         travel in this one email so the operator is not left stitching
+     *         twenty separate messages together at the airport.
+     */
     public function __construct(
         public EsimOrder $order,
-        public ?string $activationCode = null,
-        public ?string $smdpAddress = null,
-        public ?string $matchingId = null,
+        public \Illuminate\Support\Collection $units,
     ) {}
 
     public function envelope(): Envelope
     {
+        $count = $this->units->count();
+        $what  = $count > 1 ? "Your {$count} eSIMs" : 'Your eSIM';
+
         return new Envelope(
-            subject: 'Your eSIM for ' . ($this->order->country_name ?: 'your trip') . ' — ' . $this->order->order_reference,
+            subject: $what . ' for ' . ($this->order->country_name ?: 'your trip') . ' — ' . $this->order->order_reference,
         );
     }
 
     public function content(): Content
     {
-        // The LPA string is what an eSIM QR encodes. Prefer the provider's own
-        // activation_code; fall back to composing it from its parts.
-        $lpa = $this->activationCode
-            ?: ($this->smdpAddress && $this->matchingId
-                ? 'LPA:1$' . $this->smdpAddress . '$' . $this->matchingId
-                : null);
+        // Each eSIM carries its own QR, so the PNGs are built up front and
+        // embedded per unit. A unit whose activation details never came back
+        // gets a null image and is simply skipped in the template.
+        $esims = $this->units->map(function ($unit) {
+            $lpa = $unit->lpaString();
+
+            return [
+                'unit'        => $unit,
+                'number'      => $unit->unit_number,
+                'smdpAddress' => $unit->smdp_address,
+                'matchingId'  => $unit->matching_id,
+                'iccid'       => $unit->monty_iccid,
+                'qrPng'       => $lpa ? $this->qrPng($lpa) : null,
+            ];
+        })->filter(fn($e) => $e['qrPng'] || $e['smdpAddress'])->values();
 
         return new Content(
             view: 'emails.esim-qr',
             with: [
-                'order'       => $this->order,
-                'lpa'         => $lpa,
-                'smdpAddress' => $this->smdpAddress,
-                'matchingId'  => $this->matchingId,
-                'qrPng'       => $lpa ? $this->qrPng($lpa) : null,
+                'order' => $this->order,
+                'esims' => $esims,
             ],
         );
     }

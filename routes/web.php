@@ -283,6 +283,20 @@ Route::post('/umrah/payment/initiate', [UmrahPaymentController::class, 'initiate
 
 Route::post('/uaev/submit', [UAEVisaController::class, 'submit'])->name('uaev.submit');
 
+/**
+ * Hands a page a fresh CSRF token without reloading it.
+ *
+ * Long guest forms — the UAE visa application in particular, with several
+ * applicants and passport scans — can outlive the session that issued their
+ * token, and the customer then hits a 419 with everything they typed lost.
+ * The form pings this on a timer and before submitting, so the token it posts
+ * is always current.
+ */
+Route::get('/csrf-token', function () {
+    return response()->json(['token' => csrf_token()])
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+})->name('csrf.token');
+
 // Fluxir e-visa (Global Travel Compliance) integration
 use App\Http\Controllers\FluxirVisaController;
 use App\Http\Controllers\FluxirEvisaController;
@@ -373,7 +387,12 @@ Route::get('/uaevisa', function () {
             'package_id'   => $pkg->id,
             'emirates_id'  => $pkg->emirates_id,
             'package_name' => $pkg->name,
+            'package_type' => $pkg->package_type,
             'description'  => $pkg->description,
+            // Per-package deposit, falling back to the company setting when the
+            // package does not override it.
+            'deposit'      => $pkg->depositPerApplicant(),
+            'deposit_fee'  => $pkg->depositAdminFee(),
             'prices'       => $pkg->prices->map(fn($p) => [
                 'entry_type'     => $p->entry_type,
                 'duration'       => $p->duration,
@@ -453,6 +472,7 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::resource('adslots', ManagerAdSlotsController::class);
     Route::resource('announcements', ManagerAnnouncementsController::class);
     Route::resource('activities', ManagerActivitiesController::class);
+    Route::post('activities/{id}/toggle-visibility', [ManagerActivitiesController::class, 'toggleVisibility'])->name('activities.toggle-visibility');
 
     // Tenant content: tour packages, hajj/umrah packages, visa pricing.
     // BelongsToCompany trait auto-scopes queries; CRUD is per-tenant.

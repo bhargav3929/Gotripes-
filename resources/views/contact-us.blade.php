@@ -416,9 +416,9 @@
                                 with over 13 years of expertise.
                             </p>
                             <p class="mb-4">
-                                We pride ourselves on customer satisfaction and innovation. Our partnership with <strong class="text-white">Portway
-                                    Systems</strong> enables state-of-the-art Agency Management, ensuring a seamless experience
-                                for every client.
+                                We pride ourselves on customer satisfaction and innovation. Visas, eSIMs, activities and
+                                Hajj &amp; Umrah all run on <strong class="text-white">our own platform</strong>, so every
+                                booking is arranged end to end and tracked in one place.
                             </p>
                         @endplatformOnly
                         @unless(app()->bound('current_company') && app('current_company')->slug === 'gotrips')

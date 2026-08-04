@@ -37,7 +37,7 @@ class EmiratesController extends Controller
         if ($country && !$isUae($country)) {
             $activities = UAEActivity::publicVisible()
                 ->with('emirate')
-                ->where('isActive', 1)
+                ->listed()
                 ->where('country', $country)
                 ->orderBy('createdDate', 'DESC')
                 ->get();
@@ -49,7 +49,7 @@ class EmiratesController extends Controller
             $only       = $countries->first()['country'];
             $activities = UAEActivity::publicVisible()
                 ->with('emirate')
-                ->where('isActive', 1)
+                ->listed()
                 ->where('country', $only)
                 ->orderBy('createdDate', 'DESC')
                 ->get();
@@ -75,7 +75,7 @@ class EmiratesController extends Controller
         $activities = UAEActivity::publicVisible()
                                 ->with('emirate')
                                 ->where('emiratesID', $emirate->emiratesID)
-                                ->where('isActive', 1)
+                                ->listed()
                                 ->orderBy('createdDate', 'DESC')
                                 ->get();
 

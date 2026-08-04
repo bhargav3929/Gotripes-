@@ -12,35 +12,44 @@ use Illuminate\Http\Request;
 
 class ManagerVisaPricingController extends Controller
 {
+    /**
+     * Emirates that carry a refundable security deposit.
+     *
+     * Sharjah is the only one today, but the client asked to be able to add
+     * others without a code change, so the deposit fields are simply revealed
+     * for any emirate named here — and a manager can still type a deposit on
+     * any package if an emirate starts requiring one mid-season.
+     */
+    public const DEPOSIT_EMIRATES = ['sharjah'];
+
     public function index()
     {
-        $visas = UAEVisaMaster::where('isActive', 1)
-            ->orderBy('UAEVisaDuration')
-            ->get();
-
-        $emirates = Emirates::orderBy('emiratesName')->get();
-        $packages = UAEVisaPackage::with('emirate')->orderBy('name')->get();
-        $prices = UAEVisaPrice::with('package')->get();
+        $emirates = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
+        $packages = UAEVisaPackage::with(['emirate', 'prices'])->orderBy('name')->get();
+        $prices   = UAEVisaPrice::with('package.emirate')->get();
 
         $company = current_company();
         $hotelFee  = $company?->getSetting('visa_hotel_booking_fee', 25) ?? 25;
         $ticketFee = $company?->getSetting('visa_ticket_booking_fee', 25) ?? 25;
-        $supplierEmail = $company?->getSetting('visa_supplier_email', '') ?? '';
-        // Sharjah refundable security deposit per applicant. Defaults to 0 (no
-        // deposit) until a manager configures an amount — the storefront then
-        // shows a generic message and charges nothing.
-        $sharjahDeposit = $company?->getSetting('visa_sharjah_deposit', 0);
-        $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0;
-        // Non-refundable admin/processing fee deducted from the deposit when it is
-        // returned. Defaults to 0, in which case the whole deposit is refundable
-        // and the fee row is hidden everywhere on the frontend.
-        $sharjahAdminFee = $company?->getSetting('visa_sharjah_deposit_admin_fee', 0);
-        $sharjahAdminFee = is_numeric($sharjahAdminFee) ? (float) $sharjahAdminFee : 0;
 
         // Global markup applied to every Fluxir e-Visa (the /e-visa storefront).
         $evisaMarkup = EvisaSetting::markupPercent();
 
-        return view('manager.visa-pricing.index', compact('visas', 'emirates', 'packages', 'prices', 'hotelFee', 'ticketFee', 'evisaMarkup', 'supplierEmail', 'sharjahDeposit', 'sharjahAdminFee'));
+        // Emirate IDs whose packages should reveal the deposit fields.
+        $depositEmirateIds = $emirates
+            ->filter(fn($e) => in_array(strtolower(trim($e->emiratesName)), self::DEPOSIT_EMIRATES, true))
+            ->pluck('emiratesID')
+            ->values();
+
+        return view('manager.visa-pricing.index', compact(
+            'emirates',
+            'packages',
+            'prices',
+            'hotelFee',
+            'ticketFee',
+            'evisaMarkup',
+            'depositEmirateIds'
+        ));
     }
 
     /** Update the global e-Visa (Fluxir) markup percentage. */
@@ -55,16 +64,16 @@ class ManagerVisaPricingController extends Controller
         return back()->with('success', 'e-Visa markup updated to ' . rtrim(rtrim(number_format($validated['markup_percent'], 2), '0'), '.') . '%.');
     }
 
+    /**
+     * The two add-on fees that are genuinely global (they apply to every
+     * package regardless of emirate). Everything else that used to live on the
+     * old "Add-On & Settings" tab is now configured per package.
+     */
     public function updateServiceFees(Request $request)
     {
         $validated = $request->validate([
             'visa_hotel_booking_fee'  => 'required|numeric|min:0',
             'visa_ticket_booking_fee' => 'required|numeric|min:0',
-            'visa_supplier_email'     => 'nullable|email|max:255',
-            'visa_sharjah_deposit'    => 'nullable|numeric|min:0',
-            'visa_sharjah_deposit_admin_fee' => 'nullable|numeric|min:0|lte:visa_sharjah_deposit',
-        ], [
-            'visa_sharjah_deposit_admin_fee.lte' => 'The admin/processing fee cannot be greater than the security deposit.',
         ]);
 
         $company = current_company();
@@ -72,22 +81,11 @@ class ManagerVisaPricingController extends Controller
         $settings = $company->settings ?? [];
         $settings['visa_hotel_booking_fee']  = (float) $validated['visa_hotel_booking_fee'];
         $settings['visa_ticket_booking_fee'] = (float) $validated['visa_ticket_booking_fee'];
-        $settings['visa_supplier_email']     = $validated['visa_supplier_email'] ? trim($validated['visa_supplier_email']) : null;
-        // Blank or 0 = no deposit: the storefront shows a generic message and
-        // charges nothing. Any positive amount is shown and charged per applicant.
-        $settings['visa_sharjah_deposit']    = ($validated['visa_sharjah_deposit'] ?? '') !== ''
-            ? (float) $validated['visa_sharjah_deposit']
-            : 0.0;
-        // Deducted from the deposit at refund time. Blank or 0 = the full deposit
-        // is refundable and the fee row is hidden on the frontend.
-        $settings['visa_sharjah_deposit_admin_fee'] = ($validated['visa_sharjah_deposit_admin_fee'] ?? '') !== ''
-            ? (float) $validated['visa_sharjah_deposit_admin_fee']
-            : 0.0;
         $company->settings = $settings;
         $company->save();
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'settings'])
-            ->with('success', 'Visa settings updated.');
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
+            ->with('success', 'Add-on service fees updated.');
     }
 
     public function store(Request $request)
@@ -204,37 +202,105 @@ class ManagerVisaPricingController extends Controller
     }
 
     // --- Packages CRUD ---
+
+    /**
+     * Validation shared by create and edit. `emails` allows a comma-separated
+     * list so a package can notify two suppliers at once.
+     */
+    private function packageRules(bool $forUpdate = false): array
+    {
+        $rules = [
+            'emirates_id'       => 'required|exists:tbl_emirates,emiratesID',
+            'name'              => 'required|string|max:100',
+            'package_type'      => 'required|in:Standard,Urgent',
+            'description'       => 'nullable|string|max:1000',
+            'security_deposit'  => 'nullable|numeric|min:0',
+            'deposit_admin_fee' => 'nullable|numeric|min:0|lte:security_deposit',
+            'supplier_email'    => 'nullable|string|max:255',
+            'company_email'     => 'nullable|string|max:255',
+        ];
+
+        if ($forUpdate) {
+            $rules['isActive'] = 'required|boolean';
+        }
+
+        return $rules;
+    }
+
+    private function packageMessages(): array
+    {
+        return [
+            'deposit_admin_fee.lte' => 'The processing fee cannot be greater than the security deposit.',
+        ];
+    }
+
+    /**
+     * Normalise the optional package fields: '' becomes null so the model falls
+     * back to the company-wide setting, while an explicit 0 is preserved as
+     * "this package charges no deposit".
+     */
+    private function packageAttributes(array $validated): array
+    {
+        $nullIfBlank = fn($v) => ($v === null || $v === '') ? null : $v;
+
+        return [
+            'emirates_id'       => $validated['emirates_id'],
+            'name'              => $validated['name'],
+            'package_type'      => $validated['package_type'],
+            'description'       => $validated['description'] ?? null,
+            'security_deposit'  => $nullIfBlank($validated['security_deposit'] ?? null),
+            'deposit_admin_fee' => $nullIfBlank($validated['deposit_admin_fee'] ?? null),
+            'supplier_email'    => $nullIfBlank(trim((string) ($validated['supplier_email'] ?? ''))),
+            'company_email'     => $nullIfBlank(trim((string) ($validated['company_email'] ?? ''))),
+        ];
+    }
+
+    /**
+     * Create a package and, in the same submit, its first price row.
+     *
+     * The client works one visa at a time — "Sharjah, urgent, adult, 30 days,
+     * 450 AED, this supplier" — so splitting that across two forms on two tabs
+     * meant every new visa took two trips. The matrix tab then handles ongoing
+     * price edits.
+     */
     public function storePackage(Request $request)
     {
-        $validated = $request->validate([
-            'emirates_id' => 'required|exists:tbl_emirates,emiratesID',
-            'name'        => 'required|string|max:100',
-            'description' => 'nullable|string|max:1000',
+        $validated = $request->validate(
+            $this->packageRules() + [
+                'entry_type'     => 'required|string|max:100',
+                'duration'       => 'required|string|max:100',
+                'traveller_type' => 'required|string|max:100',
+                'price'          => 'required|numeric|min:0',
+            ],
+            $this->packageMessages()
+        );
+
+        $package = UAEVisaPackage::create(
+            $this->packageAttributes($validated) + ['isActive' => 1]
+        );
+
+        UAEVisaPrice::create([
+            'visa_package_id' => $package->id,
+            'entry_type'      => $validated['entry_type'],
+            'duration'        => $validated['duration'],
+            'traveller_type'  => $validated['traveller_type'],
+            'price'           => $validated['price'],
+            'isActive'        => 1,
         ]);
 
-        UAEVisaPackage::create([
-            'emirates_id' => $validated['emirates_id'],
-            'name'        => $validated['name'],
-            'description' => $validated['description'],
-            'isActive'    => 1,
-        ]);
-
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'packages'])
-            ->with('success', 'Visa Package added successfully.');
+        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
+            ->with('success', "\"{$package->name}\" created with its first price row. Add more traveller types or durations below.");
     }
 
     public function updatePackage(Request $request, $id)
     {
         $package = UAEVisaPackage::findOrFail($id);
 
-        $validated = $request->validate([
-            'emirates_id' => 'required|exists:tbl_emirates,emiratesID',
-            'name'        => 'required|string|max:100',
-            'description' => 'nullable|string|max:1000',
-            'isActive'    => 'required|boolean',
-        ]);
+        $validated = $request->validate($this->packageRules(true), $this->packageMessages());
 
-        $package->update($validated);
+        $package->update(
+            $this->packageAttributes($validated) + ['isActive' => $validated['isActive']]
+        );
 
         return redirect()->route('manager.visa-pricing.index', ['tab' => 'packages'])
             ->with('success', 'Visa Package updated successfully.');
