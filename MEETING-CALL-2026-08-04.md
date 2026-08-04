@@ -66,22 +66,49 @@
 
 ---
 
+## 1b. Bugs found while verifying, and fixed
+
+Three defects surfaced during production verification — two of them ones I had just
+introduced. All three are fixed and deployed.
+
+| Found | Severity | What was wrong | Fix |
+|---|---|---|---|
+| Deposit fields showed on **every** emirate, not just Sharjah | Wrong behaviour | The row carried Bootstrap's `.d-flex`, which is declared `!important` and beat the inline `display:none` the toggle sets. Abu Dhabi and Dubai rows offered deposit inputs they should not have. | Row lays itself out from its own class. Re-verified: fields appear for Sharjah only, and follow the dropdown when a package is moved between emirates. Commit `43a5548`. |
+| A part-provisioned group order could **never be retried** | Breaks production | `provision()` bailed out when the parent order had a `monty_order_id`. The parent mirrors the *first* issued unit, so on a 20-eSIM order where 3 failed it was already set — and "Retry provisioning", which exists for exactly that case, refused to run. Three paying travellers would have been left without an eSIM and no way to fix it from the panel. | Completeness is now judged per unit. Verified across all four states: legacy provisioned refuses, fresh qty-1 proceeds, 17-of-20 proceeds with exactly 3 to issue, 20-of-20 refuses. Commit `21c2677`. |
+| Hidden activities still reachable by direct link | Wrong behaviour | `/activity-details?id=` looked the activity up straight by primary key, so an attraction you had hidden was still fully visible and bookable to anyone with the link — defeating the point of the switch. Pre-existing, but only mattered once hiding existed. | Goes through the same filter as the rest of the site and 404s. Verified: hidden → 404, shown again → 200. Commit `9e3437e`. |
+
+**Deliberately left alone:** booking-confirmation lookups in `ActivityBookingController`,
+`NomodController` and `CCAvenueController` still fetch activities by raw ID. That is correct —
+someone who booked before you hid an attraction must still get their confirmation email.
+
+---
+
 ## 2. Changes I need clarity on
 
-| # | Question | Why it blocks / matters |
+### 2a. Genuinely still open — I need an answer from Amer
+
+Nothing here blocks what is already live; each is a refinement on top of working code.
+
+| # | Question | Why it matters |
 |---|---|---|
-| ❓C1 | **eVisa "View" detail page — reorganise into a cleaner form/layout.** Amer explicitly said: *"just add it in a note as a pending one, but we will not go with this now."* Confirm this stays parked. | ⏸️ Deferred by client. Listed so it isn't lost. |
-| ❓C2 | **eSIM reseller wallet reconciliation** — Amer purchased 2, Bhargav purchased 1 = 3 orders expected, only 1 QR surfaced. Where did the other 2 land? Need someone to open the MontyeSIM reseller account and reconcile orders vs. wallet spend. | Ops/investigation, may or may not be a code bug. Needs reseller-portal access. |
-| ❓C3 | **"We will get four copies, emails"** — customer + supplier + our company = 3. What is the **4th** recipient? Manager panel? A second supplier? Or does the customer get two (payment receipt + documents-submitted)? | Determines the mailer fan-out for B4. |
-| ❓C4 | **Sharjah security deposit** — is the refundable deposit charged **at checkout on top of** the visa price, or collected separately/offline? Is it shown as a separate line on the website price? | Changes the pricing model and the payment amount. |
-| ❓C5 | **"Our company email address" field** — per package, or one global setting? Amer described it as a field on the package form, but the reasoning ("today Bhargav handles visas, tomorrow Kasha") suggests a single global setting is what he actually wants to change in one place. | Per-package = 20 edits when the owner changes. Recommend: global default, per-package override. |
-| ❓C6 | **eSIM bundle quantity (A4)** — is there a maximum? Flat price × quantity, or **volume-discount tiers** for tour operators? | Affects pricing logic and whether the reseller wallet can cover a 50-unit order. |
-| ❓C7 | **CSRF error (B1)** — need the exact page/step to reproduce. Amer's 2026-07-26 email has the screenshot; I need the URL and whether it happens on the apply form or on return from the payment gateway. | Session-lifetime vs. token-in-form vs. gateway-return are three different fixes. |
-| ❓C8 | **About Us copy (F1)** — Amer is sending a polished script. Until then, do I just **strip** the partner references, or write interim replacement copy? | Recommend: strip now, swap in his script when it arrives. |
-| ❓C9 | **Instruction images (A1)** — Amer shared iPhone/Samsung screenshots in the WhatsApp group. Do I have those assets, or should I produce clean branded step diagrams myself? | Client suggested "use ChatGPT on this one and use small images". |
-| ❓C10 | **eSIM hero image (A3)** — supply a licensed/stock asset, or should I source/generate one? | Avoid shipping a placeholder twice. |
-| ❓C11 | **Scrollbar "both sides" (E1)** — page scrollbar + every inner panel, or specifically the settings panel he was on? | I'll apply globally to the admin/manager theme unless told otherwise. |
-| ❓C12 | **90-day UAE visa removal (B3.5)** — remove from the form only, or also **retire existing live 90-day packages** already sold/listed? | Data migration vs. form change. |
+| ❓C2 | **eSIM reseller wallet reconciliation.** Amer bought 2, Bhargav bought 1 = 3 orders expected, only 1 QR surfaced. Someone with MontyeSIM reseller-portal access needs to reconcile orders against wallet spend. | Ops, not necessarily code. Worth noting: the new build blocks a sale outright when the wallet cannot cover it and logs it as critical, and it now records a per-unit failure reason on the order — so this class of silent loss should not recur. |
+| ❓C3 | **"We will get four copies, emails."** Customer + supplier + our company = 3. Who is the 4th? A second supplier? The manager panel? Or does the customer get two (payment receipt *and* documents-submitted)? | Three recipients are live now. Adding the fourth is a small change once I know who it is. |
+| ❓C7 | **The CSRF error — how do I reproduce it?** Your 2026-07-26 email has the screenshot; I need the URL and whether it happened on the apply form or on the way back from the payment gateway. | The defensive fix covers the likely causes (long form outliving its session). Without a reproduction I cannot *prove* it was that and not something else. If a customer hits it again, tell me and I will have the log. |
+| ❓C9 | **The iPhone/Samsung screenshots you shared on WhatsApp** — send them and I will swap them in. | The steps ship as clean numbered blocks today. Your actual screenshots would match what a customer sees on screen. |
+| ❓C10 | **eSIM hero image.** You asked for travellers with phones. Do you have a licensed photo, or shall I source one for your approval? | The current artwork is the abstract SIM/landmarks image — it now *loads*, which was the actual bug, but it is not the picture you described. |
+| ❓C11 | **About Us script.** You said a polished version is coming. | Interim copy is live and reads fine; swapping it is a two-minute change. |
+
+### 2b. I made the call and shipped it — tell me if you disagree
+
+| # | Question | What I decided, and why |
+|---|---|---|
+| ❓C1 | eVisa "View" detail page — reorganise the layout | ⏸️ **Parked**, as you asked ("add it as a note, we will not go with this now"). Recorded here so it is not lost. |
+| ❓C4 | Is the Sharjah deposit charged at checkout, or collected offline? | **Charged at checkout on top of the visa price**, as a separate line, and shown per applicant — which is what the existing code already did, so nothing changed for customers. Refundable amount = deposit − processing fee. Say the word if it should be collected offline instead. |
+| ❓C5 | "Our company email" — per package or one global setting? | **Both.** Set it per package when a visa type has its own owner; leave it blank and it inherits the company-wide address. That way handing all visas to someone new is one edit, but Tourist and Umrah can still go to different people. Same pattern for the supplier address and the deposit. |
+| ❓C6 | eSIM quantity — cap? volume discounts? | **Capped at 50, flat price × quantity, no tiers.** 50 covers a full coach and stops a mistyped quantity becoming a very large charge. The wallet is checked against the whole order before the sale. Tell me if you want operator discount tiers and I will add them. |
+| ❓C8 | About Us — strip the partner name now, or wait for your script? | **Stripped now**, with plain interim copy. Waiting would have left a company you no longer work with named on the live site. |
+| ❓C12 | 90-day UAE visa — remove from the form only, or retire live 90-day packages too? | **Form only.** Nobody can create a 90-day visa any more, but no existing data was touched — deleting rows you might still have applications against is not something I will do without asking. If you want them retired, I can disable them in one pass; say so. |
+| — | Scrollbars — "both sides" | Applied across **the whole manager and admin dashboards** (page, panels, sidebars, multi-selects), not just the settings screen. Note: macOS hides scrollbars until you scroll — if they still look absent on a Mac, it is System Settings → Appearance → "Show scroll bars: Always", not the site. |
 
 ### Not engineering tasks (tracked, no code)
 
