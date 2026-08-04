@@ -1369,8 +1369,8 @@
           </div>
           <div class="feature-box-content last-paragraph-no-margin">
             <h3 class="alt-font fw-600 text-dark-gray fs-19 d-inline-block mb-5px">Innovative Solutions</h3>
-            <p class="mx-auto">With strategic partnership with Portway Systems, we provide Travel Agency Management
-              Software and Travel CRM solutions, ensuring seamless travel operations.</p>
+            <p class="mx-auto">Visas, eSIMs, activities and Hajj &amp; Umrah run on one platform we built
+              ourselves — so every booking is arranged end to end and tracked in one place.</p>
           </div>
         </div>
       </div>

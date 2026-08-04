@@ -5,8 +5,9 @@
 **Status legend:** ⬜ not started · 🟨 in progress · ✅ done & deployed · ⏸️ deferred by client · ❓ needs clarification
 
 > **All 14 items below are built, deployed to https://gotrips.ai and verified on production.**
-> Commits `c4a3859` → `809e662`. Three migrations applied to the live MySQL database.
-> Six further defects were caught while verifying and are fixed too — see §1b.
+> Commits `c4a3859` → `04f90a6`. Three migrations applied to the live MySQL database.
+> Eleven further defects were caught while verifying and are fixed too — see §1b,
+> including **`APP_DEBUG=true` on production**, which was leaking stack traces publicly.
 > Five items have a follow-up that needs Amer — they are marked **↩ needs Amer** and
 > restated in §2a. Nothing is blocked; those are refinements on top of working code.
 
@@ -69,8 +70,8 @@
 
 ## 1b. Bugs found while verifying, and fixed
 
-Six defects surfaced while verifying — four of them ones I had just introduced.
-All six are fixed, deployed and re-verified.
+Eleven defects surfaced while verifying — seven of them ones I had just introduced,
+and one a pre-existing security hole. All eleven are fixed, deployed and re-verified.
 
 | Found | Severity | What was wrong | Fix |
 |---|---|---|---|
@@ -80,6 +81,17 @@ All six are fixed, deployed and re-verified.
 | **Margin overstated** on group eSIM orders | Wrong behaviour (money) | `selling_price` became the order total while `monty_cost_price` stayed per-unit, and the detail page subtracted them directly. A 20-eSIM order with 152.60 AED of real margin reported **342.60**. | Cost is multiplied out; quantity and unit price shown alongside. Verified: 352.60 − (10.00 × 20) = **152.60**. Commit `1a2717f`. |
 | Retry button **hidden on the orders that needed it** | Breaks production | The list badge and the detail page both judged "provisioned" by the parent's `monty_order_id`, which mirrors the first unit — so a 17-of-20 order read as a clean "Issued" and offered no way to fix it. | Both count units now. List shows **"17 of 20"**; the detail page offers Retry and states how many travellers have nothing. Commit `1a2717f`. |
 | A group order showed **one ICCID** and no sign of the other 19 | Wrong behaviour | Nothing in the panel exposed the individual eSIMs. | New per-eSIM table: unit number, provider id, ICCID, status, and the provider's reason for any failure. Verified showing 17 green + 3 red with "Insufficient balance". Commit `1a2717f`. |
+| 🔴 **`APP_DEBUG=true` on production** | Security | Every unhandled error returned a full stack trace with absolute server paths (`/home/u705168859/…`) to any anonymous visitor. Pre-existing, unrelated to this call's work. | Set to `false`, config cache rebuilt, verified no trace leaks. `.env` backed up first; only that one line changed, file still 99 lines. **`APP_ENV` is still `local` on production — I left it alone deliberately** (flipping it can change mail/driver behaviour) but you should decide whether to set it to `production`. |
+| **Storefront quoted one deposit, checkout charged another** | Wrong behaviour (money) | Moving the deposit onto the package changed what the server charges, but the customer-facing calculator still read a page-level constant baked from the company-wide setting. A package overriding the deposit would have quoted the old figure and taken the new one. | Calculator reads the deposit off the selected package, from the same data the server uses. Verified: a package with its own 1500 quotes **1500**, not the company-wide 5000. |
+| Deposit only ever charged for an emirate literally named "Sharjah" | Wrong behaviour | Three hardcoded `=== 'sharjah'` string checks meant a deposit set on any other emirate was shown to the customer and then never charged — and it blocked Amer's "tomorrow if any other emirate introduces the deposit system" requirement outright. | Whether a deposit applies is now a property of the package. Both the quote and the charge derive from one number. |
+| Checkout **500'd** when a deposit package had no refund bank details | Breaks production | The four bank fields are `nullable` but were indexed directly — safe only while Sharjah, whose form always collects them, was the only emirate reaching that branch. | Coalesced to null. Caught by writing the regression test, not by reading the code. |
+| A **Dubai** package with no deposit inherited the **Sharjah** deposit | Wrong behaviour (money) | The fallback to the company-wide setting applied to every package, so enabling this feature would have started charging a deposit on emirates that have never had one. | The legacy setting is inherited only by Sharjah packages; every other package with nothing set is 0. |
+
+**Test suite:** the full suite was run and compared against the pre-work baseline by test name.
+**No test fails now that was not already failing before.** Two new tests were added — a group eSIM
+email (3 distinct QRs in one message) and the deposit chain end to end (quote = charge = 1500).
+Eight failures remain, all pre-existing and in unrelated subsystems (FIFA payments, activity
+booking notifications, passport upload) — worth a separate look, but nothing to do with this work.
 
 **Deliberately left alone:** booking-confirmation lookups in `ActivityBookingController`,
 `NomodController` and `CCAvenueController` still fetch activities by raw ID. That is correct —
