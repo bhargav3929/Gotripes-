@@ -4683,6 +4683,33 @@
 
     // ── Globals ──────────────────────────────────────────
     const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+    /* CSRF token, read live rather than captured once at page load — a token
+       baked into a const goes stale on a page a tour operator may sit on for
+       a long time, and no retry can succeed against it. */
+    function currentCsrf() {
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.content : CSRF;
+    }
+
+    function setCsrf(token) {
+        if (!token) return;
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) meta.setAttribute('content', token);
+        document.querySelectorAll('input[name="_token"]').forEach(function (i) { i.value = token; });
+    }
+
+    function refreshCsrf() {
+        return fetch('/csrf-token', { headers: { 'Accept': 'application/json' }, cache: 'no-store', credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) { if (d && d.token) setCsrf(d.token); })
+            .catch(function () { /* the retry-on-419 path still covers it */ });
+    }
+
+    setInterval(refreshCsrf, 15 * 60 * 1000);
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') refreshCsrf();
+    });
     let allCountries = [];
     let currentRegion = 'all';
     let currentSearch = '';
@@ -5533,26 +5560,46 @@
 
         console.log('Sending payment request:', payload);
 
-        fetch('/esim/purchase', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': CSRF,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (data.success && data.checkout_url) {
-                window.location.href = data.checkout_url;
-            } else {
-                btn.disabled = false;
-                btn.classList.remove('loading');
-                errorMsg.textContent = data.error || 'Something went wrong. Please try again.';
-                errorMsg.classList.add('visible');
-            }
-        })
+        // Same treatment as the visa form: if the session lapsed while the
+        // customer was filling this in, the server hands back a fresh token
+        // with a 419 and we submit once more. Group buying made this the
+        // longest-dwell page on the site, so an expired token here is likely.
+        var postPurchase = function (token) {
+            return fetch('/esim/purchase', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            }).then(function(res) {
+                return res.json().then(function(data) { return { status: res.status, data: data }; });
+            });
+        };
+
+        postPurchase(currentCsrf())
+            .then(function(r) {
+                if (r.status === 419 && r.data && r.data.csrf_token) {
+                    setCsrf(r.data.csrf_token);
+                    return postPurchase(r.data.csrf_token);
+                }
+                return r;
+            })
+            .then(function(r) {
+                var data = r.data;
+                if (data.success && data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                } else {
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                    // The 419 handler returns `message`, everything else returns
+                    // `error` — reading only one of them showed the customer a
+                    // generic "Something went wrong" they could never resolve.
+                    errorMsg.textContent = data.error || data.message || 'Something went wrong. Please try again.';
+                    errorMsg.classList.add('visible');
+                }
+            })
         .catch(function() {
             btn.disabled = false;
             btn.classList.remove('loading');
