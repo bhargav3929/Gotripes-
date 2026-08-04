@@ -4,6 +4,11 @@
 **Duration:** ~49 min
 **Status legend:** ⬜ not started · 🟨 in progress · ✅ done & deployed · ⏸️ deferred by client · ❓ needs clarification
 
+> **All 14 items below are built, deployed to https://gotrips.ai and verified on production.**
+> Commits `c4a3859` and `43a5548`. Three migrations applied to the live MySQL database.
+> Five items have a follow-up that needs Amer — they are marked **↩ needs Amer** and
+> restated in section 2. Nothing is blocked; those are refinements on top of working code.
+
 ---
 
 ## 1. Changes I understood (actionable)
@@ -12,45 +17,45 @@
 
 | # | Change | Status |
 |---|---|---|
-| A1 | Post-purchase QR email must ALSO contain activation instructions: iPhone steps, Samsung/Android steps, and manual SM-DP+ install steps. Client wants these as **small images / pictorial steps**, not a wall of text — "he's in holiday mode and not in the mood to read all our instructions". | ⬜ |
-| A2 | Same instructions published on the **website** as a "How eSIM works / How to install" reference, visible **before** purchase. | ⬜ |
-| A3 | eSIM landing page: the right-hand hero image is **broken / not loading**. Replace with a strong, on-brand contrasting image (travellers + phones + eSIM). Add tagline: **"Your eSIM ready in 2 minutes"** and **"186 countries"**. | ⬜ |
-| A4 | eSIM checkout: add a **quantity / bundle selector** (buy 5, 10, 20 …) for tour operators moving groups of 20–30 on a bus. Price must recalculate on quantity, single checkout, and **all QR codes arrive in ONE email**. Today a tour operator would have to check out 50 times. | ⬜ |
-| A5 | eSIM checkout form is too narrow — the **Pay button falls below the fold**. Stretch the form to use the left/right space so the whole form + Pay is visible in one view. | ⬜ |
+| A1 | Post-purchase QR email must ALSO contain activation instructions: iPhone steps, Samsung/Android steps, and manual SM-DP+ install steps. Client wants these as **small images / pictorial steps**, not a wall of text — "he's in holiday mode and not in the mood to read all our instructions". | ✅ **↩ needs Amer** — iPhone / Samsung / manual SM-DP+ steps now ship inside the QR email as numbered, colour-coded blocks. Rendered and checked at qty 1 and qty 3. Written as typographic steps rather than screenshots because Amer's WhatsApp images were not in the repo — send them and I will swap them in. |
+| A2 | Same instructions published on the **website** as a "How eSIM works / How to install" reference, visible **before** purchase. | ✅ Published on `/esim` as a three-tab section (iPhone / Samsung & Android / Manual entry), sitting under "How to Get Your eSIM". Tab switching verified on production. |
+| A3 | eSIM landing page: the right-hand hero image is **broken / not loading**. Replace with a strong, on-brand contrasting image (travellers + phones + eSIM). Add tagline: **"Your eSIM ready in 2 minutes"** and **"186 countries"**. | ✅ **↩ needs Amer** — root cause: `hero-esim-network.webp` was a **0-byte file** and sat first in `image-set()`, so every webp-capable browser loaded nothing. Regenerated it; hero renders on production. The "180+ Countries" pill now reads **186**. The artwork is still the abstract SIM/landmarks image — a travellers-with-phones photo needs an asset from you. |
+| A4 | eSIM checkout: add a **quantity / bundle selector** (buy 5, 10, 20 …) for tour operators moving groups of 20–30 on a bus. Price must recalculate on quantity, single checkout, and **all QR codes arrive in ONE email**. Today a tour operator would have to check out 50 times. | ✅ Quantity picker (stepper + 1/5/10/20 presets, capped at 50) on checkout. Verified live on production with a real Thailand bundle: AED 17.63 × 20 = **AED 352.60**, and the payload carried `quantity: 20` (intercepted — no order was created). Server re-prices from the provider, so the browser never decides the total. Each eSIM is a separate provider assignment stored in the new `esim_order_units` table; all QRs go out in one email. The wallet check covers the whole order, so a group booking cannot half-provision. |
+| A5 | eSIM checkout form is too narrow — the **Pay button falls below the fold**. Stretch the form to use the left/right space so the whole form + Pay is visible in one view. | ✅ Checkout widened 960px → **1320px**, form given the larger share. Pay button measured fully in view at 1440×900 (top 700px, bottom 746px). |
 
 ### B. UAE Visa
 
 | # | Change | Status |
 |---|---|---|
-| B1 | **Bug:** customers hit `CSRF token mismatch` when applying for a UAE visa and moving into the payment gateway. Reported in Amer's email, Sun 2026-07-26, subject "UAE visa panel". | ⬜ |
-| B2 | Admin dashboard → UAE Visa: **remove three tabs** — *Emirates*, *Add-on Settings*, *Legacy Prices*. Leave **only two**: (1) create visa package/category, (2) pricing matrix. "I've seen there is no use for us in the other three." | ⬜ |
-| B3 | Package-creation form, in this exact order:<br>1. **Emirate** — dropdown of the 7 emirates<br>2. If **Sharjah** (or any future emirate flagged deposit-type) is picked → extra fields appear: **security deposit / refundable amount**<br>3. **Visa / package type** — Urgent, Standard<br>4. **Visa for** — Adult / Child / Infant<br>5. **Duration** — 30 days, 60 days · **REMOVE 90 days, that visa no longer exists**<br>6. **Price** — whatever is typed here is what the website displays<br>7. **Supplier email address**<br>8. **Our company email address** — an editable field, so the job can be handed from one staffer to another without a code change | ⬜ |
-| B4 | On successful checkout, send emails to: the **customer** (submitted + list of docs shared), the **supplier**, and **our company address**. Client said "four copies" — see ❓C3. | ⬜ |
-| B5 | **Pricing-matrix tab**: after saving, show the live price grid of created packages with **Edit / Save / Delete / Disable** buttons, so price changes never require re-creating the package. | ⬜ |
+| B1 | **Bug:** customers hit `CSRF token mismatch` when applying for a UAE visa and moving into the payment gateway. Reported in Amer's email, Sun 2026-07-26, subject "UAE visa panel". | ✅ **↩ needs Amer** — three-part fix: a `/csrf-token` keep-alive that refreshes every 15 min and on tab refocus, a silent one-shot retry when a submit comes back 419, and a readable message instead of the raw error page. Verified on production: a bad token now returns JSON with a fresh token, and a normal post redirects back with the form data intact. I still could not reproduce your customer's exact failure — see ❓C7. |
+| B2 | Admin dashboard → UAE Visa: **remove three tabs** — *Emirates*, *Add-on Settings*, *Legacy Prices*. Leave **only two**: (1) create visa package/category, (2) pricing matrix. "I've seen there is no use for us in the other three." | ✅ Five tabs → **two**: *Create Visa Packages* and *Pricing Matrix*. Emirates, Add-On Settings and Legacy Prices are gone. The two fees that genuinely are global (hotel and flight assistance) plus the e-Visa markup moved onto the pricing tab so they stay editable. |
+| B3 | Package-creation form, in this exact order:<br>1. **Emirate** — dropdown of the 7 emirates<br>2. If **Sharjah** (or any future emirate flagged deposit-type) is picked → extra fields appear: **security deposit / refundable amount**<br>3. **Visa / package type** — Urgent, Standard<br>4. **Visa for** — Adult / Child / Infant<br>5. **Duration** — 30 days, 60 days · **REMOVE 90 days, that visa no longer exists**<br>6. **Price** — whatever is typed here is what the website displays<br>7. **Supplier email address**<br>8. **Our company email address** — an editable field, so the job can be handed from one staffer to another without a code change | ✅ Form follows your order exactly: Emirate → *(deposit fields, Sharjah only)* → package name → Standard/Urgent → Adult/Child/Infant → 30/60 days → price → supplier email → our company email. 90 Days is not offered. Deposit, supplier and company address are now **per package**, each falling back to the old company-wide setting when left blank — verified both ways on a real package. |
+| B4 | On successful checkout, send emails to: the **customer** (submitted + list of docs shared), the **supplier**, and **our company address**. Client said "four copies" — see ❓C3. | ✅ **↩ needs Amer** — applications now email **three** parties: customer, supplier(s), and whoever owns that visa type on our side. Previously only the first two. Supplier and company fields both accept a comma-separated list. Still need to know who the 4th recipient is — see ❓C3. |
+| B5 | **Pricing-matrix tab**: after saving, show the live price grid of created packages with **Edit / Save / Delete / Disable** buttons, so price changes never require re-creating the package. | ✅ Pricing Matrix shows the live grid with inline **edit**, **Save All Changes**, per-row **Active/Disabled**, and **delete**. Creating a package also creates its first price row in the same submit, so a new visa is one trip, not two. |
 
 ### C. Hajj & Umrah / Saudi
 
 | # | Change | Status |
 |---|---|---|
-| C1 | On the Hajj & Umrah landing section the **"Umrah by Air" card title is cropped** on smaller laptop screens — it renders as "Umrah by". Shift the Saudi Visa card left / widen the row so every card title fits. | ⬜ |
+| C1 | On the Hajj & Umrah landing section the **"Umrah by Air" card title is cropped** on smaller laptop screens — it renders as "Umrah by". Shift the Saudi Visa card left / widen the row so every card title fits. | ✅ Root cause: seven uppercase tabs inside a 1140px Bootstrap container with the scrollbar hidden, so the last one was clipped mid-word with no way to reach it. Now full-width with size-clamped tabs. Verified on production at 1440px: **all seven tabs render, zero overflow**. |
 
 ### D. Activities
 
 | # | Change | Status |
 |---|---|---|
-| D1 | Admin → Activities Listing: add a per-activity **enable / disable (hide) toggle**, so an activity closed for maintenance can be pulled off the website without deleting it. "When we delete, that means we are wiping off all your hard work." | ⬜ |
+| D1 | Admin → Activities Listing: add a per-activity **enable / disable (hide) toggle**, so an activity closed for maintenance can be pulled off the website without deleting it. "When we delete, that means we are wiping off all your hard work." | ✅ New `isVisible` column — deliberately separate from `isActive`, which the delete button already uses (hiding through that would have made the activity unreachable in the admin panel too). Verified end to end: hide → gone from `/activities` and `/activities/dubai`, row shows **Hidden** and stays in the panel, record untouched in the database; show → back on the site. |
 
 ### E. Global UI
 
 | # | Change | Status |
 |---|---|---|
-| E1 | **Scrollbars in the dashboard are too thin.** Make them noticeably thicker on both the page and the inner scrolling panels, and change the grey thumb to the theme **yellow/gold**. Today it's so thin that the client resorts to tabbing down. | ⬜ |
+| E1 | **Scrollbars in the dashboard are too thin.** Make them noticeably thicker on both the page and the inner scrolling panels, and change the grey thumb to the theme **yellow/gold**. Today it's so thin that the client resorts to tabbing down. | ✅ Scrollbars in both the manager and admin dashboards are now **14px** with a gold thumb (10px in the sidebars), replacing the 4px grey ones. The last grey thumb, on multi-selects, is gold too. Note: macOS hides scrollbars until you scroll — that is a System Settings option ("Show scroll bars: Always"), not the site. |
 
 ### F. Content
 
 | # | Change | Status |
 |---|---|---|
-| F1 | **About Us**: remove the partner-company references — Amer is no longer working with them, so their name must come off the website. A polished replacement script is coming from Amer later. | ⬜ |
+| F1 | **About Us**: remove the partner-company references — Amer is no longer working with them, so their name must come off the website. A polished replacement script is coming from Amer later. | ✅ **↩ needs Amer** — "Portway Systems" removed from the homepage, Our Story, Contact Us and the two static template files. Verified: **zero** occurrences on any live page. The replacement copy is mine and deliberately plain; send your polished script and I will drop it in. |
 
 ### Already done (confirmed on the call — no action)
 

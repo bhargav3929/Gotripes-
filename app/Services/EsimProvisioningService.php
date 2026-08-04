@@ -30,15 +30,31 @@ class EsimProvisioningService
             return ['success' => false, 'error' => 'Order is not paid.', 'skipped' => true];
         }
 
-        // Already provisioned. Assigning again would charge the wallet a second
-        // time and issue the customer a duplicate eSIM, so refuse outright —
-        // a missing QR email is a resend problem, not a provisioning one.
-        if ($order->monty_order_id) {
+        $quantity = $order->unitCount();
+
+        // Already fully provisioned. Assigning again would charge the wallet a
+        // second time and issue duplicate eSIMs, so refuse outright — a missing
+        // QR email is a resend problem, not a provisioning one.
+        //
+        // Completeness is judged per unit, not by the parent's monty_order_id.
+        // The parent mirrors the FIRST issued unit, so on a group order where
+        // some units failed it is already set — guarding on it would make the
+        // failed units impossible to retry, which is the one case retry exists
+        // for. The per-unit guard inside the loop still stops any unit that did
+        // come through from being bought twice.
+        $alreadyIssued = $order->units()->whereNotNull('monty_order_id')->count();
+
+        if ($alreadyIssued >= $quantity && $quantity > 0) {
             return ['success' => false, 'error' => 'Order is already provisioned.', 'skipped' => true];
         }
 
-        $quantity = $order->unitCount();
-        $monty    = new MontyEsimService();
+        // Orders placed before quantities existed have no unit rows at all, so
+        // fall back to the parent column for them.
+        if ($alreadyIssued === 0 && $order->monty_order_id) {
+            return ['success' => false, 'error' => 'Order is already provisioned.', 'skipped' => true];
+        }
+
+        $monty = new MontyEsimService();
 
         $issued = [];
         $failed = [];
