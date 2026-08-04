@@ -68,14 +68,17 @@
 
 ## 1b. Bugs found while verifying, and fixed
 
-Three defects surfaced during production verification — two of them ones I had just
-introduced. All three are fixed and deployed.
+Six defects surfaced while verifying — four of them ones I had just introduced.
+All six are fixed, deployed and re-verified.
 
 | Found | Severity | What was wrong | Fix |
 |---|---|---|---|
 | Deposit fields showed on **every** emirate, not just Sharjah | Wrong behaviour | The row carried Bootstrap's `.d-flex`, which is declared `!important` and beat the inline `display:none` the toggle sets. Abu Dhabi and Dubai rows offered deposit inputs they should not have. | Row lays itself out from its own class. Re-verified: fields appear for Sharjah only, and follow the dropdown when a package is moved between emirates. Commit `43a5548`. |
 | A part-provisioned group order could **never be retried** | Breaks production | `provision()` bailed out when the parent order had a `monty_order_id`. The parent mirrors the *first* issued unit, so on a 20-eSIM order where 3 failed it was already set — and "Retry provisioning", which exists for exactly that case, refused to run. Three paying travellers would have been left without an eSIM and no way to fix it from the panel. | Completeness is now judged per unit. Verified across all four states: legacy provisioned refuses, fresh qty-1 proceeds, 17-of-20 proceeds with exactly 3 to issue, 20-of-20 refuses. Commit `21c2677`. |
 | Hidden activities still reachable by direct link | Wrong behaviour | `/activity-details?id=` looked the activity up straight by primary key, so an attraction you had hidden was still fully visible and bookable to anyone with the link — defeating the point of the switch. Pre-existing, but only mattered once hiding existed. | Goes through the same filter as the rest of the site and 404s. Verified: hidden → 404, shown again → 200. Commit `9e3437e`. |
+| **Margin overstated** on group eSIM orders | Wrong behaviour (money) | `selling_price` became the order total while `monty_cost_price` stayed per-unit, and the detail page subtracted them directly. A 20-eSIM order with 152.60 AED of real margin reported **342.60**. | Cost is multiplied out; quantity and unit price shown alongside. Verified: 352.60 − (10.00 × 20) = **152.60**. Commit `1a2717f`. |
+| Retry button **hidden on the orders that needed it** | Breaks production | The list badge and the detail page both judged "provisioned" by the parent's `monty_order_id`, which mirrors the first unit — so a 17-of-20 order read as a clean "Issued" and offered no way to fix it. | Both count units now. List shows **"17 of 20"**; the detail page offers Retry and states how many travellers have nothing. Commit `1a2717f`. |
+| A group order showed **one ICCID** and no sign of the other 19 | Wrong behaviour | Nothing in the panel exposed the individual eSIMs. | New per-eSIM table: unit number, provider id, ICCID, status, and the provider's reason for any failure. Verified showing 17 green + 3 red with "Insufficient balance". Commit `1a2717f`. |
 
 **Deliberately left alone:** booking-confirmation lookups in `ActivityBookingController`,
 `NomodController` and `CCAvenueController` still fetch activities by raw ID. That is correct —
