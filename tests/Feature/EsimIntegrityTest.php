@@ -156,9 +156,14 @@ class EsimIntegrityTest extends TestCase
 
         // The customer is told how to actually switch the thing on. Shipping
         // credentials with no instructions is what generated the support calls.
-        $this->assertStringContainsString('iPhone', $rendered);
+        $this->assertStringContainsString('On iPhone', $rendered);
         $this->assertStringContainsString('Samsung', $rendered);
-        $this->assertStringContainsString('Data Roaming ON', $rendered);
+        $this->assertStringContainsString('Data Roaming', $rendered);
+        // The client's own steps open with this and it is the most common
+        // reason an install fails, so it must survive any future rewording.
+        $this->assertStringContainsString('Connect to <strong>Wi-Fi</strong>', $rendered);
+        // ICCID belongs in the manual block, next to SM-DP+ and the code.
+        $this->assertStringContainsString('ICCID', $rendered);
     }
 
     /**

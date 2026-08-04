@@ -276,21 +276,21 @@
 <style>
     .premium-nav-tabs {
         display: flex;
-        /* "safe center" keeps the tabs centred when they fit, but falls back to
-           left-aligned once they overflow — otherwise centring clips the first
-           tab off the left edge where horizontal scrolling can't reach it.
-           Unsupported browsers ignore the value and default to flex-start,
-           which is the same safe behaviour. */
-        justify-content: safe center;
+        /* WRAPS rather than scrolls. Seven uppercase tabs cannot fit one line
+           on a smaller laptop at any font size that stays readable, and the
+           previous scrolling row hid the overflow behind a hidden scrollbar —
+           so "Hajj & Umrah by Air" was cut mid-word with no way to reach it.
+           Wrapping to a second line is the only arrangement where no label can
+           ever be clipped, whatever the window width or browser zoom. */
+        flex-wrap: wrap;
+        justify-content: center;
         align-items: center;
-        gap: 0;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        row-gap: 0;
+        column-gap: 0;
     }
-    .premium-nav-tabs::-webkit-scrollbar {
-        display: none;
+    /* Each label stays on one line; only the ROW breaks. */
+    .premium-nav-tabs .tab-btn {
+        white-space: nowrap;
     }
     .tab-btn {
         background: transparent !important;
@@ -318,18 +318,9 @@
         font-size: clamp(14px, 1.05vw, 17px);
         transition: transform 0.3s ease;
     }
-    /* If the row still overflows on a very narrow window, fade the right edge
-       so it reads as "there is more here" rather than as a cut-off word. */
-    .premium-nav-tabs {
-        mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
-    }
-    @media (min-width: 1500px) {
-        .premium-nav-tabs {
-            mask-image: none;
-            -webkit-mask-image: none;
-        }
-    }
+    /* The right-edge fade that used to hint at horizontal scrolling is gone —
+       nothing scrolls now, and it would have dimmed the last tab of a wrapped
+       row for no reason. */
     .tab-btn:hover {
         color: #fff !important;
         border-bottom-color: rgba(255, 255, 255, 0.2) !important;

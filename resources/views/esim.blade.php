@@ -4504,7 +4504,7 @@
             <i class="fa-brands fa-apple"></i> iPhone
         </button>
         <button type="button" class="esim-install-tab" data-panel="android" role="tab" aria-selected="false">
-            <i class="fa-brands fa-android"></i> Samsung &amp; Android
+            <i class="fa-brands fa-android"></i> Android (Samsung, Pixel)
         </button>
         <button type="button" class="esim-install-tab" data-panel="manual" role="tab" aria-selected="false">
             <i class="fa-solid fa-keyboard"></i> Manual entry
@@ -4514,30 +4514,34 @@
     <div class="esim-install-panels">
         <div class="esim-install-panel active" data-panel="iphone" role="tabpanel">
             <ol class="esim-install-steps">
-                <li><span>Open <strong>Settings</strong> → <strong>Mobile Service</strong> (or <strong>Cellular</strong>).</span></li>
-                <li><span>Tap <strong>Add eSIM</strong> → <strong>Use QR Code</strong>.</span></li>
-                <li><span>Scan the QR code from your email, opened on a laptop or a second phone.</span></li>
-                <li><span>Name the plan <strong>Travel</strong> so you can tell it apart from your home SIM.</span></li>
-                <li><span>Keep your home number as <strong>Default</strong> for calls; set <strong>Travel</strong> for <strong>Mobile Data</strong>.</span></li>
-                <li><span>Turn <strong>Data Roaming ON</strong> for the Travel plan — the eSIM will not connect without it.</span></li>
+                <li><span>Connect to <strong>Wi-Fi</strong>.</span></li>
+                <li><span>Open <strong>Settings</strong> → <strong>Cellular</strong> (or <strong>Mobile Data</strong>).</span></li>
+                <li><span>Tap <strong>Add eSIM</strong>.</span></li>
+                <li><span>Select <strong>Use QR Code</strong>.</span></li>
+                <li><span>Scan the QR code from your email.</span></li>
+                <li><span>Follow the on-screen prompts to install the eSIM.</span></li>
+                <li><span>Once installed: turn the eSIM <strong>On</strong>, set it as the <strong>Mobile Data</strong> line, and enable <strong>Data Roaming</strong> — a travel eSIM will not connect without it.</span></li>
+                <li><span>Restart your phone if the network does not appear immediately.</span></li>
             </ol>
         </div>
 
         <div class="esim-install-panel" data-panel="android" role="tabpanel">
             <ol class="esim-install-steps">
-                <li><span>Open <strong>Settings</strong> → <strong>Connections</strong> → <strong>SIM manager</strong>.</span></li>
-                <li><span>Tap <strong>Add eSIM</strong> → <strong>Scan QR code from service provider</strong>.</span></li>
-                <li><span>Scan the QR code from your email, then tap <strong>Add</strong> and confirm.</span></li>
-                <li><span>Under <strong>Mobile data</strong>, choose the new eSIM.</span></li>
-                <li><span>Turn <strong>Data roaming ON</strong> for it, then restart the phone once.</span></li>
+                <li><span>Connect to <strong>Wi-Fi</strong>.</span></li>
+                <li><span>Open <strong>Settings</strong> → <strong>Connections</strong> (or <strong>Network &amp; Internet</strong>) → <strong>SIM Manager</strong>.</span></li>
+                <li><span>Tap <strong>Add eSIM</strong>.</span></li>
+                <li><span>Select <strong>Scan QR Code</strong>.</span></li>
+                <li><span>Scan the QR code from your email.</span></li>
+                <li><span>Complete the installation and enable the eSIM.</span></li>
+                <li><span>Set it as your <strong>preferred data SIM</strong> and enable <strong>Data Roaming</strong> if required.</span></li>
             </ol>
         </div>
 
         <div class="esim-install-panel" data-panel="manual" role="tabpanel">
             <p class="esim-install-note">
                 No second screen to scan from? Your email also carries an
-                <strong>SM-DP+ address</strong> and an <strong>activation code</strong>.
-                Typing those two in works exactly the same, and needs no app.
+                <strong>SM-DP+ address</strong>, an <strong>activation code</strong> and your
+                <strong>ICCID</strong>. Typing them in works exactly the same, and needs no app.
             </p>
             <ol class="esim-install-steps">
                 <li><span>Go to the same <strong>Add eSIM</strong> screen on your phone.</span></li>

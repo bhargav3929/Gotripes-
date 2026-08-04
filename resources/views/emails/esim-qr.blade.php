@@ -80,16 +80,13 @@
                 {{-- Installation steps. With one eSIM the manual credentials are
                      shown inside this block; with several they are already printed
                      beside each QR above, so they are not repeated. --}}
+                {{-- ICCID sits inside the manual block alongside SM-DP+ and the
+                     activation code, which is how the client presents it. --}}
                 @include('emails.partials.esim-install-steps', [
                     'smdpAddress' => $count === 1 ? $esims->first()['smdpAddress'] : null,
                     'matchingId'  => $count === 1 ? $esims->first()['matchingId'] : null,
+                    'iccid'       => $count === 1 ? $esims->first()['iccid'] : null,
                 ])
-
-                @if($count === 1 && $esims->first()['iccid'])
-                    <p style="margin:14px 0 0;font-size:12px;line-height:1.5;color:#9ca3af;">
-                        ICCID (quote this if you contact us): <strong style="color:#6b7280;">{{ $esims->first()['iccid'] }}</strong>
-                    </p>
-                @endif
 
                 <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:22px;">
                     @foreach([
