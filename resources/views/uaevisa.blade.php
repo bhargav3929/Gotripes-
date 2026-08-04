@@ -1333,10 +1333,37 @@
 
         const HOTEL_BASE = {{ $hotelFee ?? 25 }};   // hotel fee for 1–2 visas
         const TICKET_RATE = {{ $ticketFee ?? 25 }}; // air-ticket assistance fee PER visa
-        const SHARJAH_DEPOSIT = {{ $sharjahDeposit ?? 0 }}; // refundable deposit per applicant (admin-configured; 0 = none)
-        // Non-refundable admin/processing fee per applicant, deducted from the deposit
-        // at refund time (admin-configured; 0 = none, and the row stays hidden).
-        const SHARJAH_ADMIN_FEE = {{ min($sharjahAdminFee ?? 0, $sharjahDeposit ?? 0) }};
+        // Company-wide fallback, used only for packages that do not set their own
+        // amount. The authoritative figures come off the selected package (see
+        // depositForSelectedPackage below) — they must, because the server charges
+        // the package's amount, and quoting a different number here would mean
+        // taking more money than the customer was shown.
+        const FALLBACK_DEPOSIT = {{ $sharjahDeposit ?? 0 }};
+        const FALLBACK_ADMIN_FEE = {{ min($sharjahAdminFee ?? 0, $sharjahDeposit ?? 0) }};
+
+        /**
+         * Deposit and processing fee for whichever package is selected.
+         *
+         * Any package may carry a deposit, not just Sharjah ones — the client
+         * asked to be able to introduce one for another emirate without a code
+         * change, so this keys off the amount rather than the emirate's name.
+         * The fee never exceeds the deposit, matching the server-side clamp.
+         */
+        function depositForSelectedPackage() {
+            const id = visaPackageSelect ? visaPackageSelect.value : null;
+            const pkg = id
+                ? window.visaPricingData.find(p => String(p.package_id) === String(id))
+                : null;
+
+            const deposit = pkg && pkg.deposit !== undefined && pkg.deposit !== null
+                ? Number(pkg.deposit)
+                : FALLBACK_DEPOSIT;
+            const fee = pkg && pkg.deposit_fee !== undefined && pkg.deposit_fee !== null
+                ? Number(pkg.deposit_fee)
+                : FALLBACK_ADMIN_FEE;
+
+            return { deposit: Math.max(0, deposit), fee: Math.max(0, Math.min(fee, deposit)) };
+        }
 
         // Hotel fee steps up with the number of visas (all applicants):
         // 1–2 → base (25), 3–4 → 50, 5–6 → 60, then +10 per extra pair of visas.
@@ -1396,13 +1423,16 @@
             const ticketCost = ticketCheckbox.checked ? ticketUnit : 0;
             const hotelCost  = hotelCheckbox.checked ? hotelUnit : 0;
 
-            // Sharjah specific calculations
-            const isSharjah = (selectedEmirateName && selectedEmirateName.toLowerCase() === 'sharjah');
-            const depositUnit = isSharjah ? SHARJAH_DEPOSIT : 0;
+            // Deposit comes from the selected package, so the quote always matches
+            // what the server charges. `isSharjah` is now just "does this package
+            // take a deposit" — any emirate can, which is what the client asked for.
+            const dep = depositForSelectedPackage();
+            const depositUnit = dep.deposit;
+            const isSharjah = depositUnit > 0;
             const depositCost = depositUnit * totalPersons;
             // The admin/processing fee is deducted from the deposit at refund time,
             // so it never changes what the customer pays now — only what comes back.
-            const adminFeeCost = (isSharjah ? SHARJAH_ADMIN_FEE : 0) * totalPersons;
+            const adminFeeCost = dep.fee * totalPersons;
             const refundCost = Math.max(0, depositCost - adminFeeCost);
 
             const grandTotal = baseVisaTotal + hotelCost + ticketCost + depositCost;

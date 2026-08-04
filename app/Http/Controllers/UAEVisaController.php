@@ -135,8 +135,6 @@ class UAEVisaController extends Controller
         $firstId = null;
         $createdRecords = [];
 
-        // Determine if Sharjah Visa processing is selected
-        $isSharjah = strtolower($emirateName) === 'sharjah';
         // Refundable deposit per applicant. Read from the selected package when
         // there is one — a package can set its own amount, or 0 for no deposit —
         // and otherwise from the company-wide setting, which is what the legacy
@@ -154,12 +152,28 @@ class UAEVisaController extends Controller
             $sharjahAdminFee = current_company()?->getSetting('visa_sharjah_deposit_admin_fee', 0);
             $sharjahAdminFee = is_numeric($sharjahAdminFee) ? (float) $sharjahAdminFee : 0.0;
             $sharjahAdminFee = max(0.0, min($sharjahAdminFee, $sharjahDeposit));
+
+            // No package selected: the legacy flat-price path only ever charged a
+            // deposit for Sharjah, so keep that behaviour for it.
+            if (strtolower((string) $emirateName) !== 'sharjah') {
+                $sharjahDeposit = 0.0;
+                $sharjahAdminFee = 0.0;
+            }
         }
 
-        $depositAmount = $isSharjah ? $sharjahDeposit : 0.00;
+        // "Takes a deposit" is now a property of the package, not of the emirate's
+        // name. The client asked to be able to introduce a deposit for another
+        // emirate without a code change, and matching on the string 'sharjah'
+        // was the one thing preventing that. It also kept the two halves of the
+        // system in sync: the storefront quotes this same amount off the package,
+        // so gating the charge on the emirate would have meant quoting one figure
+        // and charging another.
+        $isSharjah = $sharjahDeposit > 0;
+
+        $depositAmount = $sharjahDeposit;
         // The customer is charged the full deposit; what comes back later is the
         // deposit minus the admin fee.
-        $refundAmount = $isSharjah ? round($sharjahDeposit - $sharjahAdminFee, 2) : 0.00;
+        $refundAmount = round($sharjahDeposit - $sharjahAdminFee, 2);
 
         // Resolve every traveller's name up front.
         //
