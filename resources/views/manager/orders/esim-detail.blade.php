@@ -5,7 +5,15 @@
 
 @section('content')
 @php
-    $needsProvisioning = $order->payment_status === 'paid' && ! $order->monty_order_id;
+    // "Needs provisioning" is a per-eSIM question, not a per-order one. Judging
+    // it by the parent's monty_order_id — which mirrors the first unit — hid the
+    // Retry button on exactly the orders that needed it: a group booking where
+    // some travellers got an eSIM and some did not.
+    $orderQty     = $order->unitCount();
+    $issuedUnits  = $order->units()->whereNotNull('monty_order_id')->count();
+    $outstanding  = $orderQty - ($issuedUnits ?: ($order->monty_order_id ? $orderQty : 0));
+
+    $needsProvisioning = $order->payment_status === 'paid' && $outstanding > 0;
 
     // Reason the provider gave for refusing to issue the eSIM. Without this an
     // agent sees "assign_failed" and has to go digging through laravel.log to
@@ -44,9 +52,16 @@
     <div class="wp-notice wp-notice-error">
         <span>
             <i class="fas fa-exclamation-triangle me-2"></i>
-            <strong>This customer has paid but has no eSIM.</strong>
-            Provisioning {{ $order->reservation_status === 'pending' ? 'has not run' : 'failed ('.e($order->reservation_status).')' }},
-            so no QR code was sent. Use <strong>Retry provisioning</strong> above.
+            @if($orderQty > 1 && $issuedUnits > 0)
+                <strong>This customer paid for {{ $orderQty }} eSIMs but only {{ $issuedUnits }} were issued.</strong>
+                {{ $outstanding }} {{ Str::plural('traveller', $outstanding) }} {{ $outstanding === 1 ? 'has' : 'have' }} nothing.
+                <strong>Retry provisioning</strong> above issues only the missing ones — the
+                {{ $issuedUnits }} already bought are not charged again.
+            @else
+                <strong>This customer has paid but has no eSIM.</strong>
+                Provisioning {{ $order->reservation_status === 'pending' ? 'has not run' : 'failed ('.e($order->reservation_status).')' }},
+                so no QR code was sent. Use <strong>Retry provisioning</strong> above.
+            @endif
         </span>
     </div>
 
@@ -89,10 +104,26 @@
 
     <div class="orders-card orders-detail-card">
         <h3>Payment</h3>
+        @php
+            // selling_price is the ORDER TOTAL, monty_cost_price is PER UNIT, so
+            // the cost has to be multiplied out before they can be subtracted.
+            // Comparing them directly overstated the margin on a group order by
+            // the cost of every eSIM after the first.
+            $qty       = $order->unitCount();
+            $unitSell  = (float) ($order->unit_selling_price ?: $order->selling_price);
+            $unitCost  = (float) $order->monty_cost_price;
+            $totalSell = (float) $order->selling_price;
+            $totalCost = $unitCost * $qty;
+            $cur       = $order->currency ?: 'AED';
+        @endphp
         <ul class="orders-detail-list">
-            <li><span class="label">Selling price</span>  <span class="value">{{ number_format((float) $order->selling_price, 2) }} {{ $order->currency ?: 'AED' }}</span></li>
-            <li><span class="label">Cost price</span>     <span class="value">{{ number_format((float) $order->monty_cost_price, 2) }} {{ $order->currency ?: 'AED' }}</span></li>
-            <li><span class="label">Margin</span>         <span class="value">{{ number_format((float) $order->selling_price - (float) $order->monty_cost_price, 2) }} {{ $order->currency ?: 'AED' }}</span></li>
+            @if($qty > 1)
+                <li><span class="label">Quantity</span>       <span class="value">{{ $qty }} eSIMs</span></li>
+                <li><span class="label">Unit price</span>     <span class="value">{{ number_format($unitSell, 2) }} {{ $cur }} each</span></li>
+            @endif
+            <li><span class="label">Selling price</span>  <span class="value">{{ number_format($totalSell, 2) }} {{ $cur }}{{ $qty > 1 ? ' total' : '' }}</span></li>
+            <li><span class="label">Cost price</span>     <span class="value">{{ number_format($totalCost, 2) }} {{ $cur }}{{ $qty > 1 ? ' ('.number_format($unitCost, 2).' × '.$qty.')' : '' }}</span></li>
+            <li><span class="label">Margin</span>         <span class="value">{{ number_format($totalSell - $totalCost, 2) }} {{ $cur }}</span></li>
             <li><span class="label">Payment status</span> <span class="value">{{ ucfirst($order->payment_status ?: 'pending') }}</span></li>
         </ul>
     </div>
@@ -108,5 +139,56 @@
             <li><span class="label">Created</span>             <span class="value">{{ $order->created_at?->format('d M Y H:i') ?: '—' }}</span></li>
         </ul>
     </div>
+
+    @php
+        // The two fields above mirror the FIRST eSIM only. On a group order that
+        // is misleading on its own, so every unit is listed out — including any
+        // that failed, with the provider's reason.
+        $units = $order->units()->get();
+    @endphp
+    @if($units->count() > 1)
+        <div class="orders-card orders-detail-card" style="grid-column: 1 / -1;">
+            <h3>
+                Individual eSIMs
+                <span style="font-weight:400; opacity:.7;">
+                    — {{ $units->whereNotNull('monty_order_id')->count() }} of {{ $order->unitCount() }} issued
+                </span>
+            </h3>
+            <div class="table-responsive">
+                <table class="wp-table">
+                    <thead>
+                        <tr>
+                            <th style="width:50px;">#</th>
+                            <th>Monty order ID</th>
+                            <th>ICCID</th>
+                            <th style="width:130px;">Status</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($units as $u)
+                            <tr>
+                                <td>{{ $u->unit_number }}</td>
+                                <td>{{ $u->monty_order_id ?: '—' }}</td>
+                                <td>{{ $u->monty_iccid ?: '—' }}</td>
+                                <td>
+                                    @if($u->reservation_status === 'completed')
+                                        <span class="wp-badge wp-badge-green">Issued</span>
+                                    @elseif($u->monty_order_id)
+                                        <span class="wp-badge wp-badge-amber">{{ $u->reservation_status ?: 'unknown' }}</span>
+                                    @else
+                                        <span class="wp-badge wp-badge-red">{{ $u->reservation_status ?: 'pending' }}</span>
+                                    @endif
+                                </td>
+                                <td style="font-size:12px; opacity:.75;">
+                                    {{ data_get($u->monty_response, 'error') ?: '—' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection

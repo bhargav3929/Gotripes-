@@ -42,6 +42,19 @@
                 return '<span class="badge badge-failed"><i class="fas fa-exclamation-triangle"></i> Not issued</span>';
             }
             if ($o->monty_order_id) {
+                // A group order is only done when every eSIM came through.
+                // Judging by the parent id alone showed "Issued" for an order
+                // where 17 of 20 travellers got one, which is the case most in
+                // need of attention.
+                $qty = $o->unitCount();
+                if ($qty > 1) {
+                    $issued = $o->units()->whereNotNull('monty_order_id')->count();
+                    if ($issued < $qty) {
+                        return '<span class="badge badge-failed"><i class="fas fa-exclamation-triangle"></i> '
+                            .$issued.' of '.$qty.'</span>';
+                    }
+                    return '<span class="badge badge-paid">Issued ×'.$qty.'</span>';
+                }
                 return '<span class="badge badge-paid">Issued</span>';
             }
             return '<span class="badge badge-default">—</span>';
