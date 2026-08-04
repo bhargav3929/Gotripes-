@@ -14,6 +14,41 @@
 
 ---
 
+## 0. At a glance
+
+**Asked for on the call — all done, live on gotrips.ai:**
+
+- [x] **A1** — iPhone / Android / manual install steps inside the QR email (Amer's own wording)
+- [x] **A2** — same steps published on `/esim` before purchase
+- [x] **A3** — eSIM hero image loads again (the .webp was a 0-byte file); pill reads **186 Countries**
+- [x] **A4** — buy 5 / 10 / 20 eSIMs in one checkout, all QR codes in one email
+- [x] **A5** — checkout widened, Pay button in view without scrolling
+- [x] **B1** — "CSRF token mismatch" no longer dead-ends; silent retry + readable message
+- [x] **B2** — UAE visa admin cut from 5 tabs to **2**
+- [x] **B3** — package form in Amer's exact order; Sharjah deposit fields; 90 days gone; supplier + company email per package
+- [x] **B4** — application now emails customer + supplier + our company address
+- [x] **B5** — pricing matrix with edit / save / disable / delete
+- [x] **C1** — "Hajj & Umrah by Air" no longer cropped (verified 1024 / 1280 / 1512px)
+- [x] **D1** — hide/show an activity without deleting it
+- [x] **E1** — fat gold scrollbars in both dashboards
+- [x] **F1** — "Portway Systems" removed from every page
+
+**Confirmed already working during the call — no change needed:**
+
+- [x] eVisa / eSIM / Saudi detail "View" pages with full status tracking
+- [x] Supplier email per Saudi visa type (comma-separated for two suppliers)
+- [x] Hajj & Umrah required-documents display
+- [x] Supplier email separate per activity
+- [x] All **seven** emirates in the package dropdown
+
+**Also fixed along the way (not asked for — found while verifying):** 14 defects, including
+`APP_DEBUG=true` leaking stack traces publicly, "Resend QR" failing on every pre-existing order,
+and hidden activities still being bookable by direct link. See §1b.
+
+**Waiting on Amer — 6 items, none blocking:** see §2a.
+
+---
+
 ## 1. Changes I understood (actionable)
 
 ### A. eSIM
