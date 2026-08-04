@@ -338,4 +338,110 @@ class VisaAddonPricingTest extends TestCase
         $this->assertEquals('AE1234567890123456789', $firstApp->UAEV_bank_account_number);
         $this->assertEquals('EBANDAEAAXXX', $firstApp->UAEV_bank_swift_code);
     }
+
+    /**
+     * A package's own deposit is what gets charged — on any emirate, and even
+     * when the company-wide setting says something different.
+     *
+     * Two regressions are pinned here. First, the deposit used to be gated on
+     * the emirate being literally named "Sharjah", so a deposit set on any
+     * other package was quoted to the customer and then silently not charged.
+     * Second, the storefront calculator read a page-level constant baked from
+     * the company setting while the server charged the package amount — so a
+     * package that overrode the deposit quoted one figure and took another.
+     */
+    public function test_package_deposit_overrides_the_company_setting_on_any_emirate()
+    {
+        Storage::fake('public');
+        Http::fake([
+            '*/v1/checkout' => Http::response(['id' => 'chk_d', 'url' => 'https://pay.test/chk_d', 'status' => 'created'], 200),
+        ]);
+
+        \Illuminate\Support\Facades\DB::table('tbl_UAEVStatus')->insertOrIgnore([
+            'id' => 1, 'status_name' => 'Pending',
+        ]);
+
+        $company = \App\Models\Company::first() ?: \App\Models\Company::create(['name' => 'Test Company', 'subdomain' => 'test']);
+        // Company-wide values the package must NOT inherit.
+        $company->settings = array_merge($company->settings ?? [], [
+            'visa_sharjah_deposit' => 5000,
+            'visa_sharjah_deposit_admin_fee' => 300,
+        ]);
+        $company->save();
+
+        // Deliberately NOT Sharjah.
+        $emirate = \App\Models\Emirates::create([
+            'emiratesName' => 'Dubai',
+            'isActive' => 1,
+            'company_id' => 1,
+        ]);
+
+        $package = \App\Models\UAEVisaPackage::create([
+            'emirates_id'       => $emirate->emiratesID,
+            'name'              => 'Dubai Deposit Visa',
+            'package_type'      => 'Standard',
+            'security_deposit'  => 1500,
+            'deposit_admin_fee' => 100,
+            'isActive'          => 1,
+            'company_id'        => 1,
+        ]);
+
+        \App\Models\UAEVisaPrice::create([
+            'visa_package_id' => $package->id,
+            'entry_type'      => 'Single Entry',
+            'duration'        => '30 Days',
+            'traveller_type'  => 'Adult',
+            'price'           => 400.00,
+            'isActive'        => 1,
+            'company_id'      => 1,
+        ]);
+
+        // The storefront quotes off these two, so they are the customer-facing
+        // figures and must equal what is charged below.
+        $this->assertEquals(1500.0, $package->depositPerApplicant());
+        $this->assertEquals(100.0, $package->depositAdminFee());
+
+        $this->withoutExceptionHandling();
+        $this->withoutMiddleware(VerifyCsrfToken::class)
+            ->post(route('uaev.submit'), [
+                'selected_emirate' => 'Dubai',
+                'visa_package_id'  => $package->id,
+                'entry_type'       => 'Single Entry',
+                'visaDuration'     => '30 Days',
+                'price'            => '999999',
+                'visa_count'       => 2,
+                'children_count'   => 0,
+                'arrival_date'     => '2026-08-01',
+                'departure_date'   => '2026-08-10',
+                'email'            => 'dubai_deposit@example.com',
+                'phone'            => '+971500000000',
+                'first_name'       => ['Ann', 'Ben'],
+                'last_name'        => ['One', 'Two'],
+                'passport_number'  => ['P1', 'P2'],
+                'dob'              => ['1990-01-01', '1991-01-01'],
+                'gender'           => ['Female', 'Male'],
+                'passport_copy'    => [
+                    UploadedFile::fake()->create('p0.pdf', 50, 'application/pdf'),
+                    UploadedFile::fake()->create('p1.pdf', 50, 'application/pdf'),
+                ],
+                'passport_photo'   => [
+                    UploadedFile::fake()->create('ph0.jpg', 50, 'image/jpeg'),
+                    UploadedFile::fake()->create('ph1.jpg', 50, 'image/jpeg'),
+                ],
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        // (400 x 2) + (1500 x 2) = 800 + 3000 = 3800. With the company setting
+        // it would have been 10800; with the old emirate check, 800.
+        $txn = NomodTransaction::where('booking_type', 'visa')->latest('id')->first();
+        $this->assertNotNull($txn);
+        $this->assertEquals(3800.00, (float) $txn->amount);
+
+        $app = \App\Models\UAEVApplication::where('UAEV_email', 'dubai_deposit@example.com')->first();
+        $this->assertNotNull($app);
+        $this->assertEquals(1500.00, (float) $app->UAEV_deposit_amount);
+        // Refundable = deposit - processing fee.
+        $this->assertEquals(1400.00, (float) $app->UAEV_refund_amount);
+    }
 }

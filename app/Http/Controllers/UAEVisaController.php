@@ -278,10 +278,15 @@ class UAEVisaController extends Controller
                 'UAEV_price' => $unitPrice,
                 'UAEV_deposit_amount' => $depositAmount,
                 'UAEV_refund_amount' => $refundAmount,
-                'UAEV_bank_account_holder' => $isSharjah ? $validated['bank_account_holder'] : null,
-                'UAEV_bank_name' => $isSharjah ? $validated['bank_name'] : null,
-                'UAEV_bank_account_number' => $isSharjah ? $validated['bank_account_number'] : null,
-                'UAEV_bank_swift_code' => $isSharjah ? $validated['bank_swift_code'] : null,
+                // Refund account, collected only when there is a deposit to give
+                // back. All four are nullable in the rules above, so they are
+                // coalesced rather than indexed: now that any package can carry a
+                // deposit — not just Sharjah, which always collected them — an
+                // application submitted without them must still save, not 500.
+                'UAEV_bank_account_holder' => $isSharjah ? ($validated['bank_account_holder'] ?? null) : null,
+                'UAEV_bank_name' => $isSharjah ? ($validated['bank_name'] ?? null) : null,
+                'UAEV_bank_account_number' => $isSharjah ? ($validated['bank_account_number'] ?? null) : null,
+                'UAEV_bank_swift_code' => $isSharjah ? ($validated['bank_swift_code'] ?? null) : null,
                 'UAEV_Created_by' => 'Guest (Multi-Visa)',
                 'UAEV_created_date' => now(),
                 'UAEV_isActive' => 1,

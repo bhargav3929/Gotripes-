@@ -52,9 +52,24 @@ class UAEVisaPackage extends Model
             return max(0.0, (float) $this->security_deposit);
         }
 
+        // The company-wide setting is specifically the *Sharjah* deposit — it is
+        // named that, and Sharjah was the only emirate that ever charged one. So
+        // it is only inherited by Sharjah packages. Letting a Dubai package fall
+        // back to it would have started charging a deposit on emirates that have
+        // never had one.
+        if (!$this->isDepositEmirate()) {
+            return 0.0;
+        }
+
         $fallback = current_company()?->getSetting('visa_sharjah_deposit', 0);
 
         return is_numeric($fallback) ? max(0.0, (float) $fallback) : 0.0;
+    }
+
+    /** True when this package's emirate is the one the legacy setting was for. */
+    private function isDepositEmirate(): bool
+    {
+        return strtolower(trim((string) $this->emirate?->emiratesName)) === 'sharjah';
     }
 
     /**
@@ -65,9 +80,11 @@ class UAEVisaPackage extends Model
     {
         if ($this->deposit_admin_fee !== null) {
             $fee = max(0.0, (float) $this->deposit_admin_fee);
-        } else {
+        } elseif ($this->isDepositEmirate()) {
             $fallback = current_company()?->getSetting('visa_sharjah_deposit_admin_fee', 0);
             $fee = is_numeric($fallback) ? max(0.0, (float) $fallback) : 0.0;
+        } else {
+            $fee = 0.0;
         }
 
         return min($fee, $this->depositPerApplicant());
