@@ -125,7 +125,7 @@
 
     .emirate-logo {
         display: block;
-        height: 38px;
+        height: 64px;
         width: auto;
         object-fit: contain;
         flex-shrink: 0;
@@ -274,7 +274,7 @@
             padding: 20px 24px 20px;
         }
         .emirate-logo {
-            height: 30px;
+            height: 50px;
         }
         .emirate-title {
             font-size: 21px;
@@ -300,7 +300,7 @@
             padding: 14px 18px 16px;
         }
         .emirate-logo {
-            height: 24px;
+            height: 40px;
         }
         .emirate-title {
             font-size: 17px;
@@ -335,7 +335,7 @@
             margin-bottom: 16px;
         }
         .emirate-logo {
-            height: 32px;
+            height: 52px;
         }
         .emirate-cards-grid {
             gap: 12px;
