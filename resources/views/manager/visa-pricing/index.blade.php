@@ -196,6 +196,11 @@
                                 </select>
                             </div>
                             <div class="wp-form-group">
+                                <label class="wp-form-label">Nationality (optional)</label>
+                                <input type="text" class="wp-input" name="nationality" placeholder="Leave blank to apply to all nationalities" maxlength="100">
+                                <p class="wp-form-help">Only needed for a nationality-specific override. Every package already has a full set of rows with no nationality set (applies to everyone) — edit those in the matrix instead of adding new ones.</p>
+                            </div>
+                            <div class="wp-form-group">
                                 <label class="wp-form-label">Price (AED) <span class="required">*</span></label>
                                 <input type="number" class="wp-input" name="price" required step="0.01" min="0" placeholder="e.g. 350.00">
                             </div>
@@ -219,6 +224,7 @@
                                         <th>Entry Type</th>
                                         <th>Duration</th>
                                         <th>Traveller</th>
+                                        <th>Nationality</th>
                                         <th>Price (AED)</th>
                                         <th>Status</th>
                                         <th style="width: 100px;">Actions</th>
@@ -254,6 +260,9 @@
                                                 </select>
                                             </td>
                                             <td>
+                                                <input type="text" class="wp-input" name="prices[{{ $pr->id }}][nationality]" value="{{ $pr->nationality }}" placeholder="All" maxlength="100" style="width:110px;">
+                                            </td>
+                                            <td>
                                                 <input type="number" class="wp-input" name="prices[{{ $pr->id }}][price]" value="{{ $pr->price }}" step="0.01" min="0" required style="width:100px;">
                                             </td>
                                             <td>
@@ -270,7 +279,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center py-4">No pricing grid configuration entries found.</td>
+                                            <td colspan="8" class="text-center py-4">No pricing grid configuration entries found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
