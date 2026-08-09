@@ -228,6 +228,16 @@
         border-radius: 0 10px 10px 0 !important;
         border-left: none !important;
     }
+    /* The dropdown sizes itself to its widest country name and spills out over
+       the column beside it. Pin it to the width of the phone field instead. */
+    /* Sized explicitly, not as a percentage: the dropdown lives inside the
+       narrow flag button, so 100% would collapse it to the flag's width. */
+    .iti__dropdown-content {
+        width: max-content !important;
+        min-width: 280px !important;
+        max-width: min(360px, 88vw) !important;
+        box-sizing: border-box !important;
+    }
     .iti__country-list {
         background: #0d0d0d !important;
         border: 1px solid #2a2a2a !important;
@@ -239,10 +249,24 @@
         z-index: 9999 !important;
         padding: 6px 0 !important;
         margin-top: 4px !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        box-sizing: border-box !important;
     }
+    /* Flag, name, then dial code pinned right — the plugin's default float
+       leaves the dial code at a different x on every row. */
     .iti__country {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
         padding: 8px 14px !important;
         color: #ddd !important;
+    }
+    .iti__country-name {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .iti__country.iti__highlight,
     .iti__country:hover {
@@ -250,7 +274,12 @@
         color: #fff !important;
     }
     .iti__country-name { color: inherit !important; }
-    .iti__dial-code { color: #FFD700 !important; opacity: 0.9; }
+    .iti__dial-code {
+        color: #FFD700 !important;
+        opacity: 0.9;
+        margin-left: auto;
+        font-variant-numeric: tabular-nums;
+    }
     .iti__divider {
         border-bottom-color: #2a2a2a !important;
         background: #2a2a2a !important;
@@ -933,7 +962,10 @@
                             </div>
                             <div class="form-field">
                                 <label class="field-label">WhatsApp Number <span style="color: var(--c-gold);">*</span></label>
-                                <input type="tel" id="phoneInput" class="field-input" name="phone" placeholder="50 000 0000" required>
+                                {{-- data-no-intl: this page builds its own intl-tel-input below.
+                                     Without the opt-out the global partials/intl-tel-init upgrades
+                                     it first and the widget gets built twice. --}}
+                                <input type="tel" id="phoneInput" class="field-input" name="phone" placeholder="50 000 0000" required data-no-intl>
                             </div>
                         </div>
                     </div>
@@ -1712,12 +1744,15 @@
 
         // Phone with country dropdown
         const phoneEl = document.getElementById('phoneInput');
-        const iti = window.intlTelInput(phoneEl, {
+        // Reuse an existing instance if one somehow got attached already —
+        // initialising twice nests one widget inside the other.
+        const iti = phoneEl.__iti || window.intlTelInput(phoneEl, {
             initialCountry: 'ae',
             preferredCountries: ['ae', 'sa', 'in', 'pk', 'gb', 'us'],
             separateDialCode: true,
             utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js',
         });
+        phoneEl.__iti = iti;
 
         // Form Submit
         const form = document.getElementById('visaForm');

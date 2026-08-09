@@ -104,6 +104,7 @@
             <li><span class="label">Reservation status</span>  <span class="value">{{ $order->reservation_status ?: '—' }}</span></li>
             <li><span class="label">Monty order ID</span>      <span class="value">{{ $order->monty_order_id ?: '—' }}</span></li>
             <li><span class="label">ICCID</span>               <span class="value">{{ $order->monty_iccid ?: '—' }}</span></li>
+            <li><span class="label">QR emailed</span>          <span class="value">{{ $order->qr_sent_at?->format('d M Y H:i') ?: 'Not sent by us' }}</span></li>
             <li><span class="label">Created</span>             <span class="value">{{ $order->created_at?->format('d M Y H:i') ?: '—' }}</span></li>
         </ul>
     </div>

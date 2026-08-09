@@ -384,7 +384,10 @@ class NomodController extends Controller
                 return ['type' => 'fifa', 'data' => $data];
             }
         } elseif (stripos($orderId, 'ORDVISA') !== false) {
-            $application = \App\Models\FluxirVisaApplication::where('order_id', $orderId)->first();
+            // Unscoped: this runs in a payment callback on the apex host, where
+            // CompanyScope would hide applications created on tenant subdomains.
+            $application = \App\Models\FluxirVisaApplication::withoutCompanyScope()
+                ->where('order_id', $orderId)->first();
             if ($application) {
                 return ['type' => 'evisa', 'data' => $application->toArray()];
             }
@@ -656,7 +659,10 @@ class NomodController extends Controller
      */
     private function finalizeEvisaBooking(string $orderId, string $paymentStatus): void
     {
-        $record = \App\Models\FluxirVisaApplication::where('order_id', $orderId)->first();
+        // Unscoped lookup: payment callbacks arrive on the apex host, but the
+        // application may belong to a tenant subdomain (order ids are unique).
+        $record = \App\Models\FluxirVisaApplication::withoutCompanyScope()
+            ->where('order_id', $orderId)->first();
         if (!$record) {
             return;
         }
@@ -730,6 +736,17 @@ class NomodController extends Controller
             $record->forceFill(['notified_at' => now()])->save();
         } catch (\Throwable $e) {
             Log::error('e-Visa booking notification failed', ['order_id' => $orderId, 'error' => $e->getMessage()]);
+        }
+
+        // Customer confirmation, guarded separately from the business email so
+        // either failing to send can be retried without duplicating the other.
+        if ($record->email && !$record->customer_notified_at) {
+            try {
+                Mail::to($record->email)->send(new \App\Mail\EvisaCustomerMail($record->fresh(), 'submitted'));
+                $record->forceFill(['customer_notified_at' => now()])->save();
+            } catch (\Throwable $e) {
+                Log::error('e-Visa customer confirmation failed', ['order_id' => $orderId, 'error' => $e->getMessage()]);
+            }
         }
     }
 
@@ -1016,6 +1033,7 @@ class NomodController extends Controller
             $application->passport_path,
             $application->photo_path,
             $application->additional_doc_path,
+            $application->emirates_id_path,
         );
 
         if ($supplierEmail !== '') {

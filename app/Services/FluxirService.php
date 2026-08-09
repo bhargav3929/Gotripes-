@@ -691,9 +691,50 @@ class FluxirService
         return $this->request('GET', "api/app/trip/{$tripId}");
     }
 
-    /** Retrieve a service application's current state. GET /api/app/travel-services/{id} */
-    public function getServiceApplication(int|string $serviceApplicationId): array
+    /**
+     * Current state of one service application, read from its trip.
+     *
+     * There is no GET on /api/app/travel-services/{id} — Fluxir answers 405
+     * (verified live 2 Aug 2026), so anything polling that path silently never
+     * updated. The trip payload is the supported read: it carries every
+     * application with `state`, `checkoutStatus` and `hasDownloadableContent`.
+     *
+     * @return array{success:bool,data?:array,error?:string}
+     */
+    public function getServiceApplication(int|string $tripId, int|string $serviceApplicationId): array
     {
-        return $this->request('GET', "api/app/travel-services/{$serviceApplicationId}");
+        $res = $this->getTrip($tripId);
+        if (!($res['success'] ?? false)) {
+            return $res;
+        }
+
+        foreach (($res['data']['serviceApplications'] ?? []) as $app) {
+            if ((string) ($app['id'] ?? '') === (string) $serviceApplicationId) {
+                return ['success' => true, 'data' => $app];
+            }
+        }
+
+        return ['success' => false, 'error' => 'Service application not found on trip ' . $tripId];
+    }
+
+    /**
+     * Whether a service application entry (from getServiceApplication) has been
+     * paid for.
+     *
+     * Fluxir exposes no boolean: `checkoutStatus` is "Unknown" until settled,
+     * and a paid application also leaves the ReadyForPayment gate. Treat either
+     * signal as payment so a checkoutStatus vocabulary change cannot strand a
+     * customer who has actually paid.
+     */
+    public function applicationIsPaid(array $app): bool
+    {
+        $checkout = strtolower((string) ($app['checkoutStatus'] ?? ''));
+        if (in_array($checkout, ['paid', 'succeeded', 'success', 'completed', 'complete'], true)) {
+            return true;
+        }
+
+        $state = (string) ($app['state'] ?? '');
+
+        return $state !== '' && !in_array($state, ['Draft', 'ReadyForPayment', 'Cancelled', 'Aborted'], true);
     }
 }

@@ -436,6 +436,11 @@
                                 <label class="wp-form-label">Profit Margin (%)</label>
                                 <input type="number" class="wp-input" name="markup_percent" value="{{ old('markup_percent', $evisaMarkup ?? 15) }}" step="0.01" min="0" max="1000" required>
                                 <p class="wp-form-help">Added on top of the supplier's net fee for every e-Visa on the <code>/e-visa</code> storefront. Example: a $100 net visa at 15% sells for $115.</p>
+                                <p class="wp-form-help" style="color:var(--wp-warning,#b8860b);">
+                                    <i class="fas fa-triangle-exclamation"></i>
+                                    <strong>This is a platform-wide setting.</strong> Unlike the prices above, it applies to
+                                    every site on GoTrips, not just yours — changing it changes e-Visa prices everywhere.
+                                </p>
                             </div>
                             <button type="submit" class="wp-btn wp-btn-primary w-100">
                                 <i class="fas fa-save"></i> Save e-Visa Markup

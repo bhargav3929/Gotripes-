@@ -248,53 +248,7 @@ class FluxirEvisaController extends Controller
             'departure_date'   => 'nullable|date',
         ]);
 
-        $codeMap = [
-            'AE' => 'ARE', 'IN' => 'IND', 'GB' => 'GBR', 'US' => 'USA',
-            'AF' => 'AFG', 'AL' => 'ALB', 'DZ' => 'DZA', 'AD' => 'AND',
-            'AO' => 'AGO', 'AR' => 'ARG', 'AM' => 'ARM', 'AU' => 'AUS',
-            'AT' => 'AUT', 'AZ' => 'AZE', 'BH' => 'BHR', 'BD' => 'BGD',
-            'BY' => 'BLR', 'BE' => 'BEL', 'BZ' => 'BLZ', 'BJ' => 'BEN',
-            'BT' => 'BTN', 'BO' => 'BOL', 'BA' => 'BIH', 'BW' => 'BWA',
-            'BR' => 'BRA', 'BN' => 'BRN', 'BG' => 'BGR', 'BF' => 'BFA',
-            'BI' => 'BDI', 'KH' => 'KHM', 'CM' => 'CMR', 'CA' => 'CAN',
-            'CV' => 'CPV', 'CF' => 'CAF', 'TD' => 'TCD', 'CL' => 'CHL',
-            'CN' => 'CHN', 'CO' => 'COL', 'KM' => 'COM', 'CG' => 'COG',
-            'CD' => 'COD', 'CR' => 'CRI', 'CI' => 'CIV', 'HR' => 'HRV',
-            'CU' => 'CUB', 'CY' => 'CYP', 'CZ' => 'CZE', 'DK' => 'DNK',
-            'DJ' => 'DJI', 'DO' => 'DOM', 'EC' => 'ECU', 'EG' => 'EGY',
-            'SV' => 'SLV', 'GQ' => 'GNQ', 'ER' => 'ERI', 'EE' => 'EST',
-            'SZ' => 'SWZ', 'ET' => 'ETH', 'FJ' => 'FJI', 'FI' => 'FIN',
-            'FR' => 'FRA', 'GA' => 'GAB', 'GM' => 'GMB', 'GE' => 'GEO',
-            'DE' => 'DEU', 'GH' => 'GHA', 'GR' => 'GRC', 'GT' => 'GTM',
-            'GN' => 'GIN', 'GY' => 'GUY', 'HT' => 'HTI', 'HN' => 'HND',
-            'HK' => 'HKG', 'HU' => 'HUN', 'IS' => 'ISL', 'ID' => 'IDN',
-            'IR' => 'IRN', 'IQ' => 'IRQ', 'IE' => 'IRL', 'IL' => 'ISR',
-            'IT' => 'ITA', 'JM' => 'JAM', 'JP' => 'JPN', 'JO' => 'JOR',
-            'KZ' => 'KAZ', 'KE' => 'KEN', 'KW' => 'KWT', 'KG' => 'KGZ',
-            'LA' => 'LAO', 'LV' => 'LVA', 'LB' => 'LBN', 'LS' => 'LSO',
-            'LR' => 'LBR', 'LY' => 'LBY', 'LI' => 'LIE', 'LT' => 'LTU',
-            'LU' => 'LUX', 'MO' => 'MAC', 'MG' => 'MDG', 'MW' => 'MWI',
-            'MY' => 'MYS', 'MV' => 'MDV', 'ML' => 'MLI', 'MT' => 'MLT',
-            'MR' => 'MRT', 'MU' => 'MUS', 'MX' => 'MEX', 'MD' => 'MDA',
-            'MC' => 'MCO', 'MN' => 'MNG', 'ME' => 'MNE', 'MA' => 'MAR',
-            'MZ' => 'MOZ', 'MM' => 'MMR', 'NA' => 'NAM', 'NP' => 'NPL',
-            'NL' => 'NLD', 'NZ' => 'NZL', 'NI' => 'NIC', 'NE' => 'NER',
-            'NG' => 'NGA', 'KP' => 'PRK', 'MK' => 'MKD', 'NO' => 'NOR',
-            'OM' => 'OMN', 'PK' => 'PAK', 'PS' => 'PSE', 'PA' => 'PAN',
-            'PG' => 'PNG', 'PY' => 'PRY', 'PE' => 'PER', 'PH' => 'PHL',
-            'PL' => 'POL', 'PT' => 'PRT', 'PR' => 'PRI', 'QA' => 'QAT',
-            'RO' => 'ROU', 'RU' => 'RUS', 'RW' => 'RWA', 'SM' => 'SMR',
-            'SA' => 'SAU', 'SN' => 'SEN', 'RS' => 'SRB', 'SC' => 'SYC',
-            'SL' => 'SLE', 'SG' => 'SGP', 'SK' => 'SVK', 'SI' => 'SVN',
-            'SO' => 'SOM', 'ZA' => 'ZAF', 'KR' => 'KOR', 'SS' => 'SSD',
-            'ES' => 'ESP', 'LK' => 'LKA', 'SD' => 'SDN', 'SR' => 'SUR',
-            'SE' => 'SWE', 'CH' => 'CHE', 'SY' => 'SYR', 'TW' => 'TWN',
-            'TJ' => 'TJK', 'TZ' => 'TZA', 'TH' => 'THA', 'TG' => 'TGO',
-            'TT' => 'TTO', 'TN' => 'TUN', 'TR' => 'TUR', 'TM' => 'TKM',
-            'UG' => 'UGA', 'UA' => 'UKR', 'UY' => 'URY', 'UZ' => 'UZB',
-            'VE' => 'VEN', 'VN' => 'VNM', 'YE' => 'YEM', 'ZM' => 'ZMB',
-            'ZW' => 'ZWE'
-        ];
+        $codeMap = self::$codeMap;
 
         $destCode = strtoupper($data['destination_code']);
         if (strlen($destCode) === 2) {
@@ -399,53 +353,7 @@ class FluxirEvisaController extends Controller
             'files.*'          => 'file|mimes:pdf,jpg,jpeg,png|max:8192',
         ]);
 
-        $codeMap = [
-            'AE' => 'ARE', 'IN' => 'IND', 'GB' => 'GBR', 'US' => 'USA',
-            'AF' => 'AFG', 'AL' => 'ALB', 'DZ' => 'DZA', 'AD' => 'AND',
-            'AO' => 'AGO', 'AR' => 'ARG', 'AM' => 'ARM', 'AU' => 'AUS',
-            'AT' => 'AUT', 'AZ' => 'AZE', 'BH' => 'BHR', 'BD' => 'BGD',
-            'BY' => 'BLR', 'BE' => 'BEL', 'BZ' => 'BLZ', 'BJ' => 'BEN',
-            'BT' => 'BTN', 'BO' => 'BOL', 'BA' => 'BIH', 'BW' => 'BWA',
-            'BR' => 'BRA', 'BN' => 'BRN', 'BG' => 'BGR', 'BF' => 'BFA',
-            'BI' => 'BDI', 'KH' => 'KHM', 'CM' => 'CMR', 'CA' => 'CAN',
-            'CV' => 'CPV', 'CF' => 'CAF', 'TD' => 'TCD', 'CL' => 'CHL',
-            'CN' => 'CHN', 'CO' => 'COL', 'KM' => 'COM', 'CG' => 'COG',
-            'CD' => 'COD', 'CR' => 'CRI', 'CI' => 'CIV', 'HR' => 'HRV',
-            'CU' => 'CUB', 'CY' => 'CYP', 'CZ' => 'CZE', 'DK' => 'DNK',
-            'DJ' => 'DJI', 'DO' => 'DOM', 'EC' => 'ECU', 'EG' => 'EGY',
-            'SV' => 'SLV', 'GQ' => 'GNQ', 'ER' => 'ERI', 'EE' => 'EST',
-            'SZ' => 'SWZ', 'ET' => 'ETH', 'FJ' => 'FJI', 'FI' => 'FIN',
-            'FR' => 'FRA', 'GA' => 'GAB', 'GM' => 'GMB', 'GE' => 'GEO',
-            'DE' => 'DEU', 'GH' => 'GHA', 'GR' => 'GRC', 'GT' => 'GTM',
-            'GN' => 'GIN', 'GY' => 'GUY', 'HT' => 'HTI', 'HN' => 'HND',
-            'HK' => 'HKG', 'HU' => 'HUN', 'IS' => 'ISL', 'ID' => 'IDN',
-            'IR' => 'IRN', 'IQ' => 'IRQ', 'IE' => 'IRL', 'IL' => 'ISR',
-            'IT' => 'ITA', 'JM' => 'JAM', 'JP' => 'JPN', 'JO' => 'JOR',
-            'KZ' => 'KAZ', 'KE' => 'KEN', 'KW' => 'KWT', 'KG' => 'KGZ',
-            'LA' => 'LAO', 'LV' => 'LVA', 'LB' => 'LBN', 'LS' => 'LSO',
-            'LR' => 'LBR', 'LY' => 'LBY', 'LI' => 'LIE', 'LT' => 'LTU',
-            'LU' => 'LUX', 'MO' => 'MAC', 'MG' => 'MDG', 'MW' => 'MWI',
-            'MY' => 'MYS', 'MV' => 'MDV', 'ML' => 'MLI', 'MT' => 'MLT',
-            'MR' => 'MRT', 'MU' => 'MUS', 'MX' => 'MEX', 'MD' => 'MDA',
-            'MC' => 'MCO', 'MN' => 'MNG', 'ME' => 'MNE', 'MA' => 'MAR',
-            'MZ' => 'MOZ', 'MM' => 'MMR', 'NA' => 'NAM', 'NP' => 'NPL',
-            'NL' => 'NLD', 'NZ' => 'NZL', 'NI' => 'NIC', 'NE' => 'NER',
-            'NG' => 'NGA', 'KP' => 'PRK', 'MK' => 'MKD', 'NO' => 'NOR',
-            'OM' => 'OMN', 'PK' => 'PAK', 'PS' => 'PSE', 'PA' => 'PAN',
-            'PG' => 'PNG', 'PY' => 'PRY', 'PE' => 'PER', 'PH' => 'PHL',
-            'PL' => 'POL', 'PT' => 'PRT', 'PR' => 'PRI', 'QA' => 'QAT',
-            'RO' => 'ROU', 'RU' => 'RUS', 'RW' => 'RWA', 'SM' => 'SMR',
-            'SA' => 'SAU', 'SN' => 'SEN', 'RS' => 'SRB', 'SC' => 'SYC',
-            'SL' => 'SLE', 'SG' => 'SGP', 'SK' => 'SVK', 'SI' => 'SVN',
-            'SO' => 'SOM', 'ZA' => 'ZAF', 'KR' => 'KOR', 'SS' => 'SSD',
-            'ES' => 'ESP', 'LK' => 'LKA', 'SD' => 'SDN', 'SR' => 'SUR',
-            'SE' => 'SWE', 'CH' => 'CHE', 'SY' => 'SYR', 'TW' => 'TWN',
-            'TJ' => 'TJK', 'TZ' => 'TZA', 'TH' => 'THA', 'TG' => 'TGO',
-            'TT' => 'TTO', 'TN' => 'TUN', 'TR' => 'TUR', 'TM' => 'TKM',
-            'UG' => 'UGA', 'UA' => 'UKR', 'UY' => 'URY', 'UZ' => 'UZB',
-            'VE' => 'VEN', 'VN' => 'VNM', 'YE' => 'YEM', 'ZM' => 'ZMB',
-            'ZW' => 'ZWE'
-        ];
+        $codeMap = self::$codeMap;
 
         $data['nationality']      = strtoupper($data['nationality']);
         $data['destination_code'] = strtoupper($data['destination_code']);
@@ -455,6 +363,52 @@ class FluxirEvisaController extends Controller
         }
         if (strlen($data['destination_code']) === 2) {
             $data['destination_code'] = $codeMap[$data['destination_code']] ?? $data['destination_code'];
+        }
+
+        // Resolve the visa's intent + document scheme FIRST so required
+        // documents are enforced server-side before anything is created,
+        // locally or on Fluxir. The browser enforces them too, but a direct
+        // POST must not be able to create an undocumented application that
+        // only fails later, at review time.
+        $tripPayload = [
+            'originationCode' => $data['nationality'],
+            'destinationCode' => $data['destination_code'],
+            'from'            => $data['arrival_date'],
+            'to'              => $data['departure_date'],
+        ];
+
+        $intent = $this->fluxir->resolveServiceIntentForType($tripPayload, (int) $data['visa_type_id']);
+        if (!$intent) {
+            return response()->json(['success' => false, 'message' => 'This visa is not available for the selected nationality.'], 422);
+        }
+        $documentVersionId = $intent['documentSchemeVersionId'] ?? null;
+
+        // Which scheme items are files, and which of those are missing from the
+        // request. Uploaded file keys may contain dots (traveler.personalPhoto),
+        // so index the array directly instead of using dot-notation lookups.
+        $uploadedFiles = $request->file('files') ?? [];
+        $fileNameIds   = [];
+        $missing       = [];
+        if ($documentVersionId) {
+            $schemeRes = $this->fluxir->getDocumentsScheme($documentVersionId);
+            if ($schemeRes['success'] ?? false) {
+                foreach ($this->fluxir->normalizeScheme($schemeRes['data'] ?? []) as $sec) {
+                    foreach ($sec['fields'] as $f) {
+                        if ($f['is_file']) {
+                            $fileNameIds[$f['name_id']] = true;
+                            if (($f['required'] ?? false) && empty($uploadedFiles[$f['name_id']])) {
+                                $missing[] = $f['label'] ?: $f['name_id'];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if ($missing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Required document(s) missing: ' . implode(', ', $missing) . '.',
+            ], 422);
         }
 
         $orderId = 'ORDVISA-' . strtoupper(uniqid());
@@ -483,24 +437,12 @@ class FluxirEvisaController extends Controller
             }
             $personId = $person['data']['id'] ?? null;
 
-            $tripPayload = [
-                'originationCode' => strtoupper($data['nationality']),
-                'destinationCode' => strtoupper($data['destination_code']),
-                'from'            => $data['arrival_date'],
-                'to'              => $data['departure_date'],
-                'description'     => 'GoTrips e-visa ' . $orderId,
-            ];
+            $tripPayload['description'] = 'GoTrips e-visa ' . $orderId;
             $trip = $this->fluxir->createTrip($tripPayload);
             if (!$trip['success']) {
                 return $this->fail($record, 'createTrip', $trip);
             }
             $tripId = $trip['data']['id'] ?? null;
-
-            $intent = $this->fluxir->resolveServiceIntentForType($tripPayload, (int) $data['visa_type_id']);
-            if (!$intent) {
-                return $this->fail($record, 'resolveServiceIntent', ['error' => 'No visa service intent']);
-            }
-            $documentVersionId = $intent['documentSchemeVersionId'] ?? null;
 
             $app = $this->fluxir->createServiceApplication([
                 'serviceType'       => 'Visa',
@@ -526,25 +468,10 @@ class FluxirEvisaController extends Controller
                 'status'                        => 'created',
             ]);
 
-            // Determine which scheme items are files vs text, so we route each
-            // submitted value to the right Fluxir call.
-            $fileNameIds = [];
-            if ($documentVersionId) {
-                $schemeRes = $this->fluxir->getDocumentsScheme($documentVersionId);
-                if ($schemeRes['success'] ?? false) {
-                    foreach ($this->fluxir->normalizeScheme($schemeRes['data'] ?? []) as $sec) {
-                        foreach ($sec['fields'] as $f) {
-                            if ($f['is_file']) {
-                                $fileNameIds[$f['name_id']] = true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Upload every file item present in the request.
+            // Upload every file item present in the request. ($fileNameIds was
+            // computed with the scheme fetch during pre-validation above.)
             $attachments = [];
-            foreach (($request->file('files') ?? []) as $nameId => $file) {
+            foreach ($uploadedFiles as $nameId => $file) {
                 if (!$file) {
                     continue;
                 }
@@ -628,8 +555,11 @@ class FluxirEvisaController extends Controller
             $checkout = $this->fluxir->getCheckout(
                 $tripId,
                 [$serviceAppId],
-                config('fluxir.success_url') . '?order_id=' . $orderId,
-                config('fluxir.cancel_url') . '?order_id=' . $orderId
+                // Built from the requesting host (IdentifyTenant forces the URL
+                // root), so a tenant-subdomain customer returns to their own
+                // domain instead of the hardcoded apex from config.
+                route('visa.fluxir.success', ['order_id' => $orderId]),
+                route('visa.fluxir.cancel', ['order_id' => $orderId])
             );
             if (!$checkout['success']) {
                 return $this->fail($record, 'getCheckout', $checkout);

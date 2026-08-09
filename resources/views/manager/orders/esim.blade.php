@@ -46,6 +46,16 @@
             }
             return '<span class="badge badge-default">—</span>';
         }],
+        ['label' => 'QR sent', 'html' => true, 'render' => function($o) {
+            // A provisioned eSIM the customer was never emailed is a silent
+            // failure: the order looks complete from every other column.
+            if (! $o->monty_order_id) {
+                return '<span class="badge badge-default">—</span>';
+            }
+            return $o->qr_sent_at
+                ? '<span class="badge badge-paid">Sent</span>'
+                : '<span class="badge badge-pending">Not sent</span>';
+        }],
         ['label' => 'Date',      'render' => fn($o) => $o->created_at?->format('d M Y') ?: '—'],
         ['label' => '', 'html' => true, 'render' => fn($o) =>
             '<a href="'.route('manager.orders.esim.show', $o).'" class="orders-btn orders-btn-ghost orders-btn-sm"><i class="fas fa-eye"></i> View</a>'

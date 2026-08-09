@@ -29,9 +29,12 @@ class SaudiVisaController extends Controller
             'phone'               => 'required|string|max:30',
             'saudi_visa_type_id'  => 'required|exists:tbl_saudi_visa_types,id',
 
-            // Required documents.
+            // Required documents. The Emirates ID / GCC residence copy is only
+            // demanded by some visa types, so it is validated below once the
+            // chosen type is known — see $emiratesIdRule.
             'passport_copy'       => 'required|file|mimes:pdf,jpg,jpeg,png|max:4096',
             'passport_photo'      => 'required|file|mimes:jpg,jpeg,png|max:4096',
+            'emirates_id'         => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
             'additional_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
 
             // Passport details are read from the uploaded passport, not typed:
@@ -60,6 +63,19 @@ class SaudiVisaController extends Controller
         $visaType = SaudiVisaType::where('isActive', 1)->findOrFail($validated['saudi_visa_type_id']);
         $price = $visaType->price;
 
+        // Some visa types (the 1-Year Multiple Entry among them) require an
+        // Emirates ID or GCC residence copy. Enforced here rather than in the
+        // rules above because it depends on the visa type the customer picked,
+        // and server-side because the field is shown by JavaScript.
+        if ($visaType->requiresEmiratesId() && !$request->hasFile('emirates_id')) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'emirates_id' => 'A copy of your Emirates ID or GCC residence is required for the '
+                        . $visaType->name . '.',
+                ]);
+        }
+
         try {
             // Handle file uploads
             $passportPath = '';
@@ -70,6 +86,11 @@ class SaudiVisaController extends Controller
             $photoPath = '';
             if ($request->hasFile('passport_photo')) {
                 $photoPath = $request->file('passport_photo')->store('visas/saudi/photos', 'public');
+            }
+
+            $emiratesIdPath = null;
+            if ($request->hasFile('emirates_id')) {
+                $emiratesIdPath = $request->file('emirates_id')->store('visas/saudi/emirates-id', 'public');
             }
 
             $additionalDocPath = null;
@@ -97,6 +118,7 @@ class SaudiVisaController extends Controller
                 'gender'              => $validated['gender'] ?? null,
                 'passport_path'       => $passportPath,
                 'photo_path'          => $photoPath,
+                'emirates_id_path'    => $emiratesIdPath,
                 'additional_doc_path' => $additionalDocPath,
                 'price'               => $price,
                 'payment_status'      => 'pending',

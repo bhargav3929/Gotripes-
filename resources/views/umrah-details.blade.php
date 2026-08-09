@@ -169,9 +169,17 @@ body, main { font-family: 'Outfit', sans-serif; }
 .ud-rel-from  { font-size: 10px; color: #666; display: block; }
 
 /* ─── ─── BOOKING SIDEBAR ─── ─── */
-.ud-booking-col { position: sticky; top: 78px; max-height: calc(100vh - 90px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2a2a2a transparent; }
-.ud-booking-col::-webkit-scrollbar { width: 4px; }
-.ud-booking-col::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+/* The booking card scrolls independently of the page. At 4px in near-black the
+   scrollbar was invisible, so there was nothing to tell you the panel scrolled
+   at all — you just found yourself dragging the page instead. */
+.ud-booking-col { position: sticky; top: 78px; max-height: calc(100vh - 90px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,215,0,0.55) rgba(255,255,255,0.04); }
+.ud-booking-col::-webkit-scrollbar { width: 9px; }
+.ud-booking-col::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 9px; }
+.ud-booking-col::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #FFD700, #C9A227);
+    border-radius: 9px; border: 2px solid #0a0a0a;
+}
+.ud-booking-col::-webkit-scrollbar-thumb:hover { background: #FFD700; }
 
 .ud-booking-card {
     background: #0c0c0c; border: 1px solid #1e1e1e;
@@ -378,6 +386,23 @@ body, main { font-family: 'Outfit', sans-serif; }
 .ud-pax-fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ud-pax-fields-grid .full { grid-column: 1/-1; }
 
+/* Passport copy upload — replaces the passport number and date-of-birth boxes
+   customers used to type by hand. */
+.ud-pax-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ud-pax-upload {
+    display: flex; align-items: center; gap: 9px; width: 100%; cursor: pointer;
+    background: #0d0d0d; border: 1px dashed rgba(255,215,0,0.3); border-radius: 9px;
+    padding: 11px 13px; transition: border-color .15s ease, background .15s ease;
+}
+.ud-pax-upload:hover { border-color: rgba(255,215,0,0.6); background: rgba(255,215,0,0.04); }
+.ud-pax-upload i { color: #FFD700; font-size: 15px; flex: none; }
+.ud-pax-upload-text { color: #ddd; font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ud-pax-upload-hint { color: #666; font-size: 11px; margin-left: auto; flex: none; }
+.ud-pax-status { display: none; font-size: 11.5px; margin-top: 7px; align-items: center; gap: 6px; line-height: 1.4; }
+.ud-pax-status.reading { display: flex; color: #FFB020; }
+.ud-pax-status.ok      { display: flex; color: #22c55e; }
+.ud-pax-status.error   { display: flex; color: #ef4444; }
+
 /* Mobile floating CTA */
 .ud-mobile-cta {
     display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
@@ -387,7 +412,16 @@ body, main { font-family: 'Outfit', sans-serif; }
 }
 @media(max-width:1100px) {
     .ud-mobile-cta { display: flex; }
+    /* Collapsed until "Book Now" is tapped — but it MUST be reachable. This was
+       an unconditional display:none, while the only mobile entry point was a
+       modal telling the customer to "scroll to the booking form above". The form
+       was not above; it was not rendered at all, so no one could book on a
+       phone. */
     .ud-booking-col { display: none; }
+    .ud-booking-col.mobile-open {
+        display: block; position: static; max-height: none; overflow: visible;
+        margin-top: 20px; scroll-margin-top: 80px;
+    }
     .ud-page { padding-bottom: 90px; }
 }
 .ud-mobile-price { flex: 1; }
@@ -410,6 +444,9 @@ body, main { font-family: 'Outfit', sans-serif; }
     background: #0c0c0c; border: 1px solid #222;
     border-radius: 20px 20px 0 0; width: 100%; max-width: 600px;
     max-height: 92vh; overflow-y: auto; padding: 24px 20px 30px;
+    scrollbar-width: thin; scrollbar-color: rgba(255,215,0,0.55) rgba(255,255,255,0.04);
+    /* Keeps a swipe inside the sheet from dragging the page behind it. */
+    overscroll-behavior: contain;
 }
 .ud-modal-handle { width: 40px; height: 4px; background: #333; border-radius: 4px; margin: 0 auto 18px; }
 
@@ -1110,8 +1147,8 @@ body, main { font-family: 'Outfit', sans-serif; }
             <h4 style="margin:0;font-size:18px;font-weight:800;color:#fff;">Book This Package</h4>
             <button onclick="closeMobileModal()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;">✕</button>
         </div>
-        <p style="font-size:13px;color:#888;margin-bottom:0;">Use the full desktop view to complete your booking, or scroll to the booking form above.</p>
-        <a href="#bookingCardCol" onclick="closeMobileModal()" class="ud-btn-next d-block text-center mt-3" style="text-decoration:none;padding:13px;border-radius:9px;">
+        <p style="font-size:13px;color:#888;margin-bottom:0;">Complete your booking below — it only takes a minute.</p>
+        <a href="#bookingCardCol" onclick="closeMobileModal(); openMobileModal(); return false;" class="ud-btn-next d-block text-center mt-3" style="text-decoration:none;padding:13px;border-radius:9px;">
             Go to Booking Form
         </a>
     </div>
@@ -1285,11 +1322,18 @@ function goStep(n) {
         alert.style.display = 'block'; return;
     }
     if (n > 3) {
-        // Validate passenger fields
-        const paxInputs = document.querySelectorAll('#pax-fields-wrap input[required]');
-        for (let inp of paxInputs) {
-            if (!inp.value.trim()) {
-                alert.textContent = '✏️ Please fill in all passenger details.';
+        // Every passenger needs a name and a passport copy. The copy is what the
+        // passport details are read from, so it is the one that cannot be skipped.
+        const cards = document.querySelectorAll('#pax-fields-wrap .ud-pax-field-card');
+        for (let card of cards) {
+            const nameEl = card.querySelector('input[name$="[name]"]');
+            if (!nameEl || !nameEl.value.trim()) {
+                alert.textContent = '✏️ Please enter a name for every passenger.';
+                alert.style.display = 'block'; goStep(3); return;
+            }
+            const copyEl = card.querySelector('input[name$="[passport_copy]"]');
+            if (!copyEl || !copyEl.value) {
+                alert.textContent = '📄 Please upload a passport copy for every passenger.';
                 alert.style.display = 'block'; goStep(3); return;
             }
         }
@@ -1323,6 +1367,36 @@ function goStep(n) {
     }
 
     currentStep = n;
+
+    // Put the top of the step in view. Without this, moving between steps left
+    // the viewport wherever the previous step happened to end, so every step
+    // began with the customer scrolling back up to find the first field.
+    scrollStepIntoView();
+}
+
+/**
+ * Bring the booking form back to the top of whichever container is scrolling —
+ * the sticky desktop column, the mobile sheet, or the page itself.
+ */
+function scrollStepIntoView() {
+    const modal = document.getElementById('mob-modal');
+    if (modal && modal.classList.contains('open')) {
+        const inner = modal.querySelector('.ud-mobile-modal-inner');
+        if (inner) inner.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
+
+    const col = document.getElementById('bookingCardCol');
+    if (!col) return;
+
+    col.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // On narrow screens the column is not its own scroller, so nudge the page
+    // instead — but only when the card has actually scrolled out of view.
+    const box = col.getBoundingClientRect();
+    if (box.top < 0 || box.top > window.innerHeight * 0.5) {
+        col.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1337,19 +1411,31 @@ function generatePassengerFields() {
         for (let i = 0; i < count; i++) {
             const card = document.createElement('div');
             card.className = 'ud-pax-field-card';
+            // Passport number, date of birth and nationality are read from the
+            // uploaded copy rather than typed. They ride along in hidden fields.
             card.innerHTML = `
                 <h6>${label} ${i+1}</h6>
                 <div class="ud-pax-fields-grid">
                     <div class="full">
                         <input type="text" name="passenger_details[${idx}][name]" class="ud-input" placeholder="Full name (as in passport)" required>
                     </div>
-                    <div>
-                        <input type="text" name="passenger_details[${idx}][passport_no]" class="ud-input" placeholder="Passport No." required>
-                    </div>
-                    <div>
-                        <input type="date" name="passenger_details[${idx}][dob]" class="ud-input" required>
+                    <div class="full">
+                        <label class="ud-pax-upload" for="pax-file-${idx}">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                            <span class="ud-pax-upload-text">Upload passport copy</span>
+                            <span class="ud-pax-upload-hint">JPG, PNG or PDF</span>
+                        </label>
+                        <input type="file" id="pax-file-${idx}" class="ud-pax-file"
+                               accept=".jpg,.jpeg,.png,.webp,.heic,.heif,.pdf,image/*"
+                               onchange="uploadPaxPassport(this, ${idx})" required>
+                        <div class="ud-pax-status" id="pax-status-${idx}"></div>
                     </div>
                 </div>
+                <input type="hidden" name="passenger_details[${idx}][passport_copy]">
+                <input type="hidden" name="passenger_details[${idx}][passport_no]">
+                <input type="hidden" name="passenger_details[${idx}][dob]">
+                <input type="hidden" name="passenger_details[${idx}][nationality]">
+                <input type="hidden" name="passenger_details[${idx}][passport_expiry]">
             `;
             wrap.appendChild(card);
             idx++;
@@ -1359,6 +1445,62 @@ function generatePassengerFields() {
     buildType(pax.adults,   'Adult');
     buildType(pax.children, 'Child');
     buildType(pax.infants,  'Infant');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PASSPORT UPLOAD + OCR
+   Uploads immediately so the booking request itself stays JSON.
+═══════════════════════════════════════════════════════════ */
+function uploadPaxPassport(input, idx) {
+    if (!input.files || !input.files.length) return;
+
+    const card   = input.closest('.ud-pax-field-card');
+    const status = document.getElementById('pax-status-' + idx);
+    const label  = card.querySelector('.ud-pax-upload-text');
+    const hidden = sel => card.querySelector(`input[name="passenger_details[${idx}][${sel}]"]`);
+
+    status.className = 'ud-pax-status reading';
+    status.innerHTML = '<i class="bi bi-hourglass-split"></i> Reading passport…';
+
+    const fd = new FormData();
+    fd.append('passport', input.files[0]);
+
+    fetch('{{ route('umrah-visas.passport-upload') }}', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+        body: fd
+    })
+    .then(r => r.json().then(d => ({ ok: r.ok, d })))
+    .then(({ ok, d }) => {
+        if (!ok || !d.success) {
+            status.className = 'ud-pax-status error';
+            status.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> ' +
+                (d.message || (d.errors && d.errors.passport ? d.errors.passport[0] : 'Upload failed — please try again.'));
+            input.value = '';
+            return;
+        }
+
+        hidden('passport_copy').value = d.path;
+        label.textContent = input.files[0].name;
+
+        if (d.fields) {
+            const nameInput = card.querySelector('input[name$="[name]"]');
+            if (nameInput && !nameInput.value.trim() && d.fields.name) nameInput.value = d.fields.name;
+
+            ['passport_no', 'dob', 'nationality', 'passport_expiry'].forEach(k => {
+                if (d.fields[k]) hidden(k).value = d.fields[k];
+            });
+        }
+
+        status.className = 'ud-pax-status ok';
+        status.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + d.message;
+    })
+    .catch(err => {
+        console.error('Passport upload failed:', err);
+        status.className = 'ud-pax-status error';
+        status.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> Network error — please try again.';
+        input.value = '';
+    });
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1392,10 +1534,22 @@ function submitBooking(e) {
     btn.textContent = 'Adding to Cart…';
     alert.style.display = 'none';
 
+    // Read by field name, not position — the card now holds a file input and
+    // several hidden fields, so index-based reads would grab the wrong values.
     const passengers = [];
-    document.querySelectorAll('#pax-fields-wrap .ud-pax-field-card').forEach((card, i) => {
-        const inputs = card.querySelectorAll('input');
-        passengers.push({ name: inputs[0].value, passport_no: inputs[1].value, dob: inputs[2].value });
+    document.querySelectorAll('#pax-fields-wrap .ud-pax-field-card').forEach(card => {
+        const val = suffix => {
+            const el = card.querySelector(`input[name$="[${suffix}]"]`);
+            return el ? el.value : '';
+        };
+        passengers.push({
+            name:            val('name'),
+            passport_copy:   val('passport_copy'),
+            passport_no:     val('passport_no'),
+            dob:             val('dob'),
+            nationality:     val('nationality'),
+            passport_expiry: val('passport_expiry'),
+        });
     });
 
     const payload = {
@@ -1443,8 +1597,29 @@ function scrollToBooking() {
 /* ═══════════════════════════════════════════════════════════
    MOBILE MODAL
 ═══════════════════════════════════════════════════════════ */
-function openMobileModal()  { document.getElementById('mob-modal').classList.add('open'); }
-function closeMobileModal() { document.getElementById('mob-modal').classList.remove('open'); }
+/**
+ * Mobile "Book Now" — reveal the real booking form and jump to it.
+ *
+ * This used to open a modal whose only advice was to switch to desktop. There
+ * is no reason a phone cannot complete this booking, so it now shows the same
+ * wizard the desktop uses.
+ */
+function openMobileModal() {
+    const col = document.getElementById('bookingCardCol');
+    if (!col) return;
+
+    col.classList.add('mobile-open');
+
+    // Give the browser a frame to lay the newly shown column out before scrolling.
+    requestAnimationFrame(() => {
+        col.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}
+
+function closeMobileModal() {
+    const modal = document.getElementById('mob-modal');
+    if (modal) modal.classList.remove('open');
+}
 
 function updateMobileDateLabel() {
     if (selectedDate) {

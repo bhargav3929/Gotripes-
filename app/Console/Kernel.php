@@ -19,6 +19,32 @@ class Kernel extends ConsoleKernel
             ->hourly()
             ->withoutOverlapping()
             ->onOneServer();
+
+        // Rescue e-visa applications that were paid but never finalized because
+        // the customer did not return from the payment page, and relay provider
+        // decisions to travellers. Every ten minutes so a stranded payment is
+        // recovered while the customer is still expecting a confirmation.
+        $schedule->command('evisa:reconcile')
+            ->everyTenMinutes()
+            ->withoutOverlapping()
+            ->onOneServer();
+
+        // Repair eSIM orders the provider and we disagree about: paid but never
+        // assigned, assigned but no QR emailed, or issued upstream against an
+        // order we never marked. Every repair is idempotent.
+        $schedule->command('esim:reconcile')
+            ->everyTenMinutes()
+            ->withoutOverlapping()
+            ->onOneServer();
+
+        // Keep the Fluxir catalog warm. The storefront builds its country list
+        // from a 24h cache; letting it expire on a real visitor costs them a
+        // ~12s page load, and an upstream hiccup at that moment shows the whole
+        // page as unavailable.
+        $schedule->command('evisa:warm-catalog')
+            ->hourly()
+            ->withoutOverlapping()
+            ->onOneServer();
     }
 
     /**

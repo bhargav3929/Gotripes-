@@ -3935,6 +3935,10 @@
                 <span>Loading available plans...</span>
             </div>
 
+            {{-- Shown when the provider returns nothing or is unreachable. Says so
+                 plainly rather than offering placeholder plans that cannot be fulfilled. --}}
+            <div class="esim-no-results" id="esimBundleEmpty" style="display:none; grid-column:1/-1;"></div>
+
             <div class="esim-bundles-list" id="esimBundlesList">
                 <!-- Bundles will be rendered here by JS -->
             </div>
@@ -4665,6 +4669,8 @@
 
     // ── Load: Bundles ────────────────────────────────────
     function loadBundles(countryCode) {
+        var emptyBox = document.getElementById('esimBundleEmpty');
+        if (emptyBox) emptyBox.style.display = 'none';
         var loading = document.getElementById('esimBundleLoading');
         var list = document.getElementById('esimBundlesList');
         var showAllBtn = document.getElementById('esimShowAllBtn');
@@ -4694,82 +4700,32 @@
                 bundlesData = data.bundles;
                 renderBundles();
             } else {
-                console.log('No API bundles found or success=false, loading demo plans...');
-                loadDemoBundles();
+                showNoBundles('No plans are available for this destination right now. Please try another country.');
             }
         })
         .catch(function(err) {
             console.error('Bundle fetch error:', err);
             loading.style.display = 'none';
-            loadDemoBundles();
+            showNoBundles('We could not load plans just now. Please try again in a moment.');
         });
     }
 
-    // ── Demo Bundles Fallback ────────────────────────────
-    function loadDemoBundles() {
+    // ── No plans available ───────────────────────────────
+    // There is deliberately NO fake-plan fallback here. Placeholder bundles
+    // used to be shown whenever the provider returned nothing, and they were
+    // fully purchasable: the customer paid real money for a bundle code that
+    // does not exist, so provisioning always failed afterwards. An honest
+    // empty state is the only safe answer.
+    function showNoBundles(message) {
         var loading = document.getElementById('esimBundleLoading');
         if (loading) loading.style.display = 'none';
-
-        bundlesData = [
-            { 
-                bundle_code: 'esim_1GB_7D', 
-                bundle_name: '1 GB - 7 Days', 
-                bundle_marketing_name: '1 GB Starter Plan', 
-                gprs_limit: 1, 
-                data_unit: 'GB', 
-                validity: 7, 
-                selling_price: 5.00, 
-                cost_price: 3.50, 
-                unlimited: false, 
-                supports_calls_sms: false, 
-                support_topup: false,
-                isMockData: true 
-            },
-            { 
-                bundle_code: 'esim_3GB_15D', 
-                bundle_name: '3 GB - 15 Days', 
-                bundle_marketing_name: '3 GB Explorer Plan', 
-                gprs_limit: 3, 
-                data_unit: 'GB', 
-                validity: 15, 
-                selling_price: 10.00, 
-                cost_price: 7.00, 
-                unlimited: false, 
-                supports_calls_sms: false, 
-                support_topup: true,
-                isMockData: true 
-            },
-            { 
-                bundle_code: 'esim_5GB_30D', 
-                bundle_name: '5 GB - 30 Days', 
-                bundle_marketing_name: '5 GB Voyager Plan', 
-                gprs_limit: 5, 
-                data_unit: 'GB', 
-                validity: 30, 
-                selling_price: 15.00, 
-                cost_price: 11.00, 
-                unlimited: false, 
-                supports_calls_sms: true, 
-                support_topup: true,
-                isMockData: true 
-            },
-            { 
-                bundle_code: 'esim_UNL_30D', 
-                bundle_name: 'Unlimited - 30 Days', 
-                bundle_marketing_name: 'Unlimited Monthly Elite', 
-                gprs_limit: 0, 
-                data_unit: 'GB', 
-                validity: 30, 
-                selling_price: 25.00, 
-                cost_price: 18.00, 
-                unlimited: true, 
-                supports_calls_sms: true, 
-                support_topup: true,
-                isMockData: true 
-            }
-        ];
-        console.log('Demo bundles loaded:', bundlesData.length);
+        bundlesData = [];
         renderBundles();
+        var box = document.getElementById('esimBundleEmpty');
+        if (box) {
+            box.textContent = message || 'No plans are available for this destination right now. Please try another country or check back shortly.';
+            box.style.display = '';
+        }
     }
 
     // ── Categorize bundles ───────────────────────────────

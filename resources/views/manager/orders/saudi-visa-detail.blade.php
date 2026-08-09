@@ -66,6 +66,13 @@
                     @else — @endif
                 </span>
             </li>
+            @if($application->emirates_id_path)
+            <li><span class="label">Emirates ID / GCC Residence</span>
+                <span class="value">
+                    <a href="{{ asset('storage/' . $application->emirates_id_path) }}" target="_blank" style="color:#FFD700;"><i class="fas fa-id-card"></i> View File</a>
+                </span>
+            </li>
+            @endif
             <li><span class="label">Additional Doc</span>
                 <span class="value">
                     @if($application->additional_doc_path)

@@ -21,14 +21,21 @@ class SaudiVisaMail extends Mailable
     public $data;
     public $passportPath;
     public $photoPath;
+    public $emiratesIdPath;
     public $additionalDocPath;
 
-    public function __construct($data, $passportPath = null, $photoPath = null, $additionalDocPath = null)
-    {
+    public function __construct(
+        $data,
+        $passportPath = null,
+        $photoPath = null,
+        $additionalDocPath = null,
+        $emiratesIdPath = null
+    ) {
         $this->data = $data;
         $this->passportPath = $passportPath;
         $this->photoPath = $photoPath;
         $this->additionalDocPath = $additionalDocPath;
+        $this->emiratesIdPath = $emiratesIdPath;
     }
 
     public function build()
@@ -42,9 +49,10 @@ class SaudiVisaMail extends Mailable
         // rather than assuming storage/app/public — this host points the "public"
         // disk at public/storage (symlink() is disabled on Hostinger).
         $attachments = [
-            'passport'   => $this->passportPath,
-            'photo'      => $this->photoPath,
-            'additional' => $this->additionalDocPath,
+            'passport'    => $this->passportPath,
+            'photo'       => $this->photoPath,
+            'emirates-id' => $this->emiratesIdPath,
+            'additional'  => $this->additionalDocPath,
         ];
 
         foreach ($attachments as $label => $path) {

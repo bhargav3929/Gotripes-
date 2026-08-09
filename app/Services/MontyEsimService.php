@@ -311,6 +311,13 @@ class MontyEsimService
 
         if ($result['success']) {
             $data = $result['data'];
+
+            // Keep the balance the provider just stamped on this response, so
+            // the next sale is checked against a current figure.
+            $this->rememberBalance(
+                isset($data['remaining_wallet_balance']) ? (float) $data['remaining_wallet_balance'] : null
+            );
+
             return [
                 'success' => true,
                 'order_id' => $data['order_id'] ?? null,
@@ -393,6 +400,87 @@ class MontyEsimService
         return $this->request('GET', 'Orders/Consumption', [], [
             'order_id' => $orderId,
         ]);
+    }
+
+    /**
+     * Full detail for one order, including the eSIM installation credentials.
+     *
+     * The assign response only returns iccid + order_id; the QR payload
+     * (activation_code, smdp_address, matching_id) is only available here. It
+     * is what lets us send our own QR email rather than trusting that the
+     * provider sent theirs.
+     */
+    public function getOrder(string $orderId): array
+    {
+        $result = $this->request('GET', 'Orders', [], ['order_id' => $orderId]);
+
+        if (!($result['success'] ?? false)) {
+            return $result;
+        }
+
+        $orders = $result['data']['orders'] ?? [];
+
+        return $orders
+            ? ['success' => true, 'data' => $orders[0]]
+            : ['success' => false, 'error' => 'Order ' . $orderId . ' not found at the provider'];
+    }
+
+    /**
+     * Remaining prepaid wallet balance, in the reseller account's currency.
+     *
+     * There is no balance endpoint on the reseller API, so we read the figure
+     * the provider stamps onto every order response and cache it. It is
+     * refreshed on each purchase via {@see rememberBalance()}, which keeps it
+     * accurate exactly when it matters — right after money is spent.
+     *
+     * Returns null when we have never seen a balance (nothing purchased yet),
+     * which callers must treat as "unknown", not "empty".
+     */
+    public function getWalletBalance(): ?float
+    {
+        $cached = Cache::get('montyesim_wallet_balance');
+        if ($cached !== null) {
+            return (float) $cached;
+        }
+
+        // Fall back to the most recent order's stamped balance.
+        $orders = $this->listOrders();
+        foreach ($orders['orders'] ?? [] as $o) {
+            if (isset($o['remaining_wallet_balance'])) {
+                $balance = (float) $o['remaining_wallet_balance'];
+                $this->rememberBalance($balance);
+                return $balance;
+            }
+        }
+
+        return null;
+    }
+
+    /** Cache the balance the provider reported on its latest response. */
+    public function rememberBalance(?float $balance): void
+    {
+        if ($balance !== null) {
+            Cache::put('montyesim_wallet_balance', $balance, 86400);
+        }
+    }
+
+    /**
+     * Whether the wallet can cover a bundle at $netCost (provider currency).
+     *
+     * Fails OPEN when the balance is unknown — refusing every sale because we
+     * cannot read a balance would be worse than the occasional failed assign,
+     * which is already handled and alerted. Fails CLOSED when we know the
+     * balance is short.
+     */
+    public function canAfford(float $netCost): bool
+    {
+        $balance = $this->getWalletBalance();
+
+        if ($balance === null) {
+            return true;
+        }
+
+        return $balance >= $netCost;
     }
 
     /**

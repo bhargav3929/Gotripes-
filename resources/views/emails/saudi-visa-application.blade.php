@@ -80,8 +80,16 @@
             <tr><td>Created Date:</td><td>{{ $data['created_at'] ?? \Illuminate\Support\Carbon::now() }}</td></tr>
         </table>
 
+        @php
+            // Name every file actually attached, so the supplier can tell at a
+            // glance whether the Emirates ID / GCC residence copy came through.
+            $attached = ['Passport copy', 'photo'];
+            if (!empty($data['emirates_id_path']))    { $attached[] = 'Emirates ID / GCC residence copy'; }
+            if (!empty($data['additional_doc_path'])) { $attached[] = 'additional document'; }
+            $last = array_pop($attached);
+        @endphp
         <div class="message">
-            <strong>Passport copy, photo{{ !empty($data['additional_doc_path']) ? ' and additional document' : '' }} are attached.</strong>
+            <strong>{{ $attached ? implode(', ', $attached) . ' and ' . $last : $last }} are attached.</strong>
         </div>
         <div class="footer">
             Powered by GOTRIPS &mdash; Saudi Visa System
