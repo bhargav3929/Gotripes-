@@ -11,6 +11,16 @@ class UAEVisaPricingSeeder extends Seeder
 {
     public function run(): void
     {
+        // This seeder fully owns uae_visa_packages/uae_visa_prices, and it always
+        // runs right after UAEEmiratesSeeder, which truncates tbl_emirates and
+        // reinserts it with fresh auto-increment IDs. Without clearing here first,
+        // re-running the seed chain leaves old packages behind pointing at IDs that
+        // now belong to a different emirate (e.g. a "Sharjah Entry Visa" package
+        // silently ending up linked to Ajman). Clear child rows before parent rows
+        // so this stays safe without touching foreign key checks.
+        UAEVisaPrice::truncate();
+        UAEVisaPackage::truncate();
+
         // Get seeded Emirates
         $dubai = Emirates::where('emiratesName', 'Dubai')->first();
         $sharjah = Emirates::where('emiratesName', 'Sharjah')->first();

@@ -88,7 +88,7 @@ class UmrahController extends Controller
         $saudiVisas = SaudiVisaType::where('isActive', 1)->get();
         $categories = \App\Models\UmrahCategory::where('isActive', 1)->get();
 
-        return view('umrah-visas', compact('packagesBus', 'packagesAir', 'saudiVisas', 'categories'));
+        return view('going-saudi', compact('packagesBus', 'packagesAir', 'saudiVisas', 'categories'));
     }
 
     public function show($id)
