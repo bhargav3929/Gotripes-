@@ -1370,7 +1370,7 @@
                         @feature('visas')<a href="/uaevisa" class="gt-nav-link {{ Request::is('uaevisa') ? 'active' : '' }}">UAE Visa Services{!! $gtBadge('visa_services') !!}</a>@endfeature
                         @feature('tours')<a href="/tour-packages" class="gt-nav-link {{ Request::is('tour-packages') ? 'active' : '' }}">Tour Packages{!! $gtBadge('tour_packages') !!}</a>@endfeature
                         @feature('hajj_umrah')
-                        <a href="/umrah-visas" class="gt-nav-link {{ Request::is('umrah-visas*') ? 'active' : '' }}">Hajj & Umrah{!! $gtBadge('hajj_umrah') !!}</a>
+                        <a href="/going-saudi" class="gt-nav-link {{ Request::is('going-saudi*') ? 'active' : '' }}">Hajj & Umrah{!! $gtBadge('hajj_umrah') !!}</a>
                         @endfeature
                     </div>
                     <div class="gt-nav-row gt-nav-secondary">
@@ -1457,7 +1457,7 @@
                     <a href="{{ $gtSoon('medical-tours') }}" class="gt-macc-item">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
                     @feature('activities')<a href="/activities" class="gt-macc-item">Activities</a>@endfeature
                     @feature('hajj_umrah')
-                    <a href="/umrah-visas" class="gt-macc-item">Hajj & Umrah</a>
+                    <a href="/going-saudi" class="gt-macc-item">Hajj & Umrah</a>
 
                     @endfeature
                 </div>

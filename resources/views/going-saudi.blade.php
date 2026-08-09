@@ -102,7 +102,7 @@
                                         <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->starting_price, 0) }}</strong>
                                     @endif
                                 </div>
-                                <a href="{{ route('umrah-visas.show', $pkg->id) }}" class="btn-book-now" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-weight: 700; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; transition: all 0.2s;">
+                                <a href="{{ route('going-saudi.show', $pkg->id) }}" class="btn-book-now" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-weight: 700; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; transition: all 0.2s;">
                                     View Details
                                 </a>
                             </div>
@@ -180,7 +180,7 @@
                                         <strong style="font-size: 20px; color: #FFD700;">AED {{ number_format($pkg->starting_price, 0) }}</strong>
                                     @endif
                                 </div>
-                                <a href="{{ route('umrah-visas.show', $pkg->id) }}" class="btn-book-now" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-weight: 700; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; transition: all 0.2s;">
+                                <a href="{{ route('going-saudi.show', $pkg->id) }}" class="btn-book-now" style="background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%); color: #000; font-weight: 700; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; transition: all 0.2s;">
                                     View Details
                                 </a>
                             </div>

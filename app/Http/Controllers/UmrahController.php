@@ -8,12 +8,74 @@ use App\Models\UmrahBooking;
 use App\Models\SaudiVisaType;
 use App\Models\NomodTransaction;
 use App\Services\NomodService;
+use App\Services\PassportOcrService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
 class UmrahController extends Controller
 {
+    /**
+     * Store one passenger's passport copy and read the details off it.
+     *
+     * Called as each file is chosen, rather than with the booking, so the
+     * checkout request stays JSON — the payment flow is untouched. The response
+     * pre-fills the hidden fields the booking then submits.
+     */
+    public function uploadPassport(Request $request, PassportOcrService $ocr)
+    {
+        $request->validate([
+            'passport' => 'required|file|mimes:jpg,jpeg,png,webp,heic,heif,pdf|max:' . PassportOcrService::MAX_UPLOAD_KB,
+        ], [
+            'passport.mimes' => 'Please upload a JPG, PNG or PDF of the passport page.',
+            'passport.max'   => 'That file is too large. Please upload one under 15 MB.',
+        ]);
+
+        $file = $request->file('passport');
+        $path = $file->store('umrah/passports', 'public');
+
+        // A PDF is a valid passport copy but cannot be scanned. The document is
+        // on file either way, so this is not an error the customer must fix.
+        $isPdf = strtolower($file->getClientOriginalExtension()) === 'pdf';
+
+        if ($isPdf || !$ocr->isConfigured()) {
+            return response()->json([
+                'success' => true,
+                'path'    => $path,
+                'fields'  => null,
+                'message' => 'Passport copy uploaded. Our team will read the details from it.',
+            ]);
+        }
+
+        [$fields, $error] = $ocr->extractFromUpload($file);
+
+        if ($error !== null) {
+            Log::info('Umrah passport OCR could not read the upload', ['error' => $error]);
+
+            return response()->json([
+                'success' => true,
+                'path'    => $path,
+                'fields'  => null,
+                'message' => 'Passport copy uploaded. Our team will read the details from it.',
+            ]);
+        }
+
+        [$first, $last] = PassportOcrService::splitName($fields);
+
+        return response()->json([
+            'success' => true,
+            'path'    => $path,
+            'fields'  => [
+                'name'            => trim($first . ' ' . $last),
+                'passport_no'     => trim((string) ($fields['passport_number'] ?? '')) ?: null,
+                'dob'             => PassportOcrService::normaliseDate($fields['date_of_birth'] ?? null),
+                'nationality'     => trim((string) ($fields['nationality'] ?? '')) ?: null,
+                'passport_expiry' => PassportOcrService::normaliseDate($fields['date_of_expiry'] ?? null),
+            ],
+            'message' => 'Passport read successfully.',
+        ]);
+    }
+
     public function index()
     {
         $packages = UmrahPackage::with('umrahCategory')->where('isActive', 1)
@@ -26,7 +88,7 @@ class UmrahController extends Controller
         $saudiVisas = SaudiVisaType::where('isActive', 1)->get();
         $categories = \App\Models\UmrahCategory::where('isActive', 1)->get();
 
-        return view('umrah-visas', compact('packagesBus', 'packagesAir', 'saudiVisas', 'categories'));
+        return view('going-saudi', compact('packagesBus', 'packagesAir', 'saudiVisas', 'categories'));
     }
 
     public function show($id)
@@ -69,8 +131,16 @@ class UmrahController extends Controller
             'customer_phone'     => 'required|string|max:30',
             'passenger_details'  => 'required|array',
             'passenger_details.*.name'          => 'required|string|max:255',
-            'passenger_details.*.passport_no'   => 'required|string|max:50',
-            'passenger_details.*.dob'           => 'required|date',
+            // Passport details are read from the uploaded copy, not typed. They
+            // are optional so an unreadable scan never blocks a booking — the
+            // document itself is on file for the team either way.
+            'passenger_details.*.passport_copy' => 'required|string|max:255',
+            'passenger_details.*.passport_no'   => 'nullable|string|max:50',
+            'passenger_details.*.dob'           => 'nullable|date',
+            'passenger_details.*.nationality'   => 'nullable|string|max:100',
+            'passenger_details.*.passport_expiry' => 'nullable|date',
+        ], [
+            'passenger_details.*.passport_copy.required' => 'Please upload a passport copy for every passenger.',
         ]);
 
         $departureDate = $validated['departure_date'];

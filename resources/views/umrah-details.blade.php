@@ -451,7 +451,7 @@ body, main { font-family: 'Outfit', sans-serif; }
     {{-- ───────────────── HERO ───────────────── --}}
     <section class="ud-hero">
         <div class="container" style="position:relative;z-index:2;">
-            <a href="{{ route('umrah-visas.index') }}" class="ud-back-btn">
+            <a href="{{ route('going-saudi.index') }}" class="ud-back-btn">
                 <i class="bi bi-arrow-left"></i> Back to Hajj & Umrah
             </a>
             <div class="row align-items-end g-4">
@@ -812,7 +812,7 @@ body, main { font-family: 'Outfit', sans-serif; }
                                         <span class="ud-rel-from">From</span>
                                         <span class="ud-rel-price">AED {{ number_format($rp->starting_price, 0) }}</span>
                                     </div>
-                                    <a href="{{ route('umrah-visas.show', $rp->id) }}" class="ud-btn-next" style="font-size:12px;padding:8px 16px;border-radius:7px;display:inline-block;flex:none !important;width:auto !important;text-decoration:none;">View</a>
+                                    <a href="{{ route('going-saudi.show', $rp->id) }}" class="ud-btn-next" style="font-size:12px;padding:8px 16px;border-radius:7px;display:inline-block;flex:none !important;width:auto !important;text-decoration:none;">View</a>
                                 </div>
                             </div>
                         </div>
@@ -1408,7 +1408,7 @@ function submitBooking(e) {
         passenger_details: passengers
     };
 
-    fetch('{{ route('umrah-visas.checkout', $package->id) }}', {
+    fetch('{{ route('going-saudi.checkout', $package->id) }}', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
         body: JSON.stringify(payload)
