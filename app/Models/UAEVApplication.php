@@ -44,6 +44,8 @@ class UAEVApplication extends Model
         'UAEV_price',
         'UAEV_deposit_amount',
         'UAEV_refund_amount',
+        'UAEV_refund_status',
+        'UAEV_refunded_at',
         'UAEV_bank_account_holder',
         'UAEV_bank_name',
         'UAEV_bank_account_number',
@@ -54,6 +56,11 @@ class UAEVApplication extends Model
         'UAEV_status',
     ];
 public $timestamps = false; // Because you're using custom timestamp col
+
+protected $casts = [
+    'UAEV_refunded_at' => 'datetime',
+];
+
 public function uaevStatus()
     {
         return $this->belongsTo(UAEVStatus::class, 'UAEV_status');

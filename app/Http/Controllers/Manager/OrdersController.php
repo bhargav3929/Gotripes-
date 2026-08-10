@@ -206,6 +206,22 @@ class OrdersController extends Controller
         return view('manager.orders.visa-detail', compact('application'));
     }
 
+    /** Mark a Sharjah security deposit as paid back to the customer's bank details on file. */
+    public function markUaeVisaRefunded(UAEVApplication $application)
+    {
+        if ((float) $application->UAEV_refund_amount <= 0) {
+            return back()->with('error', 'This application has no refund amount due.');
+        }
+
+        $application->update([
+            'UAEV_refund_status' => 'refunded',
+            'UAEV_refunded_at' => now(),
+        ]);
+
+        return redirect()->route('manager.orders.visa.show', $application->id)
+            ->with('success', 'Refund marked as paid.');
+    }
+
     // ─── Flights & Hotels ───────────────────────────────────────────
     public function flightsHotels(Request $request)
     {
