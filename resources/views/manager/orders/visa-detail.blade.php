@@ -105,6 +105,26 @@
             <li><span class="label">Bank Name</span>      <span class="value">{{ $application->UAEV_bank_name ?: '—' }}</span></li>
             <li><span class="label">Account / IBAN</span> <span class="value">{{ $application->UAEV_bank_account_number ?: '—' }}</span></li>
             <li><span class="label">SWIFT Code</span>     <span class="value">{{ $application->UAEV_bank_swift_code ?: '—' }}</span></li>
+            @if($application->UAEV_refund_amount > 0)
+                <li>
+                    <span class="label">Refund Status</span>
+                    <span class="value">
+                        @if($application->UAEV_refund_status === 'refunded')
+                            <span style="color:#22c55e;">Refunded {{ optional($application->UAEV_refunded_at)->format('d M Y H:i') }}</span>
+                        @else
+                            <span style="color:#FFD700;">Pending</span>
+                        @endif
+                    </span>
+                </li>
+                @if($application->UAEV_refund_status !== 'refunded')
+                    <li>
+                        <form action="{{ route('manager.orders.visa.refund', $application->id) }}" method="POST" onsubmit="return confirm('Mark this AED {{ number_format($application->UAEV_refund_amount, 2) }} refund as paid to the bank details above?');">
+                            @csrf
+                            <button type="submit" class="orders-btn orders-btn-primary">Mark Refund as Paid</button>
+                        </form>
+                    </li>
+                @endif
+            @endif
         </ul>
     </div>
     @endif

@@ -563,6 +563,7 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::post('/evisa/{application}/retry',  [OrdersController::class, 'retryEvisaSubmission'])->name('evisa.retry');
         Route::get('/visa',                        [OrdersController::class, 'visa'])->name('visa');
         Route::get('/visa/{application}',          [OrdersController::class, 'visaDetail'])->name('visa.show');
+        Route::post('/visa/{application}/refund',  [OrdersController::class, 'markUaeVisaRefunded'])->name('visa.refund');
         Route::get('/saudi-visa',                  [OrdersController::class, 'saudiVisa'])->name('saudi-visa');
         Route::get('/saudi-visa/{application}',    [OrdersController::class, 'saudiVisaDetail'])->name('saudi-visa.show');
         Route::post('/saudi-visa/{application}/status', [OrdersController::class, 'updateSaudiVisaStatus'])->name('saudi-visa.status');

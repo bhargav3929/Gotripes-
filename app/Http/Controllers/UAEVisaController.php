@@ -14,11 +14,18 @@ use App\Models\UAEVisaPackage;
 use App\Models\UAEVisaPrice;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 
 class UAEVisaController extends Controller
 {
     public function submit(Request $request)
     {
+        // Sharjah alone charges a refundable deposit, so bank details are only
+        // mandatory there — matches the JS toggle in uaevisa.blade.php, but
+        // enforced server-side too since the client-side `required` attribute
+        // can be bypassed by posting directly to this endpoint.
+        $isSharjahRequest = strtolower((string) $request->input('selected_emirate')) === 'sharjah';
+
         $validated = $request->validate([
             'nationality' => 'nullable|string|max:100',
             'residence' => 'nullable|string|max:100',
@@ -64,10 +71,14 @@ class UAEVisaController extends Controller
             'gender' => 'nullable|array',
             'gender.*' => 'nullable|string|max:20',
 
-            'bank_account_holder' => 'nullable|string|max:200',
-            'bank_name' => 'nullable|string|max:200',
-            'bank_account_number' => 'nullable|string|max:100',
+            'bank_account_holder' => [Rule::requiredIf($isSharjahRequest), 'nullable', 'string', 'max:200'],
+            'bank_name' => [Rule::requiredIf($isSharjahRequest), 'nullable', 'string', 'max:200'],
+            'bank_account_number' => [Rule::requiredIf($isSharjahRequest), 'nullable', 'string', 'max:100'],
             'bank_swift_code' => 'nullable|string|max:50',
+        ], [
+            'bank_account_holder.required' => 'Bank account holder name is required for Sharjah visas so the security deposit can be refunded.',
+            'bank_name.required' => 'Bank name is required for Sharjah visas so the security deposit can be refunded.',
+            'bank_account_number.required' => 'Bank account number / IBAN is required for Sharjah visas so the security deposit can be refunded.',
         ]);
 
         $adultCount = (int) $validated['visa_count'];
@@ -252,6 +263,7 @@ class UAEVisaController extends Controller
                 'UAEV_price' => $unitPrice,
                 'UAEV_deposit_amount' => $depositAmount,
                 'UAEV_refund_amount' => $refundAmount,
+                'UAEV_refund_status' => $refundAmount > 0 ? 'pending' : null,
                 'UAEV_bank_account_holder' => $isSharjah ? $validated['bank_account_holder'] : null,
                 'UAEV_bank_name' => $isSharjah ? $validated['bank_name'] : null,
                 'UAEV_bank_account_number' => $isSharjah ? $validated['bank_account_number'] : null,
