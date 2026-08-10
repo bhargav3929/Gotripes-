@@ -72,13 +72,22 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 
 Route::prefix('/')->group(function () {
     Route::get('hajj-umrah', function () {
-        return redirect()->route('umrah-visas.index');
+        return redirect()->route('going-saudi.index');
     })->name('hajj-umrah');
-    
-    Route::get('umrah-visas', [\App\Http\Controllers\UmrahController::class, 'index'])->name('umrah-visas.index');
-    Route::get('umrah-visas/{id}', [\App\Http\Controllers\UmrahController::class, 'show'])->name('umrah-visas.show');
-    Route::post('umrah-visas/{id}/checkout', [\App\Http\Controllers\UmrahController::class, 'checkout'])->name('umrah-visas.checkout');
-    Route::post('umrah-visas/passport-upload', [\App\Http\Controllers\UmrahController::class, 'uploadPassport'])->name('umrah-visas.passport-upload');
+
+    // Former URL — kept as a permanent redirect so existing bookmarks and any
+    // links Google has already indexed at /umrah-visas keep working.
+    Route::get('umrah-visas', function () {
+        return redirect()->route('going-saudi.index', [], 301);
+    });
+    Route::get('umrah-visas/{id}', function ($id) {
+        return redirect()->route('going-saudi.show', $id, 301);
+    });
+
+    Route::get('going-saudi', [\App\Http\Controllers\UmrahController::class, 'index'])->name('going-saudi.index');
+    Route::get('going-saudi/{id}', [\App\Http\Controllers\UmrahController::class, 'show'])->name('going-saudi.show');
+    Route::post('going-saudi/{id}/checkout', [\App\Http\Controllers\UmrahController::class, 'checkout'])->name('going-saudi.checkout');
+    Route::post('going-saudi/passport-upload', [\App\Http\Controllers\UmrahController::class, 'uploadPassport'])->name('going-saudi.passport-upload');
     Route::get('saudi-visas', [\App\Http\Controllers\SaudiVisaController::class, 'index'])->name('saudi-visa.index');
     Route::post('saudi-visa/submit', [\App\Http\Controllers\SaudiVisaController::class, 'submit'])->name('saudi-visa.submit');
 
@@ -574,6 +583,7 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::post('/evisa/{application}/retry',  [OrdersController::class, 'retryEvisaSubmission'])->name('evisa.retry');
         Route::get('/visa',                        [OrdersController::class, 'visa'])->name('visa');
         Route::get('/visa/{application}',          [OrdersController::class, 'visaDetail'])->name('visa.show');
+        Route::post('/visa/{application}/refund',  [OrdersController::class, 'markUaeVisaRefunded'])->name('visa.refund');
         Route::get('/saudi-visa',                  [OrdersController::class, 'saudiVisa'])->name('saudi-visa');
         Route::get('/saudi-visa/{application}',    [OrdersController::class, 'saudiVisaDetail'])->name('saudi-visa.show');
         Route::post('/saudi-visa/{application}/status', [OrdersController::class, 'updateSaudiVisaStatus'])->name('saudi-visa.status');

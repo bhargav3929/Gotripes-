@@ -55,7 +55,7 @@ class UmrahPassportUploadTest extends TestCase
         ]);
 
         $response = $this->withoutMiddleware(VerifyCsrfToken::class)
-            ->post(route('umrah-visas.passport-upload'), ['passport' => $this->jpeg()]);
+            ->post(route('going-saudi.passport-upload'), ['passport' => $this->jpeg()]);
 
         $response->assertOk()->assertJson(['success' => true]);
 
@@ -75,7 +75,7 @@ class UmrahPassportUploadTest extends TestCase
         Http::fake(); // any outbound call would be a bug — a PDF must not be sent to OCR
 
         $response = $this->withoutMiddleware(VerifyCsrfToken::class)
-            ->post(route('umrah-visas.passport-upload'), [
+            ->post(route('going-saudi.passport-upload'), [
                 'passport' => UploadedFile::fake()->create('passport.pdf', 80, 'application/pdf'),
             ]);
 
@@ -94,7 +94,7 @@ class UmrahPassportUploadTest extends TestCase
         )]);
 
         $response = $this->withoutMiddleware(VerifyCsrfToken::class)
-            ->post(route('umrah-visas.passport-upload'), ['passport' => $this->jpeg()]);
+            ->post(route('going-saudi.passport-upload'), ['passport' => $this->jpeg()]);
 
         // The booking must not be blocked — an agent can open the copy by hand.
         $response->assertOk()->assertJson(['success' => true, 'fields' => null]);
@@ -106,7 +106,7 @@ class UmrahPassportUploadTest extends TestCase
         Storage::fake('public');
 
         $this->withoutMiddleware(VerifyCsrfToken::class)
-            ->postJson(route('umrah-visas.passport-upload'), [
+            ->postJson(route('going-saudi.passport-upload'), [
                 'passport' => UploadedFile::fake()->create('notes.txt', 5, 'text/plain'),
             ])
             ->assertStatus(422)

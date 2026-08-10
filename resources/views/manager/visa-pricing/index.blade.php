@@ -301,6 +301,59 @@
     {{-- ==================== TAB 2: PRICING MATRIX ==================== --}}
     <div class="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
         <div class="row">
+            <div class="col-lg-4">
+                <div class="wp-card">
+                    <div class="wp-card-header"><i class="fas fa-plus-circle text-secondary-wp"></i> Add Price Grid Row</div>
+                    <div class="wp-card-body">
+                        <form action="{{ route('manager.visa-prices.store') }}" method="POST">
+                            @csrf
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Visa Package <span class="required">*</span></label>
+                                <select class="wp-input" name="visa_package_id" required>
+                                    <option value="">Select Package...</option>
+                                    @foreach($packages->where('isActive', 1) as $p)
+                                        <option value="{{ $p->id }}">{{ $p->emirate->emiratesName }} — {{ $p->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Entry Type <span class="required">*</span></label>
+                                <select class="wp-input" name="entry_type" required>
+                                    <option value="Single Entry">Single Entry</option>
+                                    <option value="Multiple Entry">Multiple Entry</option>
+                                </select>
+                            </div>
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Duration <span class="required">*</span></label>
+                                <select class="wp-input" name="duration" required>
+                                    <option value="30 Days">30 Days</option>
+                                    <option value="60 Days">60 Days</option>
+                                </select>
+                            </div>
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Traveller Type <span class="required">*</span></label>
+                                <select class="wp-input" name="traveller_type" required>
+                                    <option value="Adult">Adult</option>
+                                    <option value="Child">Child</option>
+                                    <option value="Infant">Infant</option>
+                                </select>
+                            </div>
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Nationality (optional)</label>
+                                <input type="text" class="wp-input" name="nationality" placeholder="Leave blank to apply to all nationalities" maxlength="100">
+                                <p class="wp-form-help">Only needed for a nationality-specific override. Every package already has a full set of rows with no nationality set (applies to everyone) — edit those in the matrix instead of adding new ones.</p>
+                            </div>
+                            <div class="wp-form-group">
+                                <label class="wp-form-label">Price (AED) <span class="required">*</span></label>
+                                <input type="number" class="wp-input" name="price" required step="0.01" min="0" placeholder="e.g. 350.00">
+                            </div>
+                            <button type="submit" class="wp-btn wp-btn-primary w-100">
+                                <i class="fas fa-plus"></i> Add Price Row
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="col-lg-8">
                 <div class="wp-card">
                     <div class="wp-card-header"><i class="fas fa-list text-secondary-wp"></i> Active Price Grid</div>
@@ -311,9 +364,10 @@
                                 <thead>
                                     <tr>
                                         <th>Package</th>
-                                        <th style="width: 140px;">Entry Type</th>
-                                        <th style="width: 110px;">Duration</th>
-                                        <th style="width: 110px;">Visa For</th>
+                                        <th style="width: 130px;">Entry Type</th>
+                                        <th style="width: 100px;">Duration</th>
+                                        <th style="width: 100px;">Visa For</th>
+                                        <th style="width: 110px;">Nationality</th>
                                         <th style="width: 110px;">Price (AED)</th>
                                         <th style="width: 110px;">Status</th>
                                         <th style="width: 60px;">Delete</th>
@@ -352,7 +406,10 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <input type="number" class="wp-input" name="prices[{{ $pr->id }}][price]" value="{{ $pr->price }}" step="0.01" min="0" required>
+                                                <input type="text" class="wp-input" name="prices[{{ $pr->id }}][nationality]" value="{{ $pr->nationality }}" placeholder="All" maxlength="100" style="width:110px;">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="wp-input" name="prices[{{ $pr->id }}][price]" value="{{ $pr->price }}" step="0.01" min="0" required style="width:100px;">
                                             </td>
                                             <td>
                                                 <select class="wp-input" name="prices[{{ $pr->id }}][isActive]">
@@ -369,7 +426,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center py-4">No prices yet. Create a package first — its price row appears here.</td>
+                                            <td colspan="8" class="text-center py-4">No prices yet. Create a package first — its price row appears here.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

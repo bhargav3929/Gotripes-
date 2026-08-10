@@ -22,6 +22,12 @@ class ManagerVisaPricingController extends Controller
      */
     public const DEPOSIT_EMIRATES = ['sharjah'];
 
+    // Mirrors the option lists in the Pricing tab's dropdowns — kept here so
+    // storePackage() can pre-generate the full matrix for a new package.
+    private const ENTRY_TYPES = ['Single Entry', 'Multiple Entry'];
+    private const DURATIONS = ['30 Days', '60 Days'];
+    private const TRAVELLER_TYPES = ['Adult', 'Child', 'Infant'];
+
     public function index()
     {
         $emirates = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
@@ -212,7 +218,11 @@ class ManagerVisaPricingController extends Controller
         $rules = [
             'emirates_id'       => 'required|exists:tbl_emirates,emiratesID',
             'name'              => 'required|string|max:100',
-            'package_type'      => 'required|in:Standard,Urgent',
+            // Required once a package exists and is being edited — the update
+            // form always sends one. Optional on creation so a bare
+            // name+emirate submission still succeeds and defaults to Standard;
+            // packageAttributes() below fills the default in.
+            'package_type'      => ($forUpdate ? 'required' : 'nullable') . '|in:Standard,Urgent',
             'description'       => 'nullable|string|max:1000',
             'security_deposit'  => 'nullable|numeric|min:0',
             'deposit_admin_fee' => 'nullable|numeric|min:0|lte:security_deposit',
@@ -246,7 +256,7 @@ class ManagerVisaPricingController extends Controller
         return [
             'emirates_id'       => $validated['emirates_id'],
             'name'              => $validated['name'],
-            'package_type'      => $validated['package_type'],
+            'package_type'      => $validated['package_type'] ?? 'Standard',
             'description'       => $validated['description'] ?? null,
             'security_deposit'  => $nullIfBlank($validated['security_deposit'] ?? null),
             'deposit_admin_fee' => $nullIfBlank($validated['deposit_admin_fee'] ?? null),
@@ -256,21 +266,25 @@ class ManagerVisaPricingController extends Controller
     }
 
     /**
-     * Create a package and, in the same submit, its first price row.
+     * Create a package and pre-fill its full pricing matrix.
      *
      * The client works one visa at a time — "Sharjah, urgent, adult, 30 days,
-     * 450 AED, this supplier" — so splitting that across two forms on two tabs
-     * meant every new visa took two trips. The matrix tab then handles ongoing
-     * price edits.
+     * 450 AED, this supplier" — so when the create form carries a specific
+     * entry-type/duration/traveller/price combination, that row is created
+     * active immediately and the package is live in the same trip. The rest
+     * of the matrix (and every row when the form carries no price at all) is
+     * pre-filled inactive at AED 0, so the manager is never stuck adding
+     * eleven more rows by hand before the Pricing Matrix tab has anything to
+     * show — the matrix tab then handles activating and editing the rest.
      */
     public function storePackage(Request $request)
     {
         $validated = $request->validate(
             $this->packageRules() + [
-                'entry_type'     => 'required|string|max:100',
-                'duration'       => 'required|string|max:100',
-                'traveller_type' => 'required|string|max:100',
-                'price'          => 'required|numeric|min:0',
+                'entry_type'     => 'nullable|string|max:100',
+                'duration'       => 'nullable|string|max:100',
+                'traveller_type' => 'nullable|string|max:100',
+                'price'          => 'nullable|numeric|min:0',
             ],
             $this->packageMessages()
         );
@@ -279,17 +293,54 @@ class ManagerVisaPricingController extends Controller
             $this->packageAttributes($validated) + ['isActive' => 1]
         );
 
-        UAEVisaPrice::create([
-            'visa_package_id' => $package->id,
-            'entry_type'      => $validated['entry_type'],
-            'duration'        => $validated['duration'],
-            'traveller_type'  => $validated['traveller_type'],
-            'price'           => $validated['price'],
-            'isActive'        => 1,
-        ]);
+        $hasInitialRow = filled($validated['entry_type'] ?? null)
+            && filled($validated['duration'] ?? null)
+            && filled($validated['traveller_type'] ?? null)
+            && isset($validated['price']);
+
+        if ($hasInitialRow) {
+            UAEVisaPrice::create([
+                'visa_package_id' => $package->id,
+                'entry_type'      => $validated['entry_type'],
+                'duration'        => $validated['duration'],
+                'traveller_type'  => $validated['traveller_type'],
+                'price'           => $validated['price'],
+                'isActive'        => 1,
+            ]);
+        }
+
+        // Pre-fill the rest of the matrix so the manager only has to type in
+        // prices for the remaining combinations, instead of adding every row
+        // by hand. Left inactive at AED 0 until a real price is set and
+        // activated — this keeps unpriced rows from ever appearing on the
+        // storefront. Skips the combination already created above, if any.
+        foreach (self::ENTRY_TYPES as $entryType) {
+            foreach (self::DURATIONS as $duration) {
+                foreach (self::TRAVELLER_TYPES as $travellerType) {
+                    if ($hasInitialRow
+                        && $entryType === $validated['entry_type']
+                        && $duration === $validated['duration']
+                        && $travellerType === $validated['traveller_type']) {
+                        continue;
+                    }
+                    UAEVisaPrice::create([
+                        'visa_package_id' => $package->id,
+                        'entry_type'      => $entryType,
+                        'duration'        => $duration,
+                        'traveller_type'  => $travellerType,
+                        'price'           => 0,
+                        'isActive'        => 0,
+                    ]);
+                }
+            }
+        }
+
+        $message = $hasInitialRow
+            ? "\"{$package->name}\" created with its first price row, and the rest of the matrix pre-filled below."
+            : "\"{$package->name}\" created. Fill in prices in the matrix below and mark rows Active to publish them.";
 
         return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
-            ->with('success', "\"{$package->name}\" created with its first price row. Add more traveller types or durations below.");
+            ->with('success', $message);
     }
 
     public function updatePackage(Request $request, $id)
@@ -323,14 +374,38 @@ class ManagerVisaPricingController extends Controller
             'entry_type'      => 'required|string|max:100',
             'duration'        => 'required|string|max:100',
             'traveller_type'  => 'required|string|max:100',
+            'nationality'     => 'nullable|string|max:100',
             'price'           => 'required|numeric|min:0',
         ]);
+
+        $nationality = $validated['nationality'] ?? null;
+
+        // Every package already gets the full matrix pre-filled on creation,
+        // so a manual add here is either a nationality-specific override or a
+        // genuine duplicate. Block the duplicate case — two rows for the same
+        // combination leaves the storefront with no way to know which price
+        // is the real one.
+        $duplicate = UAEVisaPrice::where('visa_package_id', $validated['visa_package_id'])
+            ->where('entry_type', $validated['entry_type'])
+            ->where('duration', $validated['duration'])
+            ->where('traveller_type', $validated['traveller_type'])
+            ->where('nationality', $nationality)
+            ->exists();
+
+        if ($duplicate) {
+            return back()->withInput()->withErrors([
+                'price' => 'A price row already exists for this package, entry type, duration, traveller type'
+                    . ($nationality ? " and nationality ($nationality)" : ' with no nationality set')
+                    . '. Edit it in the matrix below instead.',
+            ]);
+        }
 
         UAEVisaPrice::create([
             'visa_package_id' => $validated['visa_package_id'],
             'entry_type'      => $validated['entry_type'],
             'duration'        => $validated['duration'],
             'traveller_type'  => $validated['traveller_type'],
+            'nationality'     => $nationality,
             'price'           => $validated['price'],
             'isActive'        => 1,
         ]);
@@ -348,6 +423,7 @@ class ManagerVisaPricingController extends Controller
             'entry_type'      => 'required|string|max:100',
             'duration'        => 'required|string|max:100',
             'traveller_type'  => 'required|string|max:100',
+            'nationality'     => 'nullable|string|max:100',
             'price'           => 'required|numeric|min:0',
             'isActive'        => 'required|boolean',
         ]);
@@ -365,6 +441,7 @@ class ManagerVisaPricingController extends Controller
             'prices.*.entry_type' => 'required|string|max:100',
             'prices.*.duration' => 'required|string|max:100',
             'prices.*.traveller_type' => 'required|string|max:100',
+            'prices.*.nationality' => 'nullable|string|max:100',
             'prices.*.price' => 'required|numeric|min:0',
             'prices.*.isActive' => 'required|boolean',
         ]);
@@ -375,6 +452,7 @@ class ManagerVisaPricingController extends Controller
                 'entry_type'     => $data['entry_type'],
                 'duration'       => $data['duration'],
                 'traveller_type' => $data['traveller_type'],
+                'nationality'    => $data['nationality'] ?? null,
                 'price'          => $data['price'],
                 'isActive'       => $data['isActive'],
             ]);

@@ -55,20 +55,15 @@ jobs:
           $app = require_once __DIR__.'/../bootstrap/app.php';
           $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
           $out = [];
-          // Run only the booking-notification migrations explicitly (idempotent —
-          // migrate skips any already recorded in the migrations table).
-          $migrations = [
-              'database/migrations/2026_06_18_000001_add_notification_emails_to_tbl_uaeactivities.php',
-              'database/migrations/2026_06_18_000002_add_notified_at_to_fluxir_visa_applications.php',
-              'database/migrations/2026_06_18_000003_add_notification_emails_to_tbl_travel_packages.php',
-              'database/migrations/2026_06_18_000004_create_package_enquiries_table.php',
-              'database/migrations/2026_06_19_000001_add_payment_fields_to_fifa_ticket_requests.php',
-          ];
-          foreach ($migrations as $m) {
-              ob_start();
-              $kernel->call('migrate', ['--force' => true, '--path' => $m]);
-              $out['migrate ' . basename($m)] = trim(ob_get_clean()) ?: 'ok';
-          }
+          // Run every pending migration, not a hand-picked list — the list
+          // approach silently stopped covering new migrations the moment
+          // someone added one without also editing this file, which is how
+          // production's schema fell behind its own code. migrate --force is
+          // idempotent: anything already recorded in the migrations table is
+          // skipped, so this is safe to run on every deploy.
+          ob_start();
+          $kernel->call('migrate', ['--force' => true]);
+          $out['migrate'] = trim(ob_get_clean()) ?: 'ok';
           foreach (['view:clear', 'config:cache', 'route:cache'] as $cmd) {
               ob_start();
               $kernel->call($cmd);
