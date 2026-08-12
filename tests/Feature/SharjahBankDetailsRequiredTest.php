@@ -111,6 +111,51 @@ class SharjahBankDetailsRequiredTest extends TestCase
         $this->assertNull($app->UAEV_refunded_at);
     }
 
+    /**
+     * A Sharjah application whose deposit has not been configured yet still has
+     * to keep the bank details. Validation makes them mandatory for every
+     * Sharjah post by emirate name, but the save used to be gated on the
+     * deposit being greater than zero — so with the deposit left at 0 (which is
+     * how it ships until a manager sets an amount) the customer was forced to
+     * type the account details and they were then written away as null.
+     */
+    public function test_sharjah_bank_details_are_kept_when_no_deposit_is_configured(): void
+    {
+        Storage::fake('public');
+        $this->fakeCheckout();
+        $this->seedCommon(0); // no deposit amount configured yet
+
+        $response = $this->withoutMiddleware(VerifyCsrfToken::class)
+            ->post(route('uaev.submit'), [
+                'selected_emirate' => 'Sharjah',
+                'visaDuration'     => '30 Days',
+                'price'            => '0',
+                'visa_count'       => 1,
+                'applicant_name'   => 'Zero Deposit',
+                'email'            => 'zero_deposit_sharjah@example.com',
+                'phone'            => '+971500000012',
+                'bank_account_holder' => 'Zero Deposit',
+                'bank_name'           => 'Mashreq Bank',
+                'bank_account_number' => 'AE9876543210987654321',
+                'bank_swift_code'     => 'BOMLAEADXXX',
+                'passport_copy'    => [UploadedFile::fake()->create('p0.pdf', 50, 'application/pdf')],
+                'passport_photo'   => [UploadedFile::fake()->create('ph0.jpg', 50, 'image/jpeg')],
+            ]);
+
+        $response->assertOk()->assertJson(['success' => true]);
+
+        $app = UAEVApplication::where('UAEV_email', 'zero_deposit_sharjah@example.com')->first();
+        $this->assertNotNull($app);
+        $this->assertEquals('Zero Deposit', $app->UAEV_bank_account_holder);
+        $this->assertEquals('Mashreq Bank', $app->UAEV_bank_name);
+        $this->assertEquals('AE9876543210987654321', $app->UAEV_bank_account_number);
+        $this->assertEquals('BOMLAEADXXX', $app->UAEV_bank_swift_code);
+
+        // Nothing was charged, so no refund is owed and none is left pending.
+        $this->assertEquals(0.0, (float) $app->UAEV_deposit_amount);
+        $this->assertNull($app->UAEV_refund_status);
+    }
+
     public function test_dubai_submission_without_bank_details_still_succeeds(): void
     {
         Storage::fake('public');

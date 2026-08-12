@@ -918,7 +918,7 @@
                         </div>
                     </div>
 
-                    {{-- ROW 2: Adults, Children (2-12), Infants (0-2) --}}
+                    {{-- ROW 2: Adults, Children (2-18), Infants (0-2) --}}
                     <div class="form-grid-3" style="margin-top: 12px;">
                         <div class="form-field">
                             <label class="field-label">Adults</label>
@@ -929,7 +929,7 @@
                             </select>
                         </div>
                         <div class="form-field">
-                            <label class="field-label">Children (2–12 yrs)</label>
+                            <label class="field-label">Children (2–18 yrs)</label>
                             <select class="field-input" id="visaChildren" name="children_count">
                                 @for ($i = 0; $i <= 10; $i++)
                                     <option value="{{ $i }}" {{ $i === 0 ? 'selected' : '' }}>{{ $i }} {{ $i === 1 ? 'Child' : 'Children' }}</option>
@@ -1256,9 +1256,9 @@
                     label = `Child #${i - adults + 1}`;
                     ageField = `
                          <div class="form-field">
-                             <label class="field-label">Child Age (2–12)</label>
+                             <label class="field-label">Child Age (2–18)</label>
                              <select name="child_age[]" class="field-input" required>
-                                 ${Array.from({length: 11}, (_, k) => k + 2).map(a => `<option value="${a}">${a} years</option>`).join('')}
+                                 ${Array.from({length: 17}, (_, k) => k + 2).map(a => `<option value="${a}">${a} years</option>`).join('')}
                              </select>
                          </div>`;
                 } else {
@@ -1424,11 +1424,19 @@
             const hotelCost  = hotelCheckbox.checked ? hotelUnit : 0;
 
             // Deposit comes from the selected package, so the quote always matches
-            // what the server charges. `isSharjah` is now just "does this package
+            // what the server charges. `takesDeposit` is now just "does this package
             // take a deposit" — any emirate can, which is what the client asked for.
             const dep = depositForSelectedPackage();
             const depositUnit = dep.deposit;
-            const isSharjah = depositUnit > 0;
+            const takesDeposit = depositUnit > 0;
+            // Bank details are collected for every Sharjah application, whether or
+            // not a deposit amount has been configured yet. The server already
+            // requires them by emirate name (UAEVisaController::submit), so gating
+            // the inputs on a non-zero deposit left Sharjah unsubmittable whenever
+            // the deposit was unset: the customer never saw the fields, then the
+            // post was rejected for missing them.
+            const isSharjahEmirate = String(selectedEmirateName || '').toLowerCase() === 'sharjah';
+            const needsBankDetails = isSharjahEmirate || takesDeposit;
             const depositCost = depositUnit * totalPersons;
             // The admin/processing fee is deducted from the deposit at refund time,
             // so it never changes what the customer pays now — only what comes back.
@@ -1458,7 +1466,7 @@
             const refRow = document.getElementById('refundRow');
             const feeRow = document.getElementById('adminFeeRow');
             if (depRow && refRow) {
-                if (isSharjah) {
+                if (takesDeposit) {
                     depRow.style.display = 'flex';
                     refRow.style.display = 'flex';
                     document.getElementById('summaryDeposit').textContent = 'AED ' + depositCost.toFixed(2);
@@ -1480,16 +1488,16 @@
             // Show/hide Sharjah refund bank details
             const refundFieldsDiv = document.getElementById('sharjahRefundFields');
             if (refundFieldsDiv) {
-                refundFieldsDiv.style.display = isSharjah ? 'block' : 'none';
-                
+                refundFieldsDiv.style.display = needsBankDetails ? 'block' : 'none';
+
                 // Toggle required attributes for Sharjah Visa bank details
                 const bankHolderInput = document.getElementById('bank_account_holder');
                 const bankNameInput = document.getElementById('bank_name');
                 const bankNumberInput = document.getElementById('bank_account_number');
-                
-                if (bankHolderInput) bankHolderInput.required = isSharjah;
-                if (bankNameInput) bankNameInput.required = isSharjah;
-                if (bankNumberInput) bankNumberInput.required = isSharjah;
+
+                if (bankHolderInput) bankHolderInput.required = needsBankDetails;
+                if (bankNameInput) bankNameInput.required = needsBankDetails;
+                if (bankNumberInput) bankNumberInput.required = needsBankDetails;
             }
 
             document.getElementById('summaryTotal').textContent = 'AED ' + grandTotal.toFixed(2);

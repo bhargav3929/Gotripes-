@@ -181,6 +181,12 @@ class UAEVisaController extends Controller
         // and charging another.
         $isSharjah = $sharjahDeposit > 0;
 
+        // Whether to persist the refund bank account. Broader than $isSharjah on
+        // purpose: Sharjah applications are required to supply these details even
+        // before a deposit amount has been configured, and details the customer
+        // was made to type must never be silently dropped.
+        $keepBankDetails = $isSharjah || $isSharjahRequest;
+
         $depositAmount = $sharjahDeposit;
         // The customer is charged the full deposit; what comes back later is the
         // deposit minus the admin fee.
@@ -290,15 +296,18 @@ class UAEVisaController extends Controller
                 'UAEV_deposit_amount' => $depositAmount,
                 'UAEV_refund_amount' => $refundAmount,
                 'UAEV_refund_status' => $refundAmount > 0 ? 'pending' : null,
-                // Refund account, collected only when there is a deposit to give
-                // back. All four are nullable in the rules above, so they are
-                // coalesced rather than indexed: now that any package can carry a
-                // deposit — not just Sharjah, which always collected them — an
-                // application submitted without them must still save, not 500.
-                'UAEV_bank_account_holder' => $isSharjah ? ($validated['bank_account_holder'] ?? null) : null,
-                'UAEV_bank_name' => $isSharjah ? ($validated['bank_name'] ?? null) : null,
-                'UAEV_bank_account_number' => $isSharjah ? ($validated['bank_account_number'] ?? null) : null,
-                'UAEV_bank_swift_code' => $isSharjah ? ($validated['bank_swift_code'] ?? null) : null,
+                // Refund account. Kept whenever the application either carries a
+                // deposit or is a Sharjah one — the validation above already makes
+                // these mandatory for every Sharjah post regardless of the deposit
+                // amount, so gating the save on $isSharjah (deposit > 0) threw away
+                // details the customer was forced to type whenever the deposit was
+                // still unconfigured. All four are nullable in the rules above, so
+                // they are coalesced rather than indexed: an application submitted
+                // without them must still save, not 500.
+                'UAEV_bank_account_holder' => $keepBankDetails ? ($validated['bank_account_holder'] ?? null) : null,
+                'UAEV_bank_name' => $keepBankDetails ? ($validated['bank_name'] ?? null) : null,
+                'UAEV_bank_account_number' => $keepBankDetails ? ($validated['bank_account_number'] ?? null) : null,
+                'UAEV_bank_swift_code' => $keepBankDetails ? ($validated['bank_swift_code'] ?? null) : null,
                 'UAEV_Created_by' => 'Guest (Multi-Visa)',
                 'UAEV_created_date' => now(),
                 'UAEV_isActive' => 1,
