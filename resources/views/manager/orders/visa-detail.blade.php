@@ -100,12 +100,42 @@
     @if(strtolower($application->UAEV_emirate) === 'sharjah' || $application->UAEV_bank_account_holder)
     <div class="orders-card orders-detail-card">
         <h3>Refund Bank Details</h3>
-        <ul class="orders-detail-list">
-            <li><span class="label">Holder Name</span>    <span class="value">{{ $application->UAEV_bank_account_holder ?: '—' }}</span></li>
-            <li><span class="label">Bank Name</span>      <span class="value">{{ $application->UAEV_bank_name ?: '—' }}</span></li>
-            <li><span class="label">Account / IBAN</span> <span class="value">{{ $application->UAEV_bank_account_number ?: '—' }}</span></li>
-            <li><span class="label">SWIFT Code</span>     <span class="value">{{ $application->UAEV_bank_swift_code ?: '—' }}</span></li>
-            @if($application->UAEV_refund_amount > 0)
+
+        {{-- One selectable block rather than a bulleted list. Staff issuing a
+             refund copy the whole lot in a single go into WhatsApp or the bank
+             portal; with <li> rows they were picking it up a line at a time,
+             which is exactly what the client asked us to stop.
+
+             Only the account details live in here. Refund status and the
+             mark-as-paid action stay outside it — they are ours to track, and
+             pasting "Refund Status: Pending" into a bank transfer would be
+             noise at best. --}}
+        @php
+            $bankText = collect([
+                    'Holder Name'    => $application->UAEV_bank_account_holder,
+                    'Bank Name'      => $application->UAEV_bank_name,
+                    'Account / IBAN' => $application->UAEV_bank_account_number,
+                    'SWIFT Code'     => $application->UAEV_bank_swift_code,
+                ])
+                ->filter(fn ($value) => filled($value))
+                ->map(fn ($value, $label) => $label . ': ' . $value)
+                ->implode("\n");
+        @endphp
+
+        @if($bankText !== '')
+            <p id="refundBankText"
+               style="white-space:pre-line; margin:0 0 12px; padding:14px 16px;
+                      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10);
+                      border-radius:10px; color:#e6e6e6; font-size:14px; line-height:1.7;">{{ $bankText }}</p>
+            <button type="button" class="orders-btn orders-btn-ghost" onclick="copyRefundBankDetails(this)">
+                <i class="fas fa-copy"></i> Copy bank details
+            </button>
+        @else
+            <p style="margin:0; color:#999;">The customer did not provide bank details.</p>
+        @endif
+
+        @if($application->UAEV_refund_amount > 0)
+            <ul class="orders-detail-list" style="margin-top:16px;">
                 <li>
                     <span class="label">Refund Status</span>
                     <span class="value">
@@ -124,9 +154,45 @@
                         </form>
                     </li>
                 @endif
-            @endif
-        </ul>
+            </ul>
+        @endif
     </div>
     @endif
 </div>
+
+<script>
+    // Copies the refund account in one click. navigator.clipboard needs a secure
+    // context, which production has but a plain-HTTP staging box would not, so
+    // there is a execCommand fallback rather than a button that silently does
+    // nothing. Either way the text stays selectable by hand.
+    function copyRefundBankDetails(button) {
+        var block = document.getElementById('refundBankText');
+        if (!block) return;
+
+        var text = block.innerText;
+        var done = function () {
+            var original = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i> Copied';
+            setTimeout(function () { button.innerHTML = original; }, 1800);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+        } else {
+            fallback(text, done);
+        }
+
+        function fallback(value, onDone) {
+            var area = document.createElement('textarea');
+            area.value = value;
+            area.setAttribute('readonly', '');
+            area.style.position = 'fixed';
+            area.style.opacity = '0';
+            document.body.appendChild(area);
+            area.select();
+            try { document.execCommand('copy'); onDone(); } catch (e) { /* leave it to manual selection */ }
+            document.body.removeChild(area);
+        }
+    }
+</script>
 @endsection

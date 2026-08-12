@@ -848,7 +848,10 @@
                         <div class="pp-scan-info">
                             <span class="pp-scan-badge"><i class="bi bi-stars"></i></span>
                             <div>
-                                <strong>Scan passport to auto-fill</strong>
+                                {{-- "(Optional)" is not decoration: without it the scan
+                                     reads as a required step and customers who would
+                                     rather type their details think they are stuck. --}}
+                                <strong>Scan passport to auto-fill <span class="pp-scan-optional">(Optional)</span></strong>
                                 <span>Upload or photograph the passport's main page — we'll detect the details for you.</span>
                             </div>
                         </div>
@@ -1914,6 +1917,9 @@
         background:rgba(255,215,0,0.10); border:1px solid rgba(255,215,0,0.28); }
     .pp-scan-badge i { font-size:20px; color:#FFD23F; }
     .pp-scan-info strong { display:block; color:#fff; font-size:15px; font-weight:600; letter-spacing:.2px; }
+    {{-- Two classes deep on purpose: the generic `.pp-scan-info span` rule below
+         is more specific than a lone class and would otherwise grey this out. --}}
+    .pp-scan-info .pp-scan-optional { color:#FFD23F; font-size:12.5px; font-weight:500; letter-spacing:.2px; }
     .pp-scan-info span { color:#999; font-size:13px; }
     .pp-scan-actions { display:flex; gap:10px; }
     .pp-scan-btn { display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:13.5px;

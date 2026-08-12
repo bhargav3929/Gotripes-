@@ -535,6 +535,34 @@
         background: rgba(255, 255, 255, 0.05);
     }
 
+    /* Jump link to the activation tutorial further down the page. The steps were
+       already there but sat below the buy wizard, and customers were not
+       scrolling to them — so the client asked for a small yellow box up in the
+       hero pointing at them. Deliberately lighter than .esim-btn-primary: buying
+       still has to be the loudest thing in the hero. */
+    .esim-btn-howto {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 215, 0, 0.10);
+        color: #FFD700;
+        padding: 14px 24px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid rgba(255, 215, 0, 0.45);
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .esim-btn-howto:hover {
+        background: rgba(255, 215, 0, 0.18);
+        border-color: #FFD700;
+        color: #FFD700;
+        transform: translateY(-1px);
+    }
+
     /* Trust Row - Modern Pills */
     .esim-trust-row {
         display: flex;
@@ -3294,6 +3322,10 @@
             font-size: 11px;
             padding: 11px 16px;
         }
+        .esim-btn-howto {
+            font-size: 11px;
+            padding: 11px 16px;
+        }
         .esim-trust-row {
             justify-content: center;
         }
@@ -4089,6 +4121,10 @@
                     <i class="fa-solid fa-location-dot"></i>
                     Choose Your Destination
                 </button>
+                <button type="button" class="esim-btn-howto" onclick="document.getElementById('esimHowTo').scrollIntoView({ behavior: 'smooth' })">
+                    <i class="fa-solid fa-circle-question"></i>
+                    How to Install — Scroll Down for Instructions
+                </button>
             </div>
 
             <!-- Trust Indicators - Modern Pills -->
@@ -4438,7 +4474,7 @@
 <!-- ============================================================
      HOW TO ACTIVATE eSIM
      ============================================================ -->
-<section class="esim-how-section">
+<section class="esim-how-section" id="esimHowTo">
     <div class="esim-how-badge esim-reveal">TUTORIAL</div>
     <h2 class="esim-how-title esim-reveal">How to Get Your eSIM</h2>
     <p class="esim-how-subtitle esim-reveal">A simple step-by-step guide to get you connected in minutes.</p>

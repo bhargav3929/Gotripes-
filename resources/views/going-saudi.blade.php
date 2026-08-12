@@ -24,6 +24,12 @@
                 <a href="{{ url('/coming-soon/transport') }}" class="tab-btn">
                     <i class="bi bi-car-front-fill"></i> Transport
                 </a>
+                {{-- Catering sits ahead of Hotels on purpose: the client wants the
+                     tabs to track the order a pilgrim actually buys in — visa,
+                     then transport, then food, then the hotel. --}}
+                <a href="{{ url('/coming-soon/catering') }}" class="tab-btn">
+                    <i class="bi bi-cup-hot-fill"></i> Catering Services
+                </a>
                 <a href="{{ url('/coming-soon/hotels') }}" class="tab-btn">
                     <i class="bi bi-building"></i> Hotels
                 </a>
@@ -36,9 +42,6 @@
                 <button type="button" class="tab-btn" onclick="switchTab('air-tab')">
                     <i class="bi bi-airplane-engines-fill"></i> Hajj & Umrah by Air
                 </button>
-                <a href="{{ url('/coming-soon/catering') }}" class="tab-btn">
-                    <i class="bi bi-cup-hot-fill"></i> Catering Services
-                </a>
             </div>
         </div>
     </section>
