@@ -65,6 +65,7 @@
                                     @if($key === 'tours') <i class="fas fa-suitcase-rolling" style="color: var(--wp-primary);"></i>
                                     @elseif($key === 'activities') <i class="fas fa-hiking" style="color: var(--wp-primary);"></i>
                                     @elseif($key === 'esim') <i class="fas fa-sim-card" style="color: var(--wp-primary);"></i>
+                                    @elseif($key === 'evisa') <i class="fas fa-globe" style="color: var(--wp-primary);"></i>
                                     @endif
                                     {{ $label }}
                                 </strong>
@@ -73,6 +74,7 @@
                                     @if($key === 'tours') Agent can add and manage their own tour packages.
                                     @elseif($key === 'activities') Agent can add and manage their own activities.
                                     @elseif($key === 'esim') Agent can view eSIM orders for your site.
+                                    @elseif($key === 'evisa') Agent earns a commission on e-Visa sales — set the rate from Global e-Visa.
                                     @endif
                                 </span>
                             </span>

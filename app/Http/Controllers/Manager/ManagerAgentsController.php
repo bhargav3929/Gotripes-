@@ -33,7 +33,8 @@ class ManagerAgentsController extends Controller
 
     /**
      * Services this tenant can grant: the intersection of the canonical
-     * agent services with the company's enabled features.
+     * agent services with the company's enabled features. 'evisa' has no
+     * feature of its own — it piggybacks on 'visas' (see User::hasService()).
      */
     private function grantableServices(): array
     {
@@ -41,7 +42,7 @@ class ManagerAgentsController extends Controller
 
         return array_filter(
             User::AGENT_SERVICES,
-            fn ($key) => $company === null || $company->hasFeature($key),
+            fn ($key) => $company === null || $company->hasFeature($key === 'evisa' ? 'visas' : $key),
             ARRAY_FILTER_USE_KEY
         );
     }

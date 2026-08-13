@@ -22,6 +22,7 @@ class User extends Authenticatable
         'company_id',
         'role',
         'agent_services',
+        'evisa_commission_percent',
         'is_active',
         'is_super_admin',
         'last_login_at',
@@ -31,18 +32,22 @@ class User extends Authenticatable
         'is_super_admin' => 'boolean',
         'is_active' => 'boolean',
         'agent_services' => 'array',
+        'evisa_commission_percent' => 'decimal:2',
         'last_login_at' => 'datetime',
     ];
 
     /**
      * Services a manager can grant to an agent account. Keys deliberately
      * match Company::AVAILABLE_FEATURES so a grant is only effective while
-     * the tenant itself has the feature enabled.
+     * the tenant itself has the feature enabled — except 'evisa', which has
+     * no feature of its own and piggybacks on the 'visas' feature instead
+     * (see hasService() below).
      */
     public const AGENT_SERVICES = [
         'tours'      => 'Tour Packages',
         'activities' => 'Activities',
         'esim'       => 'eSIM',
+        'evisa'      => 'e-Visa Commission',
     ];
 
     protected $hidden = [
@@ -99,8 +104,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if this agent was granted a service (tours / activities / esim).
-     * The grant only counts while the tenant itself has the matching feature.
+     * Check if this agent was granted a service (tours / activities / esim /
+     * evisa). The grant only counts while the tenant itself has the matching
+     * feature — 'evisa' has no feature of its own, so it piggybacks on the
+     * tenant's 'visas' feature (the same flag that gates the e-Visa storefront).
      */
     public function hasService(string $service): bool
     {
@@ -113,7 +120,17 @@ class User extends Authenticatable
             return false;
         }
 
-        return !$this->company || $this->company->hasFeature($service);
+        $feature = $service === 'evisa' ? 'visas' : $service;
+
+        return !$this->company || $this->company->hasFeature($feature);
+    }
+
+    /**
+     * This agent's e-Visa commission percentage, or 0 if none is set.
+     */
+    public function evisaCommissionPercent(): float
+    {
+        return (float) ($this->evisa_commission_percent ?? 0);
     }
 
     /**
