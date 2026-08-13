@@ -465,6 +465,7 @@ use App\Http\Controllers\Manager\ManagerFinanceController;
 use App\Http\Controllers\Manager\OrdersController;
 use App\Http\Controllers\Manager\SettingsController;
 use App\Http\Controllers\Manager\ManagerAgentsController;
+use App\Http\Controllers\Manager\ManagerEvisaSettingsController;
 use App\Http\Controllers\Manager\ManagerFifaTicketsController;
 use App\Http\Controllers\Agent\AgentAuthController;
 use App\Http\Controllers\Agent\AgentDashboardController;
@@ -531,6 +532,11 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::post('visa-emirates',              [ManagerVisaPricingController::class, 'storeEmirate'])->name('visa-emirates.store');
     Route::put('visa-emirates/{id}',          [ManagerVisaPricingController::class, 'updateEmirate'])->name('visa-emirates.update');
     Route::delete('visa-emirates/{id}',       [ManagerVisaPricingController::class, 'destroyEmirate'])->name('visa-emirates.destroy');
+
+    // Global e-Visa: separate from UAE Visa package pricing above. Holds the
+    // platform-wide Fluxir markup and per-agent e-Visa commissions.
+    Route::get('evisa-settings',                   [ManagerEvisaSettingsController::class, 'index'])->name('evisa-settings.index');
+    Route::put('evisa-settings/agent-commissions', [ManagerEvisaSettingsController::class, 'updateAgentCommissions'])->name('evisa-settings.agent-commissions.update');
 
     // FIFA World Cup 2026 tickets — SHARED across all companies (not tenant-scoped).
     // Global markup, match + ticket inventory, and the customer request inbox.

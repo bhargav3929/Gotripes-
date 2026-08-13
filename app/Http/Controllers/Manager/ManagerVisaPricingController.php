@@ -90,7 +90,7 @@ class ManagerVisaPricingController extends Controller
         $company->settings = $settings;
         $company->save();
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
+        return redirect()->route('manager.visa-pricing.index')
             ->with('success', 'Add-on service fees updated.');
     }
 
@@ -337,9 +337,9 @@ class ManagerVisaPricingController extends Controller
 
         $message = $hasInitialRow
             ? "\"{$package->name}\" created with its first price row, and the rest of the matrix pre-filled below."
-            : "\"{$package->name}\" created. Fill in prices in the matrix below and mark rows Active to publish them.";
+            : "\"{$package->name}\" created. Fill in prices below and mark rows Active to publish them.";
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
+        return redirect()->route('manager.visa-pricing.index', ['package' => $package->id])
             ->with('success', $message);
     }
 
@@ -353,7 +353,7 @@ class ManagerVisaPricingController extends Controller
             $this->packageAttributes($validated) + ['isActive' => $validated['isActive']]
         );
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'packages'])
+        return redirect()->route('manager.visa-pricing.index', ['package' => $package->id])
             ->with('success', 'Visa Package updated successfully.');
     }
 
@@ -362,7 +362,7 @@ class ManagerVisaPricingController extends Controller
         $package = UAEVisaPackage::findOrFail($id);
         $package->update(['isActive' => 0]);
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'packages'])
+        return redirect()->route('manager.visa-pricing.index')
             ->with('success', 'Visa Package removed.');
     }
 
@@ -410,7 +410,7 @@ class ManagerVisaPricingController extends Controller
             'isActive'        => 1,
         ]);
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
+        return redirect()->route('manager.visa-pricing.index', ['package' => $validated['visa_package_id']])
             ->with('success', 'Pricing row added successfully.');
     }
 
@@ -430,7 +430,7 @@ class ManagerVisaPricingController extends Controller
 
         $price->update($validated);
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
+        return redirect()->route('manager.visa-pricing.index', ['package' => $price->visa_package_id])
             ->with('success', 'Pricing row updated successfully.');
     }
 
@@ -446,6 +446,8 @@ class ManagerVisaPricingController extends Controller
             'prices.*.isActive' => 'required|boolean',
         ]);
 
+        $packageId = null;
+
         foreach ($validated['prices'] as $id => $data) {
             $price = UAEVisaPrice::findOrFail($id);
             $price->update([
@@ -456,18 +458,20 @@ class ManagerVisaPricingController extends Controller
                 'price'          => $data['price'],
                 'isActive'       => $data['isActive'],
             ]);
+            $packageId = $packageId ?? $price->visa_package_id;
         }
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
-            ->with('success', 'Pricing matrix updated successfully.');
+        return redirect()->route('manager.visa-pricing.index', array_filter(['package' => $packageId]))
+            ->with('success', 'Pricing updated successfully.');
     }
 
     public function destroyPriceRow($id)
     {
         $price = UAEVisaPrice::findOrFail($id);
+        $packageId = $price->visa_package_id;
         $price->delete();
 
-        return redirect()->route('manager.visa-pricing.index', ['tab' => 'pricing'])
+        return redirect()->route('manager.visa-pricing.index', ['package' => $packageId])
             ->with('success', 'Pricing row deleted.');
     }
 }

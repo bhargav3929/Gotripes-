@@ -722,6 +722,12 @@
                         <span>Saudi Visa Setup</span>
                     </a>
                 </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.evisa-settings.index') }}" class="{{ request()->routeIs('manager.evisa-settings.*') ? 'active' : '' }}">
+                        <i class="fas fa-globe"></i>
+                        <span>Global e-Visa</span>
+                    </a>
+                </li>
                 @endfeature
 
                 @feature('esim')
