@@ -466,6 +466,7 @@ use App\Http\Controllers\Manager\OrdersController;
 use App\Http\Controllers\Manager\SettingsController;
 use App\Http\Controllers\Manager\ManagerAgentsController;
 use App\Http\Controllers\Manager\ManagerEvisaSettingsController;
+use App\Http\Controllers\Manager\ManagerB2bPartnersController;
 use App\Http\Controllers\Manager\ManagerFifaTicketsController;
 use App\Http\Controllers\Agent\AgentAuthController;
 use App\Http\Controllers\Agent\AgentDashboardController;
@@ -537,6 +538,17 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     // platform-wide Fluxir markup and per-agent e-Visa commissions.
     Route::get('evisa-settings',                   [ManagerEvisaSettingsController::class, 'index'])->name('evisa-settings.index');
     Route::put('evisa-settings/agent-commissions', [ManagerEvisaSettingsController::class, 'updateAgentCommissions'])->name('evisa-settings.agent-commissions.update');
+
+    // B2B partner application review — approve/reject applications that
+    // self-registered at /agency/register.
+    Route::prefix('b2b-partners')->name('b2b-partners.')->group(function () {
+        Route::get('/', [ManagerB2bPartnersController::class, 'index'])->name('index');
+        Route::get('/{partner}', [ManagerB2bPartnersController::class, 'show'])->name('show');
+        Route::post('/{partner}/approve', [ManagerB2bPartnersController::class, 'approve'])->name('approve');
+        Route::post('/{partner}/reject', [ManagerB2bPartnersController::class, 'reject'])->name('reject');
+        Route::post('/{partner}/confirm-renewal', [ManagerB2bPartnersController::class, 'confirmRenewal'])->name('confirm-renewal');
+        Route::put('/{partner}/commission', [ManagerB2bPartnersController::class, 'updateCommission'])->name('commission.update');
+    });
 
     // FIFA World Cup 2026 tickets — SHARED across all companies (not tenant-scoped).
     // Global markup, match + ticket inventory, and the customer request inbox.
@@ -727,6 +739,32 @@ Route::middleware(['referral.agent'])->prefix('partner')->name('referral.')->gro
     // Withdrawal Requests
     Route::get('/withdraw', [ReferralWithdrawalController::class, 'index'])->name('withdraw');
     Route::post('/withdraw', [ReferralWithdrawalController::class, 'store'])->name('withdraw.store');
+});
+
+// ─── B2B Partner Registration ───────────────────────────────────────
+use App\Http\Controllers\B2bPartner\B2bPartnerAuthController;
+use App\Http\Controllers\B2bPartner\B2bPartnerSignupController;
+use App\Http\Controllers\B2bPartner\B2bPartnerDashboardController;
+use App\Http\Controllers\B2bPartner\B2bPartnerLicenseRenewalController;
+
+Route::get('/agency/register', [B2bPartnerSignupController::class, 'showRegister'])->name('agency.register');
+Route::post('/agency/register', [B2bPartnerSignupController::class, 'register'])->name('agency.register.submit');
+Route::get('/agency/register/submitted', [B2bPartnerSignupController::class, 'submitted'])->name('agency.register.submitted');
+
+Route::get('/agency/login', [B2bPartnerAuthController::class, 'showLogin'])->name('agency.login');
+Route::post('/agency/login', [B2bPartnerAuthController::class, 'login'])->name('agency.login.submit');
+Route::post('/agency/logout', [B2bPartnerAuthController::class, 'logout'])->name('agency.logout');
+
+// Self-service license renewal for a disabled partner — not behind
+// b2b.auth, since a disabled partner can never pass canLogin(). Verifies
+// identity via email+password directly instead.
+Route::get('/agency/renew-license', [B2bPartnerLicenseRenewalController::class, 'showForm'])->name('agency.renew-license');
+Route::post('/agency/renew-license', [B2bPartnerLicenseRenewalController::class, 'submit'])->name('agency.renew-license.submit');
+Route::get('/agency/renew-license/submitted', [B2bPartnerLicenseRenewalController::class, 'submitted'])->name('agency.renew-license.submitted');
+
+Route::middleware(['b2b.auth'])->prefix('agency')->name('agency.')->group(function () {
+    Route::get('/', [B2bPartnerDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/contract', [B2bPartnerDashboardController::class, 'downloadContract'])->name('contract.download');
 });
 
 // Admin Referral Management Routes

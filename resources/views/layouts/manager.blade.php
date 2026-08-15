@@ -753,6 +753,12 @@
                         <span>Agents</span>
                     </a>
                 </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.b2b-partners.index') }}" class="{{ request()->routeIs('manager.b2b-partners.*') ? 'active' : '' }}">
+                        <i class="fas fa-handshake"></i>
+                        <span>B2B Partners</span>
+                    </a>
+                </li>
 
                 {{-- ────────────────  SETTINGS  ──────────────── --}}
                 {{-- Profile & Preferences land in Step D. Same coming-soon

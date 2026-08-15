@@ -45,6 +45,16 @@ class Kernel extends ConsoleKernel
             ->hourly()
             ->withoutOverlapping()
             ->onOneServer();
+
+        // Warn approved UAE B2B partners (and the business) ~30 days before
+        // their trade license expires, then hard-disable login the moment it
+        // actually expires. Daily is enough — license expiry is a calendar
+        // date event, not something needing the 10-minute cadence used for
+        // payment reconciliation above.
+        $schedule->command('partners:check-license-expiry')
+            ->dailyAt('08:00')
+            ->withoutOverlapping()
+            ->onOneServer();
     }
 
     /**

@@ -45,6 +45,11 @@ return [
             'driver' => 'session',
             'provider' => 'referral_agents',
         ],
+
+        'b2b_partner' => [
+            'driver' => 'session',
+            'provider' => 'b2b_partners',
+        ],
     ],
 
     /*
@@ -73,6 +78,11 @@ return [
         'referral_agents' => [
             'driver' => 'eloquent',
             'model' => App\Models\ReferralAgent::class,
+        ],
+
+        'b2b_partners' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\B2bPartner::class,
         ],
 
         // 'users' => [
