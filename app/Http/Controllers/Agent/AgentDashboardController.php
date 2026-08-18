@@ -29,6 +29,14 @@ class AgentDashboardController extends Controller
             ? EsimOrder::count()
             : null;
 
-        return view('agent.dashboard', compact('agent', 'packageCount', 'activityCount', 'esimOrderCount'));
+        // e-Visa and UAE Visa have no listing of their own to count — they're
+        // commission/referral grants, not content an agent creates — so they
+        // get a simple info card instead of a stat card. Still need their own
+        // flags: without them, an agent granted only one of these two sees
+        // the "no services granted" empty state below despite having access.
+        $hasEvisa = $agent->hasService('evisa');
+        $hasUaeVisa = $agent->hasService('uae_visa');
+
+        return view('agent.dashboard', compact('agent', 'packageCount', 'activityCount', 'esimOrderCount', 'hasEvisa', 'hasUaeVisa'));
     }
 }

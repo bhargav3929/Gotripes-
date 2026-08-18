@@ -71,15 +71,47 @@
         </div>
     </div>
     @endif
+
+    @if($hasEvisa)
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="wp-card" style="margin-bottom: 0;">
+            <div class="wp-card-body" style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(255,215,0,0.12); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-globe" style="color: var(--wp-primary); font-size: 18px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 22px; font-weight: 700; line-height: 1.2;">{{ rtrim(rtrim(number_format($agent->evisaCommissionPercent(), 2), '0'), '.') }}%</div>
+                    <div style="font-size: 12px; color: var(--wp-text-muted);">Global e-Visa Commission</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($hasUaeVisa)
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="wp-card" style="margin-bottom: 0;">
+            <div class="wp-card-body" style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(255,215,0,0.12); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-passport" style="color: var(--wp-primary); font-size: 18px;"></i>
+                </div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 700; line-height: 1.3;">UAE Visa Access Granted</div>
+                    <div style="font-size: 12px; color: var(--wp-text-muted);">Refer customers to the UAE Visa page — contact your manager for booking details.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
-@if(is_null($packageCount) && is_null($activityCount) && is_null($esimOrderCount))
+@if(is_null($packageCount) && is_null($activityCount) && is_null($esimOrderCount) && !$hasEvisa && !$hasUaeVisa)
 <div class="wp-card">
     <div class="wp-card-body" style="text-align: center; padding: 48px 16px;">
         <i class="fas fa-lock" style="font-size: 32px; color: var(--wp-border); display: block; margin-bottom: 12px;"></i>
         <p style="color: var(--wp-text-muted); margin: 0;">
             No services have been granted to your account yet.<br>
-            Ask your manager to enable Tour Packages, Activities, or eSIM for you.
+            Ask your manager to enable a service for you.
         </p>
     </div>
 </div>
