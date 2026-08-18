@@ -37,18 +37,35 @@ class User extends Authenticatable
     ];
 
     /**
-     * Services a manager can grant to an agent account. Keys deliberately
+     * Services a manager can grant to an agent account (also the interest
+     * checkboxes offered at agent self-registration). Keys deliberately
      * match Company::AVAILABLE_FEATURES so a grant is only effective while
-     * the tenant itself has the feature enabled — except 'evisa', which has
-     * no feature of its own and piggybacks on the 'visas' feature instead
-     * (see hasService() below).
+     * the tenant itself has the feature enabled — except 'evisa' and
+     * 'uae_visa', which have no feature of their own and both piggyback on
+     * the tenant's single 'visas' feature instead (see hasService() below;
+     * they're kept as two distinct services because Global e-Visa and UAE
+     * Visa are separate product lines an agent can be interested in
+     * independently, see routes/web.php's e-visa/uaevisa split).
      */
     public const AGENT_SERVICES = [
         'tours'      => 'Tour Packages',
         'activities' => 'Activities',
         'esim'       => 'eSIM',
-        'evisa'      => 'e-Visa Commission',
+        'evisa'      => 'Global e-Visa',
+        'uae_visa'   => 'UAE Visa',
     ];
+
+    /** Services with no Company feature of their own — see AGENT_SERVICES doc above. */
+    public const SERVICE_FEATURE_ALIASES = [
+        'evisa'    => 'visas',
+        'uae_visa' => 'visas',
+    ];
+
+    /** The Company::AVAILABLE_FEATURES key that gates a given agent service. */
+    public static function featureKeyForService(string $service): string
+    {
+        return self::SERVICE_FEATURE_ALIASES[$service] ?? $service;
+    }
 
     protected $hidden = [
         'password',
@@ -105,9 +122,9 @@ class User extends Authenticatable
 
     /**
      * Check if this agent was granted a service (tours / activities / esim /
-     * evisa). The grant only counts while the tenant itself has the matching
-     * feature — 'evisa' has no feature of its own, so it piggybacks on the
-     * tenant's 'visas' feature (the same flag that gates the e-Visa storefront).
+     * evisa / uae_visa). The grant only counts while the tenant itself has
+     * the matching feature — see SERVICE_FEATURE_ALIASES above for the two
+     * services that piggyback on the tenant's 'visas' feature.
      */
     public function hasService(string $service): bool
     {
@@ -120,9 +137,7 @@ class User extends Authenticatable
             return false;
         }
 
-        $feature = $service === 'evisa' ? 'visas' : $service;
-
-        return !$this->company || $this->company->hasFeature($feature);
+        return !$this->company || $this->company->hasFeature(self::featureKeyForService($service));
     }
 
     /**

@@ -39,15 +39,48 @@ class UAEVisaPackage extends Model
         return $this->hasMany(UAEVisaPrice::class, 'visa_package_id');
     }
 
-    /**
-     * Refundable deposit charged per applicant for this package.
-     *
-     * A package-level amount wins; null falls back to the company-wide Sharjah
-     * setting, so packages created before deposits became per-package keep
-     * charging exactly what they did before. 0 explicitly means "no deposit".
-     */
-    public function depositPerApplicant(): float
+    public function deposits()
     {
+        return $this->hasMany(UAEVisaPackageDeposit::class, 'visa_package_id');
+    }
+
+    /**
+     * Nationality-specific deposit row for this package: exact case-insensitive
+     * match first, then the row with nationality = null (this package's own
+     * default), or null when no deposit rows have been configured at all —
+     * in which case callers fall back to the legacy package-level columns.
+     */
+    private function resolveDepositRow(?string $nationality = null): ?UAEVisaPackageDeposit
+    {
+        $rows = $this->deposits->where('isActive', 1);
+
+        if ($nationality !== null && $nationality !== '') {
+            $match = $rows->first(fn($d) => !empty($d->nationality) && strtolower($d->nationality) === strtolower($nationality));
+            if ($match) {
+                return $match;
+            }
+        }
+
+        return $rows->first(fn($d) => empty($d->nationality));
+    }
+
+    /**
+     * Refundable deposit charged per applicant for this package, optionally
+     * varying by the applicant's nationality (e.g. India/Pakistan/Nepal carry
+     * a higher deposit than everyone else).
+     *
+     * A matching nationality-specific row wins; then this package's own
+     * default row; then the legacy package-level column; then the
+     * company-wide Sharjah setting, so packages created before deposits
+     * existed keep charging exactly what they did before. 0 explicitly means
+     * "no deposit".
+     */
+    public function depositPerApplicant(?string $nationality = null): float
+    {
+        if ($row = $this->resolveDepositRow($nationality)) {
+            return max(0.0, (float) $row->security_deposit);
+        }
+
         if ($this->security_deposit !== null) {
             return max(0.0, (float) $this->security_deposit);
         }
@@ -73,11 +106,17 @@ class UAEVisaPackage extends Model
     }
 
     /**
-     * Non-refundable processing fee deducted from the deposit at refund time.
-     * Never exceeds the deposit, so the refundable balance cannot go negative.
+     * Non-refundable processing fee deducted from the deposit at refund time,
+     * for the same nationality resolution as depositPerApplicant(). Never
+     * exceeds the deposit, so the refundable balance cannot go negative.
      */
-    public function depositAdminFee(): float
+    public function depositAdminFee(?string $nationality = null): float
     {
+        if ($row = $this->resolveDepositRow($nationality)) {
+            $fee = max(0.0, (float) $row->deposit_admin_fee);
+            return min($fee, $this->depositPerApplicant($nationality));
+        }
+
         if ($this->deposit_admin_fee !== null) {
             $fee = max(0.0, (float) $this->deposit_admin_fee);
         } elseif ($this->isDepositEmirate()) {
@@ -87,7 +126,7 @@ class UAEVisaPackage extends Model
             $fee = 0.0;
         }
 
-        return min($fee, $this->depositPerApplicant());
+        return min($fee, $this->depositPerApplicant($nationality));
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\TravelPackage;
 use App\Models\UAEActivity;
 use App\Models\User;
@@ -33,18 +34,22 @@ class ManagerAgentsController extends Controller
 
     /**
      * Services this tenant can grant: the intersection of the canonical
-     * agent services with the company's enabled features. 'evisa' has no
-     * feature of its own — it piggybacks on 'visas' (see User::hasService()).
+     * agent services with the company's enabled features. 'evisa' and
+     * 'uae_visa' have no feature of their own — both piggyback on 'visas'
+     * (see User::hasService()).
      */
-    private function grantableServices(): array
+    public static function grantableServicesFor(?Company $company): array
     {
-        $company = current_company() ?: auth()->user()->company;
-
         return array_filter(
             User::AGENT_SERVICES,
-            fn ($key) => $company === null || $company->hasFeature($key === 'evisa' ? 'visas' : $key),
+            fn ($key) => $company === null || $company->hasFeature(User::featureKeyForService($key)),
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    private function grantableServices(): array
+    {
+        return self::grantableServicesFor(current_company() ?: auth()->user()->company);
     }
 
     public function index()

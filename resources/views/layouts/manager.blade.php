@@ -713,7 +713,7 @@
                 <li class="wp-nav-item">
                     <a href="{{ route('manager.visa-pricing.index') }}" class="{{ request()->routeIs('manager.visa-pricing.*') ? 'active' : '' }}">
                         <i class="fas fa-passport"></i>
-                        <span>Visa Services</span>
+                        <span>UAE Visa Services</span>
                     </a>
                 </li>
                 <li class="wp-nav-item">
@@ -751,6 +751,12 @@
                     <a href="{{ route('manager.agents.index') }}" class="{{ request()->routeIs('manager.agents.*') ? 'active' : '' }}">
                         <i class="fas fa-user-tie"></i>
                         <span>Agents</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.agent-applications.index') }}" class="{{ request()->routeIs('manager.agent-applications.*') ? 'active' : '' }}">
+                        <i class="fas fa-file-signature"></i>
+                        <span>Agent Applications</span>
                     </a>
                 </li>
                 <li class="wp-nav-item">

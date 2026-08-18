@@ -386,9 +386,14 @@ Route::get('/uaevisa', function () {
         })
         ->orderBy('emiratesName')
         ->get();
-    $packages = UAEVisaPackage::with(['prices' => function($q) {
-        $q->where('isActive', 1);
-    }])->where('isActive', 1)->get();
+    $packages = UAEVisaPackage::with([
+        'prices' => function($q) {
+            $q->where('isActive', 1);
+        },
+        'deposits' => function($q) {
+            $q->where('isActive', 1);
+        },
+    ])->where('isActive', 1)->get();
 
     $pricingData = [];
     foreach ($packages as $pkg) {
@@ -398,10 +403,19 @@ Route::get('/uaevisa', function () {
             'package_name' => $pkg->name,
             'package_type' => $pkg->package_type,
             'description'  => $pkg->description,
-            // Per-package deposit, falling back to the company setting when the
-            // package does not override it.
+            // Package-wide default deposit, falling back to the company setting
+            // when the package does not override it. Used when no nationality
+            // is selected yet, or none of `deposits` below matches it.
             'deposit'      => $pkg->depositPerApplicant(),
             'deposit_fee'  => $pkg->depositAdminFee(),
+            // Nationality-specific deposit overrides — resolved client-side the
+            // same way price nationality overrides are (case-insensitive match,
+            // fallback to the row with no nationality, then to `deposit` above).
+            'deposits'     => $pkg->deposits->map(fn($d) => [
+                'nationality' => $d->nationality,
+                'deposit'     => (float) $d->security_deposit,
+                'fee'         => (float) $d->deposit_admin_fee,
+            ])->toArray(),
             'prices'       => $pkg->prices->map(fn($p) => [
                 'entry_type'     => $p->entry_type,
                 'duration'       => $p->duration,
@@ -469,6 +483,7 @@ use App\Http\Controllers\Manager\ManagerEvisaSettingsController;
 use App\Http\Controllers\Manager\ManagerB2bPartnersController;
 use App\Http\Controllers\Manager\ManagerFifaTicketsController;
 use App\Http\Controllers\Agent\AgentAuthController;
+use App\Http\Controllers\Agent\AgentSignupController;
 use App\Http\Controllers\Agent\AgentDashboardController;
 use App\Http\Controllers\Agent\AgentTravelPackagesController;
 use App\Http\Controllers\Agent\AgentActivitiesController;
@@ -530,6 +545,11 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::put('visa-prices/{id}',            [ManagerVisaPricingController::class, 'updatePriceRow'])->name('visa-prices.update');
     Route::delete('visa-prices/{id}',         [ManagerVisaPricingController::class, 'destroyPriceRow'])->name('visa-prices.destroy');
 
+    // Nationality-specific security deposits, same pattern as visa-prices above.
+    Route::post('visa-deposits',              [ManagerVisaPricingController::class, 'storeDeposit'])->name('visa-deposits.store');
+    Route::put('visa-deposits/{id}',          [ManagerVisaPricingController::class, 'updateDeposit'])->name('visa-deposits.update');
+    Route::delete('visa-deposits/{id}',       [ManagerVisaPricingController::class, 'destroyDeposit'])->name('visa-deposits.destroy');
+
     Route::post('visa-emirates',              [ManagerVisaPricingController::class, 'storeEmirate'])->name('visa-emirates.store');
     Route::put('visa-emirates/{id}',          [ManagerVisaPricingController::class, 'updateEmirate'])->name('visa-emirates.update');
     Route::delete('visa-emirates/{id}',       [ManagerVisaPricingController::class, 'destroyEmirate'])->name('visa-emirates.destroy');
@@ -548,6 +568,15 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::post('/{partner}/reject', [ManagerB2bPartnersController::class, 'reject'])->name('reject');
         Route::post('/{partner}/confirm-renewal', [ManagerB2bPartnersController::class, 'confirmRenewal'])->name('confirm-renewal');
         Route::put('/{partner}/commission', [ManagerB2bPartnersController::class, 'updateCommission'])->name('commission.update');
+    });
+
+    // Agent application review — approve/deny applications that
+    // self-registered at /agent/register, after checking the trade license.
+    Route::prefix('agent-applications')->name('agent-applications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Manager\ManagerAgentApplicationsController::class, 'index'])->name('index');
+        Route::get('/{application}', [\App\Http\Controllers\Manager\ManagerAgentApplicationsController::class, 'show'])->name('show');
+        Route::post('/{application}/approve', [\App\Http\Controllers\Manager\ManagerAgentApplicationsController::class, 'approve'])->name('approve');
+        Route::post('/{application}/reject', [\App\Http\Controllers\Manager\ManagerAgentApplicationsController::class, 'reject'])->name('reject');
     });
 
     // FIFA World Cup 2026 tickets — SHARED across all companies (not tenant-scoped).
@@ -616,6 +645,12 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
 Route::get('/agent/login', [AgentAuthController::class, 'showLogin'])->name('agent.login');
 Route::post('/agent/login', [AgentAuthController::class, 'login'])->name('agent.login.submit');
 Route::post('/agent/logout', [AgentAuthController::class, 'logout'])->name('agent.logout');
+
+// Self-service agent registration — starts `pending`, does not log in. See
+// ManagerAgentApplicationsController for the approve/deny review queue.
+Route::get('/agent/register', [AgentSignupController::class, 'showRegister'])->name('agent.register');
+Route::post('/agent/register', [AgentSignupController::class, 'register'])->name('agent.register.submit');
+Route::get('/agent/register/submitted', [AgentSignupController::class, 'submitted'])->name('agent.register.submitted');
 
 Route::middleware(['agent.auth'])->prefix('agent')->name('agent.')->group(function () {
     Route::get('/', [AgentDashboardController::class, 'index'])->name('dashboard');

@@ -241,14 +241,83 @@
                                                         </div>
                                                         <div class="field-cols">
                                                             <div class="wp-form-group mb-0">
-                                                                <label class="wp-form-label">Security Deposit (AED)</label>
+                                                                <label class="wp-form-label">Default Security Deposit (AED)</label>
                                                                 <input type="number" class="wp-input" name="security_deposit" value="{{ $p->security_deposit }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Deposit (AED)">
                                                             </div>
                                                             <div class="wp-form-group mb-0">
-                                                                <label class="wp-form-label">Processing Fee (AED)</label>
+                                                                <label class="wp-form-label">Default Processing Fee (AED)</label>
                                                                 <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ $p->deposit_admin_fee }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Processing fee">
                                                             </div>
                                                         </div>
+                                                        <p class="wp-form-help" style="margin-top:6px;">Used for every nationality with no override below (e.g. India/Pakistan/Nepal &rarr; AED 1,040).</p>
+
+                                                        @if($p->deposits->isNotEmpty())
+                                                            <table class="wp-table" style="margin-top:10px;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Nationality</th>
+                                                                        <th style="width:110px;">Deposit</th>
+                                                                        <th style="width:110px;">Fee</th>
+                                                                        <th style="width:110px;">Status</th>
+                                                                        <th style="width:40px;"></th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($p->deposits as $d)
+                                                                        <tr>
+                                                                            <td>
+                                                                                <form id="deposit-update-{{ $d->id }}" action="{{ route('manager.visa-deposits.update', $d->id) }}" method="POST" style="display:none;">
+                                                                                    @csrf @method('PUT')
+                                                                                </form>
+                                                                                <form id="delete-deposit-{{ $d->id }}" action="{{ route('manager.visa-deposits.destroy', $d->id) }}" method="POST" style="display:none;">
+                                                                                    @csrf @method('DELETE')
+                                                                                </form>
+                                                                                <input type="text" class="wp-input" name="nationality" value="{{ $d->nationality }}" form="deposit-update-{{ $d->id }}" placeholder="All (default)" maxlength="100">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="number" class="wp-input" name="security_deposit" value="{{ $d->security_deposit }}" form="deposit-update-{{ $d->id }}" step="0.01" min="0" required>
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ $d->deposit_admin_fee }}" form="deposit-update-{{ $d->id }}" step="0.01" min="0">
+                                                                            </td>
+                                                                            <td>
+                                                                                <select class="wp-input" name="isActive" form="deposit-update-{{ $d->id }}">
+                                                                                    <option value="1" {{ $d->isActive ? 'selected' : '' }}>Active</option>
+                                                                                    <option value="0" {{ !$d->isActive ? 'selected' : '' }}>Disabled</option>
+                                                                                </select>
+                                                                            </td>
+                                                                            <td>
+                                                                                <button type="submit" class="wp-btn wp-btn-secondary wp-btn-sm" form="deposit-update-{{ $d->id }}" title="Save"><i class="fas fa-save"></i></button>
+                                                                                <button type="button" class="wp-btn wp-btn-danger wp-btn-sm" title="Delete"
+                                                                                        onclick="if(confirm('Remove this deposit row?')) document.getElementById('delete-deposit-{{ $d->id }}').submit();">
+                                                                                    <i class="fas fa-trash"></i>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        @endif
+
+                                                        <details class="pkg-nationality-override">
+                                                            <summary>+ Add nationality-specific deposit</summary>
+                                                            <form action="{{ route('manager.visa-deposits.store') }}" method="POST" class="row g-2 mt-2">
+                                                                @csrf
+                                                                <input type="hidden" name="visa_package_id" value="{{ $p->id }}">
+                                                                <div class="col-6 col-md-4">
+                                                                    <input type="text" class="wp-input" name="nationality" placeholder="Nationality (e.g. India)" maxlength="100" required>
+                                                                </div>
+                                                                <div class="col-6 col-md-3">
+                                                                    <input type="number" class="wp-input" name="security_deposit" step="0.01" min="0" placeholder="Deposit (AED)" required>
+                                                                </div>
+                                                                <div class="col-6 col-md-3">
+                                                                    <input type="number" class="wp-input" name="deposit_admin_fee" step="0.01" min="0" placeholder="Processing fee (AED)">
+                                                                </div>
+                                                                <div class="col-6 col-md-2">
+                                                                    <button type="submit" class="wp-btn wp-btn-secondary wp-btn-sm w-100" title="Add deposit"><i class="fas fa-plus"></i></button>
+                                                                </div>
+                                                            </form>
+                                                        </details>
                                                     </div>
                                                 </div>
                                             </div>

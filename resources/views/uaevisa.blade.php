@@ -156,7 +156,7 @@
         padding: 0 16px;
         color: white;
         font-family: 'Outfit', sans-serif;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 500;
         transition: all 0.2s ease;
     }
@@ -671,7 +671,7 @@
         padding: 0 16px !important;
         color: #fff !important;
         font-family: 'Outfit', sans-serif !important;
-        font-size: 15px !important;
+        font-size: 17px !important;
         font-weight: 500 !important;
         height: 48px !important;
         display: flex !important;
@@ -689,7 +689,7 @@
     .ts-wrapper.field-input .ts-control input {
         color: #fff !important;
         font-family: 'Outfit', sans-serif !important;
-        font-size: 15px !important;
+        font-size: 17px !important;
         padding: 0 !important;
     }
     .ts-wrapper.field-input.single .ts-control:after {
@@ -714,7 +714,7 @@
         padding: 8px 14px !important;
         color: #ddd !important;
         font-family: 'Outfit', sans-serif !important;
-        font-size: 14px !important;
+        font-size: 16px !important;
         cursor: pointer !important;
     }
     .ts-dropdown .active,
@@ -821,7 +821,7 @@
 <div class="visa-page">
     <div class="visa-wrapper">
         <div class="visa-header">
-            <h1 class="visa-title">UAE Visa Services</h1>
+            <h1 class="visa-title">UAE Visa Service</h1>
             <div class="visa-subtitle-wrapper" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                 <p class="visa-subtitle" style="margin: 0;">Premium Processing</p>
                 <div id="emirateActiveBadge" class="emirate-active-badge" style="display: none;">
@@ -1101,19 +1101,8 @@
 
             <!-- RIGHT: SUMMARY -->
             <div class="summary-card-wrapper">
-                {{-- Photo Guidelines Card — shown first so users see it before uploading --}}
+                {{-- Payment Summary — shown first so pricing/total is immediately visible --}}
                 <div class="card">
-                    <div class="card-title">
-                        <span><i class="bi bi-camera-fill"></i> Photo Requirements</span>
-                    </div>
-                    <img src="{{ asset('assets/photo-guidelines-quick-ref.jpg') }}" alt="Photo Guidelines" style="width: 100%; border-radius: 8px; margin-bottom: 12px;">
-                    <a href="{{ asset('assets/uae-photo-guide.pdf') }}" target="_blank" class="photo-guide-link" style="font-size: 13px;">
-                        <i class="bi bi-download"></i> Download Full Photo Guidelines (PDF)
-                    </a>
-                </div>
-
-                {{-- Payment Summary --}}
-                <div class="card" style="margin-top: 14px;">
                     <div class="card-title">
                         <i class="bi bi-receipt-cutoff"></i> Payment Summary
                     </div>
@@ -1131,7 +1120,7 @@
                         <span class="summary-value" id="summaryTicket">AED {{ number_format($ticketFee ?? 25, 2) }}</span>
                     </div>
                     <div class="summary-row" id="depositRow" style="display: none;">
-                        <span class="summary-label" style="color: #FFD700;">Security Deposit</span>
+                        <span class="summary-label" style="color: #FFD700;">Security Deposit (Refundable)</span>
                         <span class="summary-value" id="summaryDeposit" style="color: #FFD700;">AED 0.00</span>
                     </div>
                     <div class="summary-row" id="adminFeeRow" style="display: none;">
@@ -1154,6 +1143,17 @@
                     <div class="secure-badge">
                         <i class="bi bi-shield-check"></i> 256-BIT SSL SECURED PAYMENT
                     </div>
+                </div>
+
+                {{-- Photo Guidelines Card --}}
+                <div class="card" style="margin-top: 14px;">
+                    <div class="card-title">
+                        <span><i class="bi bi-camera-fill"></i> Photo Requirements</span>
+                    </div>
+                    <img src="{{ asset('assets/photo-guidelines-quick-ref.jpg') }}" alt="Photo Guidelines" style="width: 100%; border-radius: 8px; margin-bottom: 12px;">
+                    <a href="{{ asset('assets/uae-photo-guide.pdf') }}" target="_blank" class="photo-guide-link" style="font-size: 13px;">
+                        <i class="bi bi-download"></i> Download Full Photo Guidelines (PDF)
+                    </a>
                 </div>
             </div>
         </div>
@@ -1345,25 +1345,45 @@
         const FALLBACK_ADMIN_FEE = {{ min($sharjahAdminFee ?? 0, $sharjahDeposit ?? 0) }};
 
         /**
-         * Deposit and processing fee for whichever package is selected.
+         * Deposit and processing fee for whichever package is selected,
+         * optionally varying by nationality (e.g. India/Pakistan/Nepal carry a
+         * different deposit) — same case-insensitive-match-then-null-fallback
+         * lookup as the price nationality overrides above.
          *
          * Any package may carry a deposit, not just Sharjah ones — the client
          * asked to be able to introduce one for another emirate without a code
          * change, so this keys off the amount rather than the emirate's name.
          * The fee never exceeds the deposit, matching the server-side clamp.
          */
-        function depositForSelectedPackage() {
+        function depositForSelectedPackage(nationality) {
             const id = visaPackageSelect ? visaPackageSelect.value : null;
             const pkg = id
                 ? window.visaPricingData.find(p => String(p.package_id) === String(id))
                 : null;
 
-            const deposit = pkg && pkg.deposit !== undefined && pkg.deposit !== null
-                ? Number(pkg.deposit)
-                : FALLBACK_DEPOSIT;
-            const fee = pkg && pkg.deposit_fee !== undefined && pkg.deposit_fee !== null
-                ? Number(pkg.deposit_fee)
-                : FALLBACK_ADMIN_FEE;
+            let deposit = null;
+            let fee = null;
+
+            if (pkg && Array.isArray(pkg.deposits) && pkg.deposits.length) {
+                const nat = (nationality || '').toLowerCase();
+                const natRow = nat ? pkg.deposits.find(d => d.nationality && d.nationality.toLowerCase() === nat) : null;
+                const row = natRow || pkg.deposits.find(d => !d.nationality);
+                if (row) {
+                    deposit = Number(row.deposit);
+                    fee = Number(row.fee);
+                }
+            }
+
+            if (deposit === null) {
+                deposit = pkg && pkg.deposit !== undefined && pkg.deposit !== null
+                    ? Number(pkg.deposit)
+                    : FALLBACK_DEPOSIT;
+            }
+            if (fee === null) {
+                fee = pkg && pkg.deposit_fee !== undefined && pkg.deposit_fee !== null
+                    ? Number(pkg.deposit_fee)
+                    : FALLBACK_ADMIN_FEE;
+            }
 
             return { deposit: Math.max(0, deposit), fee: Math.max(0, Math.min(fee, deposit)) };
         }
@@ -1387,6 +1407,9 @@
             const selectedPackageId = visaPackageSelect.value;
             const selectedEntryType = visaEntryTypeSelect.value;
             const selectedDuration  = visaDurationSelect.value;
+            // Read once — used for both the price lookup below and the deposit
+            // lookup further down, so the two always agree on nationality.
+            const selectedNat = document.getElementById('nationality').value;
 
             let adultPrice = 0;
             let childPrice = 0;
@@ -1395,13 +1418,12 @@
             if (selectedPackageId && selectedEntryType && selectedDuration) {
                 const pkg = window.visaPricingData.find(p => String(p.package_id) === String(selectedPackageId));
                 if (pkg && pkg.prices) {
-                    let pricesForCombo = pkg.prices.filter(p => 
-                        p.entry_type === selectedEntryType && 
+                    let pricesForCombo = pkg.prices.filter(p =>
+                        p.entry_type === selectedEntryType &&
                         p.duration === selectedDuration
                     );
 
                     // Filter by nationality first, fallback to null/empty nationality
-                    const selectedNat = document.getElementById('nationality').value;
                     const hasNatPrice = pricesForCombo.some(p => p.nationality && p.nationality.toLowerCase() === selectedNat.toLowerCase());
                     
                     if (hasNatPrice) {
@@ -1426,10 +1448,11 @@
             const ticketCost = ticketCheckbox.checked ? ticketUnit : 0;
             const hotelCost  = hotelCheckbox.checked ? hotelUnit : 0;
 
-            // Deposit comes from the selected package, so the quote always matches
-            // what the server charges. `takesDeposit` is now just "does this package
-            // take a deposit" — any emirate can, which is what the client asked for.
-            const dep = depositForSelectedPackage();
+            // Deposit comes from the selected package (and nationality), so the
+            // quote always matches what the server charges. `takesDeposit` is now
+            // just "does this package take a deposit" — any emirate can, which is
+            // what the client asked for.
+            const dep = depositForSelectedPackage(selectedNat);
             const depositUnit = dep.deposit;
             const takesDeposit = depositUnit > 0;
             // Bank details are collected for every Sharjah application, whether or
@@ -1464,29 +1487,24 @@
             document.getElementById('hotelRow').style.display = hotelCheckbox.checked ? 'flex' : 'none';
             document.getElementById('ticketRow').style.display = ticketCheckbox.checked ? 'flex' : 'none';
 
-            // Show/hide Sharjah deposit and refund rows
+            // Show only the net refundable amount to the customer — never the
+            // gross deposit or the processing fee taken out of it. The full
+            // gross `depositCost` is still what's added to `grandTotal` above
+            // and what the server independently charges, so this is a display
+            // simplification only, not a change to what's actually collected.
             const depRow = document.getElementById('depositRow');
             const refRow = document.getElementById('refundRow');
             const feeRow = document.getElementById('adminFeeRow');
-            if (depRow && refRow) {
+            if (depRow) {
                 if (takesDeposit) {
                     depRow.style.display = 'flex';
-                    refRow.style.display = 'flex';
-                    document.getElementById('summaryDeposit').textContent = 'AED ' + depositCost.toFixed(2);
-                    document.getElementById('summaryRefund').textContent = 'AED ' + refundCost.toFixed(2);
-                    // Only surface the fee when one is actually configured.
-                    if (feeRow) {
-                        feeRow.style.display = adminFeeCost > 0 ? 'flex' : 'none';
-                        if (adminFeeCost > 0) {
-                            document.getElementById('summaryAdminFee').textContent = '− AED ' + adminFeeCost.toFixed(2);
-                        }
-                    }
+                    document.getElementById('summaryDeposit').textContent = 'AED ' + refundCost.toFixed(2);
                 } else {
                     depRow.style.display = 'none';
-                    refRow.style.display = 'none';
-                    if (feeRow) feeRow.style.display = 'none';
                 }
             }
+            if (refRow) refRow.style.display = 'none';
+            if (feeRow) feeRow.style.display = 'none';
 
             // Show/hide Sharjah refund bank details
             const refundFieldsDiv = document.getElementById('sharjahRefundFields');
@@ -1537,10 +1555,14 @@
             visaEntryTypeSelect.innerHTML = '<option value="">Select Type</option>';
             visaDurationSelect.innerHTML = '<option value="">Select Duration</option>';
 
-            if (!selectedPackageId) return;
+            // Any early return below leaves entry type/duration unresolved for the
+            // new package, so the price must be recalculated (not left showing the
+            // previous package's total) whenever we don't cascade into
+            // populateDurations() ourselves.
+            if (!selectedPackageId) { updatePrice(); return; }
 
             const pkg = window.visaPricingData.find(p => String(p.package_id) === String(selectedPackageId));
-            if (!pkg || !pkg.prices) return;
+            if (!pkg || !pkg.prices) { updatePrice(); return; }
 
             const entryTypes = [...new Set(pkg.prices.map(p => p.entry_type))];
             entryTypes.forEach(t => {
@@ -1553,6 +1575,8 @@
             if (entryTypes.length === 1) {
                 visaEntryTypeSelect.value = entryTypes[0];
                 populateDurations();
+            } else {
+                updatePrice();
             }
         }
 
@@ -1561,10 +1585,13 @@
             const selectedEntryType = visaEntryTypeSelect.value;
             visaDurationSelect.innerHTML = '<option value="">Select Duration</option>';
 
-            if (!selectedPackageId || !selectedEntryType) return;
+            // Same reasoning as populateEntryTypes(): an early return here means no
+            // duration is resolved yet, so the stale total from before this change
+            // must be cleared rather than left on screen.
+            if (!selectedPackageId || !selectedEntryType) { updatePrice(); return; }
 
             const pkg = window.visaPricingData.find(p => String(p.package_id) === String(selectedPackageId));
-            if (!pkg || !pkg.prices) return;
+            if (!pkg || !pkg.prices) { updatePrice(); return; }
 
             const durations = [...new Set(pkg.prices.filter(p => p.entry_type === selectedEntryType).map(p => p.duration))];
             durations.forEach(d => {

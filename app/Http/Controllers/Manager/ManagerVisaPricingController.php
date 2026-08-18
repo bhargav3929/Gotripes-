@@ -8,6 +8,7 @@ use App\Models\UAEVisaMaster;
 use App\Models\Emirates;
 use App\Models\UAEVisaPackage;
 use App\Models\UAEVisaPrice;
+use App\Models\UAEVisaPackageDeposit;
 use Illuminate\Http\Request;
 
 class ManagerVisaPricingController extends Controller
@@ -31,7 +32,7 @@ class ManagerVisaPricingController extends Controller
     public function index()
     {
         $emirates = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
-        $packages = UAEVisaPackage::with(['emirate', 'prices'])->orderBy('name')->get();
+        $packages = UAEVisaPackage::with(['emirate', 'prices', 'deposits'])->orderBy('name')->get();
         $prices   = UAEVisaPrice::with('package.emirate')->get();
 
         $company = current_company();
@@ -360,10 +361,13 @@ class ManagerVisaPricingController extends Controller
     public function destroyPackage($id)
     {
         $package = UAEVisaPackage::findOrFail($id);
-        $package->update(['isActive' => 0]);
+        // Cascade-deletes uae_visa_prices rows via the FK; no other table has a
+        // hard reference to a package (booking history stores a denormalized
+        // name snapshot instead), so this is safe as a real delete.
+        $package->delete();
 
         return redirect()->route('manager.visa-pricing.index')
-            ->with('success', 'Visa Package removed.');
+            ->with('success', 'Visa Package deleted.');
     }
 
     // --- Prices Matrix CRUD ---
@@ -473,5 +477,82 @@ class ManagerVisaPricingController extends Controller
 
         return redirect()->route('manager.visa-pricing.index', ['package' => $packageId])
             ->with('success', 'Pricing row deleted.');
+    }
+
+    // --- Nationality-specific deposits CRUD ---
+    //
+    // Mirrors the price-row CRUD above: a row with nationality left blank is
+    // this package's default deposit, a row with a nationality set overrides
+    // it for that nationality only (see UAEVisaPackage::resolveDepositRow()).
+
+    public function storeDeposit(Request $request)
+    {
+        $validated = $request->validate([
+            'visa_package_id'    => 'required|exists:uae_visa_packages,id',
+            'nationality'        => 'nullable|string|max:100',
+            'security_deposit'   => 'required|numeric|min:0',
+            'deposit_admin_fee'  => 'nullable|numeric|min:0|lte:security_deposit',
+        ], [
+            'deposit_admin_fee.lte' => 'The processing fee cannot be greater than the security deposit.',
+        ]);
+
+        $nationality = $validated['nationality'] ?? null;
+
+        $duplicate = UAEVisaPackageDeposit::where('visa_package_id', $validated['visa_package_id'])
+            ->where('nationality', $nationality)
+            ->exists();
+
+        if ($duplicate) {
+            return back()->withInput()->withErrors([
+                'security_deposit' => 'A deposit row already exists for this package'
+                    . ($nationality ? " and nationality ($nationality)" : ' with no nationality set')
+                    . '. Edit it below instead.',
+            ]);
+        }
+
+        UAEVisaPackageDeposit::create([
+            'visa_package_id'   => $validated['visa_package_id'],
+            'nationality'       => $nationality,
+            'security_deposit'  => $validated['security_deposit'],
+            'deposit_admin_fee' => $validated['deposit_admin_fee'] ?? 0,
+            'isActive'          => 1,
+        ]);
+
+        return redirect()->route('manager.visa-pricing.index', ['package' => $validated['visa_package_id']])
+            ->with('success', 'Deposit row added successfully.');
+    }
+
+    public function updateDeposit(Request $request, $id)
+    {
+        $deposit = UAEVisaPackageDeposit::findOrFail($id);
+
+        $validated = $request->validate([
+            'nationality'        => 'nullable|string|max:100',
+            'security_deposit'   => 'required|numeric|min:0',
+            'deposit_admin_fee'  => 'nullable|numeric|min:0|lte:security_deposit',
+            'isActive'           => 'required|boolean',
+        ], [
+            'deposit_admin_fee.lte' => 'The processing fee cannot be greater than the security deposit.',
+        ]);
+
+        $deposit->update([
+            'nationality'       => $validated['nationality'] ?? null,
+            'security_deposit'  => $validated['security_deposit'],
+            'deposit_admin_fee' => $validated['deposit_admin_fee'] ?? 0,
+            'isActive'          => $validated['isActive'],
+        ]);
+
+        return redirect()->route('manager.visa-pricing.index', ['package' => $deposit->visa_package_id])
+            ->with('success', 'Deposit row updated successfully.');
+    }
+
+    public function destroyDeposit($id)
+    {
+        $deposit = UAEVisaPackageDeposit::findOrFail($id);
+        $packageId = $deposit->visa_package_id;
+        $deposit->delete();
+
+        return redirect()->route('manager.visa-pricing.index', ['package' => $packageId])
+            ->with('success', 'Deposit row deleted.');
     }
 }

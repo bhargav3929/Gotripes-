@@ -151,9 +151,10 @@ class UAEVisaController extends Controller
         // and otherwise from the company-wide setting, which is what the legacy
         // flat-price path has always used. Defaults to 0.
         if ($package) {
-            $sharjahDeposit  = $package->depositPerApplicant();
+            $depositNationality = $validated['nationality'] ?? null;
+            $sharjahDeposit  = $package->depositPerApplicant($depositNationality);
             // Never exceeds the deposit; the model already clamps it.
-            $sharjahAdminFee = $package->depositAdminFee();
+            $sharjahAdminFee = $package->depositAdminFee($depositNationality);
         } else {
             $sharjahDeposit = current_company()?->getSetting('visa_sharjah_deposit', 0);
             $sharjahDeposit = is_numeric($sharjahDeposit) ? (float) $sharjahDeposit : 0.0;
