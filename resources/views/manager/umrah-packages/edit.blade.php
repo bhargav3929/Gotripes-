@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if(categorySelect) {
         categorySelect.addEventListener('change', toggleAirDetails);
-        // Initial state is handled by blade {{ ... === 'air' ? 'flex' : 'none' }}
+        // Initial display state is set inline on #airDetailsSection above (line ~130)
     }
 
     form.addEventListener('submit', function() {
