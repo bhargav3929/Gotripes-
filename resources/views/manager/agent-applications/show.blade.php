@@ -56,6 +56,9 @@
                 @if($application->isApproved() && $application->user)
                     <div class="detail-row"><span>Agent Account</span><span>Active — <a href="{{ route('manager.agents.edit', $application->user_id) }}" style="color: var(--wp-primary);">manage in Agents</a></span></div>
                 @endif
+                @if(!$application->isPending())
+                    <div class="detail-row"><span>Reviewed By</span><span>{{ optional($application->reviewer)->name ?? '—' }} on {{ optional($application->reviewed_at)->format('d M Y, H:i') ?? '—' }}</span></div>
+                @endif
             </div>
         </div>
 

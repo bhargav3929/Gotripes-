@@ -8,6 +8,7 @@ use App\Models\UAEVApplication;
 use App\Models\ActivityBooking;
 use App\Models\AgentBooking;
 use App\Models\EsimOrder;
+use App\Models\FifaTicket;
 use App\Models\FifaTicketRequest;
 use App\Models\UAEActivity;
 use App\Mail\PaymentStatusMail;
@@ -767,11 +768,32 @@ class NomodController extends Controller
             return;
         }
 
+        $alreadyPaid = $booking->payment_status === 'paid';
+
         $booking->update([
             'payment_status' => 'paid',
             'status'         => 'paid',
             'paid_at'        => now(),
         ]);
+
+        // Decrement remaining stock only the first time this booking is
+        // confirmed paid — a duplicate webhook delivery must not double-charge
+        // the ticket count. The WHERE guard makes this a single atomic UPDATE,
+        // so it can't go negative even under concurrent confirmations; if it
+        // affects zero rows, this sale oversold the ticket and needs a human.
+        if (!$alreadyPaid && $booking->ticket_id && $booking->quantity) {
+            $decremented = FifaTicket::where('id', $booking->ticket_id)
+                ->where('quantity', '>=', $booking->quantity)
+                ->decrement('quantity', $booking->quantity);
+
+            if (!$decremented) {
+                Log::warning('FIFA ticket oversold — paid booking exceeds remaining stock', [
+                    'order_id'  => $orderId,
+                    'ticket_id' => $booking->ticket_id,
+                    'quantity'  => $booking->quantity,
+                ]);
+            }
+        }
 
         if ($booking->notified_at) {
             return; // already notified on an earlier callback

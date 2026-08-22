@@ -17,7 +17,8 @@
         </a>
         <h2 style="margin:0; font-size:18px; color:var(--wp-text);">{{ $package->title }}</h2>
         <span class="wp-badge wp-badge-amber" style="font-size:11px;">
-            {{ strtoupper($package->category ?? 'bus') }} · {{ ucfirst($package->sub_category ?? '') }}
+            {{ strtoupper($package->category ?? 'bus') }}
+            @if(optional($package->umrahCategory)->name) · {{ $package->umrahCategory->name }} @endif
         </span>
     </div>
     <div style="text-align:right;">
@@ -99,7 +100,7 @@
                                 <form action="{{ route('manager.umrah-packages.departures.update', [$package->id, $dep->id]) }}"
                                       method="POST" id="form-dep-{{ $dep->id }}">
                                     @csrf @method('PUT')
-                                    <input type="number" name="seats_available" value="{{ $dep->seats_available }}"
+                                    <input type="number" name="seats_total" value="{{ $dep->seats_total }}"
                                            class="wp-input" min="0" style="width:70px; text-align:center; padding:5px 8px; font-size:13px;"
                                            onchange="document.getElementById('form-dep-{{ $dep->id }}').submit()">
                             </td>
@@ -179,10 +180,17 @@
 
                     <div style="margin-bottom:14px;">
                         <label class="wp-label" style="display:block; font-size:12px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; margin-bottom:6px;">
-                            Seats Available <span style="color:#ef4444;">*</span>
+                            Seat Capacity <span style="color:#ef4444;">*</span>
                         </label>
-                        <input type="number" name="seats_available" class="wp-input" required min="1"
-                               value="{{ old('seats_available', 50) }}">
+                        <input type="number" name="seats_total" class="wp-input" required min="1"
+                               value="{{ old('seats_total', 50) }}">
+                    </div>
+
+                    <div style="margin-bottom:14px;">
+                        <label class="wp-label" style="display:block; font-size:12px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; margin-bottom:6px;">
+                            Booking Cutoff
+                        </label>
+                        <input type="date" name="booking_cutoff" class="wp-input" value="{{ old('booking_cutoff') }}">
                     </div>
 
                     <div style="margin-bottom:18px;">

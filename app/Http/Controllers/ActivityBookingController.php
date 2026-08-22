@@ -449,16 +449,19 @@ class ActivityBookingController extends Controller
     {
         try {
             $bookingId = $request->input('booking_id');
-            $amount = $request->input('amount');
 
-            if (!$bookingId || !$amount) {
-                return response()->json(['error' => 'Missing booking_id or amount'], 400);
+            if (!$bookingId) {
+                return response()->json(['error' => 'Missing booking_id'], 400);
             }
 
             $booking = ActivityBooking::find($bookingId);
             if (!$booking) {
                 return response()->json(['error' => 'Booking not found'], 404);
             }
+
+            // Always charge the amount the server computed at booking time —
+            // never trust a client-submitted amount for a real booking_id.
+            $amount = (float) $booking->amount;
 
             $orderId = 'ORDAB' . $bookingId;
 

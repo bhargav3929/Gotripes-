@@ -14,16 +14,13 @@ class ManagerUmrahPackagesController extends Controller
 {
     public function index(Request $request)
     {
-        $query = UmrahPackage::orderBy('sortOrder', 'asc')
+        $query = UmrahPackage::with('umrahCategory')
+                             ->orderBy('sortOrder', 'asc')
                              ->orderBy('createdDate', 'desc');
 
         // Category filter
         if ($request->filled('category')) {
             $query->where('category', $request->category);
-        }
-        // Sub-category (tier) filter
-        if ($request->filled('sub_category')) {
-            $query->where('sub_category', $request->sub_category);
         }
         // Status filter
         if ($request->filled('status')) {

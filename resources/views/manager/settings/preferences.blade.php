@@ -82,16 +82,7 @@
         </div>
         <p class="lede" style="margin-top:-6px;">Seasonal campaigns shown on the main gotrips.ai homepage. Turn off out of season.</p>
 
-        <label class="toggle-row">
-            <input type="checkbox" name="fifa_promo_enabled" value="1"
-                   @checked($company->getSetting('fifa_promo_enabled', false))>
-            <span class="toggle-text">
-                <strong>FIFA World Cup 2026 promo</strong>
-                <small>Shows the LEVEL9 CONCIERGERIE World Cup section on the homepage.</small>
-            </span>
-        </label>
-
-        <div class="form-row" style="margin-top:18px;">
+        <div class="form-row">
             <label for="level9_whatsapp">Concierge WhatsApp number (FIFA / LEVEL9)</label>
             <input type="text" id="level9_whatsapp" name="level9_whatsapp"
                    value="{{ old('level9_whatsapp', $company->getSetting('level9_whatsapp', '')) }}"

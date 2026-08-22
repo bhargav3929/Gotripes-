@@ -62,16 +62,6 @@
             </select>
         </div>
         <div>
-            <label style="font-size:11px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; display:block; margin-bottom:5px;">Tier</label>
-            <select name="sub_category" class="wp-select" style="min-width:130px;">
-                <option value="">All Tiers</option>
-                <option value="economy"  {{ request('sub_category')=='economy'  ? 'selected' : '' }}>Economy</option>
-                <option value="standard" {{ request('sub_category')=='standard' ? 'selected' : '' }}>Standard</option>
-                <option value="premium"  {{ request('sub_category')=='premium'  ? 'selected' : '' }}>Premium</option>
-                <option value="vip"      {{ request('sub_category')=='vip'      ? 'selected' : '' }}>VIP</option>
-            </select>
-        </div>
-        <div>
             <label style="font-size:11px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; display:block; margin-bottom:5px;">Status</label>
             <select name="status" class="wp-select" style="min-width:110px;">
                 <option value="">All</option>
@@ -83,7 +73,7 @@
             <button type="submit" class="wp-btn wp-btn-primary wp-btn-sm">
                 <i class="fas fa-filter"></i> Filter
             </button>
-            @if(request()->hasAny(['category','sub_category','status']))
+            @if(request()->hasAny(['category','status']))
             <a href="{{ route('manager.umrah-packages.index') }}" class="wp-btn wp-btn-secondary wp-btn-sm">
                 <i class="fas fa-times"></i> Clear
             </a>
@@ -138,10 +128,12 @@
                         <span class="wp-badge" style="background:rgba(59,130,246,0.15); color:#60a5fa; font-size:10px; margin-bottom:4px; display:inline-block;">
                             {{ $package->category == 'bus' ? '🚌 Bus' : '✈️ Air' }}
                         </span>
+                        @if($package->umrahCategory)
                         <br>
                         <span class="wp-badge wp-badge-amber" style="font-size:10px;">
-                            {{ ucfirst($package->sub_category ?? '—') }}
+                            {{ $package->umrahCategory->name }}
                         </span>
+                        @endif
                     </td>
                     <td>
                         @if($package->discount_price && $package->discount_price < $package->price)

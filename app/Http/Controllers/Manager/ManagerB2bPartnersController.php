@@ -22,7 +22,8 @@ class ManagerB2bPartnersController extends Controller
         $status = $request->get('status', 'pending');
 
         $partners = B2bPartner::when($status === 'renewal', fn ($q) => $q->where('pending_license_review', true))
-            ->when(!in_array($status, ['all', 'renewal'], true), fn ($q) => $q->where('status', $status))
+            ->when($status === 'disabled', fn ($q) => $q->where('status', 'approved')->where('is_active', false))
+            ->when(!in_array($status, ['all', 'renewal', 'disabled'], true), fn ($q) => $q->where('status', $status))
             ->orderByDesc('created_at')
             ->paginate(15)
             ->withQueryString();

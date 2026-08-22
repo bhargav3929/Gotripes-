@@ -65,6 +65,7 @@
                 <option value="">All Statuses</option>
                 <option value="pending"   {{ request('payment_status')=='pending'   ? 'selected' : '' }}>Pending</option>
                 <option value="paid"      {{ request('payment_status')=='paid'      ? 'selected' : '' }}>Paid</option>
+                <option value="failed"    {{ request('payment_status')=='failed'    ? 'selected' : '' }}>Failed</option>
                 <option value="cancelled" {{ request('payment_status')=='cancelled' ? 'selected' : '' }}>Cancelled</option>
                 <option value="refunded"  {{ request('payment_status')=='refunded'  ? 'selected' : '' }}>Refunded</option>
             </select>
@@ -150,7 +151,7 @@
                             <select name="payment_status" class="wp-select"
                                     style="font-size:11px; padding:4px 6px; border-radius:6px;"
                                     onchange="this.form.submit()">
-                                @foreach(['pending'=>'⏳ Pending','paid'=>'✅ Paid','cancelled'=>'❌ Cancelled','refunded'=>'↩ Refunded'] as $val => $label)
+                                @foreach(['pending'=>'⏳ Pending','paid'=>'✅ Paid','failed'=>'⚠ Failed','cancelled'=>'❌ Cancelled','refunded'=>'↩ Refunded'] as $val => $label)
                                     <option value="{{ $val }}" {{ $booking->payment_status == $val ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>

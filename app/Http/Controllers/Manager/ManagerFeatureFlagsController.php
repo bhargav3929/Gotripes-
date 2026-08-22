@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 
-class ManagerSettingsController extends Controller
+class ManagerFeatureFlagsController extends Controller
 {
     /**
      * Show the (read-only) feature list for the current tenant.

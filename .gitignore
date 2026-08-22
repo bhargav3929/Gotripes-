@@ -8,6 +8,10 @@
 .env
 .env.*
 !.env.example
+
+# Local/production database — contains real customer data, never commit
+database/*.sqlite
+database/*.sqlite-journal
 merge_output.txt
 server_log.txt
 .phpunit.result.cache

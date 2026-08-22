@@ -61,6 +61,12 @@
                 @if($partner->isRejected() && $partner->rejection_reason)
                     <div class="detail-row"><span>Rejection Reason</span><span>{{ $partner->rejection_reason }}</span></div>
                 @endif
+                @if(!$partner->isPending())
+                    <div class="detail-row"><span>Reviewed By</span><span>{{ optional($partner->reviewer)->name ?? '—' }} on {{ optional($partner->reviewed_at)->format('d M Y, H:i') ?? '—' }}</span></div>
+                @endif
+                @if($partner->isApproved() && !$partner->is_active && $partner->disabled_at)
+                    <div class="detail-row"><span>Disabled At</span><span>{{ $partner->disabled_at->format('d M Y, H:i') }}</span></div>
+                @endif
             </div>
         </div>
 

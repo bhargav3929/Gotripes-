@@ -109,21 +109,37 @@ class EsimReconcile extends Command
                 $order->refresh();
             }
 
-            // 2. Paid, but never assigned — the customer has nothing.
-            if ($order->payment_status === 'paid' && !$order->monty_order_id) {
-                $problems++;
-                if ($dry) {
-                    $rows[] = [$order->order_reference, 'paid', 'NOT ISSUED', 'would provision'];
-                    continue;
-                }
-                $result = $provisioner->provision($order);
-                if ($result['success'] ?? false) {
-                    $repaired++;
-                    $rows[] = [$order->order_reference, 'paid', 'NOT ISSUED', 'PROVISIONED'];
-                    $order->refresh();
-                } else {
-                    $rows[] = [$order->order_reference, 'paid', 'NOT ISSUED', 'failed: ' . ($result['error'] ?? '?')];
-                    continue;
+            // 2. Paid, but not (fully) provisioned. Judged per unit — the same
+            // completeness check EsimProvisioningService::provision() itself
+            // uses — rather than the parent's mirrored monty_order_id, which is
+            // set as soon as the FIRST unit succeeds. Guarding on that column
+            // alone made a half-provisioned group order (e.g. 17-of-20) invisible
+            // to this reconciler: it was neither "never assigned" nor complete.
+            if ($order->payment_status === 'paid') {
+                $quantity = $order->unitCount();
+                $issuedUnits = $order->units()->whereNotNull('monty_order_id')->count();
+                // Orders placed before quantities existed have no unit rows at
+                // all — fall back to the parent column for them, same as the
+                // provisioning service does.
+                $legacyDone = $issuedUnits === 0 && $order->monty_order_id;
+                $fullyProvisioned = $legacyDone || ($quantity > 0 && $issuedUnits >= $quantity);
+
+                if (!$fullyProvisioned) {
+                    $problems++;
+                    $label = $issuedUnits > 0 ? "NOT ISSUED ({$issuedUnits}/{$quantity})" : 'NOT ISSUED';
+                    if ($dry) {
+                        $rows[] = [$order->order_reference, 'paid', $label, 'would provision'];
+                        continue;
+                    }
+                    $result = $provisioner->provision($order);
+                    if ($result['success'] ?? false) {
+                        $repaired++;
+                        $rows[] = [$order->order_reference, 'paid', $label, 'PROVISIONED'];
+                        $order->refresh();
+                    } else {
+                        $rows[] = [$order->order_reference, 'paid', $label, 'failed: ' . ($result['error'] ?? '?')];
+                        continue;
+                    }
                 }
             }
 

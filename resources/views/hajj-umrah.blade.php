@@ -68,7 +68,7 @@
 
                             <div class="package-footer">
                                 <span class="price">From <strong>AED {{ number_format($pkg->price, 0) }}</strong></span>
-                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('{{ $pkg->title }}', {{ $pkg->price }})">Buy Now</button>
+                                <button type="button" class="btn-book" onclick="initiateUmrahPayment({{ $pkg->id }})">Buy Now</button>
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                             </ul>
                             <div class="package-footer">
                                 <span class="price">From <strong>AED 799</strong></span>
-                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('Economy Umrah', 799)">Buy Now</button>
+                                <a href="/contact-us" class="btn-book">Enquire</a>
                             </div>
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                             </ul>
                             <div class="package-footer">
                                 <span class="price">From <strong>AED 1,299</strong></span>
-                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('Premium Umrah', 1299)">Buy Now</button>
+                                <a href="/contact-us" class="btn-book">Enquire</a>
                             </div>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                             </ul>
                             <div class="package-footer">
                                 <span class="price">From <strong>AED 2,499</strong></span>
-                                <button type="button" class="btn-book" onclick="initiateUmrahPayment('VIP Umrah', 2499)">Buy Now</button>
+                                <a href="/contact-us" class="btn-book">Enquire</a>
                             </div>
                         </div>
                     </div>
@@ -421,7 +421,7 @@
 </style>
 
 <script>
-function initiateUmrahPayment(packageName, amount) {
+function initiateUmrahPayment(packageId) {
     const btn = event.currentTarget;
     const originalText = btn.textContent;
     btn.textContent = 'Processing...';
@@ -434,8 +434,7 @@ function initiateUmrahPayment(packageName, amount) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
         },
         body: JSON.stringify({
-            package_name: packageName,
-            amount: amount,
+            package_id: packageId,
         }),
     })
     .then(res => res.json())

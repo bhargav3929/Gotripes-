@@ -96,6 +96,11 @@ class B2bPartner extends Authenticatable
         return $this->status === 'pending';
     }
 
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
     public function isApproved(): bool
     {
         return $this->status === 'approved';

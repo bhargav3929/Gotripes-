@@ -493,7 +493,7 @@ body, main { font-family: 'Outfit', sans-serif; }
             </a>
             <div class="row align-items-end g-4">
                 <div class="col-lg-8">
-                    <span class="badge-cat">🚌 Umrah Bus · {{ $package->category }}</span>
+                    <span class="badge-cat">{{ $package->category === 'air' ? '✈️ Umrah Air' : '🚌 Umrah Bus' }}</span>
                     <h1>{{ $package->title }}</h1>
                     <div class="d-flex flex-wrap gap-2 mt-2">
                         <span class="info-pill"><i class="bi bi-clock text-warning"></i>{{ $package->duration }}</span>
@@ -568,7 +568,11 @@ body, main { font-family: 'Outfit', sans-serif; }
                         <p style="color:#aaa;font-size:14px;line-height:1.7;margin-bottom:22px;">{{ $package->description ?: 'Experience a spiritually enriching Umrah journey from UAE with full package support, accommodation, transport, and guided Ziyarat tours across Medina and Makkah.' }}</p>
                         <div class="ud-feat-grid">
                             <div class="ud-feat-item"><div class="ud-feat-icon"><i class="bi bi-shield-check"></i></div><div><p class="ud-feat-label">Visa Included</p><p class="ud-feat-desc">Fully managed Umrah visa documentation & submission.</p></div></div>
+                            @if($package->category === 'air')
+                            <div class="ud-feat-item"><div class="ud-feat-icon"><i class="bi bi-airplane"></i></div><div><p class="ud-feat-label">Return Flights</p><p class="ud-feat-desc">Round-trip air travel from UAE.</p></div></div>
+                            @else
                             <div class="ud-feat-item"><div class="ud-feat-icon"><i class="bi bi-bus-front"></i></div><div><p class="ud-feat-label">AC Coach</p><p class="ud-feat-desc">Round-trip luxury air-conditioned coach from UAE.</p></div></div>
+                            @endif
                             <div class="ud-feat-item"><div class="ud-feat-icon"><i class="bi bi-building"></i></div><div><p class="ud-feat-label">Hotel Stay</p><p class="ud-feat-desc">Comfortable stays in Medina & Makkah close to Harams.</p></div></div>
                             <div class="ud-feat-item"><div class="ud-feat-icon"><i class="bi bi-compass"></i></div><div><p class="ud-feat-label">Ziyarat Tours</p><p class="ud-feat-desc">Historical guided visits across Medina & Makkah.</p></div></div>
                         </div>
@@ -752,10 +756,17 @@ body, main { font-family: 'Outfit', sans-serif; }
                             <button class="ud-faq-btn" onclick="toggleFaq(this)">Is the Umrah Visa fee included? <i class="bi bi-chevron-down"></i></button>
                             <div class="ud-faq-body">Yes — visa processing is fully included in the quoted package price. No hidden charges at checkout.</div>
                         </div>
+                        @if($package->category === 'air')
+                        <div class="ud-faq-item">
+                            <button class="ud-faq-btn" onclick="toggleFaq(this)">When do flights depart? <i class="bi bi-chevron-down"></i></button>
+                            <div class="ud-faq-body">Departure dates for this package are listed on the calendar above — availability is confirmed at booking.</div>
+                        </div>
+                        @else
                         <div class="ud-faq-item">
                             <button class="ud-faq-btn" onclick="toggleFaq(this)">When do coaches depart? <i class="bi bi-chevron-down"></i></button>
                             <div class="ud-faq-body">All bus departures operate exclusively on Wednesdays. This ensures a consistent group schedule and streamlined processing at border crossings.</div>
                         </div>
+                        @endif
                         <div class="ud-faq-item">
                             <button class="ud-faq-btn" onclick="toggleFaq(this)">What is the cancellation policy? <i class="bi bi-chevron-down"></i></button>
                             <div class="ud-faq-body">Cancellations made 10+ days before departure receive a 90% refund. Cancellations within 5 days of departure are non-refundable as hotel and bus slots are finalized.</div>
@@ -883,7 +894,11 @@ body, main { font-family: 'Outfit', sans-serif; }
                     <div class="ud-feat-strip">
                         <div class="ud-feat-strip-item"><i class="bi bi-shield-check"></i><span>Visa Incl.</span></div>
                         <div class="ud-feat-strip-item"><i class="bi bi-building"></i><span>Hotel Incl.</span></div>
+                        @if($package->category === 'air')
+                        <div class="ud-feat-strip-item"><i class="bi bi-airplane"></i><span>Flights Incl.</span></div>
+                        @else
                         <div class="ud-feat-strip-item"><i class="bi bi-bus-front"></i><span>AC Coach</span></div>
+                        @endif
                         <div class="ud-feat-strip-item"><i class="bi bi-lightning-charge"></i><span>Instant</span></div>
                     </div>
 
@@ -909,7 +924,11 @@ body, main { font-family: 'Outfit', sans-serif; }
                                 <span class="ud-field-label">Step 1 — Select Departure Date</span>
                                 <div class="ud-cal-hint">
                                     <i class="bi bi-info-circle text-warning me-1"></i>
-                                    Bus departures operate every <strong style="color:#FFD700;">Wednesday</strong>. Book at least 5 days before departure.
+                                    @if($package->category === 'air')
+                                        Book your departure at least 5 days in advance.
+                                    @else
+                                        Bus departures operate every <strong style="color:#FFD700;">Wednesday</strong>. Book at least 5 days before departure.
+                                    @endif
                                 </div>
                                 <div class="ud-calendar">
                                     <div class="ud-cal-nav">
@@ -1465,7 +1484,7 @@ function uploadPaxPassport(input, idx) {
     const fd = new FormData();
     fd.append('passport', input.files[0]);
 
-    fetch('{{ route('umrah-visas.passport-upload') }}', {
+    fetch('{{ route('going-saudi.passport-upload') }}', {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
         body: fd

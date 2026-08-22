@@ -47,7 +47,7 @@
             </div>
         @elseif($available < 50)
             <div class="alert-warn">
-                Minimum withdrawal is <strong>AED 50</strong>. Your available balance is <strong>{{ $company->currency ?? 'AED' }} {{ number_format($available, 2) }}</strong>.
+                Minimum withdrawal is <strong>{{ $company->currency ?? 'AED' }} 50</strong>. Your available balance is <strong>{{ $company->currency ?? 'AED' }} {{ number_format($available, 2) }}</strong>.
             </div>
         @else
             <form method="POST" action="{{ route('manager.finance.withdrawals.request') }}">

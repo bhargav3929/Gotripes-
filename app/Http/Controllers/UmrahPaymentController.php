@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\NomodTransaction;
+use App\Models\UmrahPackage;
 use App\Services\NomodService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -12,12 +13,14 @@ class UmrahPaymentController extends Controller
     public function initiate(Request $request)
     {
         $request->validate([
-            'package_name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:1',
+            'package_id' => 'required|integer|exists:tbl_umrah_packages,id',
         ]);
 
-        $packageName = $request->input('package_name');
-        $amount = round((float) $request->input('amount'), 2);
+        // Amount is always resolved server-side from the package record — a
+        // client-submitted amount is never trusted for a real charge.
+        $package = UmrahPackage::where('isActive', 1)->findOrFail($request->input('package_id'));
+        $packageName = $package->title;
+        $amount = round((float) $package->price, 2);
         $orderId = 'ORDUM' . time();
 
         try {

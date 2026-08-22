@@ -87,6 +87,13 @@
                     @else — @endif
                 </span>
             </li>
+            <li><span class="label">Airline ticket</span>
+                <span class="value">
+                    @if($application->UAEV_airline_ticket)
+                        <a href="{{ asset('storage/' . $application->UAEV_airline_ticket) }}" target="_blank" style="color:#FFD700;">View file</a>
+                    @else — @endif
+                </span>
+            </li>
             <li><span class="label">Price</span>          <span class="value">AED {{ number_format($application->UAEV_price ?: 0, 2) }}</span></li>
             @if($application->UAEV_deposit_amount > 0)
                 <li><span class="label" style="color: #FFD700;">Security Deposit</span> <span class="value" style="color: #FFD700;">AED {{ number_format($application->UAEV_deposit_amount, 2) }}</span></li>

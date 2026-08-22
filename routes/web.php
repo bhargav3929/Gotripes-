@@ -30,10 +30,6 @@ use App\Http\Controllers\EsimController;
 // Search API
 Route::get('/api/search', [SearchController::class, 'search'])->name('search');
 
-Route::get('/', function () {
-
-    return view('welcome');
-});
 Route::get('/admin', function () {
     return view('auth.login');
 });
@@ -71,25 +67,27 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 
 
 Route::prefix('/')->group(function () {
-    Route::get('hajj-umrah', function () {
-        return redirect()->route('going-saudi.index');
-    })->name('hajj-umrah');
+    Route::middleware('tenant.feature:hajj_umrah')->group(function () {
+        Route::get('hajj-umrah', function () {
+            return redirect()->route('going-saudi.index');
+        })->name('hajj-umrah');
 
-    // Former URL — kept as a permanent redirect so existing bookmarks and any
-    // links Google has already indexed at /umrah-visas keep working.
-    Route::get('umrah-visas', function () {
-        return redirect()->route('going-saudi.index', [], 301);
-    });
-    Route::get('umrah-visas/{id}', function ($id) {
-        return redirect()->route('going-saudi.show', $id, 301);
-    });
+        // Former URL — kept as a permanent redirect so existing bookmarks and any
+        // links Google has already indexed at /umrah-visas keep working.
+        Route::get('umrah-visas', function () {
+            return redirect()->route('going-saudi.index', [], 301);
+        });
+        Route::get('umrah-visas/{id}', function ($id) {
+            return redirect()->route('going-saudi.show', $id, 301);
+        });
 
-    Route::get('going-saudi', [\App\Http\Controllers\UmrahController::class, 'index'])->name('going-saudi.index');
-    Route::get('going-saudi/{id}', [\App\Http\Controllers\UmrahController::class, 'show'])->name('going-saudi.show');
-    Route::post('going-saudi/{id}/checkout', [\App\Http\Controllers\UmrahController::class, 'checkout'])->name('going-saudi.checkout');
-    Route::post('going-saudi/passport-upload', [\App\Http\Controllers\UmrahController::class, 'uploadPassport'])->name('going-saudi.passport-upload');
-    Route::get('saudi-visas', [\App\Http\Controllers\SaudiVisaController::class, 'index'])->name('saudi-visa.index');
-    Route::post('saudi-visa/submit', [\App\Http\Controllers\SaudiVisaController::class, 'submit'])->name('saudi-visa.submit');
+        Route::get('going-saudi', [\App\Http\Controllers\UmrahController::class, 'index'])->name('going-saudi.index');
+        Route::get('going-saudi/{id}', [\App\Http\Controllers\UmrahController::class, 'show'])->name('going-saudi.show');
+        Route::post('going-saudi/{id}/checkout', [\App\Http\Controllers\UmrahController::class, 'checkout'])->name('going-saudi.checkout');
+        Route::post('going-saudi/passport-upload', [\App\Http\Controllers\UmrahController::class, 'uploadPassport'])->name('going-saudi.passport-upload');
+        Route::get('saudi-visas', [\App\Http\Controllers\SaudiVisaController::class, 'index'])->name('saudi-visa.index');
+        Route::post('saudi-visa/submit', [\App\Http\Controllers\SaudiVisaController::class, 'submit'])->name('saudi-visa.submit');
+    });
 
     Route::get('our-services', fn() => view('our-services'))->name('our-services');
     Route::get('banner0', fn() => view('banner0'));
@@ -145,7 +143,7 @@ Route::prefix('/')->group(function () {
         return view('tour-packages-country', compact('packages', 'countryName', 'flag', 'heroImage', 'minPrice', 'maxPrice'));
     })->middleware('tenant.feature:tours')->name('tour-packages.country');
     Route::get('ourstory', fn() => view('ourstory'));
-    Route::get('contact-us', fn() => view('contact-us'));
+    Route::get('contact-us', fn() => view('contact-us', ['enquiryPackage' => request('enquiry')]));
     Route::get('termsandconditions', fn() => view('termsandconditions'));
     Route::get('cancellationandrefundpolicy', fn() => view('cancellationandrefundpolicy'));
     Route::get('privacypolicy', fn() => view('privacypolicy'));
@@ -156,7 +154,6 @@ Route::prefix('/')->group(function () {
     Route::get('payonline', fn() => view('payonline'))->middleware('tenant.feature:pay_online');
     Route::get('lookingforajob', fn() => view('lookingforajob'))->middleware('tenant.feature:careers');
     Route::get('visaservice', fn() => view('visaservice'))->middleware('tenant.feature:visas');
-    Route::get('uaevisa', fn() => view('uaevisa'))->middleware('tenant.feature:visas');
     Route::get('caro', fn() => view('uaecarousel'));
 
     // Coming Soon placeholders for newly-introduced menu items (services listed
@@ -227,10 +224,18 @@ Route::group(['middleware' => ['auth', 'isAdmin'], 'prefix' => 'admin', 'as' => 
     // Travel Packages
     Route::resource('packages', TravelPackageController::class)->except(['show']);
 
-    // Umrah Packages
-    Route::resource('umrah-packages', UmrahPackageController::class)->except(['show']);
-    Route::resource('umrah-packages.departures', \App\Http\Controllers\Admin\UmrahDepartureController::class)->except(['show', 'create', 'edit']);
-    Route::resource('saudi-visas', \App\Http\Controllers\Admin\SaudiVisaAdminController::class)->except(['show', 'create', 'edit']);
+    // Umrah Packages — legacy CRUD retired in favor of Manager Portal (writes a
+    // conflicting `category` semantics: tier here vs. bus/air on the live schema,
+    // which silently hid packages from the storefront). Manager Portal's
+    // umrah-packages screens are the only supported editor now.
+    // Route::resource('umrah-packages', UmrahPackageController::class)->except(['show']);
+    // Route::resource('umrah-packages.departures', \App\Http\Controllers\Admin\UmrahDepartureController::class)->except(['show', 'create', 'edit']);
+
+    // Saudi Visa types — legacy CRUD retired in favor of Manager Portal (this
+    // one never validated/persisted `required_documents`, so a visa type
+    // created here would silently never require the Emirates ID upload the
+    // Manager-created ones do). Not linked from any admin nav either.
+    // Route::resource('saudi-visas', \App\Http\Controllers\Admin\SaudiVisaAdminController::class)->except(['show', 'create', 'edit']);
 });
 
 // Admin routes accessible to both full Admin and Activities Manager
@@ -327,12 +332,16 @@ Route::get('/visa/fluxir/cancel',          [FluxirVisaController::class, 'cancel
 Route::get('/visa/fluxir/status/{orderId}', [FluxirVisaController::class, 'status'])->name('visa.fluxir.status');
 
 
-use App\Http\Controllers\PaymentController;
-
-Route::get('/payment', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
-Route::match(['get', 'post'], '/payment/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
-Route::post('/payment/response', [PaymentController::class, 'paymentResponse'])->name('payment.response');
-Route::post('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
+// PaymentController — DEPRECATED, replaced by NomodController (same as the
+// CCAvenue routes above, which were already disabled). /payment 500'd outright
+// (pointed at a showPaymentForm method that doesn't exist on the controller;
+// only showForm() does), and no live page links to any of these four routes.
+// use App\Http\Controllers\PaymentController;
+//
+// Route::get('/payment', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
+// Route::match(['get', 'post'], '/payment/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
+// Route::post('/payment/response', [PaymentController::class, 'paymentResponse'])->name('payment.response');
+// Route::post('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
 
 
 Route::get('/activities/{emirateSlug}/{activitySlug}', [UAEDetailsController::class, 'showBySlug'])->name('activities.detail.slug');
@@ -369,11 +378,6 @@ use App\Http\Controllers\HomepageAdsController;
 
 Route::get('/banner', [HomepageAdsController::class, 'showCarousel']);
 Route::get('/', [HomepageAdsController::class, 'index']);
-
-use App\Http\Controllers\AnnouncementController;
-
-Route::get('/news-ticker', [AnnouncementController::class, 'index']);
-
 
 use App\Models\UAEVisaMaster;
 use App\Models\Emirates;
@@ -454,10 +458,12 @@ Route::post('/activity/payment/initiate', [ActivityBookingController::class, 'in
 Route::post('/agent/pay', [AgentBookingController::class, 'submit'])->name('agent.pay');
 
 // ─── eSIM Routes ────────────────────────────────────────────────────
-Route::get('/esim', [EsimController::class, 'index'])->middleware('tenant.feature:esim')->name('esim.index');
-Route::get('/api/esim/countries', [EsimController::class, 'getCountries'])->name('esim.countries');
-Route::post('/esim/bundles', [EsimController::class, 'getBundles'])->name('esim.bundles');
-Route::post('/esim/purchase', [EsimController::class, 'purchase'])->name('esim.purchase');
+Route::middleware('tenant.feature:esim')->group(function () {
+    Route::get('/esim', [EsimController::class, 'index'])->name('esim.index');
+    Route::get('/api/esim/countries', [EsimController::class, 'getCountries'])->name('esim.countries');
+    Route::post('/esim/bundles', [EsimController::class, 'getBundles'])->name('esim.bundles');
+    Route::post('/esim/purchase', [EsimController::class, 'purchase'])->name('esim.purchase');
+});
 
 // ─── Passport OCR (Groq vision) ─────────────────────────────────────
 Route::get('/passport-scan', [\App\Http\Controllers\PassportOcrController::class, 'show'])->name('passport.scan');
@@ -474,7 +480,7 @@ use App\Http\Controllers\Manager\ManagerActivitiesController;
 use App\Http\Controllers\Manager\ManagerTravelPackagesController;
 use App\Http\Controllers\Manager\ManagerUmrahPackagesController;
 use App\Http\Controllers\Manager\ManagerVisaPricingController;
-use App\Http\Controllers\Manager\ManagerSettingsController;
+use App\Http\Controllers\Manager\ManagerFeatureFlagsController;
 use App\Http\Controllers\Manager\ManagerFinanceController;
 use App\Http\Controllers\Manager\OrdersController;
 use App\Http\Controllers\Manager\SettingsController;
@@ -596,7 +602,7 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
 
     // Features are managed by super-admin via /superadmin/companies/{c}/edit.
     // Tenants get a read-only view here (no POST endpoint — see audit finding #13).
-    Route::get('/settings/features', [ManagerSettingsController::class, 'features'])->name('settings.features');
+    Route::get('/settings/features', [ManagerFeatureFlagsController::class, 'features'])->name('settings.features');
 
     // Tenant Settings — profile/branding + preferences (Step D).
     Route::get('/settings/profile',      [SettingsController::class, 'profile'])->name('settings.profile');

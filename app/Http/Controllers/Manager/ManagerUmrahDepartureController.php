@@ -58,15 +58,21 @@ class ManagerUmrahDepartureController extends Controller
             'status'          => 'required|string|in:available,sold_out,inactive',
         ]);
 
-        $seats_available = max(0, $validated['seats_total'] - $departure->seats_booked);
+        // seats_available always mirrors gross capacity (seats_total) — every
+        // reader (dashboard totals, checkout's seat check, the departures
+        // list) computes remaining seats itself as seats_available -
+        // seats_booked. Writing an already-net value here made those readers
+        // double-subtract seats_booked after every edit to a departure that
+        // already had bookings.
+        $remaining = max(0, $validated['seats_total'] - $departure->seats_booked);
         $status = $validated['status'];
-        if ($seats_available == 0 && $status == 'available') {
+        if ($remaining == 0 && $status == 'available') {
             $status = 'sold_out';
         }
 
         $departure->update([
             'seats_total'     => $validated['seats_total'],
-            'seats_available' => $seats_available,
+            'seats_available' => $validated['seats_total'],
             'booking_cutoff'  => $validated['booking_cutoff'] ?? null,
             'status'          => $status,
         ]);

@@ -20,11 +20,27 @@ class UAEVisaController extends Controller
 {
     public function submit(Request $request)
     {
-        // Sharjah alone charges a refundable deposit, so bank details are only
-        // mandatory there — matches the JS toggle in uaevisa.blade.php, but
-        // enforced server-side too since the client-side `required` attribute
-        // can be bypassed by posting directly to this endpoint.
         $isSharjahRequest = strtolower((string) $request->input('selected_emirate')) === 'sharjah';
+
+        // Whether this submission actually carries a refundable deposit — a
+        // property of the selected PACKAGE, not of the emirate's name (a
+        // package for any emirate can be configured with a deposit). Resolved
+        // here, before validation, using the same UAEVisaPackage::depositPerApplicant()
+        // the real charge is computed from further down, so the server never
+        // requires less than what it's about to actually charge and refund.
+        // $isSharjahRequest is kept in the OR below because Sharjah applicants
+        // must supply these details even before a deposit amount is configured.
+        $preCheckPackageId = $request->input('visa_package_id');
+        if ($preCheckPackageId) {
+            $preCheckPackage = UAEVisaPackage::find($preCheckPackageId);
+            $requiresDeposit = $preCheckPackage
+                && $preCheckPackage->depositPerApplicant($request->input('nationality')) > 0;
+        } else {
+            // Legacy flat-price path: only ever charged a deposit for Sharjah.
+            $legacyDeposit = current_company()?->getSetting('visa_sharjah_deposit', 0);
+            $requiresDeposit = $isSharjahRequest && is_numeric($legacyDeposit) && (float) $legacyDeposit > 0;
+        }
+        $bankDetailsRequired = $isSharjahRequest || $requiresDeposit;
 
         $validated = $request->validate([
             'nationality' => 'nullable|string|max:100',
@@ -52,6 +68,8 @@ class UAEVisaController extends Controller
             'passport_copy.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:4096',
             'passport_photo' => 'required|array',
             'passport_photo.*' => 'required|image|max:4096',
+            'airline_ticket' => 'required|array',
+            'airline_ticket.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:4096',
             'supporting_document' => 'nullable|array',
             'supporting_document.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
 
@@ -71,14 +89,14 @@ class UAEVisaController extends Controller
             'gender' => 'nullable|array',
             'gender.*' => 'nullable|string|max:20',
 
-            'bank_account_holder' => [Rule::requiredIf($isSharjahRequest), 'nullable', 'string', 'max:200'],
-            'bank_name' => [Rule::requiredIf($isSharjahRequest), 'nullable', 'string', 'max:200'],
-            'bank_account_number' => [Rule::requiredIf($isSharjahRequest), 'nullable', 'string', 'max:100'],
+            'bank_account_holder' => [Rule::requiredIf($bankDetailsRequired), 'nullable', 'string', 'max:200'],
+            'bank_name' => [Rule::requiredIf($bankDetailsRequired), 'nullable', 'string', 'max:200'],
+            'bank_account_number' => [Rule::requiredIf($bankDetailsRequired), 'nullable', 'string', 'max:100'],
             'bank_swift_code' => 'nullable|string|max:50',
         ], [
-            'bank_account_holder.required' => 'Bank account holder name is required for Sharjah visas so the security deposit can be refunded.',
-            'bank_name.required' => 'Bank name is required for Sharjah visas so the security deposit can be refunded.',
-            'bank_account_number.required' => 'Bank account number / IBAN is required for Sharjah visas so the security deposit can be refunded.',
+            'bank_account_holder.required' => 'Bank account holder name is required so the security deposit can be refunded.',
+            'bank_name.required' => 'Bank name is required so the security deposit can be refunded.',
+            'bank_account_number.required' => 'Bank account number / IBAN is required so the security deposit can be refunded.',
         ]);
 
         $adultCount = (int) $validated['visa_count'];
@@ -245,6 +263,11 @@ class UAEVisaController extends Controller
                 $passportPhotoPath = $request->file("passport_photo.$i")->store('visas/passport_photos', 'public');
             }
 
+            $airlineTicketPath = null;
+            if ($request->hasFile("airline_ticket.$i")) {
+                $airlineTicketPath = $request->file("airline_ticket.$i")->store('visas/airline_tickets', 'public');
+            }
+
             $supportingDocPath = null;
             if ($request->hasFile("supporting_document.$i")) {
                 $supportingDocPath = $request->file("supporting_document.$i")->store('visas/supporting_docs', 'public');
@@ -288,6 +311,7 @@ class UAEVisaController extends Controller
                 'UAEV_email' => $validated['email'],
                 'UAEV_passport_copy' => $passportCopyPath,
                 'UAEV_passport_photo' => $passportPhotoPath,
+                'UAEV_airline_ticket' => $airlineTicketPath,
                 'UAEV_addons' => json_encode(array_filter([
                     $request->boolean('hotel_booking') ? 'hotel' : null,
                     $request->boolean('ticket_booking') ? 'flight' : null,

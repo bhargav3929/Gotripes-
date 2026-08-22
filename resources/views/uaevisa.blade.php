@@ -983,7 +983,7 @@
                             <span class="checkbox-text">I confirm that all passports are valid for 6+ months from the date of travel.</span>
                         </label>
                         <label class="custom-checkbox-label">
-                            <input type="checkbox" class="custom-checkbox-input" name="overstay_agree" value="1" required>
+                            <input type="checkbox" class="custom-checkbox-input" name="not_stay_long" value="1" required>
                             <span class="custom-checkbox-box"><i class="bi bi-check-lg"></i></span>
                             <span class="checkbox-text">I agree not to overstay. If so, I agree to pay the overstay charges per day (AED 3,200) and also the absconding fee.</span>
                         </label>

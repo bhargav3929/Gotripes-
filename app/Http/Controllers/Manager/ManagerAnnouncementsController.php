@@ -25,7 +25,7 @@ class ManagerAnnouncementsController extends Controller
     {
         $request->validate([
             'description' => 'required|string|max:500',
-            'tagType' => 'required|in:none,breaking,trending,exclusive,alert',
+            'tagType' => 'required|in:none,breaking,trending,exclusive,alert,hot',
         ]);
 
         Announcement::create([
@@ -52,7 +52,7 @@ class ManagerAnnouncementsController extends Controller
     {
         $request->validate([
             'description' => 'required|string|max:500',
-            'tagType' => 'required|in:none,breaking,trending,exclusive,alert',
+            'tagType' => 'required|in:none,breaking,trending,exclusive,alert,hot',
         ]);
 
         $announcement->update([

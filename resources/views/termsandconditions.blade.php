@@ -7,7 +7,7 @@
         <div class="row extra-very-small-screen align-items-center">
             <div class="col-lg-7 col-sm-8 position-relative page-title-extra-small appear anime-child anime-complete"
                 data-anime="{ &quot;el&quot;: &quot;childs&quot;, &quot;opacity&quot;: [0, 1], &quot;translateX&quot;: [-30, 0], &quot;duration&quot;: 800, &quot;delay&quot;: 0, &quot;staggervalue&quot;: 300, &quot;easing&quot;: &quot;easeOutQuad&quot; }">
-                <<h1 class="mb-20px text-shadow-medium" style="color: #fff !important; font-size: 38px;">
+                <h1 class="mb-20px text-shadow-medium" style="color: #fff !important; font-size: 38px;">
                     TERMS AND CONDITIONS
                 </h1>
             </div>
@@ -71,15 +71,15 @@
                 </style>
 
                 <h3>Introduction</h3>
-                <p>Welcome to Ayn Al Amir. By accessing our website (www.gotrips.ai) and using our services, you agree
+                <p>Welcome to {{ current_company()?->name ?? 'Ayn Al Amir' }}. By accessing our website (www.gotrips.ai) and using our services, you agree
                     to comply with and be bound by the following terms and conditions.</p>
 
                 <h3>Definitions</h3>
                 <ul>
-                    <li><strong>We, Us, Our:</strong> Refers to Ayn Al Amir.</li>
+                    <li><strong>We, Us, Our:</strong> Refers to {{ current_company()?->name ?? 'Ayn Al Amir' }}.</li>
                     <li><strong>You, User:</strong> Refers to any individual accessing our website or using our
                         services.</li>
-                    <li><strong>Services:</strong> Includes all travel-related services provided by Ayn Al Amir.</li>
+                    <li><strong>Services:</strong> Includes all travel-related services provided by {{ current_company()?->name ?? 'Ayn Al Amir' }}.</li>
                 </ul>
 
                 <h3>Booking and Payment</h3>
@@ -105,7 +105,7 @@
 
                 <h3>Limitation of Liability</h3>
                 <ul>
-                    <li>Ayn Al Amir is not liable for any direct, indirect, incidental, or consequential damages
+                    <li>{{ current_company()?->name ?? 'Ayn Al Amir' }} is not liable for any direct, indirect, incidental, or consequential damages
                         arising from the use of our services.</li>
                     <li>We are not responsible for any delays, cancellations, or changes in travel arrangements caused
                         by third-party providers.</li>
@@ -127,9 +127,9 @@
 
                 <h3>Governing Law</h3>
                 <ul>
-                    <li>These terms and conditions are governed by the laws of [Your Country/State].</li>
+                    <li>These terms and conditions are governed by the laws of the United Arab Emirates.</li>
                     <li>Any disputes arising from these terms will be subject to the exclusive jurisdiction of the
-                        courts in [Your Country/State].</li>
+                        courts in the United Arab Emirates.</li>
                 </ul>
 
                 <h3>Contact Us</h3>
@@ -143,29 +143,9 @@
 </section>
 <!-- end section -->
 
-<!-- WHATSAPP -->
-<div class="whats">
-    <a target="_blank"
-        href="https://api.whatsapp.com/send/?phone=971543651065&amp;text&amp;type=phone_number&amp;app_absent=0">
-        <img src="assets/termsandconditions_files/whats.gif" class="img-fluid" data-no-retina="">
-    </a>
-</div>
-
-<style>
-    .whats {
-        width: 60px;
-        position: fixed;
-        bottom: 3%;
-        left: 1%;
-        z-index: 10000;
-        border-radius: 90px;
-        overflow: hidden;
-    }
-
-    .whats img {
-        height: 60px;
-    }
-</style>
+<!-- WhatsApp widget: the shared footer below already renders one, dynamically
+     tied to the current tenant's phone number — this page no longer needs
+     its own copy hardcoded to a fixed number. -->
 
 <!-- FOOTER & Scripts (keep your existing footer and Tawk.to scripts here) -->
 @include('footer')

@@ -54,7 +54,7 @@
 
                 <!-- ✅ Privacy Policy Content -->
                 <h3>Introduction</h3>
-                <p>Welcome to Ayn Al Amir. We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, and protect your information when you visit our website (www.gotrips.ai) and use our services.</p>
+                <p>Welcome to {{ current_company()?->name ?? 'Ayn Al Amir' }}. We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, and protect your information when you visit our website (www.gotrips.ai) and use our services.</p>
 
                 <h3>Information We Collect</h3>
                 <ul>

@@ -95,13 +95,17 @@ class UmrahController extends Controller
     {
         $package = UmrahPackage::where('isActive', 1)->findOrFail($id);
 
-        // Fetch active departures for this package that are Wednesdays, at least 5 days in the future, and have seats left
+        // Fetch active departures for this package, at least 5 days in the future, with seats left.
+        // The Wednesday-only rule is a Bus-package restriction — Air packages can depart any day.
         $minDate = now()->addDays(5)->toDateString();
         $departures = $package->departures()
             ->where('status', 'available')
             ->where('departure_date', '>=', $minDate)
             ->get()
-            ->filter(function ($dep) {
+            ->filter(function ($dep) use ($package) {
+                if ($package->category !== 'bus') {
+                    return true;
+                }
                 // Ensure date is indeed a Wednesday (safety check)
                 return date('w', strtotime($dep->departure_date)) == 3;
             })
@@ -146,8 +150,8 @@ class UmrahController extends Controller
         $departureDate = $validated['departure_date'];
         $totalPassengers = $validated['adults'] + $validated['children'] + $validated['infants'];
 
-        // Enforce Wednesday rule
-        if (date('w', strtotime($departureDate)) != 3) {
+        // Enforce Wednesday rule — Bus packages only; Air packages can depart any day.
+        if ($package->category === 'bus' && date('w', strtotime($departureDate)) != 3) {
             return response()->json(['success' => false, 'error' => 'Bus departures are only available on Wednesdays.'], 422);
         }
 

@@ -5,7 +5,7 @@
 
 @section('content')
 @php
-    $statusOptions = [''=>'All statuses', 'paid'=>'Paid', 'pending'=>'Pending', 'failed'=>'Failed'];
+    $statusOptions = [''=>'All statuses', 'paid'=>'Paid', 'unpaid'=>'Unpaid', 'failed'=>'Failed'];
     $statusSelect = '<select name="status">';
     foreach ($statusOptions as $val => $lbl) {
         $sel = request('status') === $val ? ' selected' : '';
@@ -29,11 +29,37 @@
         ['label' => 'Bundle',    'render' => fn($o) => ($o->bundle_name ?: '—').' · '.($o->validity_days ? $o->validity_days.'d' : '')],
         ['label' => 'Amount',    'render' => fn($o) => number_format((float) $o->selling_price, 2).' '.($o->currency ?: 'AED')],
         ['label' => 'Payment',   'html' => true, 'render' => function($o) {
-            $s = strtolower($o->payment_status ?? 'pending');
+            $s = strtolower($o->payment_status ?? 'unpaid');
             $cls = $s === 'paid' ? 'badge-paid'
-                 : ($s === 'pending' ? 'badge-pending'
+                 : ($s === 'unpaid' ? 'badge-pending'
                  : ($s === 'failed' ? 'badge-failed' : 'badge-default'));
             return '<span class="badge '.$cls.'">'.e(ucfirst($s)).'</span>';
+        }],
+        ['label' => 'eSIM', 'html' => true, 'render' => function($o) {
+            if ($o->payment_status === 'paid' && ! $o->monty_order_id) {
+                return '<span class="badge badge-failed"><i class="fas fa-exclamation-triangle"></i> Not issued</span>';
+            }
+            if ($o->monty_order_id) {
+                $qty = $o->unitCount();
+                if ($qty > 1) {
+                    $issued = $o->units()->whereNotNull('monty_order_id')->count();
+                    if ($issued < $qty) {
+                        return '<span class="badge badge-failed"><i class="fas fa-exclamation-triangle"></i> '
+                            .$issued.' of '.$qty.'</span>';
+                    }
+                    return '<span class="badge badge-paid">Issued ×'.$qty.'</span>';
+                }
+                return '<span class="badge badge-paid">Issued</span>';
+            }
+            return '<span class="badge badge-default">—</span>';
+        }],
+        ['label' => 'QR sent', 'html' => true, 'render' => function($o) {
+            if (! $o->monty_order_id) {
+                return '<span class="badge badge-default">—</span>';
+            }
+            return $o->qr_sent_at
+                ? '<span class="badge badge-paid">Sent</span>'
+                : '<span class="badge badge-pending">Not sent</span>';
         }],
         ['label' => 'Date',      'render' => fn($o) => $o->created_at?->format('d M Y') ?: '—'],
     ],

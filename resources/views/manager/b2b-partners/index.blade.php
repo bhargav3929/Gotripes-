@@ -10,7 +10,7 @@
 
 <div class="wp-card">
     <div class="wp-card-header" style="display:flex; gap:6px; flex-wrap:wrap;">
-        @foreach(['pending' => 'Pending', 'approved' => 'Approved', 'renewal' => 'Renewal Pending', 'rejected' => 'Rejected', 'all' => 'All'] as $key => $label)
+        @foreach(['pending' => 'Pending', 'approved' => 'Approved', 'renewal' => 'Renewal Pending', 'disabled' => 'Disabled', 'rejected' => 'Rejected', 'all' => 'All'] as $key => $label)
             <a href="{{ route('manager.b2b-partners.index', ['status' => $key]) }}"
                class="wp-btn wp-btn-sm {{ $status === $key ? 'wp-btn-primary' : 'wp-btn-secondary' }}">
                 {{ $label }}

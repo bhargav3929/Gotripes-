@@ -20,6 +20,7 @@
             $statusColors = [
                 'pending'   => '#eab308',
                 'paid'      => '#22c55e',
+                'failed'    => '#ef4444',
                 'cancelled' => '#ef4444',
                 'refunded'  => '#9ca3af',
             ];
@@ -196,7 +197,7 @@
                 <div style="margin-bottom:12px;">
                     <label style="font-size:11px; font-weight:600; color:var(--wp-text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">New Status</label>
                     <select name="payment_status" class="wp-select">
-                        @foreach(['pending'=>'Pending','paid'=>'Paid','cancelled'=>'Cancelled','refunded'=>'Refunded'] as $val => $label)
+                        @foreach(['pending'=>'Pending','paid'=>'Paid','failed'=>'Failed','cancelled'=>'Cancelled','refunded'=>'Refunded'] as $val => $label)
                             <option value="{{ $val }}" {{ $booking->payment_status == $val ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>

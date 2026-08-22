@@ -5,7 +5,7 @@
 
 @section('content')
 @php
-    $statusOptions = [''=>'All statuses', 'paid'=>'Paid', 'pending'=>'Pending', 'failed'=>'Failed'];
+    $statusOptions = [''=>'All statuses', 'paid'=>'Paid', 'unpaid'=>'Unpaid', 'failed'=>'Failed'];
     $statusSelect = '<select name="status">';
     foreach ($statusOptions as $val => $lbl) {
         $sel = request('status') === $val ? ' selected' : '';
@@ -29,9 +29,9 @@
         ['label' => 'Bundle',    'render' => fn($o) => ($o->bundle_name ?: '—').' · '.($o->validity_days ? $o->validity_days.'d' : '')],
         ['label' => 'Amount',    'render' => fn($o) => number_format((float) $o->selling_price, 2).' '.($o->currency ?: 'AED')],
         ['label' => 'Payment',   'html' => true, 'render' => function($o) {
-            $s = strtolower($o->payment_status ?? 'pending');
+            $s = strtolower($o->payment_status ?? 'unpaid');
             $cls = $s === 'paid' ? 'badge-paid'
-                 : ($s === 'pending' ? 'badge-pending'
+                 : ($s === 'unpaid' ? 'badge-pending'
                  : ($s === 'failed' ? 'badge-failed' : 'badge-default'));
             return '<span class="badge '.$cls.'">'.e(ucfirst($s)).'</span>';
         }],

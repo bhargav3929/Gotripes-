@@ -7,6 +7,7 @@ use App\Models\NomodTransaction;
 use App\Services\NexusApiService;
 use App\Services\NomodService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -53,6 +54,9 @@ class FlightApiController extends Controller
         return response()->json($result, $result['success'] ? 200 : 502);
     }
 
+    /** How long a revalidated price quote may be booked against, in minutes. */
+    protected const QUOTE_TTL_MINUTES = 20;
+
     /** POST /api/flights/price — revalidate a selected offer */
     public function price(Request $request)
     {
@@ -62,7 +66,23 @@ class FlightApiController extends Controller
 
         $result = $this->nexus->price($data['offer_id'], $request->except('offer_id'));
 
+        // Cache the authoritative, marked-up price for this offer so book()
+        // can charge exactly what was just quoted — never a client-submitted
+        // amount — for as long as the quote is meant to stay valid.
+        if ($result['success'] && isset($result['data']['total_price'])) {
+            Cache::put($this->quoteCacheKey($data['offer_id']), [
+                'amount'     => (float) $result['data']['total_price'],
+                'net_amount' => (float) ($result['data']['net_price'] ?? $result['data']['total_price']),
+                'currency'   => $result['data']['currency'] ?? config('nexusapi.default_currency', 'AED'),
+            ], now()->addMinutes(self::QUOTE_TTL_MINUTES));
+        }
+
         return response()->json($result, $result['success'] ? 200 : 502);
+    }
+
+    protected function quoteCacheKey(string $offerId): string
+    {
+        return 'flight_quote:' . $offerId;
     }
 
     /** POST /api/flights/fare-rules */
@@ -114,9 +134,6 @@ class FlightApiController extends Controller
             'passengers.*.passport'       => 'nullable|array',
             'contact.email'               => 'required|email',
             'contact.phone'               => 'required|string|max:20',
-            'currency'                    => 'nullable|string|size:3',
-            'net_amount'                  => 'nullable|numeric',
-            'amount'                      => 'required|numeric',
             'ancillaries'                 => 'nullable|array',
             'origin'                      => 'nullable|string|size:3',
             'destination'                 => 'nullable|string|size:3',
@@ -125,7 +142,17 @@ class FlightApiController extends Controller
             'cabin'                       => 'nullable|string',
         ]);
 
-        $currency = $data['currency'] ?? config('nexusapi.default_currency', 'AED');
+        // The amount is never trusted from the client — it must come from a
+        // quote this same offer_id was just priced at via /api/flights/price.
+        $quote = Cache::get($this->quoteCacheKey($data['offer_id']));
+        if (!$quote) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This offer has not been priced recently. Please re-price it before booking.',
+            ], 422);
+        }
+
+        $currency = $quote['currency'];
         $orderId  = 'ORDFLT-' . strtoupper(uniqid());
 
         // Call nexusAPI to create the PNR.
@@ -156,8 +183,8 @@ class FlightApiController extends Controller
             'children'          => collect($data['passengers'])->where('type', 'CHD')->count(),
             'infants'           => collect($data['passengers'])->where('type', 'INF')->count(),
             'currency'          => $currency,
-            'net_amount'        => $data['net_amount'] ?? null,
-            'amount'            => $data['amount'],
+            'net_amount'        => $quote['net_amount'],
+            'amount'            => $quote['amount'],
             'ticket_time_limit' => $result['ticket_time_limit'] ?? null,
             'passengers'        => $data['passengers'],
             'contact'           => $data['contact'],

@@ -70,7 +70,7 @@
 
                 <!-- ✅ Policy Content -->
                 <h3>Introduction</h3>
-                <p>At Ayn Al Amir, we understand that plans can change. Our cancellation and refund policy is designed to provide flexibility and clarity for our customers.</p>
+                <p>At {{ current_company()?->name ?? 'Ayn Al Amir' }}, we understand that plans can change. Our cancellation and refund policy is designed to provide flexibility and clarity for our customers.</p>
 
                 <h3>Cancellation Policy</h3>
                 <ul>
@@ -78,8 +78,8 @@
                     <li>Cancellations made more than 30 days before the scheduled departure date will receive a full refund.</li>
                     <li>Cancellations made between 15 to 30 days before the scheduled departure date will incur a 50% cancellation fee.</li>
                     <li>Cancellations made less than 15 days before the scheduled departure date are non-refundable.</li>
-                    <li><strong>Cancellation by Ayn Al Amir:</strong></li>
-                    <li>In the unlikely event that Ayn Al Amir cancels a trip, customers will receive a full refund or the option to reschedule.</li>
+                    <li><strong>Cancellation by {{ current_company()?->name ?? 'Ayn Al Amir' }}:</strong></li>
+                    <li>In the unlikely event that {{ current_company()?->name ?? 'Ayn Al Amir' }} cancels a trip, customers will receive a full refund or the option to reschedule.</li>
                 </ul>
 
                 <h3>Refund Policy</h3>

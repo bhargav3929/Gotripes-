@@ -78,7 +78,7 @@ class ManagerUmrahBookingController extends Controller
         $booking = UmrahBooking::findOrFail($id);
 
         $validated = $request->validate([
-            'payment_status' => 'required|string|in:pending,paid,cancelled,refunded',
+            'payment_status' => 'required|string|in:pending,paid,failed,cancelled,refunded',
         ]);
 
         $booking->update(['payment_status' => $validated['payment_status']]);

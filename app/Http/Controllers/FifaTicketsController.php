@@ -132,6 +132,18 @@ class FifaTicketsController extends Controller
             return response()->json(['success' => false, 'error' => 'This ticket is not available for online payment.'], 422);
         }
 
+        // The quantity a manager sets was previously advisory only — shown to
+        // customers and used as a client-side stepper max, but never checked
+        // here. This closes the obvious oversell case; the atomic decrement
+        // guard at payment confirmation (NomodController::finalizeFifaBooking)
+        // closes the remaining race between two concurrent checkouts.
+        if ($qty > (int) $ticket->quantity) {
+            return response()->json([
+                'success' => false,
+                'error'   => 'Only ' . (int) $ticket->quantity . ' ticket(s) left for this category.',
+            ], 422);
+        }
+
         $matchLabel = $ticket->match
             ? trim(($ticket->match->team_a ?? '') . ' vs ' . ($ticket->match->team_b ?? ''), ' vs ')
             : null;

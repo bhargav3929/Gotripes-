@@ -119,9 +119,6 @@ class SettingsController extends Controller
         }
         $company->setSetting('menu_flash', $flash);
 
-        // Homepage FIFA promo section (GoTrips main site only, @platformOnly).
-        $company->setSetting('fifa_promo_enabled', $request->boolean('fifa_promo_enabled'));
-
         // Contact numbers for "Enquire on WhatsApp" CTAs.
         $company->setSetting('level9_whatsapp', preg_replace('/[^0-9]/', '', (string) ($validated['level9_whatsapp'] ?? '')));
         $company->setSetting('enquiry_whatsapp', preg_replace('/[^0-9]/', '', (string) ($validated['enquiry_whatsapp'] ?? '')));

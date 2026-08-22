@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 |--------------------------------------------------------------------------
 | search -> price -> book -> checkout (pay) -> ticket, plus post-booking ops.
 */
-Route::prefix('flights')->controller(FlightApiController::class)->group(function () {
+Route::prefix('flights')->middleware('auth:sanctum')->controller(FlightApiController::class)->group(function () {
     // Shopping
     Route::post('search', 'search');
     Route::post('price', 'price');

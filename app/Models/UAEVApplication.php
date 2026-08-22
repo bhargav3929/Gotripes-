@@ -39,6 +39,7 @@ class UAEVApplication extends Model
         'UAEV_marital_status',
         'UAEV_passport_copy',
         'UAEV_passport_photo',
+        'UAEV_airline_ticket',
         'UAEV_addons',
         'UAEV_visaDuration',
         'UAEV_price',

@@ -218,9 +218,15 @@ class NexusApiService
      */
     public function price(string $offerId, array $extra = []): array
     {
-        return $this->request('POST', $this->endpoints['air_price'], array_merge([
+        $result = $this->request('POST', $this->endpoints['air_price'], array_merge([
             'offer_id' => $offerId,
         ], $extra));
+
+        if ($result['success'] && is_array($result['data'] ?? null)) {
+            $result['data'] = $this->applyMarkupToOffer($result['data']);
+        }
+
+        return $result;
     }
 
     /**
@@ -398,21 +404,27 @@ class NexusApiService
      */
     protected function applyMarkup(array $offers): array
     {
-        if ($this->markupPercent <= 0) {
-            return $offers;
+        return array_map(fn($offer) => $this->applyMarkupToOffer($offer), $offers);
+    }
+
+    /**
+     * Apply the configured markup to a single offer/priced-offer array.
+     * Shared by search() (array of offers) and price() (one revalidated offer)
+     * so the two never disagree on what a customer is actually charged.
+     */
+    protected function applyMarkupToOffer($offer): array
+    {
+        if (!is_array($offer) || !isset($offer['total_price']) || $this->markupPercent <= 0) {
+            return is_array($offer) ? $offer : [];
         }
 
         $factor = 1 + ($this->markupPercent / 100);
+        $net = (float) $offer['total_price'];
+        $offer['net_price']      = round($net, 2);
+        $offer['total_price']    = round($net * $factor, 2);
+        $offer['markup_percent'] = $this->markupPercent;
 
-        return array_map(function ($offer) use ($factor) {
-            if (is_array($offer) && isset($offer['total_price'])) {
-                $net = (float) $offer['total_price'];
-                $offer['net_price']     = round($net, 2);
-                $offer['total_price']   = round($net * $factor, 2);
-                $offer['markup_percent'] = $this->markupPercent;
-            }
-            return $offer;
-        }, $offers);
+        return $offer;
     }
 
     /**

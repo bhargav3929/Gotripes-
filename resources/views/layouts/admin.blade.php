@@ -1838,14 +1838,8 @@
                     </li>
                 @endif
 
-                @if($user->isAdmin())
-                    <li class="nav-item">
-                        <a href="{{ route('admin.umrah-packages.index') }}" class="nav-link {{ request()->routeIs('admin.umrah-packages.*') ? 'active' : '' }}">
-                            <i class="fas fa-kaaba"></i>
-                            <span>Hajj & Umrah</span>
-                        </a>
-                    </li>
-                @endif
+                {{-- Hajj & Umrah editing has moved to Manager Portal; this legacy Admin
+                     screen wrote a conflicting `category` value and is retired. --}}
 
                 @if($user->isAdmin())
                     <li class="nav-item {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}">
