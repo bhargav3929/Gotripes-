@@ -41,6 +41,9 @@
                                 @case('alert')
                                     <span class="wp-badge wp-badge-blue">New</span>
                                     @break
+                                @case('hot')
+                                    <span class="wp-badge wp-badge-amber">Hot</span>
+                                    @break
                             @endswitch
                         @else
                             <span class="text-muted-wp" style="font-size: 12px;">No tag</span>
