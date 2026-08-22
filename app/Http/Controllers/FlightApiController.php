@@ -27,6 +27,23 @@ class FlightApiController extends Controller
     {
     }
 
+    /**
+     * Look up a booking by its order_id and require the authenticated user to
+     * be the one who created it. order_id alone is not a secret (it's a
+     * uniqid()-based string embedded in URLs/emails), so every endpoint that
+     * takes one must check ownership too, not just require *some* login.
+     */
+    protected function findOwnedBooking(string $orderId, $user): FlightBooking
+    {
+        $booking = FlightBooking::where('order_id', $orderId)->firstOrFail();
+
+        if ((int) $booking->user_id !== (int) $user->id) {
+            abort(403, 'You do not have access to this booking.');
+        }
+
+        return $booking;
+    }
+
     /* ---------------------------------------------------------------- Shopping */
 
     /** POST /api/flights/search */
@@ -167,6 +184,7 @@ class FlightApiController extends Controller
         // Persist regardless of outcome (audit trail).
         $booking = FlightBooking::create([
             'order_id'          => $orderId,
+            'user_id'           => $request->user()->id,
             'offer_id'          => $data['offer_id'],
             'pnr'               => $result['pnr'] ?? null,
             'booking_reference' => $result['booking_ref'] ?? null,
@@ -218,7 +236,7 @@ class FlightApiController extends Controller
     {
         $data = $request->validate(['order_id' => 'required|string']);
 
-        $booking = FlightBooking::where('order_id', $data['order_id'])->firstOrFail();
+        $booking = $this->findOwnedBooking($data['order_id'], $request->user());
 
         $nomod = new NomodService();
         $checkout = $nomod->createCheckout([
@@ -266,7 +284,7 @@ class FlightApiController extends Controller
     {
         $data = $request->validate(['order_id' => 'required|string']);
 
-        $booking = FlightBooking::where('order_id', $data['order_id'])->firstOrFail();
+        $booking = $this->findOwnedBooking($data['order_id'], $request->user());
 
         if (!$booking->booking_reference) {
             return response()->json(['success' => false, 'message' => 'Booking has no reference to ticket.'], 422);
@@ -290,9 +308,9 @@ class FlightApiController extends Controller
     /* ---------------------------------------------------------------- Post-booking */
 
     /** GET /api/flights/booking/{orderId} */
-    public function show(string $orderId)
+    public function show(Request $request, string $orderId)
     {
-        $booking = FlightBooking::where('order_id', $orderId)->firstOrFail();
+        $booking = $this->findOwnedBooking($orderId, $request->user());
 
         // Refresh from provider when we have a reference.
         $live = $booking->booking_reference
@@ -310,7 +328,7 @@ class FlightApiController extends Controller
     public function cancel(Request $request)
     {
         $data = $request->validate(['order_id' => 'required|string']);
-        $booking = FlightBooking::where('order_id', $data['order_id'])->firstOrFail();
+        $booking = $this->findOwnedBooking($data['order_id'], $request->user());
 
         $result = $this->nexus->cancel($booking->booking_reference ?? '');
 
@@ -325,7 +343,7 @@ class FlightApiController extends Controller
     public function refund(Request $request)
     {
         $data = $request->validate(['order_id' => 'required|string']);
-        $booking = FlightBooking::where('order_id', $data['order_id'])->firstOrFail();
+        $booking = $this->findOwnedBooking($data['order_id'], $request->user());
 
         $result = $this->nexus->refund($booking->booking_reference ?? '');
 

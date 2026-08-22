@@ -20,6 +20,7 @@ class FlightBooking extends Model
 
     protected $fillable = [
         'company_id',
+        'user_id',           // who booked it — the only accepted owner for show/cancel/refund/ticket
         'order_id',          // internal order reference (e.g. ORDFLT-...)
         'offer_id',          // nexusAPI offer/solution key
         'pnr',               // GDS record locator
