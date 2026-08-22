@@ -501,9 +501,13 @@ Route::post('/manager/logout', [ManagerAuthController::class, 'logout'])->name('
 
 Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(function () {
     Route::get('/', [ManagerDashboardController::class, 'index'])->name('dashboard');
-    Route::resource('adslots', ManagerAdSlotsController::class);
-    Route::resource('announcements', ManagerAnnouncementsController::class);
-    Route::resource('activities', ManagerActivitiesController::class);
+    // ->except(['show']): none of these three controllers implement show(),
+    // so the resource's default GET /{id} route pointed at a nonexistent
+    // method and 500'd for anyone who navigated to it directly. Nothing in
+    // the UI ever links there — managers use the edit screens.
+    Route::resource('adslots', ManagerAdSlotsController::class)->except(['show']);
+    Route::resource('announcements', ManagerAnnouncementsController::class)->except(['show']);
+    Route::resource('activities', ManagerActivitiesController::class)->except(['show']);
     Route::post('activities/{id}/toggle-visibility', [ManagerActivitiesController::class, 'toggleVisibility'])->name('activities.toggle-visibility');
 
     // Tenant content: tour packages, hajj/umrah packages, visa pricing.
@@ -516,8 +520,10 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::resource('saudi-visas', \App\Http\Controllers\Manager\ManagerSaudiVisaController::class)->except(['show', 'create', 'edit']);
 
     Route::prefix('umrah')->name('umrah.')->group(function () {
-        Route::resource('categories', \App\Http\Controllers\Manager\ManagerUmrahCategoryController::class);
-        Route::resource('hotels', \App\Http\Controllers\Manager\ManagerUmrahHotelController::class);
+        // Same reasoning as adslots/announcements/activities above — neither
+        // controller implements show(), and nothing links to it.
+        Route::resource('categories', \App\Http\Controllers\Manager\ManagerUmrahCategoryController::class)->except(['show']);
+        Route::resource('hotels', \App\Http\Controllers\Manager\ManagerUmrahHotelController::class)->except(['show']);
         Route::get('pricing', [\App\Http\Controllers\Manager\ManagerUmrahPricingController::class, 'index'])->name('pricing.index');
         Route::post('pricing', [\App\Http\Controllers\Manager\ManagerUmrahPricingController::class, 'update'])->name('pricing.update');
     });
