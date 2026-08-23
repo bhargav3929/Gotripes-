@@ -101,6 +101,11 @@ OVERALL=PASS
 { [ "$BACKEND" = "UNKNOWN" ] && [ "$FRONTEND" = "UNKNOWN" ]; } && OVERALL=WARN
 echo "Backend: $BACKEND | Frontend: $FRONTEND | Overall: $OVERALL"
 
+# Compact card for the Teams message (the CTO reads bullets, not essays);
+# the full reports stay available behind the report link.
+claude -p "$(cat qa/prompts/summarize-card.md)" --model "$MODEL" --dangerously-skip-permissions \
+  > qa/out/card.md 2>/dev/null || true
+
 if [ -n "${PUBLIC_URL:-}" ] && [ -n "${REPORTS_TOKEN:-}" ]; then
   RUN_URL="${PUBLIC_URL%/}/report?token=${REPORTS_TOKEN}"
 else
@@ -113,6 +118,6 @@ OVERALL="$OVERALL" BACKEND="$BACKEND" FRONTEND="$FRONTEND" TESTS="SKIPPED (db-fr
 # ---- 7. Keep the reports for the /report endpoint
 mkdir -p "$REPORTS_DIR"
 rm -f "$REPORTS_DIR"/*
-cp qa/out/requirements.md qa/out/backend-report.md qa/out/frontend-report.md qa/out/commits.txt "$REPORTS_DIR"/ 2>/dev/null || true
+cp qa/out/requirements.md qa/out/backend-report.md qa/out/frontend-report.md qa/out/commits.txt qa/out/card.md "$REPORTS_DIR"/ 2>/dev/null || true
 echo "=== audit complete: $OVERALL ==="
 exit 0
