@@ -56,9 +56,8 @@ fi
   echo ""
   cat qa/prompts/frontend-personas.md
 } > qa/out/frontend-prompt.txt
-claude -p --model "$MODEL" --dangerously-skip-permissions \
-  --mcp-config qa/mcp-playwright.json \
-  "$(cat qa/out/frontend-prompt.txt)" | tee qa/out/frontend-report.md
+claude -p "$(cat qa/out/frontend-prompt.txt)" --model "$MODEL" --dangerously-skip-permissions \
+  --mcp-config qa/mcp-playwright.json | tee qa/out/frontend-report.md
 
 echo "==> Verdicts"
 get_verdict() { grep -oE 'VERDICT: *(PASS|WARN|BLOCK)' "$1" 2>/dev/null | tail -1 | grep -oE 'PASS|WARN|BLOCK' || echo "UNKNOWN"; }
