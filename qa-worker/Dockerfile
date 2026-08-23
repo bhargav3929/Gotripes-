@@ -19,6 +19,9 @@ RUN npm install --omit=dev
 COPY server.js pipeline.sh mcp-playwright.json ./
 RUN chmod +x pipeline.sh
 
+# The container is an isolated sandbox; allows the Claude CLI to run
+# non-interactively as root inside it.
+ENV IS_SANDBOX=1
 ENV PORT=8080
 EXPOSE 8080
 CMD ["node", "server.js"]
