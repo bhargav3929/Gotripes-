@@ -1,0 +1,13 @@
+{
+  "name": "gotrips-qa-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloud QA auditor for GoTrips: audits teammate pushes with Claude agents and reports to Teams",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.0"
+  }
+}
