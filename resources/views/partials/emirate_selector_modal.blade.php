@@ -382,7 +382,6 @@
         <!-- Header -->
         <div class="emirate-modal-header">
             <img src="{{ $modalLogo }}" alt="{{ $modalName }}" class="emirate-logo">
-            <button type="button" class="emirate-close-btn" id="emirateCloseBtn" aria-label="Close modal">&times;</button>
         </div>
 
         <h2 class="emirate-title" id="emirateModalTitle">Which Emirates Visa Are You Applying For?</h2>
@@ -400,7 +399,6 @@
 
         const overlay = document.getElementById('emirateSelectorOverlay');
         const grid = document.getElementById('emirateGrid');
-        const closeBtn = document.getElementById('emirateCloseBtn');
         const hiddenInput = document.getElementById('selectedEmirate');
 
         if (!overlay || !grid) return;
@@ -430,25 +428,6 @@
 
                 selectEmirate(this.getAttribute('data-emirate'));
             });
-        });
-
-        // Close button click handler
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeEmirateSelector);
-        }
-
-        // Click outside modal container closes it
-        overlay.addEventListener('click', function(e) {
-            if (e.target === overlay) {
-                closeEmirateSelector();
-            }
-        });
-
-        // Keyboard: Escape closes modal
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && overlay.classList.contains('active')) {
-                closeEmirateSelector();
-            }
         });
 
         function selectEmirate(emirate) {
