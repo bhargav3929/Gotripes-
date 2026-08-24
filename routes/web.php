@@ -97,6 +97,28 @@ Route::get('/gt-diag-register', function (\Illuminate\Http\Request $request) {
     }
     return response()->json($result);
 });
+
+// TEMPORARY: find/remove dummy test activities (e.g. "Car activities.",
+// hyd, INR 10) reported live on /activities. Read-only unless ?delete=1.
+// Remove after use.
+Route::get('/gt-diag-activities', function (\Illuminate\Http\Request $request) {
+    if ($request->query('token') !== 'gt-diag-2026-x7k9') {
+        abort(404);
+    }
+    $matches = \App\Models\UAEActivity::where('activityName', 'like', '%Car activities%')
+        ->orWhere(function ($q) {
+            $q->where('activityLocation', 'hyd')->where('activityPrice', 10);
+        })
+        ->get(['activityID', 'activityName', 'activityLocation', 'activityPrice', 'activityCurrency', 'activityImage', 'isActive', 'emirates']);
+
+    if ($request->query('delete') === '1') {
+        $ids = $matches->pluck('activityID');
+        \App\Models\UAEActivity::whereIn('activityID', $ids)->delete();
+        return response()->json(['deleted_ids' => $ids, 'count' => $ids->count()]);
+    }
+
+    return response()->json($matches);
+});
 // Route::post('/register', [UserController::class, 'register'])->name('register');
 
 // Admin routes (protected by auth + isAdmin middleware)
