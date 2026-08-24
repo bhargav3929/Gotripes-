@@ -51,6 +51,37 @@ Route::post('/register', [UserController::class, 'register'])->name('register');
 
 // Public registration routes
 Route::get('/get-emirates', [UserController::class, 'getEmirates'])->name('get.emirates');
+
+// TEMPORARY diagnostic for the partner-registration 500 — token-gated,
+// read-only column check + a throwaway insert/delete. Remove after use.
+Route::get('/gt-diag-register', function (\Illuminate\Http\Request $request) {
+    if ($request->query('token') !== 'gt-diag-2026-x7k9') {
+        abort(404);
+    }
+    $result = [];
+    try {
+        $result['email_verified_at_column'] = DB::selectOne(
+            "SHOW COLUMNS FROM users WHERE Field = 'email_verified_at'"
+        );
+    } catch (\Throwable $e) {
+        $result['column_check_error'] = $e->getMessage();
+    }
+    try {
+        $test = \App\Models\User::create([
+            'name' => 'DiagTest',
+            'phone' => '+9715' . random_int(1000000, 9999999),
+            'email' => 'diag_' . random_int(1000, 9999) . '@example.com',
+            'password' => bcrypt('test1234'),
+            'email_verified_at' => '1,2rseparator0rseparator',
+        ]);
+        $result['test_insert'] = 'success';
+        $result['test_user_id'] = $test->id;
+        $test->delete();
+    } catch (\Throwable $e) {
+        $result['test_insert_error'] = $e->getMessage();
+    }
+    return response()->json($result);
+});
 // Route::post('/register', [UserController::class, 'register'])->name('register');
 
 // Admin routes (protected by auth + isAdmin middleware)
