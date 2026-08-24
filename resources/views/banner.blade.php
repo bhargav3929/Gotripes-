@@ -953,7 +953,7 @@
                       <select id="partnerCountry" name="country" required class="partner-select">
                         <option value="">Select your country</option>
                         @foreach(\App\Support\CountryCodes::all() as $code => $c)
-                          <option value="{{ $c['name'] }}" data-flag="{{ $c['flag'] }}">{{ $c['flag'] }} {{ $c['name'] }}</option>
+                          <option value="{{ $c['name'] }}" data-iso="{{ strtolower($c['iso']) }}">{{ $c['name'] }}</option>
                         @endforeach
                       </select>
                       <span class="partner-error-msg" id="partnerCountry-error"></span>
@@ -1100,11 +1100,31 @@
         // Initialize Tom Select for country dropdown
         const countrySelect = document.getElementById('partnerCountry');
         if (countrySelect && typeof TomSelect !== 'undefined') {
+          // Map country name -> ISO code (read from the original <option> tags
+          // before Tom Select replaces the DOM) so we can render a real flag
+          // icon — Unicode flag emoji don't render as flags on Windows/Chrome,
+          // they fall back to plain letter codes.
+          var countryIso = {};
+          countrySelect.querySelectorAll('option[data-iso]').forEach(function (opt) {
+            countryIso[opt.value] = opt.dataset.iso;
+          });
+          function flagHtml(name, escape) {
+            var iso = countryIso[name];
+            if (!iso) return '';
+            return '<span class="iti__flag iti__' + iso + '" style="margin-right:8px;flex:none;"></span>';
+          }
+
           new TomSelect(countrySelect, {
             create: false,
             placeholder: 'Select your country',
             controlInput: '<input>',
             render: {
+              option: function(data, escape) {
+                return '<div style="display:flex;align-items:center;">' + flagHtml(data.value, escape) + '<span>' + escape(data.text) + '</span></div>';
+              },
+              item: function(data, escape) {
+                return '<div style="display:flex;align-items:center;">' + flagHtml(data.value, escape) + '<span>' + escape(data.text) + '</span></div>';
+              },
               no_results: function(data, escape) {
                 return '<div class="no-results" style="padding: 8px 14px; color: #888;">No country found for "' + escape(data.input) + '"</div>';
               }
