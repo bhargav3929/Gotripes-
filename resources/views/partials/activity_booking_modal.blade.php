@@ -1129,7 +1129,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('{{ route("activity.book") }}', {
                 method: 'POST',
                 body: formData,
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
             });
 
             const bookText = await response.text();
@@ -1154,7 +1154,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const payResponse = await fetch('{{ route("activity.payment.initiate") }}', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ booking_id: data.booking_id, amount: calculateTotal() })
             });
 
