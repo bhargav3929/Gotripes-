@@ -105,8 +105,18 @@ instead: the worker then checks the repo for new pushes itself.
 
 ## Day-to-day
 
-- Nothing to do. Teammate pushes → site auto-deploys as usual → report arrives
-  in Teams ~15–30 min later.
+**Manual-start mode (current setup, `AUTO_AUDIT=off`):** teammate pushes deploy
+as usual but do NOT trigger audits. When the team says work is finished, the
+founder opens the **Start link** (pinned in the Teams channel):
+`<PUBLIC_URL>/start?token=<REPORTS_TOKEN>` — one tap starts a single audit
+covering **every push since the last audit**, announces "🚀 audit started" in
+the channel, and delivers the short report card ~20 min later. Opening it again
+while one is running just says "already running"; if there's nothing new it says
+so and runs nothing. Set `AUTO_AUDIT=on` (or remove the variable) to go back to
+auditing every teammate push automatically.
+
+- Teammate pushes → site auto-deploys as usual → report arrives
+  in Teams ~15–30 min later (auto mode) or after the founder hits Start.
 - Full report: the card's button opens `<PUBLIC_URL>/report?token=...`
   (requirements + backend + frontend reports as plain text).
 - Status/history: `<PUBLIC_URL>/status`. Live logs: `railway logs`.

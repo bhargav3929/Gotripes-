@@ -31,6 +31,9 @@ const REPO = process.env.REPO || 'bhargav3929/Gotripes-';
 const SKIP_ACTORS = (process.env.SKIP_ACTORS || 'bhargav3929')
   .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
+// AUTO_AUDIT=off: pushes are recorded but audits run ONLY via the founder's
+// /start link. The audit then covers everything since the last audited commit.
+const AUTO_AUDIT = (process.env.AUTO_AUDIT || 'on').toLowerCase() !== 'off';
 // Use a Railway volume at /data when present so state and the last report
 // survive restarts/redeploys; otherwise fall back to /tmp.
 const DATA_DIR = fs.existsSync('/data') ? '/data' : '/tmp';
@@ -111,8 +114,12 @@ app.post('/webhook', (req, res) => {
   const p = req.body || {};
   if (p.ref !== 'refs/heads/main') return res.send('not main, ignored');
   const actor = (p.pusher?.name || p.sender?.login || 'unknown').toLowerCase();
-  if (SKIP_ACTORS.includes(actor)) return res.send(`push by ${actor} — founder push, audit skipped`);
   if (p.deleted) return res.send('branch delete, ignored');
+  if (!AUTO_AUDIT) {
+    console.log(`[webhook] push by ${actor} (${(p.after || '').slice(0, 7)}) recorded — auto-audit is OFF, waiting for founder /start`);
+    return res.send('recorded — auto-audit off, waiting for manual start');
+  }
+  if (SKIP_ACTORS.includes(actor)) return res.send(`push by ${actor} — founder push, audit skipped`);
 
   runJob({ actor, before: p.before, after: p.after, reason: 'webhook' });
   res.send('audit queued');
@@ -142,6 +149,10 @@ async function checkForNewPush(reason) {
       console.log(`[${reason}] first run — baseline ${head.sha.slice(0, 7)} recorded, no audit`);
       return;
     }
+    if (!AUTO_AUDIT) {
+      console.log(`[${reason}] new commits up to ${head.sha.slice(0, 7)} — auto-audit is OFF, waiting for founder /start`);
+      return;
+    }
     const actor = (head.author?.login || head.commit?.author?.name || 'unknown').toLowerCase();
     if (SKIP_ACTORS.includes(actor)) {
       fs.writeFileSync(STATE_FILE, head.sha);
@@ -160,6 +171,61 @@ if (pollMinutes > 0) {
 }
 // One catch-up pass shortly after every (re)start
 setTimeout(() => checkForNewPush('startup-catchup'), 10 * 1000);
+
+// ---- founder's Start button: audits EVERYTHING since the last audited commit.
+// GET so it works as a plain link pinned in the Teams channel.
+async function startAudit(req, res) {
+  if (!process.env.REPORTS_TOKEN || req.query.token !== process.env.REPORTS_TOKEN) {
+    return res.status(403).send('forbidden');
+  }
+  const page = (msg) => `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+    <body style="font-family:-apple-system,sans-serif;background:#0f1115;color:#eee;display:grid;place-items:center;height:95vh">
+    <div style="max-width:420px;text-align:center"><h2>GoTrips QA Auditor</h2><p style="font-size:1.1rem">${msg}</p></div></body>`;
+  if (running) return res.send(page('⏳ An audit is already running — the report will arrive in Teams when it finishes.'));
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/commits/main`, {
+      headers: {
+        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        'User-Agent': 'gotrips-qa-worker',
+        Accept: 'application/vnd.github+json',
+      },
+    });
+    if (!r.ok) return res.status(502).send(page(`GitHub API error ${r.status} — try again in a minute.`));
+    const head = await r.json();
+    const last = fs.existsSync(STATE_FILE) ? fs.readFileSync(STATE_FILE, 'utf8').trim() : '';
+    if (last && head.sha === last) {
+      return res.send(page('✅ Nothing new to audit — no commits since the last audit.'));
+    }
+    if (req.query.dry === '1') {
+      return res.json({ wouldAudit: { before: last || '(last commit only)', after: head.sha } });
+    }
+    // Announce the start in the Teams channel (fire-and-forget)
+    if (process.env.TEAMS_WEBHOOK_URL) {
+      fetch(process.env.TEAMS_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'message',
+          attachments: [{
+            contentType: 'application/vnd.microsoft.card.adaptive',
+            content: {
+              $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+              type: 'AdaptiveCard', version: '1.4',
+              body: [{ type: 'TextBlock', wrap: true, weight: 'Bolder',
+                text: `🚀 QA audit started by the founder — covering all pushes since the last audit (up to ${head.sha.slice(0, 7)}). Report lands here in ~20 min.` }],
+            },
+          }],
+        }),
+      }).catch(e => console.error('[start] Teams announce failed:', e.message));
+    }
+    runJob({ actor: 'founder-start', before: last, after: head.sha, reason: 'manual-start' });
+    res.send(page('🚀 Audit started! It covers every push since the last audit. The report will arrive in the Teams channel in about 20 minutes.'));
+  } catch (e) {
+    res.status(500).send(page(`Error: ${e.message}`));
+  }
+}
+app.get('/start', startAudit);
+app.post('/start', startAudit);
 
 // ---- manual trigger + status + report viewing
 app.post('/run', (req, res) => {
