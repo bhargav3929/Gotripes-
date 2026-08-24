@@ -293,7 +293,7 @@
       <!-- Service Card 5: Hajj Umrah Services -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/going-saudi" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_hajj_umrah_1767532980525.png" alt="Hajj Umrah Services"
                 class="service-card-img">
@@ -311,7 +311,7 @@
       <!-- Service Card 6: City Tour -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/coming-soon/local-tours" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_city_tour_1767532704738.png" alt="City Tour"
                 class="service-card-img">
@@ -327,7 +327,7 @@
       <!-- Service Card 7: Trips Organising -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_trips_organizing_1767532787246.png" alt="Trips Organising"
                 class="service-card-img">
@@ -343,7 +343,7 @@
       <!-- Service Card 8: Hotel Bookings -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_hotel_bookings_1767532833171.png" alt="Hotel Bookings"
                 class="service-card-img">
@@ -359,7 +359,7 @@
       <!-- Service Card 9: Car Rentals -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/coming-soon/transport" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_car_rentals_1767532996883.png" alt="Car Rentals"
                 class="service-card-img">
@@ -375,7 +375,7 @@
       <!-- Service Card 10: Pick & Drop Guests -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_pick_drop_1767532722482.png" alt="Pick & Drop Guests"
                 class="service-card-img">
@@ -391,7 +391,7 @@
       <!-- Service Card 11: Liwa Guests Assistance -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_liwa_assistance_1767532741495.png" alt="Liwa Guests Assistance"
                 class="service-card-img">
@@ -407,7 +407,7 @@
       <!-- Service Card 12: Recruitment Services -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_recruitment_1767533016184.png" alt="Recruitment Services"
                 class="service-card-img">
@@ -423,7 +423,7 @@
       <!-- Service Card 13: Internships -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_internships_1767533036518.png" alt="Internships"
                 class="service-card-img">
@@ -439,7 +439,7 @@
       <!-- Service Card 14: Business WhatsApp Integration -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_whatsapp_integration_1767532912170.png"
                 alt="Business WhatsApp Integration" class="service-card-img">
@@ -455,7 +455,7 @@
       <!-- Service Card 15: Website Development -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_website_development_1767532932173.png" alt="Website Development"
                 class="service-card-img">
@@ -471,7 +471,7 @@
       <!-- Service Card 16: Travel Agency Workflow Setup -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_travel_workflow_1767533087171.png" alt="Travel Agency Workflow Setup"
                 class="service-card-img">
@@ -487,7 +487,7 @@
       <!-- Service Card 17: New Business Setup Assistance -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_business_setup_1767533129733.png" alt="New Business Setup Assistance"
                 class="service-card-img">
@@ -503,7 +503,7 @@
       <!-- Service Card 18: GDS (Global Distribution System) Support -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_gds_1767533146390.png" alt="GDS Support" class="service-card-img">
               <div class="service-card-overlay"></div>
@@ -518,7 +518,7 @@
       <!-- Service Card 19: Business Consultants -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_business_consultants_1767533163259.png" alt="Business Consultants"
                 class="service-card-img">
@@ -534,7 +534,7 @@
       <!-- Service Card 20: AI, AR, VR Integration -->
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="service-card">
-          <a href="/" class="service-card-link">
+          <a href="/our-services" class="service-card-link">
             <div class="service-card-image-wrapper">
               <img src="assets/index_files/service_ai_ar_vr_1767533181726.png" alt="AI, AR, VR Integration"
                 class="service-card-img">
