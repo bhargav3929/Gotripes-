@@ -80,6 +80,21 @@ Route::get('/gt-diag-register', function (\Illuminate\Http\Request $request) {
     } catch (\Throwable $e) {
         $result['test_insert_error'] = $e->getMessage();
     }
+    try {
+        $destinationPath = public_path('uploads/partners');
+        $result['uploads_dir_exists_before'] = \Illuminate\Support\Facades\File::exists($destinationPath);
+        if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+            \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+        }
+        $result['uploads_dir_exists_after'] = \Illuminate\Support\Facades\File::exists($destinationPath);
+        $result['uploads_dir_writable'] = is_writable($destinationPath);
+        $testFile = $destinationPath . '/diag_test.txt';
+        file_put_contents($testFile, 'diag');
+        $result['test_file_write'] = file_exists($testFile) ? 'success' : 'failed';
+        if (file_exists($testFile)) unlink($testFile);
+    } catch (\Throwable $e) {
+        $result['upload_dir_error'] = $e->getMessage();
+    }
     return response()->json($result);
 });
 // Route::post('/register', [UserController::class, 'register'])->name('register');
