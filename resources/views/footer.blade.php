@@ -97,6 +97,15 @@
     color: rgba(255, 255, 255, 0.85) !important;
   }
 
+  /* The blanket ".gt-footer *" rule above also caught the Font Awesome <i>
+     icons and forced them onto the Outfit font, which has no glyph for their
+     icon codepoints — that's why the contact icons were rendering as empty
+     boxes. Restore the icon font for them specifically. */
+  .gt-footer-contact i {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+  }
+
   .gt-footer { background: #000 !important; }
 
   .gt-footer-title {
