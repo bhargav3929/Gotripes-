@@ -691,6 +691,20 @@
         font-family: 'Outfit', sans-serif !important;
         font-size: 17px !important;
         padding: 0 !important;
+        line-height: 46px !important;
+        height: 46px !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    .ts-wrapper.field-input .ts-control .item {
+        color: #fff !important;
+        line-height: 46px !important;
+        height: 46px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     .ts-wrapper.field-input.single .ts-control:after {
         border-color: var(--c-gold) transparent transparent transparent !important;
