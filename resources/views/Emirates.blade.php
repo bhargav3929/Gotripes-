@@ -630,6 +630,24 @@
 
 @include('partials.activity_booking_modal')
 
+@if($deepLinkActivity ?? null)
+<script type="text/javascript">
+    // Search results link here as /activities?id={{ $deepLinkActivity['id'] }} —
+    // open that activity's booking modal directly instead of leaving the
+    // visitor on the generic emirates grid with no indication of what they
+    // searched for. Registered after the modal partial's own DOMContentLoaded
+    // listener (which defines window.openActivityBookingModal), so it fires after.
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.openActivityBookingModal === 'function') {
+            window.openActivityBookingModal(
+                {{ (int) $deepLinkActivity['id'] }},
+                @json($deepLinkActivity['name'])
+            );
+        }
+    });
+</script>
+@endif
+
 <script type="text/javascript">
 function switchEmirateTab(tab, btn) {
     var uaePanel   = document.getElementById('tab-panel-uae');

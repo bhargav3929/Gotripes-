@@ -61,7 +61,20 @@ class EmiratesController extends Controller
         $emirate    = null;
         $activities = collect();
 
-        return view('Emirates', compact('emirates', 'emirate', 'activities'));
+        // Search results link here as /activities?id=90 for a specific
+        // activity. Look it up so the view can auto-open its booking modal
+        // instead of silently dropping the visitor on the generic grid.
+        $deepLinkActivity = null;
+        if ($activityId = $request->get('id')) {
+            $match = UAEActivity::publicVisible()->listed()
+                ->where('activityID', $activityId)
+                ->first(['activityID', 'activityName']);
+            if ($match) {
+                $deepLinkActivity = ['id' => $match->activityID, 'name' => $match->activityName];
+            }
+        }
+
+        return view('Emirates', compact('emirates', 'emirate', 'activities', 'deepLinkActivity'));
     }
 
     public function showBySlug($slug)
