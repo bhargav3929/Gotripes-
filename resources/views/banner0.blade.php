@@ -352,16 +352,16 @@
       @endif
     @else
       {{-- Fallback static images --}}
-      <a href="#flights" class="ad-grid-item" style="text-decoration:none;display:block;cursor:pointer;" onclick="showTab('flights', event); event.preventDefault();">
+      <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
           <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
         </div>
-      </a>
-      <a href="#hotels" class="ad-grid-item" style="text-decoration:none;display:block;cursor:pointer;" onclick="showTab('hotels', event); event.preventDefault();">
+      </div>
+      <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
           <img src="{{ asset('assets/homepageads/ad_hotel.png') }}" alt="Hotels" class="ad-carousel-media">
         </div>
-      </a>
+      </div>
       {{-- eSIM promo in fallback position 3 — only if tenant has eSIM --}}
       @feature('esim')
       <a href="/esim" class="ad-grid-item esim-promo-tv" style="text-decoration:none;display:block;">
@@ -369,16 +369,16 @@
         <img src="{{ asset('assets/esim_promo_ad.jpg') }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center center; z-index:0; border-radius:12px; background:#000;">
       </a>
       @endfeature
-      <a href="/tour-packages" class="ad-grid-item" style="text-decoration:none;display:block;">
+      <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
           <img src="{{ asset('assets/homepageads/ad_tour.png') }}" alt="Tours" class="ad-carousel-media">
         </div>
-      </a>
-      <a href="#flights" class="ad-grid-item" style="text-decoration:none;display:block;cursor:pointer;" onclick="showTab('flights', event); event.preventDefault();">
+      </div>
+      <div class="ad-grid-item">
         <div class="ad-tv-slide active" data-type="image" data-duration="5">
           <img src="{{ asset('assets/homepageads/ad_flight.png') }}" alt="Flights" class="ad-carousel-media">
         </div>
-      </a>
+      </div>
     @endif
   </div>
 </div>
