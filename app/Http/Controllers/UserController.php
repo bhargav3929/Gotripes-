@@ -162,14 +162,10 @@ class UserController extends Controller
             ], 201);
 
         } catch (Exception $e) {
-            // TEMPORARY: reveal the real error only to the diagnostic caller,
-            // never to a normal request. Remove once the 500 is fixed.
-            $isDiag = $request->header('X-Diag-Token') === 'gt-diag-2026-x7k9';
             return response()->json([
                 'success' => false,
                 'message' => 'Registration failed. Please try again.',
-                'debug_error' => ($isDiag || config('app.debug')) ? $e->getMessage() : null,
-                'debug_file' => $isDiag ? $e->getFile() . ':' . $e->getLine() : null,
+                'debug_error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
