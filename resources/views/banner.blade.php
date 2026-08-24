@@ -953,7 +953,7 @@
                       <select id="partnerCountry" name="country" required class="partner-select">
                         <option value="">Select your country</option>
                         @foreach(\App\Support\CountryCodes::all() as $code => $c)
-                          <option value="{{ $c['name'] }}">{{ $c['name'] }}</option>
+                          <option value="{{ $c['name'] }}" data-flag="{{ $c['flag'] }}">{{ $c['flag'] }} {{ $c['name'] }}</option>
                         @endforeach
                       </select>
                       <span class="partner-error-msg" id="partnerCountry-error"></span>
