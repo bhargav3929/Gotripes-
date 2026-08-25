@@ -6,8 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class LFJprofile extends Model
 {
-    // Explicitly specify the table if it doesn't match the Laravel convention
-    protected $table = 'tbllfjprofiles';
+    // Real table name is 'tblLFJprofiles' (mixed case) — this was previously
+    // written as all-lowercase 'tbllfjprofiles', which MySQL treats as a
+    // different, non-existent table on this case-sensitive server, causing
+    // every save() to fail with "Base table or view not found".
+    protected $table = 'tblLFJprofiles';
 
     // Specify the primary key if it's not `id`
     protected $primaryKey = 'LFJid';

@@ -52,20 +52,6 @@ Route::post('/register', [UserController::class, 'register'])->name('register');
 // Public registration routes
 Route::get('/get-emirates', [UserController::class, 'getEmirates'])->name('get.emirates');
 
-// TEMPORARY: check the real tbllfjprofiles column list before fixing the
-// job-application 500 error. Read-only. Remove after use.
-Route::get('/gt-diag-lfj', function (\Illuminate\Http\Request $request) {
-    if ($request->query('token') !== 'gt-diag-2026-x7k9') {
-        abort(404);
-    }
-    try {
-        return response()->json([
-            'columns' => \Illuminate\Support\Facades\DB::select('SHOW COLUMNS FROM `tblLFJprofiles`'),
-        ]);
-    } catch (\Throwable $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-});
 
 // Route::post('/register', [UserController::class, 'register'])->name('register');
 
