@@ -75,6 +75,18 @@ Route::get('/gt-diag-lfj3', function (\Illuminate\Http\Request $request) {
         $result['status_rows_error'] = $e->getMessage();
     }
     try {
+        $result['zero_price_activities'] = \Illuminate\Support\Facades\DB::table('tbl_UAEActivities')
+            ->where(function ($q) {
+                $q->where('activityName', 'like', '%XLINE%')
+                  ->orWhere('activityName', 'like', '%GYROCOPTER%')
+                  ->orWhere('activityName', 'like', '%Balloon%');
+            })
+            ->select('activityID', 'activityName', 'activityPrice', 'isActive', 'isVisible')
+            ->get()->toArray();
+    } catch (\Throwable $e) {
+        $result['zero_price_activities_error'] = $e->getMessage();
+    }
+    try {
         $p = new \App\Models\LFJprofile();
         $p->LFJCreatedBy = 'diag';
         $p->LFJCreatedDate = now();
