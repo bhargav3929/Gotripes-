@@ -1583,7 +1583,12 @@ function submitBooking(e) {
 
     fetch('{{ route('going-saudi.checkout', $package->id) }}', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+        },
         body: JSON.stringify(payload)
     })
     .then(r => r.json())
