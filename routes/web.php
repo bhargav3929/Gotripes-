@@ -75,6 +75,19 @@ Route::get('/gt-diag-lfj3', function (\Illuminate\Http\Request $request) {
         $result['status_rows_error'] = $e->getMessage();
     }
     try {
+        $result['activitybookings_columns'] = array_map(fn ($c) => $c->Field, \Illuminate\Support\Facades\DB::select('SHOW COLUMNS FROM activitybookings'));
+        $result['activitybookings_recent'] = \Illuminate\Support\Facades\DB::table('activitybookings')
+            ->orderByDesc('id')
+            ->limit(10)
+            ->get()->toArray();
+        $result['activitybookings_distinct_status'] = \Illuminate\Support\Facades\DB::table('activitybookings')
+            ->select('status')->distinct()->get()->toArray();
+        $result['activitybookings_distinct_paymentOption'] = \Illuminate\Support\Facades\DB::table('activitybookings')
+            ->select('paymentOption')->distinct()->get()->toArray();
+    } catch (\Throwable $e) {
+        $result['activitybookings_error'] = $e->getMessage();
+    }
+    try {
         $result['recent_real_applications'] = \Illuminate\Support\Facades\DB::table('tblLFJprofiles')
             ->where('LFJEmail', 'like', 'qa_lfj_final_%')
             ->orderByDesc('LFJid')
