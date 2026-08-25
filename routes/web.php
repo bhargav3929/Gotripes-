@@ -75,6 +75,15 @@ Route::get('/gt-diag-lfj3', function (\Illuminate\Http\Request $request) {
         $result['status_rows_error'] = $e->getMessage();
     }
     try {
+        $result['recent_real_applications'] = \Illuminate\Support\Facades\DB::table('tblLFJprofiles')
+            ->where('LFJEmail', 'like', 'qa_lfj_final_%')
+            ->orderByDesc('LFJid')
+            ->select('LFJid', 'LFJName', 'LFJEmail', 'LFJProfile_status', 'created_at')
+            ->get()->toArray();
+    } catch (\Throwable $e) {
+        $result['recent_real_applications_error'] = $e->getMessage();
+    }
+    try {
         $result['zero_price_activities'] = \Illuminate\Support\Facades\DB::table('tbl_UAEActivities')
             ->where(function ($q) {
                 $q->where('activityName', 'like', '%XLINE%')
