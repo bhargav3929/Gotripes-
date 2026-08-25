@@ -1377,7 +1377,7 @@
                         @feature('esim')<a href="/esim" class="gt-nav-sublink {{ Request::is('esim') ? 'active' : '' }}">eSIM{!! $gtBadge('esim') !!}</a>@endfeature
                         @feature('visas')<a href="/e-visa" class="gt-nav-sublink {{ Request::is('e-visa') || Request::is('uae-evisa') ? 'active' : '' }}">e-Visa (80+ Countries){!! $gtBadge('evisa') !!}</a>@endfeature
                         <a href="{{ $gtSoon('insurance') }}" class="gt-nav-sublink">Insurance{!! $gtBadge('insurance') !!}</a>
-                        @platformOnly<a href="{{ $gtSoon('cruise') }}" class="gt-nav-sublink">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
+                        @platformOnly<a href="/lotus-cruise-dubai" class="gt-nav-sublink">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
                         <a href="{{ $gtSoon('transport') }}" class="gt-nav-sublink">Transport{!! $gtBadge('transport') !!}</a>
                         <a href="{{ $gtSoon('holiday-homes') }}" class="gt-nav-sublink">Holiday Homes{!! $gtBadge('holiday_homes') !!}</a>
                     </div>
@@ -1403,7 +1403,7 @@
                     </div>
                     <div class="gt-nav-row gt-nav-secondary">
                         <a href="{{ $gtSoon('business-tourism') }}" class="gt-nav-sublink">Business Tourism (MICE){!! $gtBadge('mice') !!}</a>
-                        @platformOnly<a href="{{ $gtSoon('events') }}" class="gt-nav-sublink">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
+                        @platformOnly<a href="/events" class="gt-nav-sublink">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
                         <a href="{{ $gtSoon('local-tours') }}" class="gt-nav-sublink">Local Tours{!! $gtBadge('local_tours') !!}</a>
                         <a href="{{ $gtSoon('festival-tours') }}" class="gt-nav-sublink">Festival Tours{!! $gtBadge('festival_tours') !!}</a>
                         <a href="{{ $gtSoon('medical-tours') }}" class="gt-nav-sublink">Medical Tours{!! $gtBadge('medical_tours') !!}</a>
@@ -1468,12 +1468,12 @@
                 <button type="button" class="gt-mobile-nav-link gt-macc-toggle">Stays <i class="bi bi-chevron-down"></i></button>
                 <div class="gt-macc-panel">
                     <a href="{{ $gtSoon('holiday-homes') }}" class="gt-macc-item">Holiday Homes{!! $gtBadge('holiday_homes') !!}</a>
-                    @platformOnly<a href="{{ $gtSoon('cruise') }}" class="gt-macc-item">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
+                    @platformOnly<a href="/lotus-cruise-dubai" class="gt-macc-item">Cruise{!! $gtBadge('cruises') !!}</a>@endplatformOnly
                     <a href="{{ $gtSoon('transport') }}" class="gt-macc-item">Transport{!! $gtBadge('transport') !!}</a>
                 </div>
             </div>
 
-            @platformOnly<a href="{{ $gtSoon('events') }}" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
+            @platformOnly<a href="/events" class="gt-mobile-nav-link gt-nav-events">Events{!! $gtBadge('events') !!}</a>@endplatformOnly
 
             {{-- More --}}
             <div class="gt-macc">
