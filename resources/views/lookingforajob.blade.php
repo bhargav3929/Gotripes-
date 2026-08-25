@@ -182,6 +182,18 @@
     background: #000;
   }
 
+  /* Chrome/Edge paint autofilled fields with their own white background,
+     ignoring background-color — override it so autofilled fields stay on
+     the dark theme instead of flashing white. */
+  .premium-form .form-control:-webkit-autofill,
+  .premium-form .form-control:-webkit-autofill:hover,
+  .premium-form .form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: #fff;
+    -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset;
+    box-shadow: 0 0 0 1000px var(--input-bg) inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
   /* Custom File Input */
   .premium-form input[type="file"] {
     padding-top: 10px;
@@ -425,7 +437,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-6">
                   <label for="mobile" class="form-label">Mobile Number</label>
                   <input type="tel" id="mobile" name="mobile" class="form-control" placeholder="+971..."
-                    pattern="[0-9]{10,15}" required>
+                    pattern="\+?[0-9]{9,15}" required>
                 </div>
 
                 <div class="col-lg-3 col-md-4 col-sm-6">
@@ -478,17 +490,17 @@
                 <div class="col-lg-3 col-md-4 col-sm-6">
                   <label for="reference_name" class="form-label">Reference Name</label>
                   <input type="text" id="reference_name" name="reference_name" class="form-control"
-                    placeholder="Optional">
+                    placeholder="e.g. Jane Smith" required>
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-6">
                   <label for="reference_position" class="form-label">Reference Position</label>
                   <input type="text" id="reference_position" name="reference_position" class="form-control"
-                    placeholder="Optional">
+                    placeholder="e.g. Team Lead" required>
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-6">
                   <label for="reference_mobile" class="form-label">Reference Mobile</label>
                   <input type="tel" id="reference_mobile" name="reference_mobile" class="form-control"
-                    placeholder="Optional">
+                    placeholder="+971..." pattern="\+?[0-9]{9,15}" required>
                 </div>
               </div>
 
