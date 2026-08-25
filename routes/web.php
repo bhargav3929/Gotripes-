@@ -59,9 +59,11 @@ Route::get('/gt-diag-lfj', function (\Illuminate\Http\Request $request) {
         abort(404);
     }
     try {
+        $all = collect(\Illuminate\Support\Facades\DB::select('SHOW TABLES'))
+            ->map(fn($row) => array_values((array) $row)[0]);
         return response()->json([
-            'tables_found' => collect(\Illuminate\Support\Facades\DB::select('SHOW TABLES LIKE "%lfj%"'))
-                ->map(fn($row) => array_values((array) $row)[0]),
+            'likely_matches' => $all->filter(fn($t) => stripos($t, 'lfj') !== false || stripos($t, 'job') !== false)->values(),
+            'all_tables' => $all,
         ]);
     } catch (\Throwable $e) {
         return response()->json(['error' => $e->getMessage()], 500);
