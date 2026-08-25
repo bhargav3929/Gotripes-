@@ -11,6 +11,14 @@ class ContactController extends Controller
 {
     public function submit(Request $request)
     {
+        // The page submits this via fetch(), but only ever checked
+        // response.ok — which is true even for a redirect back to a 200
+        // page, so a validation failure or a failed email send both looked
+        // identical to success. Detecting "wants JSON" here (matching the
+        // headers the page now sends) lets a real failure actually reach
+        // the customer as an error instead of a false "Message Sent!".
+        $isAjax = $request->ajax() || $request->wantsJson() || $request->expectsJson();
+
         // Validate input data
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
@@ -37,7 +45,11 @@ class ContactController extends Controller
 
         if (empty($toEmail)) {
             Log::error('No tenant email and no platform default — contact lead has nowhere to go.');
-            return redirect()->back()->with('error', 'Sorry, we cannot accept messages right now. Please try later.');
+            $message = 'Sorry, we cannot accept messages right now. Please try later.';
+            if ($isAjax) {
+                return response()->json(['success' => false, 'message' => $message], 500);
+            }
+            return redirect()->back()->with('error', $message);
         }
 
         $recipients = [$toEmail];
@@ -55,6 +67,9 @@ class ContactController extends Controller
                 'timestamp' => now()->toDateTimeString(),
             ]);
 
+            if ($isAjax) {
+                return response()->json(['success' => true, 'message' => 'Your message has been sent!']);
+            }
             return redirect()->back()->with('success', 'Your message has been sent!');
         } catch (\Exception $e) {
             // Log error with exception message and input data
@@ -66,7 +81,11 @@ class ContactController extends Controller
                 'data'      => $data,
             ]);
 
-            return redirect()->back()->with('error', 'Failed to send message. Please try again later.');
+            $message = 'Failed to send message. Please try again later.';
+            if ($isAjax) {
+                return response()->json(['success' => false, 'message' => $message], 500);
+            }
+            return redirect()->back()->with('error', $message);
         }
     }
 }

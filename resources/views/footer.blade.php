@@ -229,7 +229,7 @@
         </div>
         <ul class="gt-footer-contact">
           <li><i class="fa-solid fa-envelope"></i><a href="mailto:{{ $footerEmail }}">{{ $footerEmail }}</a></li>
-          <li><i class="fa-solid fa-phone"></i><a href="tel:{{ preg_replace('/\s+/', '', $footerPhone) }}">{{ $footerPhone }}</a></li>
+          <li><i class="fa-solid fa-phone"></i><a href="tel:{{ preg_replace('/[^\d+]/', '', $footerPhone) }}">{{ $footerPhone }}</a></li>
           <li><i class="fa-solid fa-location-dot"></i><span>{{ $footerAddressParts[0] }}@if(!empty($footerAddressParts[1]))<br>{{ $footerAddressParts[1] }}@endif</span></li>
         </ul>
       </div>

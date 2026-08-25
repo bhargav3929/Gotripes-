@@ -605,7 +605,7 @@
                     </div>
                     <div class="qr-title">Call / WhatsApp</div>
                     <p class="qr-text">
-                        <a href="tel:{{ preg_replace('/\s+/', '', $cuPhone) }}" style="color:inherit; text-decoration:none;">{{ $cuPhone }}</a>
+                        <a href="tel:{{ preg_replace('/[^\d+]/', '', $cuPhone) }}" style="color:inherit; text-decoration:none;">{{ $cuPhone }}</a>
                     </p>
                 </div>
             </div>
@@ -679,25 +679,41 @@
 
         fetch(this.action, {
             method: 'POST',
-            headers: { 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            },
             body: formData
         })
             .then(async response => {
                 document.getElementById('buttonText').style.display = '';
                 document.getElementById('buttonSpinner').style.display = 'none';
 
-                if (response.ok) {
+                // A redirect-back-to-a-200-page used to read as "success" here
+                // even when the server rejected the submission — the response
+                // status/body were never actually inspected. Parse the JSON
+                // body the server now sends and trust *that*, not just
+                // whether some response came back.
+                let data = null;
+                try { data = await response.json(); } catch (e) { /* non-JSON body handled below */ }
+
+                if (response.ok && data && data.success) {
                     this.reset();
                     snackbar.style.display = 'block';
                     snackbar.style.background = '#198754';
                     snackbar.innerHTML = '<span class="text-white">Message Sent Successfully! We will revert shortly.</span>';
                 } else {
+                    let errorText = (data && data.message) || 'Failed to send message. Please try again.';
+                    if (data && data.errors) {
+                        errorText = Object.values(data.errors).flat().join(' ');
+                    }
                     snackbar.style.display = 'block';
                     snackbar.style.background = '#dc3545';
-                    snackbar.innerHTML = '<span class="text-white">Failed to send message. Please try again.</span>';
+                    snackbar.innerHTML = '<span class="text-white">' + errorText + '</span>';
                 }
 
-                setTimeout(() => snackbar.style.display = 'none', 3000);
+                setTimeout(() => snackbar.style.display = 'none', 4000);
             })
             .catch(() => {
                 document.getElementById('buttonText').style.display = '';
@@ -705,6 +721,7 @@
                 snackbar.style.display = 'block';
                 snackbar.style.background = '#dc3545';
                 snackbar.innerHTML = '<span class="text-white">Network error. Please try again.</span>';
+                setTimeout(() => snackbar.style.display = 'none', 4000);
             });
     });
 </script>
