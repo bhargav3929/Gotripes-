@@ -59,11 +59,8 @@ Route::get('/gt-diag-lfj', function (\Illuminate\Http\Request $request) {
         abort(404);
     }
     try {
-        $all = collect(\Illuminate\Support\Facades\DB::select('SHOW TABLES'))
-            ->map(fn($row) => array_values((array) $row)[0]);
         return response()->json([
-            'likely_matches' => $all->filter(fn($t) => stripos($t, 'lfj') !== false || stripos($t, 'job') !== false)->values(),
-            'all_tables' => $all,
+            'columns' => \Illuminate\Support\Facades\DB::select('SHOW COLUMNS FROM `tblLFJprofiles`'),
         ]);
     } catch (\Throwable $e) {
         return response()->json(['error' => $e->getMessage()], 500);
