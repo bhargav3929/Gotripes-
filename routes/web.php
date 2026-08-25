@@ -58,9 +58,14 @@ Route::get('/gt-diag-lfj', function (\Illuminate\Http\Request $request) {
     if ($request->query('token') !== 'gt-diag-2026-x7k9') {
         abort(404);
     }
-    return response()->json(
-        \Illuminate\Support\Facades\DB::select('SHOW COLUMNS FROM tbllfjprofiles')
-    );
+    try {
+        return response()->json([
+            'tables_found' => collect(\Illuminate\Support\Facades\DB::select('SHOW TABLES LIKE "%lfj%"'))
+                ->map(fn($row) => array_values((array) $row)[0]),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
 });
 
 // Route::post('/register', [UserController::class, 'register'])->name('register');
