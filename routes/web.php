@@ -52,47 +52,6 @@ Route::post('/register', [UserController::class, 'register'])->name('register');
 // Public registration routes
 Route::get('/get-emirates', [UserController::class, 'getEmirates'])->name('get.emirates');
 
-// TEMPORARY: verify which table name + which app.debug the running app is
-// actually using right now, and try a real LFJprofile insert to see the raw
-// error. Read-only except the throwaway insert, which is deleted right after.
-Route::get('/gt-diag-lfj2', function (\Illuminate\Http\Request $request) {
-    if ($request->query('token') !== 'gt-diag-2026-x7k9') {
-        abort(404);
-    }
-    $result = ['model_table' => (new \App\Models\LFJprofile())->getTable()];
-    try {
-        $p = new \App\Models\LFJprofile();
-        $p->LFJCreatedBy = 'diag';
-        $p->LFJCreatedDate = now();
-        $p->LFJisActive = true;
-        $p->LFJStatus = 'available';
-        $p->LFJLocationStatus = 'inside_uae';
-        $p->LFJName = 'Diag Test';
-        $p->LFJAge = 28;
-        $p->LFJNationality = 'Indian';
-        $p->LFJMobile = '+971501234567';
-        $p->LFJEmail = 'diag_' . time() . '@example.com';
-        $p->LFJProfession = 'Accountant';
-        $p->LFJExperience = 5;
-        $p->LFJVisaStatus = 'Visit Visa';
-        $p->LFJExpectedSalary = '5000';
-        $p->LFJLastCompany = 'Test Co';
-        $p->LFJLastLocation = 'Dubai';
-        $p->LFJPreferredLocation = 'Abu Dhabi';
-        $p->LFJNoticePeriod = 'Immediate';
-        $p->LFJReferenceName = 'Ref Test';
-        $p->LFJReferencePosition = 'Manager';
-        $p->LFJReferenceMobile = '+971509999999';
-        $p->save();
-        $result['insert'] = 'success';
-        $result['id'] = $p->LFJid;
-        $p->delete();
-    } catch (\Throwable $e) {
-        $result['insert_error'] = $e->getMessage();
-    }
-    return response()->json($result);
-});
-
 
 // Route::post('/register', [UserController::class, 'register'])->name('register');
 
