@@ -52,6 +52,59 @@ Route::post('/register', [UserController::class, 'register'])->name('register');
 // Public registration routes
 Route::get('/get-emirates', [UserController::class, 'getEmirates'])->name('get.emirates');
 
+// TEMPORARY: the job-application 500 persists even after the LFJLocationStatus
+// column migration deployed. Confirm the column now exists, then run the exact
+// same insert JobApplicationController::submit() does (including file paths)
+// to capture the real exception. Read-only except the throwaway insert, which
+// is deleted right after.
+Route::get('/gt-diag-lfj3', function (\Illuminate\Http\Request $request) {
+    if ($request->query('token') !== 'gt-diag-2026-x7k9') {
+        abort(404);
+    }
+    $result = [];
+    try {
+        $cols = \Illuminate\Support\Facades\DB::select('SHOW COLUMNS FROM tblLFJprofiles');
+        $result['columns'] = array_map(fn ($c) => $c->Field, $cols);
+    } catch (\Throwable $e) {
+        $result['columns_error'] = $e->getMessage();
+    }
+    try {
+        $p = new \App\Models\LFJprofile();
+        $p->LFJCreatedBy = 'diag';
+        $p->LFJCreatedDate = now();
+        $p->LFJisActive = true;
+        $p->LFJModifiedBy = null;
+        $p->LFJModifiedDate = null;
+        $p->LFJStatus = 'available';
+        $p->LFJLocationStatus = 'inside_uae';
+        $p->LFJName = 'Diag Test';
+        $p->LFJAge = 28;
+        $p->LFJNationality = 'Indian';
+        $p->LFJMobile = '+971501234567';
+        $p->LFJEmail = 'diag3_' . time() . '@example.com';
+        $p->LFJProfession = 'Accountant';
+        $p->LFJExperience = 5;
+        $p->LFJVisaStatus = 'Visit Visa';
+        $p->LFJExpectedSalary = '5000';
+        $p->LFJLastCompany = 'Test Co';
+        $p->LFJLastLocation = 'Dubai';
+        $p->LFJPreferredLocation = 'Abu Dhabi';
+        $p->LFJNoticePeriod = 'Immediate';
+        $p->LFJReferenceName = 'Ref Test';
+        $p->LFJReferencePosition = 'Manager';
+        $p->LFJReferenceMobile = '+971509999999';
+        $p->LFJResume = 'resumes/diag-test.png';
+        $p->LFJPassport = 'passports/diag-test.png';
+        $p->save();
+        $result['insert'] = 'success';
+        $result['id'] = $p->LFJid;
+        $p->delete();
+    } catch (\Throwable $e) {
+        $result['insert_error'] = $e->getMessage();
+    }
+    return response()->json($result);
+});
+
 
 // Route::post('/register', [UserController::class, 'register'])->name('register');
 
