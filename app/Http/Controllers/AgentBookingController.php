@@ -15,12 +15,18 @@ class AgentBookingController extends Controller
         $isAjax = $request->ajax() || $request->wantsJson() || $request->expectsJson();
 
         $validator = Validator::make($request->all(), [
-            'client_name' => 'required|string|max:255',
+            // Nomod rejects a customer name with digits/symbols after the
+            // round-trip to their gateway — catch it here too (the page
+            // already blocks this client-side) so a request that bypasses
+            // the browser check still fails fast with a clear message.
+            'client_name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ\s\'.-]*$/'],
             'client_email' => 'nullable|email|max:255',
             'client_phone' => 'required|string|max:50',
             'service' => 'required|string',
             'amount' => 'required|numeric|min:1',
             'agent_name' => 'nullable|string|max:255'
+        ], [
+            'client_name.regex' => 'Name can only contain letters, spaces, hyphens and apostrophes — no numbers or symbols.',
         ]);
 
         if ($validator->fails()) {

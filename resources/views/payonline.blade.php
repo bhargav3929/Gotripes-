@@ -145,6 +145,18 @@
         font-weight: 400;
     }
 
+    .field-input.invalid {
+        border-color: #ff4d4f;
+    }
+
+    .field-error-msg {
+        display: block;
+        color: #ff6b6b;
+        font-size: 12px;
+        margin-top: 6px;
+        min-height: 14px;
+    }
+
     /* Override browser autofill styling */
     .field-input:-webkit-autofill,
     .field-input:-webkit-autofill:hover,
@@ -417,6 +429,7 @@
                             <label class="field-label">Full Name</label>
                             <input type="text" class="field-input" id="client_name" name="client_name"
                                 placeholder="John Doe" required>
+                            <span class="field-error-msg" id="client_name-error"></span>
                         </div>
 
                         <div class="form-field">
@@ -557,8 +570,35 @@
         const form = document.getElementById('agentPayForm');
         const btn = document.getElementById('submitBtn');
 
+        // Nomod rejects a customer name containing digits or symbols only
+        // after the round-trip to their gateway. Catch it here instead, so
+        // the customer sees the problem immediately instead of waiting on
+        // a payment request that was always going to fail.
+        const nameInput = document.getElementById('client_name');
+        const nameError = document.getElementById('client_name-error');
+        const NAME_PATTERN = /^[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ\s'.-]*$/;
+
+        function validateName() {
+            const value = nameInput.value.trim();
+            const valid = value !== '' && NAME_PATTERN.test(value);
+            nameInput.classList.toggle('invalid', !valid);
+            nameError.textContent = valid ? '' : 'Name can only contain letters, spaces, hyphens and apostrophes — no numbers or symbols.';
+            return valid;
+        }
+
+        nameInput.addEventListener('input', function () {
+            if (nameInput.classList.contains('invalid')) validateName();
+        });
+        nameInput.addEventListener('blur', validateName);
+
         form.addEventListener('submit', function (e) {
             e.preventDefault();
+
+            if (!validateName()) {
+                nameInput.focus();
+                return;
+            }
+
             const orig = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<i class="bi bi-hourglass"></i> Processing...';
