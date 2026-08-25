@@ -129,6 +129,18 @@
         outline: none;
     }
 
+    /* Chrome/Edge paint autofilled fields with their own white background,
+       ignoring background-color — override it so autofilled fields stay on
+       the dark theme instead of flashing white. */
+    .premium-form .form-control:-webkit-autofill,
+    .premium-form .form-control:-webkit-autofill:hover,
+    .premium-form .form-control:-webkit-autofill:focus {
+        -webkit-text-fill-color: #fff;
+        -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.6) inset;
+        box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.6) inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
     /* Button */
     .btn-gold {
         background: var(--premium-gold-gradient);
