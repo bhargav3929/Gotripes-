@@ -68,12 +68,14 @@ class SaudiVisaController extends Controller
         // rules above because it depends on the visa type the customer picked,
         // and server-side because the field is shown by JavaScript.
         if ($visaType->requiresEmiratesId() && !$request->hasFile('emirates_id')) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'emirates_id' => 'A copy of your Emirates ID or GCC residence is required for the '
-                        . $visaType->name . '.',
-                ]);
+            $message = 'A copy of your Emirates ID or GCC residence is required for the '
+                . $visaType->name . '.';
+
+            return response()->json([
+                'success' => false,
+                'error' => $message,
+                'errors' => ['emirates_id' => [$message]],
+            ], 422);
         }
 
         try {
