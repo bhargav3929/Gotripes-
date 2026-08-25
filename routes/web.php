@@ -70,6 +70,7 @@ Route::get('/gt-diag-lfj3', function (\Illuminate\Http\Request $request) {
     }
     try {
         $result['status_rows'] = \Illuminate\Support\Facades\DB::table('tbl_LFJProfileStatus')->get()->toArray();
+        $result['status_columns'] = array_map(fn ($c) => $c->Field, \Illuminate\Support\Facades\DB::select('SHOW COLUMNS FROM tbl_LFJProfileStatus'));
     } catch (\Throwable $e) {
         $result['status_rows_error'] = $e->getMessage();
     }
