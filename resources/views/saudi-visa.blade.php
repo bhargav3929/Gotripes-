@@ -285,6 +285,18 @@
         box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.07);
     }
 
+    /* Chrome/Edge paint autofilled fields with their own white background,
+       ignoring background-color — override it with the inset box-shadow
+       trick so autofilled Name/Email fields stay on the dark theme. */
+    .field-input:-webkit-autofill,
+    .field-input:-webkit-autofill:hover,
+    .field-input:-webkit-autofill:focus {
+        -webkit-text-fill-color: var(--gt-text);
+        -webkit-box-shadow: 0 0 0 1000px var(--c-input-bg) inset;
+        box-shadow: 0 0 0 1000px var(--c-input-bg) inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
     select.field-input {
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='14' height='14' fill='%23FFD700'%3E%3Cpath d='M11.9997 13.1714L16.9495 8.22168L18.3637 9.63589L11.9997 15.9999L5.63574 9.63589L7.04996 8.22168L11.9997 13.1714Z'/%3E%3C/svg%3E");
