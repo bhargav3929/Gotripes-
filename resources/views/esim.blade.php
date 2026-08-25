@@ -1680,6 +1680,14 @@
         letter-spacing: -0.5px;
     }
 
+    /* The "MOST POPULAR" tag is absolutely positioned at top:6px inside the
+       card's 20px top padding, leaving only ~2px of clearance before this
+       heading — too thin, so the tag visually overlaps the size text. Push
+       the heading down only on cards that actually have the tag. */
+    .esim-bundle-popular-tag + .esim-bundle-data {
+        margin-top: 14px;
+    }
+
     .esim-bundle-validity {
         font-size: 10px;
         color: rgba(255, 255, 255, 0.4);
@@ -3729,6 +3737,11 @@
             font-size: 6px;
             padding: 2px 6px;
             top: -8px;
+        }
+        /* On this breakpoint the tag already hangs above the card (top:-8px),
+           so it doesn't need the extra clearance added for desktop. */
+        .esim-bundle-popular-tag + .esim-bundle-data {
+            margin-top: 0;
         }
         .esim-continue-btn {
             width: 100%;
