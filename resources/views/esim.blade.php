@@ -18,6 +18,19 @@
         --c-border-accent: #C9A227;
     }
 
+    /* Light-theme values for the variables above. Previously missing entirely,
+       so every card/input/dropdown/muted-text usage on this page (~25 places)
+       stayed dark-hardcoded even when the site switched to light mode. Values
+       match the palette already used on saudi-visa.blade.php for consistency. */
+    html[data-theme="light"] {
+        --c-dark-bg: #f4f5f7;
+        --c-card-bg: #ffffff;
+        --c-input-bg: #ffffff;
+        --c-input-border: #e0e0e0;
+        --c-text-muted: #666;
+        --c-text-light: #222;
+    }
+
     * { box-sizing: border-box; }
 
     /* ============================================================

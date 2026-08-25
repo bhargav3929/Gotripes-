@@ -30,7 +30,10 @@
                         ['title' => 'WEBSITE DEVELOPMENT', 'img' => 'assets/index_files/service_website_development_1767532932173.png', 'link' => '/'],
                         ['title' => 'VISA SERVICES', 'img' => 'assets/index_files/service_visa_services_1767532949283.png', 'link' => '/uaevisa'],
                         ['title' => 'HAJJ UMRAH SERVICES', 'img' => 'assets/index_files/service_hajj_umrah_1767532980525.png', 'link' => '/hajj-umrah'],
-                        ['title' => 'CAR RENTALS', 'img' => 'assets/index_files/service_car_rentals_1767532996883.png', 'link' => '/'],
+                        // Matched to the existing Transport "Coming Soon" page — its own
+                        // tagline is "Premium chauffeur, transfers and car rentals", the
+                        // same nav item other pages already link to for this service.
+                        ['title' => 'CAR RENTALS', 'img' => 'assets/index_files/service_car_rentals_1767532996883.png', 'link' => '/coming-soon/transport'],
                         ['title' => 'RECRUITMENT SERVICES', 'img' => 'assets/index_files/service_recruitment_1767533016184.png', 'link' => '/'],
                         ['title' => 'INTERNSHIPS', 'img' => 'assets/index_files/service_internships_1767533036518.png', 'link' => '/'],
                         ['title' => 'WORLD CLASS TOUR PACKAGES', 'img' => 'assets/index_files/service_tour_packages_1767533057318.png', 'link' => '/countriestour'],

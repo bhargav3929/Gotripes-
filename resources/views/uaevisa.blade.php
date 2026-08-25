@@ -1379,8 +1379,7 @@
             let fee = null;
 
             if (pkg && Array.isArray(pkg.deposits) && pkg.deposits.length) {
-                const nat = (nationality || '').toLowerCase();
-                const natRow = nat ? pkg.deposits.find(d => d.nationality && d.nationality.toLowerCase() === nat) : null;
+                const natRow = nationality ? pkg.deposits.find(d => nationalityRowMatches(d.nationality, nationality)) : null;
                 const row = natRow || pkg.deposits.find(d => !d.nationality);
                 if (row) {
                     deposit = Number(row.deposit);
@@ -1412,6 +1411,41 @@
             return 60 + (tier - 3) * 10;
         }
 
+        // Standard Arab League membership (22 states), matched against the exact
+        // option values in the #nationality <select> above. Used to expand a
+        // price row whose `nationality` field is the category name "Arab
+        // Countries" set by a manager, rather than one specific country.
+        const ARAB_COUNTRIES = [
+            'algeria', 'bahrain', 'comoros', 'djibouti', 'egypt', 'iraq', 'jordan',
+            'kuwait', 'lebanon', 'libya', 'mauritania', 'morocco', 'oman',
+            'palestine', 'qatar', 'saudi arabia', 'somalia', 'sudan', 'syria',
+            'tunisia', 'united arab emirates', 'yemen'
+        ];
+
+        // A price row's `nationality` field (set by a manager in the pricing
+        // matrix) is one of: a single country ("India"), a comma-separated list
+        // ("India ,Sri Lanka, Philippines and Nepal"), the category name "Arab
+        // Countries", the wildcard "Any", or blank (applies to everyone). This
+        // decides whether a given row applies to the traveller's selected
+        // nationality — previously this was a single exact-string-equals check,
+        // which only ever matched a row whose nationality was one literal
+        // country, so every list/category/wildcard row was silently ignored
+        // and the price fell through to 0.
+        function nationalityRowMatches(rowNat, selectedNat) {
+            if (!rowNat || !selectedNat) return false;
+            const row = rowNat.trim().toLowerCase();
+            const sel = selectedNat.trim().toLowerCase();
+            if (row === sel) return true;
+            if (row === 'any') return true;
+            if (row === 'arab countries') return ARAB_COUNTRIES.includes(sel);
+            if (row.includes(',')) {
+                return row.split(',')
+                    .map(s => s.replace(/^\s*and\s+/i, '').trim())
+                    .some(s => s === sel);
+            }
+            return false;
+        }
+
         function updatePrice() {
             const adults = getAdults();
             const children = getChildren();
@@ -1437,11 +1471,12 @@
                         p.duration === selectedDuration
                     );
 
-                    // Filter by nationality first, fallback to null/empty nationality
-                    const hasNatPrice = pricesForCombo.some(p => p.nationality && p.nationality.toLowerCase() === selectedNat.toLowerCase());
-                    
+                    // Filter by nationality first (exact / list / category / "Any"
+                    // wildcard — see nationalityRowMatches), fallback to blank rows.
+                    const hasNatPrice = pricesForCombo.some(p => nationalityRowMatches(p.nationality, selectedNat));
+
                     if (hasNatPrice) {
-                        pricesForCombo = pricesForCombo.filter(p => p.nationality && p.nationality.toLowerCase() === selectedNat.toLowerCase());
+                        pricesForCombo = pricesForCombo.filter(p => nationalityRowMatches(p.nationality, selectedNat));
                     } else {
                         pricesForCombo = pricesForCombo.filter(p => !p.nationality);
                     }

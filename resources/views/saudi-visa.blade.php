@@ -417,6 +417,13 @@
         background: var(--gt-surface) !important;
         border: 1px solid var(--gt-border-strong) !important;
     }
+    /* Passport-scan status text is too light to read on light-theme's near-white
+       card background (measured ~1.7:1 contrast for .success, well under the
+       4.5:1 WCAG AA minimum). Darken the text only — background/border tints
+       and the dark-theme colors above are unchanged. */
+    html[data-theme="light"] .scan-result-card.success { color: #15803d; }
+    html[data-theme="light"] .scan-result-card.scanning { color: var(--gt-gold-deep); }
+    html[data-theme="light"] .scan-result-card.error { color: #b91c1c; }
     .ts-dropdown .option { padding: 9px 14px !important; color: var(--gt-text-secondary) !important; }
     .ts-dropdown .active { background: var(--gt-gold-soft) !important; color: var(--c-gold) !important; }
 

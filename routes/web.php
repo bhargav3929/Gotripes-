@@ -69,6 +69,11 @@ Route::get('/gt-diag-lfj3', function (\Illuminate\Http\Request $request) {
         $result['columns_error'] = $e->getMessage();
     }
     try {
+        $result['status_rows'] = \Illuminate\Support\Facades\DB::table('tbl_LFJProfileStatus')->get()->toArray();
+    } catch (\Throwable $e) {
+        $result['status_rows_error'] = $e->getMessage();
+    }
+    try {
         $p = new \App\Models\LFJprofile();
         $p->LFJCreatedBy = 'diag';
         $p->LFJCreatedDate = now();

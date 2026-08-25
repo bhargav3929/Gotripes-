@@ -463,6 +463,18 @@ class ActivityBookingController extends Controller
             // never trust a client-submitted amount for a real booking_id.
             $amount = (float) $booking->amount;
 
+            // "On request" / not-yet-priced activities store as 0 (or unset)
+            // rather than a real fee. Sending that to the gateway would create
+            // a real checkout session for AED 0 — refuse it here and point the
+            // customer at a request-a-quote path instead of self-payment.
+            if ($amount <= 0) {
+                $message = 'This activity is priced on request. Please contact us and our team will confirm pricing before you pay.';
+                if ($request->ajax()) {
+                    return response()->json(['success' => false, 'error' => $message], 422);
+                }
+                return redirect()->back()->withErrors(['error' => $message]);
+            }
+
             $orderId = 'ORDAB' . $bookingId;
 
             $nomodService = new NomodService();
