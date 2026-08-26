@@ -97,7 +97,13 @@ class EsimReconcile extends Command
                     'monty_order_id'     => $upstream['order_id'] ?? null,
                     'monty_iccid'        => $upstream['iccid'] ?? null,
                     'reservation_status' => 'completed',
-                    'payment_status'     => $order->payment_status === 'paid' ? 'paid' : $order->payment_status,
+                    // MontyeSIM only ever has a record here because assignBundle()
+                    // ran, which itself requires payment_status === 'paid' at the
+                    // time — so a real upstream match means the order WAS paid,
+                    // regardless of what this column currently says. Previously
+                    // this only preserved an existing 'paid' value, which under
+                    // --all left a genuinely-issued order looking "Unpaid".
+                    'payment_status'     => 'paid',
                     'monty_response'     => $upstream,
                 ]);
                 Log::warning('eSIM order adopted from provider during reconcile', [

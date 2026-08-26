@@ -37,6 +37,24 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->onOneServer();
 
+        // Rescue eSIM orders paid via Nomod but never confirmed because the
+        // customer did not return from the checkout redirect. esim:reconcile
+        // above only compares against MontyeSIM, which never heard about these
+        // orders in the first place — this asks Nomod directly instead.
+        $schedule->command('esim:reconcile-payments')
+            ->everyTenMinutes()
+            ->withoutOverlapping()
+            ->onOneServer();
+
+        // Rescue activity bookings that were paid via Nomod but never
+        // finalized because the customer did not return from the checkout
+        // redirect. Same failure mode as evisa:reconcile above, just for the
+        // activities order type. Every ten minutes for the same reason.
+        $schedule->command('activity:reconcile')
+            ->everyTenMinutes()
+            ->withoutOverlapping()
+            ->onOneServer();
+
         // Keep the Fluxir catalog warm. The storefront builds its country list
         // from a 24h cache; letting it expire on a real visitor costs them a
         // ~12s page load, and an upstream hiccup at that moment shows the whole

@@ -5,7 +5,7 @@
 
 @section('content')
 @php
-    $statusOptions = [''=>'All statuses', 'paid'=>'Paid', 'unpaid'=>'Unpaid', 'failed'=>'Failed'];
+    $statusOptions = [''=>'All statuses', 'paid'=>'Paid', 'unpaid'=>'Unpaid', 'failed'=>'Failed', 'cancelled'=>'Cancelled'];
     $statusSelect = '<select name="status">';
     foreach ($statusOptions as $val => $lbl) {
         $sel = request('status') === $val ? ' selected' : '';
@@ -30,9 +30,12 @@
         ['label' => 'Amount',    'render' => fn($o) => number_format((float) $o->selling_price, 2).' '.($o->currency ?: 'AED')],
         ['label' => 'Payment',   'html' => true, 'render' => function($o) {
             $s = strtolower($o->payment_status ?? 'unpaid');
+            // 'cancelled' is grouped with 'failed' visually (both mean no charge
+            // went through) but keeps its own label so managers can tell a
+            // customer-cancelled checkout apart from a genuine decline.
             $cls = $s === 'paid' ? 'badge-paid'
                  : ($s === 'unpaid' ? 'badge-pending'
-                 : ($s === 'failed' ? 'badge-failed' : 'badge-default'));
+                 : (in_array($s, ['failed', 'cancelled']) ? 'badge-failed' : 'badge-default'));
             return '<span class="badge '.$cls.'">'.e(ucfirst($s)).'</span>';
         }],
         ['label' => 'eSIM', 'html' => true, 'render' => function($o) {

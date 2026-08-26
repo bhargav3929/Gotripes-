@@ -646,6 +646,8 @@ class NomodController extends Controller
                     // failure the service alerts the team and the order can be
                     // retried from the manager portal.
                     (new EsimProvisioningService())->provision($esimOrder);
+                } elseif ($paymentStatus === 'Cancelled') {
+                    $esimOrder->update(['payment_status' => 'cancelled']);
                 } else {
                     $esimOrder->update(['payment_status' => 'failed']);
                 }

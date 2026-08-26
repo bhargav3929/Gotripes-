@@ -6,8 +6,10 @@ use App\Models\EsimOrder;
 use App\Models\NomodTransaction;
 use App\Services\MontyEsimService;
 use App\Services\NomodService;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,6 +23,14 @@ class EsimController extends Controller
      * this cap only stops a mistyped quantity becoming a very large charge.
      */
     public const MAX_QUANTITY = 50;
+
+    /**
+     * How recent an existing unpaid order for the same customer/bundle/
+     * quantity must be to be treated as a duplicate submission (double-click
+     * across tabs, refresh-and-resubmit, or a network-level retry) rather
+     * than a genuinely new, separate purchase.
+     */
+    private const DUPLICATE_WINDOW_SECONDS = 120;
 
     private function tenantMarkup(): ?float
     {
@@ -121,7 +131,72 @@ class EsimController extends Controller
             ], 422);
         }
 
+        $quantity = max(1, (int) $request->input('quantity', 1));
+
+        // Duplicate-submission guard. Nothing before this point creates any
+        // state, so a request that turns out to be a duplicate costs nothing.
+        //
+        // The lock serializes two requests that arrive close enough together
+        // that neither would otherwise see the other's row yet (two tabs
+        // submitted within the same instant, or a client-side retry firing
+        // before the first request has committed) — without it, both could
+        // pass the "any recent duplicate?" check below at the same time and
+        // each create their own order. The lock only ever guards this one
+        // purchase intent (keyed on email+bundle+country+quantity), so it
+        // cannot block or delay any other customer's purchase.
+        $lockKey = 'esim_purchase:' . sha1(strtolower((string) $request->email) . '|' . $request->bundle_code . '|' . $request->country_code . '|' . $quantity);
+        $lock = Cache::lock($lockKey, 20);
+
         try {
+            $lock->block(5);
+        } catch (LockTimeoutException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'This purchase is already being processed. Please wait a moment before trying again.',
+            ], 429);
+        }
+
+        try {
+            // An existing unpaid order for the exact same customer/bundle/
+            // country/quantity, created moments ago, is almost certainly this
+            // same purchase intent arriving twice — not a second, deliberate
+            // purchase. Reuse its checkout rather than creating another payable
+            // order and another Nomod checkout session. An order outside the
+            // window, or already paid/failed/cancelled, is never touched here —
+            // only a fresh, still-open attempt qualifies.
+            $existingOrder = EsimOrder::where('customer_email', $request->email)
+                ->where('bundle_code', $request->bundle_code)
+                ->where('country_code', $request->country_code)
+                ->where('quantity', $quantity)
+                ->where('payment_status', 'unpaid')
+                ->where('created_at', '>=', now()->subSeconds(self::DUPLICATE_WINDOW_SECONDS))
+                ->orderByDesc('id')
+                ->first();
+
+            if ($existingOrder) {
+                $existingCheckout = NomodTransaction::where('order_id', $existingOrder->order_reference)
+                    ->where('status', 'created')
+                    ->orderByDesc('id')
+                    ->first();
+
+                if ($existingCheckout && $existingCheckout->checkout_url) {
+                    Log::info('eSIM purchase: reusing existing unpaid order/checkout for a duplicate submission', [
+                        'esim_order_id'   => $existingOrder->id,
+                        'order_reference' => $existingOrder->order_reference,
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'checkout_url' => $existingCheckout->checkout_url,
+                        'order_reference' => $existingOrder->order_reference,
+                    ]);
+                }
+                // An unpaid order exists but has no usable checkout (e.g. Nomod
+                // was down on the prior attempt) — reuse the ORDER below rather
+                // than creating a second one, and just create a fresh checkout
+                // for it.
+            }
+
             // Price and plan details are always re-fetched from the provider.
             // A placeholder/demo branch used to live here: any bundle_code
             // starting with "esim_" was priced from a hardcoded table and sold
@@ -136,8 +211,6 @@ class EsimController extends Controller
                     'error' => 'Selected plan is no longer available. Please choose another.',
                 ], 404);
             }
-
-            $quantity = max(1, (int) $request->input('quantity', 1));
 
             $costPrice = $bundle['cost_price'];
             // Per-eSIM price, and the order total the customer is charged.
@@ -173,30 +246,37 @@ class EsimController extends Controller
                 ], 503);
             }
 
-            // Create eSIM order
-            $esimOrder = EsimOrder::create([
-                'order_reference' => '', // Will set after we have the ID
-                'customer_name' => $request->name,
-                'customer_email' => $request->email,
-                'customer_phone' => $request->phone,
-                'country_code' => $request->country_code,
-                'country_name' => $request->country_name,
-                'bundle_code' => $request->bundle_code,
-                'bundle_name' => $bundleName,
-                'quantity' => $quantity,
-                'data_amount' => $dataAmount,
-                'validity_days' => $validityDays,
-                'monty_cost_price' => $costPrice,
-                'selling_price' => $sellingPrice,
-                'unit_selling_price' => $unitSellingPrice,
-                'currency' => 'AED',
-                'reservation_status' => 'pending',
-                'payment_status' => 'unpaid',
-            ]);
+            if ($existingOrder) {
+                // Reuse the order found above rather than creating a second one
+                // for the same purchase intent — only its checkout was missing.
+                $esimOrder = $existingOrder;
+                $orderReference = $esimOrder->order_reference;
+            } else {
+                // Create eSIM order
+                $esimOrder = EsimOrder::create([
+                    'order_reference' => '', // Will set after we have the ID
+                    'customer_name' => $request->name,
+                    'customer_email' => $request->email,
+                    'customer_phone' => $request->phone,
+                    'country_code' => $request->country_code,
+                    'country_name' => $request->country_name,
+                    'bundle_code' => $request->bundle_code,
+                    'bundle_name' => $bundleName,
+                    'quantity' => $quantity,
+                    'data_amount' => $dataAmount,
+                    'validity_days' => $validityDays,
+                    'monty_cost_price' => $costPrice,
+                    'selling_price' => $sellingPrice,
+                    'unit_selling_price' => $unitSellingPrice,
+                    'currency' => 'AED',
+                    'reservation_status' => 'pending',
+                    'payment_status' => 'unpaid',
+                ]);
 
-            // Set the order reference with the ID
-            $orderReference = 'ORDESIM' . $esimOrder->id;
-            $esimOrder->update(['order_reference' => $orderReference]);
+                // Set the order reference with the ID
+                $orderReference = 'ORDESIM' . $esimOrder->id;
+                $esimOrder->update(['order_reference' => $orderReference]);
+            }
 
             // Create Nomod checkout
             $nomodService = new NomodService();
@@ -281,6 +361,8 @@ class EsimController extends Controller
                 'success' => false,
                 'error' => 'Something went wrong. Please try again.',
             ], 500);
+        } finally {
+            $lock->release();
         }
     }
 }

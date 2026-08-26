@@ -34,6 +34,7 @@ class OrdersController extends Controller
                   ->orWhere('email', 'like', "%{$s}%")
                   ->orWhere('phone', 'like', "%{$s}%");
             }))
+            ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->date_from, fn ($q, $d) => $q->whereDate('date', '>=', $d))
             ->when($request->date_to,   fn ($q, $d) => $q->whereDate('date', '<=', $d))
             ->orderByDesc('id')
@@ -45,8 +46,11 @@ class OrdersController extends Controller
 
     public function activityDetail(ActivityBooking $booking)
     {
+        // publicVisible() (not the default scope) so shared/platform activities
+        // (company_id IS NULL) still resolve for their owning tenant's bookings —
+        // the default scope's strict company_id match would otherwise hide them.
         $activity = $booking->activityId
-            ? UAEActivity::where('activityID', $booking->activityId)->first()
+            ? UAEActivity::publicVisible()->where('activityID', $booking->activityId)->first()
             : null;
 
         return view('manager.orders.activity-detail', compact('booking', 'activity'));
