@@ -27,7 +27,7 @@ class ManagerVisaPricingController extends Controller
     // storePackage() can pre-generate the full matrix for a new package.
     private const ENTRY_TYPES = ['Single Entry', 'Multiple Entry'];
     private const DURATIONS = ['30 Days', '60 Days'];
-    private const TRAVELLER_TYPES = ['Adult', 'Child', 'Infant'];
+    private const TRAVELLER_TYPES = ['Adult', 'Child'];
 
     public function index()
     {
@@ -286,6 +286,9 @@ class ManagerVisaPricingController extends Controller
                 'duration'       => 'nullable|string|max:100',
                 'traveller_type' => 'nullable|string|max:100',
                 'price'          => 'nullable|numeric|min:0',
+                'nationality'    => 'nullable|string|max:100',
+                'nationality_security_deposit'  => 'nullable|numeric|min:0',
+                'nationality_deposit_admin_fee' => 'nullable|numeric|min:0|lte:nationality_security_deposit',
             ],
             $this->packageMessages()
         );
@@ -299,14 +302,30 @@ class ManagerVisaPricingController extends Controller
             && filled($validated['traveller_type'] ?? null)
             && isset($validated['price']);
 
+        $nationality = filled($validated['nationality'] ?? null) ? trim($validated['nationality']) : null;
+
         if ($hasInitialRow) {
             UAEVisaPrice::create([
                 'visa_package_id' => $package->id,
                 'entry_type'      => $validated['entry_type'],
                 'duration'        => $validated['duration'],
                 'traveller_type'  => $validated['traveller_type'],
+                'nationality'     => $nationality,
                 'price'           => $validated['price'],
                 'isActive'        => 1,
+            ]);
+        }
+
+        // A nationality-specific deposit/processing fee override, separate from
+        // the package-level default set above — same null-nationality-is-default
+        // pattern as pricing.
+        if ($nationality !== null && (filled($validated['nationality_security_deposit'] ?? null) || filled($validated['nationality_deposit_admin_fee'] ?? null))) {
+            UAEVisaPackageDeposit::create([
+                'visa_package_id'    => $package->id,
+                'nationality'        => $nationality,
+                'security_deposit'   => $validated['nationality_security_deposit'] ?? 0,
+                'deposit_admin_fee'  => $validated['nationality_deposit_admin_fee'] ?? 0,
+                'isActive'           => 1,
             ]);
         }
 

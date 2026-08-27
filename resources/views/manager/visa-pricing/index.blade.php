@@ -359,7 +359,6 @@
                                                                             <select class="wp-input" name="prices[{{ $pr->id }}][traveller_type]" required>
                                                                                 <option value="Adult" {{ $pr->traveller_type === 'Adult' ? 'selected' : '' }}>Adult</option>
                                                                                 <option value="Child" {{ $pr->traveller_type === 'Child' ? 'selected' : '' }}>Child</option>
-                                                                                <option value="Infant" {{ $pr->traveller_type === 'Infant' ? 'selected' : '' }}>Infant</option>
                                                                             </select>
                                                                         </td>
                                                                         <td>
@@ -419,7 +418,6 @@
                                                             <select class="wp-input" name="traveller_type" required>
                                                                 <option value="Adult">Adult</option>
                                                                 <option value="Child">Child</option>
-                                                                <option value="Infant">Infant</option>
                                                             </select>
                                                         </div>
                                                         <div class="col-6 col-md-3">
@@ -535,8 +533,7 @@
                                     <label class="wp-form-label">Visa For <span class="required">*</span></label>
                                     <select class="wp-input" name="traveller_type" required>
                                         <option value="Adult">Adult</option>
-                                        <option value="Child">Child</option>
-                                        <option value="Infant">Infant</option>
+                                        <option value="Child">Child (2-12 yrs)</option>
                                     </select>
                                 </div>
                             </div>
@@ -567,7 +564,26 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="wp-form-help" style="margin-top:-6px;">This is the price shown on the website. The rest of the pricing matrix (other traveller types/durations) is pre-filled automatically — edit it from the package's row after creating it.</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="wp-form-group mb-0">
+                                    <label class="wp-form-label">Nationality (optional)</label>
+                                    <input type="text" class="wp-input" name="nationality" value="{{ old('nationality') }}" placeholder="e.g. India — blank applies to all nationalities">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="wp-form-help" style="margin-top:-6px;">This is the price shown on the website. Leave Nationality blank to apply this price to every nationality, or type one to make this price/deposit specific to that nationality only. The rest of the pricing matrix (other traveller types/durations) is pre-filled automatically — edit it from the package's row after creating it.</p>
+                    </div>
+
+                    <div class="field-cols" id="createNationalityDepositBlock">
+                        <div class="wp-form-group mb-0">
+                            <label class="wp-form-label">Nationality Security Deposit (AED)</label>
+                            <input type="number" class="wp-input" name="nationality_security_deposit" value="{{ old('nationality_security_deposit') }}" step="0.01" min="0" placeholder="Overrides the package default above, for this nationality only">
+                        </div>
+                        <div class="wp-form-group mb-0">
+                            <label class="wp-form-label">Nationality Processing Fee (AED)</label>
+                            <input type="number" class="wp-input" name="nationality_deposit_admin_fee" value="{{ old('nationality_deposit_admin_fee') }}" step="0.01" min="0" placeholder="Overrides the package default above, for this nationality only">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

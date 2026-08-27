@@ -935,8 +935,8 @@
                         </div>
                     </div>
 
-                    {{-- ROW 2: Adults, Children (2-18), Infants (0-2) --}}
-                    <div class="form-grid-3" style="margin-top: 12px;">
+                    {{-- ROW 2: Adults, Children (2-12). Infant option removed per meeting requirement. --}}
+                    <div class="form-grid-3" style="margin-top: 12px; grid-template-columns: 1fr 1fr;">
                         <div class="form-field">
                             <label class="field-label">Adults</label>
                             <select class="field-input" id="visaCount" name="visa_count" required>
@@ -946,21 +946,19 @@
                             </select>
                         </div>
                         <div class="form-field">
-                            <label class="field-label">Children (2–18 yrs)</label>
+                            <label class="field-label">Children (2–12 yrs)</label>
                             <select class="field-input" id="visaChildren" name="children_count">
                                 @for ($i = 0; $i <= 10; $i++)
                                     <option value="{{ $i }}" {{ $i === 0 ? 'selected' : '' }}>{{ $i }} {{ $i === 1 ? 'Child' : 'Children' }}</option>
                                 @endfor
                             </select>
                         </div>
-                        <div class="form-field">
-                            <label class="field-label">Infants (0–2 yrs)</label>
-                            <select class="field-input" id="visaInfants" name="infants_count">
-                                @for ($i = 0; $i <= 5; $i++)
-                                    <option value="{{ $i }}" {{ $i === 0 ? 'selected' : '' }}>{{ $i }} {{ $i === 1 ? 'Infant' : 'Infants' }}</option>
-                                @endfor
-                            </select>
-                        </div>
+                        {{-- Infant option removed per meeting requirement — kept as a hidden,
+                             always-zero input so the existing JS/backend infant-pricing code
+                             (unused now) doesn't need touching. --}}
+                        <select class="field-input" id="visaInfants" name="infants_count" style="display:none;">
+                            <option value="0" selected>0</option>
+                        </select>
                     </div>
 
                     {{-- Booking contact — the only details the customer types. --}}
