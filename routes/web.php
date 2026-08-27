@@ -634,6 +634,7 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     // "Add Agent": managers create agent accounts and pick which services
     // (tours / activities / esim) each agent may manage in the /agent portal.
     Route::resource('agents', ManagerAgentsController::class)->except(['show']);
+    Route::post('agents/{id}/confirm-renewal', [ManagerAgentsController::class, 'confirmRenewal'])->name('agents.confirm-renewal');
     // Visa pricing is a flat list of duration+price rows; CRUD is inline on the index page.
     Route::get('visa-pricing',                [ManagerVisaPricingController::class, 'index'])->name('visa-pricing.index');
     Route::post('visa-pricing',               [ManagerVisaPricingController::class, 'store'])->name('visa-pricing.store');
@@ -758,6 +759,13 @@ Route::post('/agent/logout', [AgentAuthController::class, 'logout'])->name('agen
 Route::get('/agent/register', [AgentSignupController::class, 'showRegister'])->name('agent.register');
 Route::post('/agent/register', [AgentSignupController::class, 'register'])->name('agent.register.submit');
 Route::get('/agent/register/submitted', [AgentSignupController::class, 'submitted'])->name('agent.register.submitted');
+
+// Self-service trade license renewal for an agent auto-disabled by
+// agents:check-license-expiry. Not behind agent.auth — a disabled agent can
+// never pass that gate, so this verifies identity itself.
+Route::get('/agent/renew-license', [\App\Http\Controllers\Agent\AgentLicenseRenewalController::class, 'showForm'])->name('agent.renew-license');
+Route::post('/agent/renew-license', [\App\Http\Controllers\Agent\AgentLicenseRenewalController::class, 'submit'])->name('agent.renew-license.submit');
+Route::get('/agent/renew-license/submitted', [\App\Http\Controllers\Agent\AgentLicenseRenewalController::class, 'submitted'])->name('agent.renew-license.submitted');
 
 Route::middleware(['agent.auth'])->prefix('agent')->name('agent.')->group(function () {
     Route::get('/', [AgentDashboardController::class, 'index'])->name('dashboard');

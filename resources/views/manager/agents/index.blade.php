@@ -44,6 +44,43 @@
     </div>
 @endif
 
+<div class="wp-card" style="margin-bottom: 16px;">
+    <div class="wp-card-body">
+        <form method="GET" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+            <div>
+                <label class="wp-form-label" style="font-size: 12px;">Location</label>
+                <select name="location" class="wp-input" onchange="this.form.submit()">
+                    <option value="">All locations</option>
+                    @foreach($locations as $loc)
+                        <option value="{{ $loc }}" {{ $location === $loc ? 'selected' : '' }}>{{ $loc }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="wp-form-label" style="font-size: 12px;">Service</label>
+                <select name="service" class="wp-input" onchange="this.form.submit()">
+                    <option value="">All services</option>
+                    @foreach(\App\Models\User::AGENT_SERVICES as $key => $label)
+                        <option value="{{ $key }}" {{ $service === $key ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="wp-form-label" style="font-size: 12px;">Trade License</label>
+                <select name="license_status" class="wp-input" onchange="this.form.submit()">
+                    <option value="">All licenses</option>
+                    <option value="expiring_soon" {{ $licenseStatus === 'expiring_soon' ? 'selected' : '' }}>Expiring within 30 days</option>
+                    <option value="expired" {{ $licenseStatus === 'expired' ? 'selected' : '' }}>Expired</option>
+                    <option value="renewal_pending" {{ $licenseStatus === 'renewal_pending' ? 'selected' : '' }}>Renewal awaiting confirmation</option>
+                </select>
+            </div>
+            @if($location || $service || $licenseStatus)
+                <a href="{{ route('manager.agents.index') }}" class="wp-btn wp-btn-secondary wp-btn-sm">Clear filters</a>
+            @endif
+        </form>
+    </div>
+</div>
+
 <div class="wp-card">
     <div class="table-responsive">
         <table class="wp-table">
@@ -51,11 +88,13 @@
                 <tr>
                     <th style="width: 50px;">#</th>
                     <th>Agent</th>
+                    <th>Location</th>
                     <th>Services</th>
                     <th style="width: 130px;">Listings</th>
+                    <th style="width: 140px;">Trade License</th>
                     <th style="width: 110px;">Status</th>
                     <th style="width: 130px;">Last Login</th>
-                    <th style="width: 190px;">Actions</th>
+                    <th style="width: 230px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,10 +103,16 @@
                     <td style="color: var(--wp-text-muted);">{{ $agents->firstItem() + $index }}</td>
                     <td>
                         <strong style="color: var(--wp-text);">{{ $agent->name }}</strong>
+                        @if($agent->company_name)
+                            <br><span style="font-size: 12px; color: var(--wp-text-secondary);">{{ $agent->company_name }}</span>
+                        @endif
                         <br><span style="font-size: 12px; color: var(--wp-text-muted);">{{ $agent->email }}</span>
                         @if($agent->phone)
                             <br><span style="font-size: 12px; color: var(--wp-text-muted);"><i class="fas fa-phone" style="font-size: 10px;"></i> {{ $agent->phone }}</span>
                         @endif
+                    </td>
+                    <td style="font-size: 12px; color: var(--wp-text-secondary);">
+                        {{ $agent->emirate ?: ($agent->country ?: '—') }}
                     </td>
                     <td>
                         @forelse($agent->agentServiceLabels() as $label)
@@ -85,6 +130,20 @@
                         @if($ac) <span title="Activities" style="margin-left: 6px;"><i class="fas fa-hiking" style="color: var(--wp-primary);"></i> {{ $ac }}</span> @endif
                         @if(!$pc && !$ac) <span class="text-muted-wp">—</span> @endif
                     </td>
+                    <td style="font-size: 12px;">
+                        @if($agent->trade_license_expiry_date)
+                            {{ $agent->trade_license_expiry_date->format('d M Y') }}
+                            @if($agent->pending_license_review)
+                                <br><span class="wp-badge wp-badge-amber">Renewal pending</span>
+                            @elseif($agent->isTradeLicenseExpired())
+                                <br><span class="wp-badge wp-badge-red">Expired</span>
+                            @elseif($agent->trade_license_expiry_date->diffInDays(now()) <= 30)
+                                <br><span class="wp-badge wp-badge-amber">Expiring soon</span>
+                            @endif
+                        @else
+                            <span class="text-muted-wp">—</span>
+                        @endif
+                    </td>
                     <td>
                         @if($agent->is_active)
                             <span class="wp-badge wp-badge-green">Active</span>
@@ -96,11 +155,19 @@
                         {{ $agent->last_login_at?->format('d M Y H:i') ?? 'Never' }}
                     </td>
                     <td>
-                        <div style="display: flex; gap: 6px;">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                             <a href="{{ route('manager.agents.edit', $agent->id) }}" class="wp-btn wp-btn-secondary wp-btn-sm">
                                 <i class="fas fa-pen"></i> Edit
                             </a>
-                            @if($agent->is_active)
+                            @if($agent->pending_license_review)
+                            <form action="{{ route('manager.agents.confirm-renewal', $agent->id) }}" method="POST"
+                                  onsubmit="return confirm('Confirm this agent\'s renewed trade license and restore their access?');">
+                                @csrf
+                                <button type="submit" class="wp-btn wp-btn-primary wp-btn-sm">
+                                    <i class="fas fa-check"></i> Confirm Renewal
+                                </button>
+                            </form>
+                            @elseif($agent->is_active)
                             <form action="{{ route('manager.agents.destroy', $agent->id) }}" method="POST"
                                   onsubmit="return confirm('Deactivate this agent? They will no longer be able to log in. Their listings stay live.');">
                                 @csrf @method('DELETE')
@@ -114,10 +181,10 @@
                 </tr>
                 @empty
                 <tr class="empty-row">
-                    <td colspan="7">
+                    <td colspan="9">
                         <div style="padding: 24px 0; text-align: center;">
                             <i class="fas fa-user-tie" style="font-size: 32px; color: var(--wp-border); margin-bottom: 8px; display: block;"></i>
-                            No agents yet.
+                            No agents match these filters.
                             <a href="{{ route('manager.agents.create') }}" style="color: var(--wp-primary);">Add your first agent.</a>
                         </div>
                     </td>

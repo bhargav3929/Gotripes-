@@ -16,13 +16,19 @@ class AgentApplication extends Model
 
     protected $table = 'agent_applications';
 
+    /** The value stored in `country` (and copied onto the User) for a UAE applicant who picked an Emirate. */
+    public const UAE_COUNTRY_NAME = 'United Arab Emirates';
+
     protected $fillable = [
         'company_id',
         'name',
+        'company_name',
         'email',
         'password',
         'phone',
         'country',
+        'address',
+        'emirate',
         'services',
         'trade_license_number',
         'trade_license_expiry_date',
@@ -79,12 +85,19 @@ class AgentApplication extends Model
     {
         $agent = User::create([
             'name'           => $this->name,
+            'company_name'   => $this->company_name,
             'email'          => $this->email,
             'phone'          => $this->phone,
             'password'       => $this->password,
             'role'           => 'company_agent',
             'company_id'     => $this->company_id,
+            'country'        => $this->country,
+            'address'        => $this->address,
+            'emirate'        => $this->emirate,
             'agent_services' => $this->services,
+            'trade_license_number'         => $this->trade_license_number,
+            'trade_license_expiry_date'    => $this->trade_license_expiry_date,
+            'trade_license_document_path'  => $this->trade_license_document_path,
             'is_active'      => true,
         ]);
 

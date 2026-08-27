@@ -44,11 +44,21 @@ class AgentAuthController extends Controller
                 ->withErrors(['credentials' => 'This account does not have agent access.']);
         }
 
+        // Defensive check: enforce an expired license the same day it lapses,
+        // without waiting for the next agents:check-license-expiry run.
+        if ($user->is_active && $user->isTradeLicenseExpired()) {
+            $user->disableForExpiry();
+        }
+
         if (!$user->is_active) {
+            $message = $user->wasDisabledForExpiry()
+                ? 'Your trade license has expired, so your agent account has been disabled. Submit your renewed license to restore access.'
+                : 'Your agent account has been deactivated. Contact your manager.';
+
             $this->rejectLogin($request);
             return back()
                 ->withInput($request->only('email'))
-                ->withErrors(['credentials' => 'Your agent account has been deactivated. Contact your manager.']);
+                ->withErrors(['credentials' => $message]);
         }
 
         $tenant = app()->bound('current_company') ? app('current_company') : null;
@@ -73,7 +83,7 @@ class AgentAuthController extends Controller
 
     private function canAccessAgentPortal($user): bool
     {
-        return $user && $user->role === 'company_agent' && $user->is_active;
+        return $user && $user->role === 'company_agent' && $user->is_active && !$user->isTradeLicenseExpired();
     }
 
     // Soft logout for login rejections — does NOT invalidate the session so

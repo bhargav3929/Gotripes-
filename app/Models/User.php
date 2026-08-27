@@ -13,6 +13,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'company_name',
         'email',
         'phone',
         'password',
@@ -21,9 +22,18 @@ class User extends Authenticatable
         'partner_document_path',
         'company_id',
         'role',
+        'country',
+        'address',
+        'emirate',
         'agent_services',
+        'trade_license_number',
+        'trade_license_expiry_date',
+        'trade_license_document_path',
         'evisa_commission_percent',
         'is_active',
+        'disabled_at',
+        'pending_license_review',
+        'expiry_warning_sent_at',
         'is_super_admin',
         'last_login_at',
     ];
@@ -32,7 +42,11 @@ class User extends Authenticatable
         'is_super_admin' => 'boolean',
         'is_active' => 'boolean',
         'agent_services' => 'array',
+        'trade_license_expiry_date' => 'date',
         'evisa_commission_percent' => 'decimal:2',
+        'disabled_at' => 'datetime',
+        'pending_license_review' => 'boolean',
+        'expiry_warning_sent_at' => 'datetime',
         'last_login_at' => 'datetime',
     ];
 
@@ -157,7 +171,71 @@ class User extends Authenticatable
         return array_values(array_intersect_key(self::AGENT_SERVICES, array_flip($services)));
     }
 
+    /**
+     * True once this agent's trade license expiry date has passed. Checked
+     * unconditionally (unlike B2bPartner, which only enforces this for UAE
+     * partners) — the meeting requirement applies it to every agent.
+     */
+    public function isTradeLicenseExpired(): bool
+    {
+        return $this->isAgent()
+            && $this->trade_license_expiry_date
+            && $this->trade_license_expiry_date->isPast();
+    }
 
+    /**
+     * Called by the scheduled expiry-check command (and defensively by
+     * AgentAuthMiddleware so an expired license is enforced the same day it
+     * lapses, without waiting for the next cron run).
+     */
+    public function disableForExpiry(): void
+    {
+        $this->update([
+            'is_active' => false,
+            'disabled_at' => now(),
+        ]);
+    }
+
+    /**
+     * True only for an agent disabled by the automatic expiry check (not one
+     * a manager manually deactivated) — decides whether the self-service
+     * renewal flow applies.
+     */
+    public function wasDisabledForExpiry(): bool
+    {
+        return $this->isAgent() && !$this->is_active && $this->disabled_at !== null;
+    }
+
+    /**
+     * An agent submits a renewed license through the public renewal flow.
+     * Deliberately does NOT flip is_active back on — the renewal sits as
+     * "pending review" until a manager confirms the new document, same as
+     * B2bPartner::submitLicenseRenewal().
+     */
+    public function submitLicenseRenewal(string $number, string $expiryDate, ?string $documentPath): void
+    {
+        $this->update([
+            'trade_license_number' => $number,
+            'trade_license_expiry_date' => $expiryDate,
+            'trade_license_document_path' => $documentPath ?? $this->trade_license_document_path,
+            'pending_license_review' => true,
+        ]);
+    }
+
+    /**
+     * A manager confirms a renewed license — re-activates the account and
+     * resets the expiry-warning flag so the new date gets its own fresh
+     * 30-day warning cycle.
+     */
+    public function confirmLicenseRenewal(): void
+    {
+        $this->update([
+            'is_active' => true,
+            'disabled_at' => null,
+            'pending_license_review' => false,
+            'expiry_warning_sent_at' => null,
+        ]);
+    }
 
 
 

@@ -28,10 +28,21 @@ class AgentAuthMiddleware
                 ->withErrors(['credentials' => 'You do not have agent access.']);
         }
 
+        // Defensive check: enforce an expired license the same day it lapses,
+        // without waiting for the next partners:check-license-expiry-style
+        // scheduled run (see agents:check-license-expiry).
+        if ($user->is_active && $user->isTradeLicenseExpired()) {
+            $user->disableForExpiry();
+        }
+
         if (!$user->is_active) {
+            $message = $user->wasDisabledForExpiry()
+                ? 'Your trade license has expired, so your agent account has been disabled. Submit your renewed license to restore access.'
+                : 'Your agent account has been deactivated. Contact your manager.';
+
             $this->logoutAndInvalidate($request);
             return redirect()->route('agent.login')
-                ->withErrors(['credentials' => 'Your agent account has been deactivated. Contact your manager.']);
+                ->withErrors(['credentials' => $message]);
         }
 
         $tenant = app()->bound('current_company') ? app('current_company') : null;

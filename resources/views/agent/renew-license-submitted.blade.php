@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @php
-        $submittedTenant = current_company();
-        $submittedTenantName = $submittedTenant?->name ?? 'GoTrips';
-        $submittedTenantLogo = $submittedTenant?->logo_url ?? asset('assets/index_files/logo.png');
-        $submittedTenantFavicon = $submittedTenant?->favicon_url ?? asset('assets/index_files/logo.png');
+        $renewedTenant = current_company();
+        $renewedTenantName = $renewedTenant?->name ?? 'GoTrips';
+        $renewedTenantLogo = $renewedTenant?->logo_url ?? asset('assets/index_files/logo.png');
+        $renewedTenantFavicon = $renewedTenant?->favicon_url ?? asset('assets/index_files/logo.png');
     @endphp
-    <title>Application Submitted - {{ $submittedTenantName }}</title>
-    <link rel="icon" type="image/png" href="{{ $submittedTenantFavicon }}">
+    <title>Renewal Submitted - {{ $renewedTenantName }}</title>
+    <link rel="icon" type="image/png" href="{{ $renewedTenantFavicon }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -38,18 +38,17 @@
         h1 { font-size: 20px; margin-bottom: 12px; }
         p { color: #999; font-size: 14px; line-height: 1.6; }
         a { color: #FFD700; text-decoration: none; }
-        a:hover { color: #FFA500; text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="brand-logo">
-        <img src="{{ $submittedTenantLogo }}" alt="{{ $submittedTenantName }}">
+        <img src="{{ $renewedTenantLogo }}" alt="{{ $renewedTenantName }}">
     </div>
     <div class="card">
         <div class="icon"><i class="fas fa-circle-check"></i></div>
-        <h1>Application Submitted</h1>
-        <p>Thanks for applying to become a {{ $submittedTenantName }} agent. Your application and trade license have been received and are now under review. We've sent a confirmation to your email — you'll be notified once a decision is made.</p>
-        <p style="margin-top:20px;"><a href="{{ url('/') }}">Back to {{ $submittedTenantName }}</a></p>
+        <h1>Renewal Submitted</h1>
+        <p>Your renewed trade license has been received and is now awaiting manager confirmation. Your account stays disabled until it's reviewed — you'll be able to log in again once it's confirmed.</p>
+        <p style="margin-top:20px;"><a href="{{ url('/') }}">Back to {{ $renewedTenantName }}</a></p>
     </div>
 </body>
 </html>

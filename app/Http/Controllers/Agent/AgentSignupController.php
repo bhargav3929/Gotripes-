@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Manager\ManagerAgentsController;
 use App\Mail\AgentApplicationReceivedMail;
 use App\Models\AgentApplication;
+use App\Models\Emirates;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,43 +33,59 @@ class AgentSignupController extends Controller
         }
 
         $services = ManagerAgentsController::grantableServicesFor(current_company());
+        $emirates = Emirates::getActiveEmirates();
+        $countries = collect(config('countries', []))
+            ->keys()
+            ->reject(fn ($c) => $c === AgentApplication::UAE_COUNTRY_NAME)
+            ->values();
 
-        return view('agent.register', compact('services'));
+        return view('agent.register', compact('services', 'emirates', 'countries'));
     }
 
     public function register(Request $request)
     {
         $services = ManagerAgentsController::grantableServicesFor(current_company());
+        $emirateNames = Emirates::getActiveEmirates()->pluck('emiratesName')->all();
+        $isUae = $request->boolean('registering_from_uae');
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:agent_applications,email|unique:users,email',
-            'phone'    => 'required|string|max:30',
-            'country'  => 'nullable|string|max:100',
-            'password' => 'required|string|min:8|confirmed',
-            'services'   => 'required|array|min:1',
-            'services.*' => ['string', Rule::in(array_keys($services))],
+            'name'          => 'required|string|max:255',
+            'company_name'  => 'required|string|max:255',
+            'email'         => 'required|email|unique:agent_applications,email|unique:users,email',
+            'phone'         => 'required|string|max:30',
+            'address'       => 'required|string|max:500',
+            'registering_from_uae' => 'required|boolean',
+            'emirate'       => ['required_if:registering_from_uae,1', 'nullable', 'string', Rule::in($emirateNames)],
+            'country'       => ['required_if:registering_from_uae,0', 'nullable', 'string', 'max:100'],
+            'password'      => 'required|string|min:8|confirmed',
+            'services'      => 'required|array|min:1',
+            'services.*'    => ['string', Rule::in(array_keys($services))],
             'trade_license_number'       => 'required|string|max:100',
             'trade_license_expiry_date'  => 'required|date|after:today',
             'trade_license_document'     => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ], [
             'services.required' => 'Select at least one service you\'re interested in.',
+            'emirate.required_if' => 'Select which Emirate you\'re registering from.',
+            'country.required_if' => 'Select which country you\'re registering from.',
         ]);
 
         $licensePath = $request->file('trade_license_document')->store('agents/trade_licenses', 'public');
 
         $application = AgentApplication::create([
-            'company_id' => current_company_id(),
-            'name'       => $validated['name'],
-            'email'      => $validated['email'],
-            'password'   => Hash::make($validated['password']),
-            'phone'      => $validated['phone'],
-            'country'    => $validated['country'] ?? null,
-            'services'   => array_values($validated['services']),
+            'company_id'   => current_company_id(),
+            'name'         => $validated['name'],
+            'company_name' => $validated['company_name'],
+            'email'        => $validated['email'],
+            'password'     => Hash::make($validated['password']),
+            'phone'        => $validated['phone'],
+            'address'      => $validated['address'],
+            'country'      => $isUae ? AgentApplication::UAE_COUNTRY_NAME : $validated['country'],
+            'emirate'      => $isUae ? $validated['emirate'] : null,
+            'services'     => array_values($validated['services']),
             'trade_license_number'      => $validated['trade_license_number'],
             'trade_license_expiry_date' => $validated['trade_license_expiry_date'],
             'trade_license_document_path' => $licensePath,
-            'status'     => 'pending',
+            'status'       => 'pending',
         ]);
 
         try {

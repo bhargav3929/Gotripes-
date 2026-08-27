@@ -22,6 +22,7 @@
             <thead>
                 <tr>
                     <th>Applicant</th>
+                    <th style="width: 140px;">Location</th>
                     <th style="width: 200px;">Services Requested</th>
                     <th style="width: 130px;">Status</th>
                     <th style="width: 140px;">Submitted</th>
@@ -33,7 +34,13 @@
                     <tr>
                         <td>
                             <strong>{{ $application->name }}</strong>
+                            @if($application->company_name)
+                                <br><span class="text-secondary-wp" style="font-size:12px;">{{ $application->company_name }}</span>
+                            @endif
                             <br><span class="text-secondary-wp" style="font-size:12px;">{{ $application->email }} &middot; {{ $application->phone }}</span>
+                        </td>
+                        <td style="font-size:12px; color: var(--wp-text-secondary);">
+                            {{ $application->emirate ?: ($application->country ?: '—') }}
                         </td>
                         <td>
                             @foreach($application->services ?? [] as $service)
@@ -58,7 +65,7 @@
                     </tr>
                 @empty
                     <tr class="empty-row">
-                        <td colspan="5">
+                        <td colspan="6">
                             <div style="padding: 24px 0; text-align: center;">
                                 No {{ $status !== 'all' ? $status : '' }} applications.
                             </div>

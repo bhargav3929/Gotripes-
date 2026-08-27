@@ -52,12 +52,30 @@ class ManagerAgentsController extends Controller
         return self::grantableServicesFor(current_company() ?: auth()->user()->company);
     }
 
-    public function index()
+    /**
+     * Supports the meeting requirement that managers be able to filter
+     * agents by location, service, and trade license expiry — each stored
+     * in its own column rather than a blob, so these are plain where()s.
+     */
+    public function index(Request $request)
     {
+        $location = $request->get('location');
+        $service = $request->get('service');
+        $licenseStatus = $request->get('license_status');
+        $today = now()->startOfDay();
+
         $agents = User::where('company_id', $this->companyId())
             ->where('role', 'company_agent')
+            ->when($location, fn ($q) => $q->where(function ($q2) use ($location) {
+                $q2->where('emirate', $location)->orWhere('country', $location);
+            }))
+            ->when($service, fn ($q) => $q->whereJsonContains('agent_services', $service))
+            ->when($licenseStatus === 'expired', fn ($q) => $q->whereNotNull('trade_license_expiry_date')->where('trade_license_expiry_date', '<', $today))
+            ->when($licenseStatus === 'expiring_soon', fn ($q) => $q->whereNotNull('trade_license_expiry_date')->whereBetween('trade_license_expiry_date', [$today, $today->copy()->addDays(30)]))
+            ->when($licenseStatus === 'renewal_pending', fn ($q) => $q->where('pending_license_review', true))
             ->orderByDesc('id')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         // Listing counts per agent, shown on the index table.
         $agentIds = $agents->pluck('id');
@@ -74,7 +92,24 @@ class ManagerAgentsController extends Controller
             ->groupBy('agent_id')
             ->pluck('c', 'agent_id');
 
-        return view('manager.agents.index', compact('agents', 'packageCounts', 'activityCounts'));
+        $locations = User::where('company_id', $this->companyId())
+            ->where('role', 'company_agent')
+            ->whereNotNull('emirate')
+            ->distinct()
+            ->pluck('emirate')
+            ->merge(
+                User::where('company_id', $this->companyId())
+                    ->where('role', 'company_agent')
+                    ->whereNotNull('country')
+                    ->whereNull('emirate')
+                    ->distinct()
+                    ->pluck('country')
+            )
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('manager.agents.index', compact('agents', 'packageCounts', 'activityCounts', 'locations', 'location', 'service', 'licenseStatus'));
     }
 
     public function create()
@@ -177,6 +212,26 @@ class ManagerAgentsController extends Controller
 
         return redirect()->route('manager.agents.index')
             ->with('success', "Agent “{$agent->name}” deactivated. Their listings remain live.");
+    }
+
+    /**
+     * Confirm a renewed trade license submitted through the self-service
+     * renewal flow — restores access. Mirrors
+     * ManagerB2bPartnersController::confirmRenewal().
+     */
+    public function confirmRenewal($id)
+    {
+        $agent = $this->findAgent($id);
+
+        if (!$agent->pending_license_review) {
+            return redirect()->route('manager.agents.index')
+                ->with('error', 'This agent has no renewal awaiting confirmation.');
+        }
+
+        $agent->confirmLicenseRenewal();
+
+        return redirect()->route('manager.agents.index')
+            ->with('success', "\"{$agent->name}\"'s renewed license confirmed — their account is active again.");
     }
 
     private function findAgent($id): User

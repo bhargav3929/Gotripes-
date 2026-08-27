@@ -40,9 +40,14 @@
                     </span>
                 </div>
                 <div class="detail-row"><span>Name</span><span>{{ $application->name }}</span></div>
+                <div class="detail-row"><span>Company</span><span>{{ $application->company_name ?: '—' }}</span></div>
                 <div class="detail-row"><span>Email</span><span>{{ $application->email }}</span></div>
                 <div class="detail-row"><span>Phone</span><span>{{ $application->phone }}</span></div>
+                <div class="detail-row"><span>Address</span><span>{{ $application->address ?: '—' }}</span></div>
                 <div class="detail-row"><span>Country</span><span>{{ $application->country ?: '—' }}</span></div>
+                @if($application->emirate)
+                    <div class="detail-row"><span>Emirate</span><span>{{ $application->emirate }}</span></div>
+                @endif
                 <div class="detail-row"><span>Services Requested</span>
                     <span>
                         @foreach($application->services ?? [] as $service)

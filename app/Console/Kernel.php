@@ -73,6 +73,13 @@ class Kernel extends ConsoleKernel
             ->dailyAt('08:00')
             ->withoutOverlapping()
             ->onOneServer();
+
+        // Same expiry lifecycle as partners:check-license-expiry above, for
+        // company_agent Users instead of B2B partners.
+        $schedule->command('agents:check-license-expiry')
+            ->dailyAt('08:05')
+            ->withoutOverlapping()
+            ->onOneServer();
     }
 
     /**

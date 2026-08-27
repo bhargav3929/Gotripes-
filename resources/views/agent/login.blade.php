@@ -100,6 +100,15 @@
             box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.25);
             background: #222;
         }
+        .form-group input:-webkit-autofill,
+        .form-group input:-webkit-autofill:hover,
+        .form-group input:-webkit-autofill:focus,
+        .form-group input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+            -webkit-text-fill-color: #f0f0f0 !important;
+            caret-color: #f0f0f0 !important;
+            transition: background-color 9999s ease-in-out 0s;
+        }
 
         .login-btn {
             width: 100%;
