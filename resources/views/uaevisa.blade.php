@@ -1457,11 +1457,18 @@
             // lookup further down, so the two always agree on nationality.
             const selectedNat = document.getElementById('nationality').value;
 
+            // Nothing meaningful has been chosen yet until all three of these
+            // are set — used to gate the deposit below the same way the price
+            // lookup already gates itself, so the summary reads AED 0.00
+            // instead of silently charging a deposit for a still-incomplete
+            // selection.
+            const hasValidSelection = Boolean(selectedPackageId && selectedEntryType && selectedDuration);
+
             let adultPrice = 0;
             let childPrice = 0;
             let infantPrice = 0;
 
-            if (selectedPackageId && selectedEntryType && selectedDuration) {
+            if (hasValidSelection) {
                 const pkg = window.visaPricingData.find(p => String(p.package_id) === String(selectedPackageId));
                 if (pkg && pkg.prices) {
                     let pricesForCombo = pkg.prices.filter(p =>
@@ -1499,7 +1506,7 @@
             // quote always matches what the server charges. `takesDeposit` is now
             // just "does this package take a deposit" — any emirate can, which is
             // what the client asked for.
-            const dep = depositForSelectedPackage(selectedNat);
+            const dep = hasValidSelection ? depositForSelectedPackage(selectedNat) : { deposit: 0, fee: 0 };
             const depositUnit = dep.deposit;
             const takesDeposit = depositUnit > 0;
             // Bank details are collected for every Sharjah application, whether or
