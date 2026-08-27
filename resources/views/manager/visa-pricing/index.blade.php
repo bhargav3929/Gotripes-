@@ -565,25 +565,26 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="wp-form-group mb-0">
                                     <label class="wp-form-label">Nationality (optional)</label>
-                                    <input type="text" class="wp-input" name="nationality" value="{{ old('nationality') }}" placeholder="e.g. India — blank applies to all nationalities">
+                                    <input type="text" class="wp-input" name="nationality" value="{{ old('nationality') }}" placeholder="e.g. India">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="wp-form-group mb-0">
+                                    <label class="wp-form-label">Nationality Deposit (AED)</label>
+                                    <input type="number" class="wp-input" name="nationality_security_deposit" value="{{ old('nationality_security_deposit') }}" step="0.01" min="0" placeholder="Overrides default">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="wp-form-group mb-0">
+                                    <label class="wp-form-label">Nationality Processing Fee (AED)</label>
+                                    <input type="number" class="wp-input" name="nationality_deposit_admin_fee" value="{{ old('nationality_deposit_admin_fee') }}" step="0.01" min="0" placeholder="Overrides default">
                                 </div>
                             </div>
                         </div>
-                        <p class="wp-form-help" style="margin-top:-6px;">This is the price shown on the website. Leave Nationality blank to apply this price to every nationality, or type one to make this price/deposit specific to that nationality only. The rest of the pricing matrix (other traveller types/durations) is pre-filled automatically — edit it from the package's row after creating it.</p>
-                    </div>
-
-                    <div class="field-cols" id="createNationalityDepositBlock">
-                        <div class="wp-form-group mb-0">
-                            <label class="wp-form-label">Nationality Security Deposit (AED)</label>
-                            <input type="number" class="wp-input" name="nationality_security_deposit" value="{{ old('nationality_security_deposit') }}" step="0.01" min="0" placeholder="Overrides the package default above, for this nationality only">
-                        </div>
-                        <div class="wp-form-group mb-0">
-                            <label class="wp-form-label">Nationality Processing Fee (AED)</label>
-                            <input type="number" class="wp-input" name="nationality_deposit_admin_fee" value="{{ old('nationality_deposit_admin_fee') }}" step="0.01" min="0" placeholder="Overrides the package default above, for this nationality only">
-                        </div>
+                        <p class="wp-form-help" style="margin-top:6px;">Leave Nationality blank to apply this price to everyone, or type one to make this price/deposit specific to that nationality only.</p>
                     </div>
                 </div>
                 <div class="modal-footer">
