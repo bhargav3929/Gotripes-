@@ -46,6 +46,21 @@
     .field-cols { display: flex; gap: 20px; flex-wrap: wrap; }
     .field-cols > div { flex: 1 1 260px; min-width: 0; }
 
+    /* Same 2-column idea as .field-cols, but a real grid with fields placed
+       row-by-row (not stacked whole-column-then-whole-column) so an uneven
+       field (a textarea, a field with help text) only affects its own row
+       instead of leaving a dead gap trailing the shorter column. */
+    .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 20px;
+        row-gap: 16px;
+        align-items: start;
+    }
+    @media (max-width: 640px) {
+        .field-grid { grid-template-columns: 1fr; }
+    }
+
     /* ── Existing Packages: full-width wide table ───────────────── */
     .wp-table-wide th, .wp-table-wide td { vertical-align: top; }
     .wp-table-wide col.col-emirate  { width: 160px; }
@@ -111,7 +126,22 @@
         opacity: 0.55; transition: opacity 0.15s ease, transform 0.15s ease;
     }
     .gt-modal .btn-close:hover { opacity: 1; transform: rotate(90deg); }
-    .gt-modal .modal-body { padding: 24px; }
+    /* Force an explicit scrollable height directly, instead of relying on
+       Bootstrap's modal-dialog-scrollable calc() (which can end up taller
+       than the viewport in some browser/zoom combinations and silently
+       fail to scroll). This guarantees the body scrolls and shows an
+       obvious gold bar, regardless of that outer calculation. */
+    .gt-modal .modal-body {
+        padding: 24px;
+        max-height: 60vh;
+        overflow-y: scroll;
+        scrollbar-width: thin;
+        scrollbar-color: var(--wp-primary) transparent;
+    }
+    .gt-modal .modal-body::-webkit-scrollbar { width: 12px; }
+    .gt-modal .modal-body::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
+    .gt-modal .modal-body::-webkit-scrollbar-thumb { background: var(--wp-primary); border-radius: 6px; border: 2px solid transparent; background-clip: padding-box; }
+    .gt-modal .modal-body::-webkit-scrollbar-thumb:hover { background: var(--wp-primary-hover, var(--wp-primary)); background-clip: padding-box; }
     .gt-modal .modal-footer {
         padding: 16px 24px;
         background: rgba(0, 0, 0, 0.15);
@@ -465,43 +495,39 @@
             <form action="{{ route('manager.visa-packages.store') }}" method="POST" id="createPackageForm">
                 @csrf
                 <div class="modal-body">
-                    <div class="field-cols">
-                        <div>
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Emirate <span class="required">*</span></label>
-                                <select class="wp-input" name="emirates_id" id="createEmirate" required>
-                                    <option value="">Select Emirate...</option>
-                                    @foreach($emirates as $e)
-                                        <option value="{{ $e->emiratesID }}" {{ old('emirates_id') == $e->emiratesID ? 'selected' : '' }}>{{ $e->emiratesName }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Package Name <span class="required">*</span></label>
-                                <input type="text" class="wp-input" name="name" value="{{ old('name') }}" required placeholder="e.g. Tourist Visa" maxlength="100">
-                            </div>
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Processing Type <span class="required">*</span></label>
-                                <select class="wp-input" name="package_type" required>
-                                    <option value="Standard" {{ old('package_type') === 'Standard' ? 'selected' : '' }}>Standard</option>
-                                    <option value="Urgent" {{ old('package_type') === 'Urgent' ? 'selected' : '' }}>Urgent</option>
-                                </select>
-                            </div>
+                    <div class="field-grid">
+                        <div class="wp-form-group mb-0">
+                            <label class="wp-form-label">Emirate <span class="required">*</span></label>
+                            <select class="wp-input" name="emirates_id" id="createEmirate" required>
+                                <option value="">Select Emirate...</option>
+                                @foreach($emirates as $e)
+                                    <option value="{{ $e->emiratesID }}" {{ old('emirates_id') == $e->emiratesID ? 'selected' : '' }}>{{ $e->emiratesName }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div>
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Description</label>
-                                <textarea class="wp-input" name="description" placeholder="Processing time, requirements, anything the customer should know..." rows="2" maxlength="1000">{{ old('description') }}</textarea>
-                            </div>
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Supplier Email</label>
-                                <input type="text" class="wp-input" name="supplier_email" value="{{ old('supplier_email') }}" placeholder="supplier@example.com, second@example.com">
-                                <p class="wp-form-help">Comma-separate two suppliers. Leave blank to use the company-wide supplier.</p>
-                            </div>
-                            <div class="wp-form-group">
-                                <label class="wp-form-label">Our Company Email</label>
-                                <input type="text" class="wp-input" name="company_email" value="{{ old('company_email') }}" placeholder="visas@gotrips.ai">
-                            </div>
+                        <div class="wp-form-group mb-0">
+                            <label class="wp-form-label">Processing Type <span class="required">*</span></label>
+                            <select class="wp-input" name="package_type" required>
+                                <option value="Standard" {{ old('package_type') === 'Standard' ? 'selected' : '' }}>Standard</option>
+                                <option value="Urgent" {{ old('package_type') === 'Urgent' ? 'selected' : '' }}>Urgent</option>
+                            </select>
+                        </div>
+                        <div class="wp-form-group mb-0">
+                            <label class="wp-form-label">Package Name <span class="required">*</span></label>
+                            <input type="text" class="wp-input" name="name" value="{{ old('name') }}" required placeholder="e.g. Tourist Visa" maxlength="100">
+                        </div>
+                        <div class="wp-form-group mb-0">
+                            <label class="wp-form-label">Our Company Email</label>
+                            <input type="text" class="wp-input" name="company_email" value="{{ old('company_email') }}" placeholder="visas@gotrips.ai">
+                        </div>
+                        <div class="wp-form-group mb-0">
+                            <label class="wp-form-label">Description</label>
+                            <textarea class="wp-input" name="description" placeholder="Processing time, requirements, anything the customer should know..." rows="2" maxlength="1000">{{ old('description') }}</textarea>
+                        </div>
+                        <div class="wp-form-group mb-0">
+                            <label class="wp-form-label">Supplier Email</label>
+                            <input type="text" class="wp-input" name="supplier_email" value="{{ old('supplier_email') }}" placeholder="supplier@example.com, second@example.com">
+                            <p class="wp-form-help">Comma-separate two suppliers. Leave blank to use the company-wide supplier.</p>
                         </div>
                     </div>
 

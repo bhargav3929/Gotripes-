@@ -39,9 +39,9 @@
     .emirate-modal {
         background: linear-gradient(145deg, #111111 0%, #0d0d0d 100%);
         border: 1px solid rgba(255, 215, 0, 0.22);
-        border-radius: 20px;
-        padding: 32px 30px 28px;
-        width: min(680px, 94vw);
+        border-radius: 22px;
+        padding: 36px 34px 32px;
+        width: min(720px, 94vw);
         max-height: 92vh;
         overflow-y: auto;
         position: relative;
@@ -92,7 +92,7 @@
         align-items: center;
         justify-content: center;
         gap: 12px;
-        margin-bottom: 14px;
+        margin-bottom: 20px;
         position: relative;
     }
 
@@ -125,7 +125,7 @@
 
     .emirate-logo {
         display: block;
-        height: 148px;
+        height: 118px;
         width: auto;
         object-fit: contain;
         flex-shrink: 0;
@@ -133,20 +133,20 @@
 
     .emirate-title {
         color: #FFD700;
-        font-size: 26px;
+        font-size: 24px;
         font-weight: 800;
-        margin: 0 0 22px;
-        letter-spacing: 0.3px;
-        line-height: 1.3;
+        margin: 0 0 12px;
+        letter-spacing: 0.2px;
+        line-height: 1.35;
         text-shadow: 0 0 30px rgba(255,215,0,0.2);
     }
 
     /* Divider */
     .emirate-divider {
-        width: 60px;
+        width: 56px;
         height: 2px;
         background: linear-gradient(90deg, transparent, #FFD700, transparent);
-        margin: 0 auto 16px;
+        margin: 0 auto 26px;
         border-radius: 2px;
     }
 
@@ -156,7 +156,14 @@
     .emirate-cards-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 22px;
+    }
+    /* A trailing odd-one-out card (3 emirates, 5, etc.) shouldn't strand
+       itself alone on the left — center it and cap its width instead. */
+    .emirate-cards-grid > .emirate-card:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        max-width: 320px;
+        margin: 0 auto;
     }
 
     /* =============================================
@@ -166,8 +173,8 @@
         position: relative;
         background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
         border: none;
-        border-radius: 18px;
-        padding: 12px 12px 18px;
+        border-radius: 16px;
+        padding: 14px 14px 18px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -184,9 +191,9 @@
        Height tracks viewport height so all 4 cards fit without scrolling. */
     .emirate-card .emirate-flag-img {
         width: 100%;
-        height: clamp(120px, 26vh, 240px);
+        height: clamp(110px, 20vh, 190px);
         object-fit: cover;
-        border-radius: 12px;
+        border-radius: 11px;
         display: block;
     }
 
@@ -236,8 +243,8 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        height: clamp(120px, 26vh, 240px);
-        border-radius: 12px;
+        height: clamp(110px, 20vh, 190px);
+        border-radius: 11px;
         background: linear-gradient(135deg, #1a1400, #2a2000);
     }
 
@@ -274,7 +281,7 @@
             padding: 20px 24px 20px;
         }
         .emirate-logo {
-            height: 112px;
+            height: 84px;
         }
         .emirate-title {
             font-size: 21px;
@@ -300,7 +307,7 @@
             padding: 14px 18px 16px;
         }
         .emirate-logo {
-            height: 88px;
+            height: 66px;
         }
         .emirate-title {
             font-size: 17px;
@@ -335,7 +342,7 @@
             margin-bottom: 16px;
         }
         .emirate-logo {
-            height: 116px;
+            height: 88px;
         }
         .emirate-cards-grid {
             gap: 12px;
