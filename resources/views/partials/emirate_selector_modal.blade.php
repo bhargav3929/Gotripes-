@@ -151,49 +151,40 @@
     }
 
     /* =============================================
-       GRID — ONE unified gold box, split into selectable
-       sections (not separate floating cards).
+       GRID — 2x2 gold cards
     ============================================= */
     .emirate-cards-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0;
-        background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
-        border-radius: 18px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 215, 0, 0.5);
-        box-shadow: 0 14px 34px -10px rgba(255, 215, 0, 0.35);
+        gap: 22px;
     }
-    /* A trailing odd-one-out section (3 emirates, 5, etc.) becomes a full-
-       width row of its own within the same box, divided by a top border,
-       instead of stranding a smaller floating card off to one side. */
+    /* A trailing odd-one-out card (3 emirates, 5, etc.) shouldn't strand
+       itself alone on the left — center it and cap its width instead. */
     .emirate-cards-grid > .emirate-card:last-child:nth-child(odd) {
         grid-column: 1 / -1;
-        border-top: 1px solid rgba(26, 20, 0, 0.15);
-    }
-    /* Divider between side-by-side sections in the same row. */
-    .emirate-cards-grid > .emirate-card:nth-child(odd):not(:last-child) {
-        border-right: 1px solid rgba(26, 20, 0, 0.15);
+        max-width: 320px;
+        margin: 0 auto;
     }
 
     /* =============================================
-       SECTION — one selectable half of the unified box
+       CARD — gold gradient card, image + name
     ============================================= */
     .emirate-card {
         position: relative;
-        background: transparent;
+        background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
         border: none;
-        border-radius: 0;
-        padding: 18px 18px 20px;
+        border-radius: 16px;
+        padding: 14px 14px 18px;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 12px;
         cursor: pointer;
-        transition: background-color 0.2s ease, filter 0.2s ease;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: #1a1400;
         font-family: 'Outfit', sans-serif;
         width: 100%;
+        box-shadow: 0 10px 26px -8px rgba(255, 215, 0, 0.35);
     }
 
     /* Image sits inside the card, above the name.
@@ -207,15 +198,17 @@
     }
 
     .emirate-card:hover {
-        background: rgba(26, 20, 0, 0.06);
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px -8px rgba(255, 215, 0, 0.5);
+        filter: brightness(1.04);
     }
 
-    /* Selected state — an inset ring instead of a floating shadow, since
-       these are sections of one box, not independent cards. */
+    /* Selected state */
     .emirate-card.selected,
     .emirate-card[aria-pressed="true"] {
-        background: rgba(26, 20, 0, 0.08);
-        box-shadow: inset 0 0 0 3px rgba(26, 20, 0, 0.55);
+        box-shadow:
+            0 0 0 3px rgba(26, 20, 0, 0.55),
+            0 16px 40px -8px rgba(255, 215, 0, 0.5);
     }
     .emirate-card.selected::before {
         content: '✓';
@@ -297,6 +290,9 @@
         .emirate-divider {
             margin: 0 auto 12px;
         }
+        .emirate-cards-grid {
+            gap: 14px;
+        }
         .emirate-card {
             padding: 10px 10px 14px;
             gap: 8px;
@@ -317,12 +313,22 @@
             font-size: 17px;
             margin: 0 0 10px;
         }
+        .emirate-cards-grid {
+            gap: 10px;
+        }
         .emirate-card {
             padding: 8px 8px 10px;
             gap: 6px;
         }
         .emirate-card-name {
             font-size: 14px;
+        }
+    }
+
+    /* Tablet: keep 2x2, tighten spacing */
+    @media (max-width: 860px) {
+        .emirate-cards-grid {
+            gap: 14px;
         }
     }
 
@@ -338,6 +344,9 @@
         .emirate-logo {
             height: 88px;
         }
+        .emirate-cards-grid {
+            gap: 12px;
+        }
         .emirate-card .emirate-flag-img,
         .emirate-card-icon {
             height: 130px;
@@ -348,21 +357,11 @@
         }
     }
 
-    /* Small mobile: single column, matching the original. Dividers switch
-       from vertical (side-by-side) to horizontal (stacked) accordingly. */
+    /* Small mobile: single column, matching the original */
     @media (max-width: 575.98px) {
         .emirate-cards-grid {
             grid-template-columns: 1fr;
-            gap: 0;
-        }
-        .emirate-cards-grid > .emirate-card:nth-child(odd):not(:last-child) {
-            border-right: none;
-        }
-        .emirate-cards-grid > .emirate-card:last-child:nth-child(odd) {
-            border-top: none;
-        }
-        .emirate-cards-grid > .emirate-card:not(:last-child) {
-            border-bottom: 1px solid rgba(26, 20, 0, 0.15);
+            gap: 14px;
         }
         .emirate-card .emirate-flag-img,
         .emirate-card-icon {
