@@ -65,8 +65,16 @@ class UserController extends Controller
                 'name' => 'required|string|max:255|min:2',
                 'phone' => 'required|string|max:20|min:10|unique:users,phone',
                 'email' => 'required|string|email|max:255|unique:users,email',
-                'password' => 'required|string|min:6|max:255',
-                'selected_emirates' => 'required|string',
+                'password' => 'required|string|min:8|max:255|confirmed',
+                'company_name' => 'required|string|max:255',
+                'address' => 'required|string|max:500',
+                'trade_license_number' => 'required|string|max:100',
+                'trade_license_expiry_date' => 'required|date|after:today',
+                'registering_from_uae' => 'required|boolean',
+                'emirate_id' => 'required_if:registering_from_uae,1|nullable|integer',
+                'country' => 'required_if:registering_from_uae,0|nullable|string|max:100',
+                'services' => 'required|array|min:1',
+                'services.*' => ['string', \Illuminate\Validation\Rule::in(array_keys(User::AGENT_SERVICES))],
                 'partner_documents' => 'required|array',
                 'partner_documents.*' => 'file|mimes:pdf,doc,docx,png,jpg,jpeg|max:5120',
             ], [
@@ -79,8 +87,16 @@ class UserController extends Controller
                 'email.email' => 'Please enter a valid email address',
                 'email.unique' => 'This email is already registered',
                 'password.required' => 'Password is required',
-                'password.min' => 'Password must be at least 6 characters',
-                'selected_emirates.required' => 'Please select at least one emirate',
+                'password.min' => 'Password must be at least 8 characters',
+                'password.confirmed' => 'Password and confirm password do not match',
+                'company_name.required' => 'Business/company name is required',
+                'address.required' => 'Address is required',
+                'trade_license_number.required' => 'Trade license number is required',
+                'trade_license_expiry_date.required' => 'Trade license expiry date is required',
+                'trade_license_expiry_date.after' => 'Trade license expiry date must be in the future',
+                'emirate_id.required_if' => 'Please select which Emirate you are registering from',
+                'country.required_if' => 'Please select which country you are registering from',
+                'services.required' => 'Select at least one product/service you want to sell',
                 'partner_documents.required' => 'At least one document must be uploaded',
                 'partner_documents.*.mimes' => 'Only pdf, doc, docx, png, jpg, jpeg files are allowed',
                 'partner_documents.*.max' => 'Uploaded file may not be greater than 5MB',
@@ -93,36 +109,31 @@ class UserController extends Controller
                 ], 422);
             }
 
-            $emiratesIds = explode(',', $request->selected_emirates);
-            $emiratesIds = array_map('trim', $emiratesIds);
-            $emiratesIds = array_filter($emiratesIds);
+            $isUae = $request->boolean('registering_from_uae');
+            $emirateName = null;
+            $emiratesIdsCsv = '';
 
-            if (empty($emiratesIds)) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => ['selected_emirates' => ['Please select at least one emirate']]
-                ], 422);
+            if ($isUae) {
+                $emirate = DB::table('tbl_emirates')
+                    ->where('emiratesID', $request->emirate_id)
+                    ->where('isActive', 1)
+                    ->first();
+
+                if (!$emirate) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid emirate selection. Please refresh the page and try again.'
+                    ], 422);
+                }
+
+                $emirateName = $emirate->emiratesName;
+                // Kept in the same numeric-id-csv shape the admin approval
+                // screen already parses from email_verified_at, so a single
+                // chosen emirate still displays there exactly like before.
+                $emiratesIdsCsv = (string) $emirate->emiratesID;
             }
 
-            $validEmirates = DB::table('tbl_emirates')
-                ->whereIn('emiratesID', $emiratesIds)
-                ->where('isActive', 1)
-                ->count();
-
-            if ($validEmirates !== count($emiratesIds)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid emirates selection. Please refresh the page and try again.'
-                ], 422);
-            }
-
-            $selectedEmirates = DB::table('tbl_emirates')
-                ->whereIn('emiratesID', $emiratesIds)
-                ->where('isActive', 1)
-                ->pluck('emiratesName')
-                ->toArray();
-
-            $emailVerifiedAtValue = $request->selected_emirates . 'rseparator0rseparator';
+            $emailVerifiedAtValue = $emiratesIdsCsv . 'rseparator0rseparator';
 
             $userData = [
                 'name' => $request->name,
@@ -130,6 +141,13 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'email_verified_at' => $emailVerifiedAtValue,
+                'company_name' => $request->company_name,
+                'address' => $request->address,
+                'trade_license_number' => $request->trade_license_number,
+                'trade_license_expiry_date' => $request->trade_license_expiry_date,
+                'emirate' => $emirateName,
+                'country' => $isUae ? null : trim($request->country),
+                'agent_services' => array_values($request->services),
             ];
 
             // MULTIPLE FILE UPLOAD
@@ -155,8 +173,7 @@ class UserController extends Controller
                 'success' => true,
                 'message' => 'Partner registration successful! Your account is pending admin approval.',
                 'user_id' => $user->id,
-                'emirates' => $selectedEmirates,
-                'emirates_count' => count($emiratesIds),
+                'location' => $isUae ? $emirateName : $userData['country'],
                 'status' => 'Pending Approval',
                 'note' => 'You will receive an email notification once your account is approved by the admin.'
             ], 201);

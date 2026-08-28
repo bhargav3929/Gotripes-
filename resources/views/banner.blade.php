@@ -213,7 +213,10 @@
       border: 1px solid rgba(255, 215, 0, 0.15);
       border-radius: 24px;
       width: 95%;
-      max-width: 800px;
+      max-width: 1080px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
       box-shadow:
         0 25px 80px rgba(0, 0, 0, 0.8),
         0 0 60px rgba(255, 215, 0, 0.08),
@@ -243,6 +246,7 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: none;
+      flex-shrink: 0;
     }
 
     .partner-registration-modal .partner-modal-header h2 {
@@ -281,13 +285,82 @@
 
     .partner-registration-modal .partner-modal-body {
       padding: 15px 35px 25px;
+      overflow-y: scroll;
+      scrollbar-width: thin;
+      scrollbar-color: #FFD700 rgba(255, 255, 255, 0.06);
+    }
+    /* Forced visible always — not just when content happens to overflow by
+       a lot — so it never reads as just a thin stray line. */
+    .partner-registration-modal .partner-modal-body::-webkit-scrollbar {
+      width: 14px;
+    }
+    .partner-registration-modal .partner-modal-body::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      margin: 4px 0;
+    }
+    .partner-registration-modal .partner-modal-body::-webkit-scrollbar-thumb {
+      background-color: #FFD700;
+      border-radius: 8px;
+      border: 3px solid #141414;
+      background-clip: padding-box;
+      min-height: 40px;
+    }
+    .partner-registration-modal .partner-modal-body::-webkit-scrollbar-thumb:hover {
+      background-color: #FFA500;
+      background-clip: padding-box;
     }
 
-    /* Premium Form Grid */
-    .partner-registration-modal .partner-form-grid {
+    /* 3-column layout — same pattern as the Agent Registration form: one
+       card per section, laid out side by side instead of stacked. */
+    .partner-registration-modal .partner-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .partner-registration-modal .partner-col {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 215, 0, 0.12);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .partner-registration-modal .partner-col-title {
+      color: #FFD700;
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding-bottom: 8px;
+      margin-bottom: 2px;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+    }
+    .partner-registration-modal .partner-col .partner-form-group {
+      margin-bottom: 0;
+    }
+    /* Pairs two fields per row inside a column — same technique as the
+       Agent Registration form's .field-row. */
+    .partner-registration-modal .partner-field-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 8px;
+    }
+    /* Secondary row below the 3 columns — license document + credentials,
+       same as the Agent Registration form's .extra-row. */
+    .partner-registration-modal .partner-extra-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 900px) {
+      .partner-registration-modal .partner-extra-row {
+        grid-template-columns: 1fr;
+      }
     }
 
     .partner-registration-modal .partner-form-group {
@@ -309,7 +382,8 @@
     .partner-registration-modal .partner-form-group input[type="email"],
     .partner-registration-modal .partner-form-group input[type="password"],
     .partner-registration-modal .partner-form-group input[type="tel"],
-    .partner-registration-modal .partner-form-group input[type="date"] {
+    .partner-registration-modal .partner-form-group input[type="date"],
+    .partner-registration-modal .partner-form-group select {
       width: 100%;
       height: 44px;
       background: linear-gradient(145deg, #0e0e0e 0%, #0a0a0a 100%);
@@ -325,16 +399,106 @@
       box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
-    .partner-registration-modal .partner-form-group input:hover {
+    .partner-registration-modal .partner-form-group input:hover,
+    .partner-registration-modal .partner-form-group select:hover {
       border-color: rgba(255, 215, 0, 0.25);
       background: linear-gradient(145deg, #141414 0%, #0e0e0e 100%);
     }
 
-    .partner-registration-modal .partner-form-group input:focus {
+    .partner-registration-modal .partner-form-group input:focus,
+    .partner-registration-modal .partner-form-group select:focus {
       outline: none;
       border-color: #FFD700;
       background: linear-gradient(145deg, #151515 0%, #101010 100%);
       box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Chrome paints autofilled fields with its own white background by
+       default, ignoring the input's own styling unless overridden this way. */
+    .partner-registration-modal .partner-form-group input:-webkit-autofill,
+    .partner-registration-modal .partner-form-group input:-webkit-autofill:hover,
+    .partner-registration-modal .partner-form-group input:-webkit-autofill:focus,
+    .partner-registration-modal .partner-form-group input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px #0e0e0e inset !important;
+      -webkit-text-fill-color: #fff !important;
+      caret-color: #fff !important;
+      transition: background-color 9999s ease-in-out 0s;
+    }
+
+    /* UAE / Outside toggle */
+    .partner-registration-modal .partner-uae-toggle {
+      display: flex;
+      gap: 8px;
+    }
+    .partner-registration-modal .partner-uae-option {
+      flex: 1;
+      margin: 0 !important;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 9px 10px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: normal;
+      color: #ddd;
+      background: linear-gradient(145deg, #0e0e0e 0%, #0a0a0a 100%);
+      transition: all 0.2s ease;
+    }
+    .partner-registration-modal .partner-uae-option:has(input:checked) {
+      border-color: #FFD700;
+      background: linear-gradient(145deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 215, 0, 0.03) 100%);
+    }
+    .partner-registration-modal .partner-uae-option input {
+      accent-color: #FFD700;
+      cursor: pointer;
+    }
+
+    /* Services checkboxes */
+    .partner-registration-modal .partner-services-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .partner-registration-modal .partner-service-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 10px 14px;
+      min-height: 38px;
+      background: linear-gradient(145deg, #0e0e0e 0%, #0a0a0a 100%);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .partner-registration-modal .partner-service-option:hover {
+      border-color: rgba(255, 215, 0, 0.3);
+    }
+    .partner-registration-modal .partner-service-option input {
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
+      min-height: 14px;
+      margin: 0;
+      accent-color: #FFD700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .partner-registration-modal .partner-service-option label {
+      flex: 1;
+      min-width: 0;
+      margin: 0 !important;
+      color: #ddd;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: normal;
+      cursor: pointer;
+      display: block;
     }
 
     .partner-registration-modal .partner-form-group input::placeholder {
@@ -436,8 +600,8 @@
 
     .partner-registration-modal .partner-emirates-checkbox-container {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      grid-template-columns: 1fr;
+      gap: 8px;
       padding: 0;
       background: transparent;
       border: none;
@@ -448,15 +612,16 @@
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      padding: 0 16px;
+      padding: 0 14px;
       background: linear-gradient(145deg, #0e0e0e 0%, #0a0a0a 100%);
       border: 1px solid #222;
-      border-radius: 50px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.25s ease;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
       height: 38px;
       box-sizing: border-box;
+      width: 100%;
     }
 
     .partner-registration-modal .partner-emirate-checkbox-item:hover {
@@ -584,11 +749,13 @@
     }
 
     /* Responsive */
-    @media (max-width: 768px) {
-      .partner-registration-modal .partner-form-grid {
+    @media (max-width: 900px) {
+      .partner-registration-modal .partner-columns {
         grid-template-columns: 1fr;
       }
+    }
 
+    @media (max-width: 768px) {
       .partner-registration-modal .partner-modal-body {
         padding: 20px 25px 30px;
       }
@@ -604,10 +771,6 @@
 
       .partner-registration-modal .partner-form-actions {
         flex-direction: column;
-      }
-
-      .partner-registration-modal .partner-emirates-checkbox-container {
-        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -926,119 +1089,146 @@
                 <form id="partnerRegistrationForm">
                   @csrf
 
-                  <!-- GRID WRAPPER -->
-                  <div class="partner-form-grid">
+                  @php
+                    $partnerEmirates = \App\Models\Emirates::getActiveEmirates();
+                    $partnerCountries = collect(\App\Support\CountryCodes::all())
+                      ->pluck('name')
+                      ->reject(fn ($name) => $name === 'United Arab Emirates')
+                      ->values();
+                  @endphp
 
-                    <div class="partner-form-group">
-                      <label for="partnerName">Full Name</label>
-                      <input type="text" id="partnerName" name="name" placeholder="Enter your full name" required>
-                      <span class="partner-error-msg" id="partnerName-error"></span>
-                    </div>
+                  <!-- 3-column layout, same pattern as the Agent Registration form -->
+                  <div class="partner-columns">
 
-                    <div class="partner-form-group">
-                      <label for="partnerPhone">Phone Number</label>
-                      <input type="tel" id="partnerPhone" name="phone" placeholder="+971 50 123 4567" required>
-                      <span class="partner-error-msg" id="partnerPhone-error"></span>
-                    </div>
+                    <!-- Column 1: Company / Contact Details -->
+                    <div class="partner-col">
+                      <div class="partner-col-title">Company / Contact Details</div>
 
-                    <div class="partner-form-group">
-                      <label for="partnerEmail">Email Address</label>
-                      <input type="email" id="partnerEmail" name="email" placeholder="your.email@domain.com" required>
-                      <span class="partner-error-msg" id="partnerEmail-error"></span>
-                    </div>
-
-                    <!-- Country Dropdown - Server-side preloaded + Tom Select searchable -->
-                    <div class="partner-form-group">
-                      <label for="partnerCountry">Country</label>
-                      <select id="partnerCountry" name="country" required class="partner-select">
-                        <option value="">Select your country</option>
-                        @foreach(\App\Support\CountryCodes::all() as $code => $c)
-                          <option value="{{ $c['name'] }}" data-iso="{{ strtolower($c['iso']) }}">{{ $c['name'] }}</option>
-                        @endforeach
-                      </select>
-                      <span class="partner-error-msg" id="partnerCountry-error"></span>
-                    </div>
-
-                    <div class="partner-form-group">
-                      <label for="partnerPassword">Password</label>
-                      <input type="password" id="partnerPassword" name="password" placeholder="Create a secure password"
-                        required>
-                      <span class="partner-error-msg" id="partnerPassword-error"></span>
-                    </div>
-
-                    <div class="partner-form-group">
-                      <label for="partnerLicenseExpiry">Trade License Expiry Date</label>
-                      <input type="date" id="partnerLicenseExpiry" name="license_expiry" required>
-                      <span class="partner-error-msg" id="partnerLicenseExpiry-error"></span>
-                    </div>
-
-                    <div class="partner-form-group">
-                      <label for="partnerDocument">Trade License Documents</label>
-                      <input type="file" name="partner_documents[]" id="partnerDocument"
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple required>
-                      <span class="partner-error-msg" id="partnerDocument-error"></span>
-                    </div>
-
-
-
-
-
-                    <!-- Emirates (Full width) -->
-                    <div class="partner-form-group partner-full-width">
-                      <div class="partner-emirates-section-title">Select Emirates</div>
-                      <p class="partner-form-helper-text">Choose the emirates you want to operate in (multiple selection
-                        allowed):</p>
-
-                      <div class="partner-emirates-checkbox-container" id="partnerEmiratesContainer">
-                        <div class="partner-emirate-checkbox-item" onclick="toggleEmirateSelection(this)">
-                          <input type="checkbox" id="partnerEmirate_1" name="emirates[]" value="1"
-                            class="partner-emirate-checkbox">
-                          <label for="partnerEmirate_1" class="partner-emirate-label">Abu Dhabi</label>
+                      <div class="partner-field-row">
+                        <div class="partner-form-group">
+                          <label for="partnerName">Contact Name</label>
+                          <input type="text" id="partnerName" name="name" placeholder="Enter your full name" required>
+                          <span class="partner-error-msg" id="partnerName-error"></span>
                         </div>
-                        <div class="partner-emirate-checkbox-item" onclick="toggleEmirateSelection(this)">
-                          <input type="checkbox" id="partnerEmirate_2" name="emirates[]" value="2"
-                            class="partner-emirate-checkbox">
-                          <label for="partnerEmirate_2" class="partner-emirate-label">Dubai</label>
-                        </div>
-                        <div class="partner-emirate-checkbox-item" onclick="toggleEmirateSelection(this)">
-                          <input type="checkbox" id="partnerEmirate_3" name="emirates[]" value="3"
-                            class="partner-emirate-checkbox">
-                          <label for="partnerEmirate_3" class="partner-emirate-label">Sharjah</label>
-                        </div>
-                        <div class="partner-emirate-checkbox-item" onclick="toggleEmirateSelection(this)">
-                          <input type="checkbox" id="partnerEmirate_4" name="emirates[]" value="4"
-                            class="partner-emirate-checkbox">
-                          <label for="partnerEmirate_4" class="partner-emirate-label">Ajman</label>
-                        </div>
-                        <div class="partner-emirate-checkbox-item" onclick="toggleEmirateSelection(this)">
-                          <input type="checkbox" id="partnerEmirate_5" name="emirates[]" value="5"
-                            class="partner-emirate-checkbox">
-                          <label for="partnerEmirate_5" class="partner-emirate-label">Umm Al Quwain</label>
-                        </div>
-                        <div class="partner-emirate-checkbox-item" onclick="toggleEmirateSelection(this)">
-                          <input type="checkbox" id="partnerEmirate_6" name="emirates[]" value="6"
-                            class="partner-emirate-checkbox">
-                          <label for="partnerEmirate_6" class="partner-emirate-label">Ras Al Khaimah</label>
-                        </div>
-                        <div class="partner-emirate-checkbox-item" onclick="toggleEmirateSelection(this)">
-                          <input type="checkbox" id="partnerEmirate_7" name="emirates[]" value="7"
-                            class="partner-emirate-checkbox">
-                          <label for="partnerEmirate_7" class="partner-emirate-label">Fujairah</label>
+                        <div class="partner-form-group">
+                          <label for="partnerPhone">Contact No.</label>
+                          <input type="tel" id="partnerPhone" name="phone" placeholder="+971 50 123 4567" required>
+                          <span class="partner-error-msg" id="partnerPhone-error"></span>
                         </div>
                       </div>
 
-                      <span class="partner-error-msg" id="partnerEmirates-error"></span>
+                      <div class="partner-field-row">
+                        <div class="partner-form-group">
+                          <label for="partnerEmail">Email Address</label>
+                          <input type="email" id="partnerEmail" name="email" placeholder="your.email@domain.com" required>
+                          <span class="partner-error-msg" id="partnerEmail-error"></span>
+                        </div>
+                        <div class="partner-form-group">
+                          <label for="partnerCompanyName">Business Name / Company</label>
+                          <input type="text" id="partnerCompanyName" name="company_name" placeholder="Your company name" required>
+                          <span class="partner-error-msg" id="partnerCompanyName-error"></span>
+                        </div>
+                      </div>
+
+                      <div class="partner-field-row">
+                        <div class="partner-form-group">
+                          <label for="partnerLicenseNumber">Trade License No.</label>
+                          <input type="text" id="partnerLicenseNumber" name="trade_license_number" placeholder="e.g. TL-12345" required maxlength="100">
+                          <span class="partner-error-msg" id="partnerLicenseNumber-error"></span>
+                        </div>
+                        <div class="partner-form-group">
+                          <label for="partnerLicenseExpiry">Trade License Expiry</label>
+                          <input type="date" id="partnerLicenseExpiry" name="trade_license_expiry_date" required>
+                          <span class="partner-error-msg" id="partnerLicenseExpiry-error"></span>
+                        </div>
+                      </div>
+
+                      <div class="partner-form-group">
+                        <label for="partnerAddress">Address</label>
+                        <input type="text" id="partnerAddress" name="address" placeholder="Their address" required>
+                        <span class="partner-error-msg" id="partnerAddress-error"></span>
+                      </div>
+                    </div>
+
+                    <!-- Column 2: Registering From -->
+                    <div class="partner-col">
+                      <div class="partner-col-title">Registering From</div>
+
+                      <div class="partner-form-group">
+                        <label>Registering from UAE?</label>
+                        <div class="partner-uae-toggle">
+                          <label class="partner-uae-option">
+                            <input type="radio" name="registering_from_uae" id="partnerUaeYes" value="1" checked>
+                            In UAE
+                          </label>
+                          <label class="partner-uae-option">
+                            <input type="radio" name="registering_from_uae" id="partnerUaeNo" value="0">
+                            Outside UAE
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="partner-form-group" id="partnerEmirateBlock">
+                        <label for="partnerEmirateSelect">Emirate</label>
+                        <select id="partnerEmirateSelect" name="emirate_id">
+                          <option value="">Select an Emirate...</option>
+                          @foreach($partnerEmirates as $e)
+                            <option value="{{ $e->emiratesID }}">{{ $e->emiratesName }}</option>
+                          @endforeach
+                        </select>
+                        <span class="partner-error-msg" id="partnerEmirateSelect-error"></span>
+                      </div>
+
+                      <div class="partner-form-group" id="partnerCountryBlock" style="display:none;">
+                        <label for="partnerCountrySelect">Country</label>
+                        <select id="partnerCountrySelect" name="country">
+                          <option value="">Select country...</option>
+                          @foreach($partnerCountries as $c)
+                            <option value="{{ $c }}">{{ $c }}</option>
+                          @endforeach
+                        </select>
+                        <span class="partner-error-msg" id="partnerCountrySelect-error"></span>
+                      </div>
+                    </div>
+
+                    <!-- Column 3: Services -->
+                    <div class="partner-col">
+                      <div class="partner-col-title">Which products or services do you want to sell through us?</div>
+
+                      <div class="partner-services-grid">
+                        @foreach(\App\Models\User::AGENT_SERVICES as $key => $label)
+                          <div class="partner-service-option">
+                            <input type="checkbox" id="partnerService_{{ $key }}" name="services[]" value="{{ $key }}">
+                            <label for="partnerService_{{ $key }}">{{ $label }}</label>
+                          </div>
+                        @endforeach
+                      </div>
+                      <span class="partner-error-msg" id="partnerServices-error"></span>
                     </div>
 
                   </div>
 
-
-
-
-
-
-
-
+                  <!-- Secondary row: license document + account credentials -->
+                  <div class="partner-extra-row">
+                    <div class="partner-form-group">
+                      <label for="partnerDocument">Trade License Document</label>
+                      <input type="file" name="partner_documents[]" id="partnerDocument"
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple required>
+                      <span class="partner-error-msg" id="partnerDocument-error"></span>
+                    </div>
+                    <div class="partner-form-group">
+                      <label for="partnerPassword">Password</label>
+                      <input type="password" id="partnerPassword" name="password" placeholder="Create a secure password"
+                        required minlength="8">
+                      <span class="partner-error-msg" id="partnerPassword-error"></span>
+                    </div>
+                    <div class="partner-form-group">
+                      <label for="partnerPasswordConfirm">Confirm Password</label>
+                      <input type="password" id="partnerPasswordConfirm" name="password_confirmation" placeholder="Re-enter your password"
+                        required minlength="8">
+                      <span class="partner-error-msg" id="partnerPasswordConfirm-error"></span>
+                    </div>
+                  </div>
 
 
 
@@ -1097,48 +1287,35 @@
       document.addEventListener('DOMContentLoaded', function () {
         console.log('🚀 Partner registration modal initializing...');
 
-        // Initialize Tom Select for country dropdown
-        const countrySelect = document.getElementById('partnerCountry');
-        if (countrySelect && typeof TomSelect !== 'undefined') {
-          // Map country name -> ISO code (read from the original <option> tags
-          // before Tom Select replaces the DOM) so we can render a real flag
-          // icon — Unicode flag emoji don't render as flags on Windows/Chrome,
-          // they fall back to plain letter codes.
-          var countryIso = {};
-          countrySelect.querySelectorAll('option[data-iso]').forEach(function (opt) {
-            countryIso[opt.value] = opt.dataset.iso;
-          });
-          function flagHtml(name, escape) {
-            var iso = countryIso[name];
-            if (!iso) return '';
-            return '<span class="iti__flag iti__' + iso + '" style="margin-right:8px;flex:none;"></span>';
-          }
-
-          new TomSelect(countrySelect, {
-            create: false,
-            placeholder: 'Select your country',
-            controlInput: '<input>',
-            render: {
-              option: function(data, escape) {
-                return '<div style="display:flex;align-items:center;">' + flagHtml(data.value, escape) + '<span>' + escape(data.text) + '</span></div>';
-              },
-              item: function(data, escape) {
-                return '<div style="display:flex;align-items:center;">' + flagHtml(data.value, escape) + '<span>' + escape(data.text) + '</span></div>';
-              },
-              no_results: function(data, escape) {
-                return '<div class="no-results" style="padding: 8px 14px; color: #888;">No country found for "' + escape(data.input) + '"</div>';
-              }
-            }
-          });
-        }
-
         // Modal Elements
         const partnerModal = document.getElementById('partnerRegistrationModal');
         const partnerRegisterBtn = document.getElementById('partnerRegisterBtn');
         const partnerCloseModal = document.getElementById('partnerCloseModal');
         const partnerCancelBtn = document.getElementById('partnerCancelBtn');
         const partnerRegistrationForm = document.getElementById('partnerRegistrationForm');
-        const partnerEmiratesContainer = document.getElementById('partnerEmiratesContainer');
+
+        // UAE-vs-Outside toggle — shows the Emirate select or the Country
+        // select, never both, mirroring the Agent Registration form.
+        const partnerUaeYes = document.getElementById('partnerUaeYes');
+        const partnerUaeNo = document.getElementById('partnerUaeNo');
+        const partnerEmirateBlock = document.getElementById('partnerEmirateBlock');
+        const partnerCountryBlock = document.getElementById('partnerCountryBlock');
+        const partnerEmirateSelect = document.getElementById('partnerEmirateSelect');
+        const partnerCountrySelect = document.getElementById('partnerCountrySelect');
+
+        function partnerSyncLocationFields() {
+          const isUae = partnerUaeYes.checked;
+          partnerEmirateBlock.style.display = isUae ? '' : 'none';
+          partnerCountryBlock.style.display = isUae ? 'none' : '';
+          partnerEmirateSelect.required = isUae;
+          partnerCountrySelect.required = !isUae;
+        }
+
+        if (partnerUaeYes && partnerUaeNo) {
+          partnerUaeYes.addEventListener('change', partnerSyncLocationFields);
+          partnerUaeNo.addEventListener('change', partnerSyncLocationFields);
+          partnerSyncLocationFields();
+        }
 
         // 🎯 NEW: Phone Number Validation
         const partnerPhoneInput = document.getElementById('partnerPhone');
@@ -1324,7 +1501,15 @@
             'phone': 'partnerPhone',
             'email': 'partnerEmail',
             'password': 'partnerPassword',
-            'emirates': 'partnerEmirates'
+            'password_confirmation': 'partnerPasswordConfirm',
+            'company_name': 'partnerCompanyName',
+            'address': 'partnerAddress',
+            'trade_license_number': 'partnerLicenseNumber',
+            'trade_license_expiry_date': 'partnerLicenseExpiry',
+            'emirate_id': 'partnerEmirateSelect',
+            'country': 'partnerCountrySelect',
+            'services': 'partnerServices',
+            'partner_documents': 'partnerDocument'
           };
 
           Object.keys(errors).forEach(field => {
@@ -1342,25 +1527,16 @@
           console.log('📤 Partner form submitted');
 
           const submitBtn = document.querySelector('.partner-submit-btn');
-          const formData = new FormData(partnerRegistrationForm);
 
-          // Get selected emirates
-          const selectedEmirates = [];
-          const checkboxes = document.querySelectorAll('input[name="emirates[]"]:checked');
-          checkboxes.forEach(checkbox => {
-            selectedEmirates.push(checkbox.value);
-          });
-
-          console.log('📋 Selected emirates:', selectedEmirates);
-
-          // Validate emirates selection
-          if (selectedEmirates.length === 0) {
-            document.getElementById('partnerEmirates-error').textContent = 'Please select at least one emirate';
+          // Client-side nicety: require at least one service before even
+          // hitting the server (which also enforces this).
+          const selectedServices = document.querySelectorAll('input[name="services[]"]:checked');
+          if (selectedServices.length === 0) {
+            document.getElementById('partnerServices-error').textContent = 'Select at least one product/service';
             return;
           }
 
-          // Add emirates to form data
-          formData.append('selected_emirates', selectedEmirates.join(','));
+          const formData = new FormData(partnerRegistrationForm);
 
           // Add loading state
           submitBtn.disabled = true;
