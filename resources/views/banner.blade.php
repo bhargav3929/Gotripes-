@@ -213,7 +213,7 @@
       border: 1px solid rgba(255, 215, 0, 0.15);
       border-radius: 24px;
       width: 95%;
-      max-width: 1080px;
+      max-width: 1140px;
       max-height: 88vh;
       display: flex;
       flex-direction: column;
@@ -315,7 +315,10 @@
        card per section, laid out side by side instead of stacked. */
     .partner-registration-modal .partner-columns {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      /* Column 1 packs 2 fields per row (name/phone, email/company, license
+         no/expiry) so it needs more room than columns 2-3 to avoid clipping
+         placeholder text like "your.email@domain.com". */
+      grid-template-columns: minmax(430px, 1.7fr) minmax(210px, 1fr) minmax(210px, 1fr);
       gap: 16px;
       align-items: start;
     }
@@ -411,6 +414,16 @@
       border-color: #FFD700;
       background: linear-gradient(145deg, #151515 0%, #101010 100%);
       box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    /* The select itself is styled white-on-dark, but a native option list
+       renders with its own background — Chromium/Firefox honor option
+       background/color and it stays readable; browsers that ignore it fall
+       back to system dark-on-white, which is still readable, just off-theme. */
+    .partner-registration-modal .partner-form-group select option {
+      background: #141414;
+      color: #ffffff;
+      padding: 8px 12px;
     }
 
     /* Chrome paints autofilled fields with its own white background by
@@ -749,7 +762,11 @@
     }
 
     /* Responsive */
-    @media (max-width: 900px) {
+    /* Stacks earlier than the extra-row's 900px breakpoint: below ~1024px
+       viewport the modal itself isn't wide enough to fit Column 1's
+       minmax(430px, ...) track without squeezing, so drop to single-column
+       before that point rather than clipping text. */
+    @media (max-width: 1024px) {
       .partner-registration-modal .partner-columns {
         grid-template-columns: 1fr;
       }
@@ -771,6 +788,13 @@
 
       .partner-registration-modal .partner-form-actions {
         flex-direction: column;
+      }
+
+      /* Column 1's paired fields (name/phone, email/company, license
+         no/expiry) don't have room for full placeholders at phone widths
+         even once the outer 3-column layout has already stacked. */
+      .partner-registration-modal .partner-field-row {
+        grid-template-columns: 1fr;
       }
     }
 
