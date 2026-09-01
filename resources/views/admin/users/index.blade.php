@@ -40,28 +40,31 @@
                             <table class="table table-dark table-hover datatable datatable-User">
                                 <thead>
                                     <tr>
-                                        <th style="width: 80px; text-align: center;">
+                                        <th style="width: 60px; text-align: center;">
                                             <i class="fas fa-hashtag me-1"></i>Sl. No
                                         </th>
-                                        <th style="width: 180px;">
+                                        <th style="width: 160px;">
                                             <i class="fas fa-user me-1"></i>Name
                                         </th>
-                                        <th style="width: 160px;">
+                                        <th style="width: 150px;">
                                             <i class="fas fa-envelope me-1"></i>Email
                                         </th>
-                                        <th style="width: 200px;">
+                                        <th style="width: 170px;">
                                             <i class="fas fa-map-marker-alt me-1"></i>Selected Emirates
                                         </th>
-                                        <th class="text-center" style="width: 140px;">
+                                        <th class="text-center" style="width: 70px;">
+                                            <i class="fas fa-building me-1"></i>Details
+                                        </th>
+                                        <th class="text-center" style="width: 120px;">
                                             <i class="fas fa-info-circle me-1"></i>Status
                                         </th>
-                                        <th class="text-center" style="width: 150px;">
+                                        <th class="text-center" style="width: 110px;">
                                             <i class="fas fa-shield-alt me-1"></i>Access
                                         </th>
-                                        <th class="text-center" style="width: 160px;">
+                                        <th class="text-center" style="width: 130px;">
                                             <i class="fas fa-file-download me-1"></i>Documents
                                         </th>
-                                        <th class="text-center" style="width: 220px;">
+                                        <th class="text-center" style="width: 190px;">
                                             <i class="fas fa-cogs me-1"></i>Action
                                         </th>
                                     </tr>
@@ -83,6 +86,13 @@
                                                 ->toArray();
                                         }
                                         $filePaths = json_decode($user->partner_document_path, true) ?? [];
+                                        $serviceKeys = is_array($user->agent_services) ? $user->agent_services : [];
+                                        $serviceLabels = array_values(array_intersect_key(
+                                            \App\Models\User::AGENT_SERVICES,
+                                            array_flip($serviceKeys)
+                                        ));
+                                        $licenseExpired = $user->trade_license_expiry_date
+                                            && $user->trade_license_expiry_date->isPast();
                                     @endphp
                                     
                                     <tr data-entry-id="{{ $user->id }}">
@@ -118,6 +128,31 @@
                                                 <span class="text-muted">
                                                     <i class="fas fa-minus me-1"></i>No Emirates
                                                 </span>
+                                            @endif
+                                        </td>
+                                        <!-- REGISTRATION DETAILS (Company / Address / Trade License / Country / Services) -->
+                                        <td class="text-center">
+                                            @if($user->company_name || $user->trade_license_number || !empty($serviceLabels))
+                                                @php
+                                                    $detailsTooltip = collect([
+                                                        $user->company_name,
+                                                        $user->address,
+                                                        $user->trade_license_number ? 'License: ' . $user->trade_license_number : null,
+                                                        $user->trade_license_expiry_date
+                                                            ? 'Expires: ' . $user->trade_license_expiry_date->format('d M Y') . ($licenseExpired ? ' (Expired)' : '')
+                                                            : null,
+                                                        $user->country,
+                                                        !empty($serviceLabels) ? 'Services: ' . implode(', ', $serviceLabels) : null,
+                                                    ])->filter()->implode(' | ');
+                                                @endphp
+                                                <span class="btn-icon {{ $licenseExpired ? 'btn-icon-delete' : 'btn-icon-edit' }}"
+                                                      data-bs-toggle="tooltip"
+                                                      data-bs-html="false"
+                                                      title="{{ $detailsTooltip }}">
+                                                    <i class="fas fa-building"></i>
+                                                </span>
+                                            @else
+                                                <span class="text-muted"><i class="fas fa-minus"></i></span>
                                             @endif
                                         </td>
                                         <td class="text-center">
@@ -230,7 +265,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="8" class="text-center py-5">
+                                        <td colspan="9" class="text-center py-5">
                                             <div class="empty-state-desktop">
                                                 <i class="fas fa-users text-gold mb-3" style="font-size: 4rem; opacity: 0.5;"></i>
                                                 <h4 class="text-white mb-2">No Users Found</h4>
@@ -343,6 +378,21 @@
 
 <!-- Enhanced Mobile-First Responsive Styles with Fixed Colors -->
 <style>
+    /* Forces the browser to respect each <th>'s declared width instead of
+       stretching columns to fit unbreakable content (e.g. long emails) —
+       without this, the Action column (with Approve/Reject) gets pushed
+       off-screen regardless of how narrow the other columns are set. */
+    .datatable-User {
+        table-layout: fixed;
+        width: 100%;
+    }
+    .datatable-User th,
+    .datatable-User td {
+        box-sizing: border-box !important;
+        overflow: hidden;
+        word-wrap: break-word;
+    }
+
     /* Compact icon-only action buttons */
     .btn-icon {
         display: inline-flex;
@@ -656,10 +706,16 @@ $(function () {
         pageLength: 25,
     });
     
-    $('.datatable-User:not(.ajaxTable)').DataTable({ 
-        responsive: true,
+    $('.datatable-User:not(.ajaxTable)').DataTable({
+        // Disabled: with the Company/License and Services columns added, the
+        // table no longer fits most screens, and the responsive plugin's
+        // default reaction — hiding columns behind a per-row expand toggle —
+        // reads as broken. The table's own .table-responsive wrapper already
+        // scrolls horizontally, which is the simpler, more predictable fix.
+        responsive: false,
+        autoWidth: false, // otherwise DataTables recalculates/overrides the <th> widths after init, undoing table-layout:fixed
         columnDefs: [
-            { orderable: false, targets: [3, 5] } // Disable sorting for Emirates and Actions columns
+            { orderable: false, targets: [3, 4, 8] } // Disable sorting for Emirates, Details and Actions columns
         ]
     });
     

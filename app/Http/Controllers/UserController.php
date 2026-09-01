@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Company;
 use Illuminate\Http\JsonResponse;
 use Exception;
 use Illuminate\Support\Str;
@@ -227,10 +228,30 @@ class UserController extends Controller
             $adminNotes = $request->admin_notes ? trim($request->admin_notes) : '';
             $newValue = $parts['emirates'] . 'rseparator' . $newStatus . 'rseparator' . $adminNotes;
 
-            User::where('id', $userId)->update([
+            $updateData = [
                 'email_verified_at' => $newValue,
                 'updated_at' => now()
-            ]);
+            ];
+
+            // Approval connects this Partner Registration to the same
+            // Agent/Manager system built for AgentApplication (rather than a
+            // second, parallel one): granting the company_agent role and a
+            // company_id is what makes ManagerAgentsController::index() list
+            // it and User::hasService() honor the services chosen at
+            // registration. Registrations happen with no tenant context (the
+            // main gotrips.ai domain), so they land under the main "gotrips"
+            // company — the same fallback IdentifyTenant itself uses for
+            // that domain. Left alone on reject / re-processing.
+            if ($newStatus == 1) {
+                $mainCompany = Company::where('slug', 'gotrips')->first();
+                if ($mainCompany) {
+                    $updateData['role'] = 'company_agent';
+                    $updateData['company_id'] = $mainCompany->id;
+                    $updateData['is_active'] = true;
+                }
+            }
+
+            User::where('id', $userId)->update($updateData);
 
             $statusText = $newStatus == 1 ? 'Approved' : 'Rejected';
             $emiratesNames = $this->getEmiratesFromValue($currentValue);

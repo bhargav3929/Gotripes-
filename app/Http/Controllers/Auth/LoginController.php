@@ -21,11 +21,25 @@ class LoginController extends Controller
     }
 
     /**
-     * Tell Laravel to use 'name' field instead of 'email' for login
+     * Authenticate by email — the only identifier collected at registration
+     * (Partner Registration, Admin user creation) and the one users actually
+     * expect to type back in.
      */
     public function username()
     {
-        return 'name';
+        return 'email';
+    }
+
+    /**
+     * Validate as a real email address now that this is the login field,
+     * instead of the trait's generic 'required|string'.
+     */
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            $this->username() => 'required|email',
+            'password' => 'required|string',
+        ]);
     }
 
     /**

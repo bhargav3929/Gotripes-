@@ -463,20 +463,20 @@
                 @csrf
 
                 <div class="form-group">
-                    <label class="form-label" for="name">Username</label>
+                    <label class="form-label" for="email">Email Address</label>
                     <div class="input-wrapper">
-                        <input id="name"
-                               type="text"
-                               class="form-input @error('name') is-invalid @enderror"
-                               name="name"
-                               value="{{ old('name') }}"
-                               placeholder="Enter your username"
+                        <input id="email"
+                               type="email"
+                               class="form-input @error('email') is-invalid @enderror"
+                               name="email"
+                               value="{{ old('email') }}"
+                               placeholder="Enter your email"
                                required
-                               autocomplete="username"
+                               autocomplete="email"
                                autofocus>
-                        <i class="fas fa-user input-icon"></i>
+                        <i class="fas fa-envelope input-icon"></i>
                     </div>
-                    @error('name')
+                    @error('email')
                         <span class="invalid-feedback" role="alert">
                             {{ $message }}
                         </span>

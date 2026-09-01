@@ -1116,8 +1116,7 @@
                   @php
                     $partnerEmirates = \App\Models\Emirates::getActiveEmirates();
                     $partnerCountries = collect(\App\Support\CountryCodes::all())
-                      ->pluck('name')
-                      ->reject(fn ($name) => $name === 'United Arab Emirates')
+                      ->reject(fn ($c) => $c['name'] === 'United Arab Emirates')
                       ->values();
                   @endphp
 
@@ -1208,7 +1207,7 @@
                         <select id="partnerCountrySelect" name="country">
                           <option value="">Select country...</option>
                           @foreach($partnerCountries as $c)
-                            <option value="{{ $c }}">{{ $c }}</option>
+                            <option value="{{ $c['name'] }}" data-iso="{{ strtolower($c['iso']) }}">{{ $c['name'] }}</option>
                           @endforeach
                         </select>
                         <span class="partner-error-msg" id="partnerCountrySelect-error"></span>
@@ -1327,18 +1326,40 @@
         const partnerEmirateSelect = document.getElementById('partnerEmirateSelect');
         const partnerCountrySelect = document.getElementById('partnerCountrySelect');
 
+        // Keeps the phone widget's own dial-code flag (intl-tel-input, set up
+        // by partials/intl-tel-init) in step with the Registering From
+        // choice — otherwise it silently stays on its 'ae' default and an
+        // Outside-UAE number gets saved with the wrong country code.
+        function partnerSyncPhoneCountry() {
+          const phoneInput = document.getElementById('partnerPhone');
+          const iti = phoneInput && phoneInput.__iti;
+          if (!iti) return;
+
+          if (partnerUaeYes.checked) {
+            iti.setCountry('ae');
+            return;
+          }
+          const selectedOption = partnerCountrySelect.options[partnerCountrySelect.selectedIndex];
+          const iso = selectedOption && selectedOption.dataset.iso;
+          if (iso) iti.setCountry(iso);
+        }
+
         function partnerSyncLocationFields() {
           const isUae = partnerUaeYes.checked;
           partnerEmirateBlock.style.display = isUae ? '' : 'none';
           partnerCountryBlock.style.display = isUae ? 'none' : '';
           partnerEmirateSelect.required = isUae;
           partnerCountrySelect.required = !isUae;
+          partnerSyncPhoneCountry();
         }
 
         if (partnerUaeYes && partnerUaeNo) {
           partnerUaeYes.addEventListener('change', partnerSyncLocationFields);
           partnerUaeNo.addEventListener('change', partnerSyncLocationFields);
           partnerSyncLocationFields();
+        }
+        if (partnerCountrySelect) {
+          partnerCountrySelect.addEventListener('change', partnerSyncPhoneCountry);
         }
 
         // 🎯 NEW: Phone Number Validation
@@ -1370,9 +1391,9 @@
               if (errorElement) {
                 errorElement.textContent = 'Phone number is required';
               }
-            } else if (value.length < 7) {
+            } else if (value.length < 10) {
               if (errorElement) {
-                errorElement.textContent = 'Phone number must be at least 7 digits';
+                errorElement.textContent = 'Phone number must be at least 10 digits';
               }
             } else if (!/^[+]?[0-9\-\s()]+$/.test(value)) {
               if (errorElement) {
@@ -1537,7 +1558,10 @@
           };
 
           Object.keys(errors).forEach(field => {
-            const mappedField = fieldMapping[field] || field;
+            // Laravel keys array-item errors as "partner_documents.0" — strip
+            // the index so it still matches fieldMapping's plain 'partner_documents'.
+            const baseField = field.replace(/\.\d+$/, '');
+            const mappedField = fieldMapping[baseField] || fieldMapping[field] || field;
             const errorElement = document.getElementById(mappedField + '-error');
             if (errorElement && errors[field][0]) {
               errorElement.textContent = errors[field][0];
