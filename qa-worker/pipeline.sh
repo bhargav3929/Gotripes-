@@ -89,6 +89,7 @@ fi
 # NOTE: the prompt must come BEFORE --mcp-config — that flag is variadic and
 # would otherwise swallow the prompt text as a (too-long) config filename.
 claude -p "$(cat qa/out/frontend-prompt.txt)" --model "$MODEL" --dangerously-skip-permissions \
+  --disallowedTools "ScheduleWakeup,CronCreate,CronDelete,CronList,Monitor" \
   --mcp-config /app/mcp-playwright.json | tee qa/out/frontend-report.md
 
 # ---- 6. Verdicts + Teams report
@@ -119,5 +120,6 @@ OVERALL="$OVERALL" BACKEND="$BACKEND" FRONTEND="$FRONTEND" TESTS="SKIPPED (db-fr
 mkdir -p "$REPORTS_DIR"
 rm -f "$REPORTS_DIR"/*
 cp qa/out/requirements.md qa/out/backend-report.md qa/out/frontend-report.md qa/out/commits.txt qa/out/card.md "$REPORTS_DIR"/ 2>/dev/null || true
+printf "%s %s\n" "${BEFORE:-}" "${AFTER:-}" > "$REPORTS_DIR/last-range.txt" 2>/dev/null || true
 echo "=== audit complete: $OVERALL ==="
 exit 0

@@ -39,6 +39,29 @@ const AUTO_AUDIT = (process.env.AUTO_AUDIT || 'on').toLowerCase() !== 'off';
 const DATA_DIR = fs.existsSync('/data') ? '/data' : '/tmp';
 const REPORTS_DIR = path.join(DATA_DIR, 'qa-last-run');
 const STATE_FILE = path.join(DATA_DIR, 'qa-last-sha.txt');
+// Set once per batch: "we told the founder there is work waiting for Start".
+const PENDING_FLAG = path.join(DATA_DIR, 'qa-pending-notified');
+
+function startLink() {
+  return process.env.PUBLIC_URL && process.env.REPORTS_TOKEN
+    ? `${process.env.PUBLIC_URL.replace(/\/$/, '')}/start?token=${process.env.REPORTS_TOKEN}` : null;
+}
+// Post a small Adaptive Card to the Teams channel (fire-and-forget).
+function postTeams(text, withStartButton) {
+  if (!process.env.TEAMS_WEBHOOK_URL) return;
+  const card = {
+    $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+    type: 'AdaptiveCard', version: '1.4',
+    body: [{ type: 'TextBlock', wrap: true, text }],
+  };
+  const link = startLink();
+  if (withStartButton && link) card.actions = [{ type: 'Action.OpenUrl', title: '🚀 Start QA Audit', url: link }];
+  fetch(process.env.TEAMS_WEBHOOK_URL, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'message', attachments: [{ contentType: 'application/vnd.microsoft.card.adaptive', content: card }] }),
+  }).then(r => console.log(`[teams] post -> HTTP ${r.status}`))
+    .catch(e => console.error('[teams] post failed:', e.message));
+}
 
 app.use(express.json({
   limit: '5mb',
@@ -86,6 +109,7 @@ function runJob(job) {
     if (job.after) {
       try { fs.writeFileSync(STATE_FILE, job.after); } catch (e) { console.error('[state]', e.message); }
     }
+    try { fs.rmSync(PENDING_FLAG, { force: true }); } catch {}
     console.log(`[job] finished (exit ${code}):`, JSON.stringify(summary));
     running = null;
     if (pending) { const next = pending; pending = null; runJob(next); }
@@ -117,6 +141,12 @@ app.post('/webhook', (req, res) => {
   if (p.deleted) return res.send('branch delete, ignored');
   if (!AUTO_AUDIT) {
     console.log(`[webhook] push by ${actor} (${(p.after || '').slice(0, 7)}) recorded — auto-audit is OFF, waiting for founder /start`);
+    if (!fs.existsSync(PENDING_FLAG) && !SKIP_ACTORS.includes(actor)) {
+      const n = Array.isArray(p.commits) ? p.commits.length : 1;
+      const title = p.head_commit?.message ? p.head_commit.message.split('\n')[0].slice(0, 90) : '';
+      postTeams(`📦 **New work pushed by ${actor}** (${n} commit${n === 1 ? '' : 's'}${title ? `: "${title}"` : ''}).\n\nNothing has been audited yet. Later pushes will be included automatically — when the team says it's finished, press **Start QA Audit** and the report lands here ~20 min later.`, true);
+      try { fs.writeFileSync(PENDING_FLAG, new Date().toISOString()); } catch (e) { console.error('[state]', e.message); }
+    }
     return res.send('recorded — auto-audit off, waiting for manual start');
   }
   if (SKIP_ACTORS.includes(actor)) return res.send(`push by ${actor} — founder push, audit skipped`);
@@ -193,32 +223,20 @@ async function startAudit(req, res) {
     if (!r.ok) return res.status(502).send(page(`GitHub API error ${r.status} — try again in a minute.`));
     const head = await r.json();
     const last = fs.existsSync(STATE_FILE) ? fs.readFileSync(STATE_FILE, 'utf8').trim() : '';
+    let before = last;
     if (last && head.sha === last) {
-      return res.send(page('✅ Nothing new to audit — no commits since the last audit.'));
+      if (req.query.force !== '1') {
+        return res.send(page('✅ Nothing new to audit — no commits since the last audit.'));
+      }
+      // force=1: re-run the previous range (e.g. after a failed frontend pass)
+      try { before = fs.readFileSync(path.join(REPORTS_DIR, 'last-range.txt'), 'utf8').trim().split(' ')[0] || ''; } catch { before = ''; }
     }
+    if (req.query.force === '1' && /^[0-9a-f]{7,40}$/i.test(req.query.before || '')) before = req.query.before;
     if (req.query.dry === '1') {
-      return res.json({ wouldAudit: { before: last || '(last commit only)', after: head.sha } });
+      return res.json({ wouldAudit: { before: before || '(last commit only)', after: head.sha } });
     }
-    // Announce the start in the Teams channel (fire-and-forget)
-    if (process.env.TEAMS_WEBHOOK_URL) {
-      fetch(process.env.TEAMS_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'message',
-          attachments: [{
-            contentType: 'application/vnd.microsoft.card.adaptive',
-            content: {
-              $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
-              type: 'AdaptiveCard', version: '1.4',
-              body: [{ type: 'TextBlock', wrap: true, weight: 'Bolder',
-                text: `🚀 QA audit started by the founder — covering all pushes since the last audit (up to ${head.sha.slice(0, 7)}). Report lands here in ~20 min.` }],
-            },
-          }],
-        }),
-      }).catch(e => console.error('[start] Teams announce failed:', e.message));
-    }
-    runJob({ actor: 'founder-start', before: last, after: head.sha, reason: 'manual-start' });
+    postTeams(`🚀 **QA audit started by the founder** — covering all pushes since the last audit (up to ${head.sha.slice(0, 7)}). Report lands here in ~20 min.`, false);
+    runJob({ actor: 'founder-start', before, after: head.sha, reason: 'manual-start' });
     res.send(page('🚀 Audit started! It covers every push since the last audit. The report will arrive in the Teams channel in about 20 minutes.'));
   } catch (e) {
     res.status(500).send(page(`Error: ${e.message}`));
