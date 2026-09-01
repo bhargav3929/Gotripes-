@@ -223,14 +223,19 @@ async function startAudit(req, res) {
     if (!r.ok) return res.status(502).send(page(`GitHub API error ${r.status} — try again in a minute.`));
     const head = await r.json();
     const last = fs.existsSync(STATE_FILE) ? fs.readFileSync(STATE_FILE, 'utf8').trim() : '';
+    let before = last;
     if (last && head.sha === last) {
-      return res.send(page('✅ Nothing new to audit — no commits since the last audit.'));
+      if (req.query.force !== '1') {
+        return res.send(page('✅ Nothing new to audit — no commits since the last audit.'));
+      }
+      // force=1: re-run the previous range (e.g. after a failed frontend pass)
+      try { before = fs.readFileSync(path.join(REPORTS_DIR, 'last-range.txt'), 'utf8').trim().split(' ')[0] || ''; } catch { before = ''; }
     }
     if (req.query.dry === '1') {
-      return res.json({ wouldAudit: { before: last || '(last commit only)', after: head.sha } });
+      return res.json({ wouldAudit: { before: before || '(last commit only)', after: head.sha } });
     }
     postTeams(`🚀 **QA audit started by the founder** — covering all pushes since the last audit (up to ${head.sha.slice(0, 7)}). Report lands here in ~20 min.`, false);
-    runJob({ actor: 'founder-start', before: last, after: head.sha, reason: 'manual-start' });
+    runJob({ actor: 'founder-start', before, after: head.sha, reason: 'manual-start' });
     res.send(page('🚀 Audit started! It covers every push since the last audit. The report will arrive in the Teams channel in about 20 minutes.'));
   } catch (e) {
     res.status(500).send(page(`Error: ${e.message}`));
