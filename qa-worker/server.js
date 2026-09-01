@@ -141,7 +141,7 @@ app.post('/webhook', (req, res) => {
   if (p.deleted) return res.send('branch delete, ignored');
   if (!AUTO_AUDIT) {
     console.log(`[webhook] push by ${actor} (${(p.after || '').slice(0, 7)}) recorded — auto-audit is OFF, waiting for founder /start`);
-    if (!fs.existsSync(PENDING_FLAG)) {
+    if (!fs.existsSync(PENDING_FLAG) && !SKIP_ACTORS.includes(actor)) {
       const n = Array.isArray(p.commits) ? p.commits.length : 1;
       const title = p.head_commit?.message ? p.head_commit.message.split('\n')[0].slice(0, 90) : '';
       postTeams(`📦 **New work pushed by ${actor}** (${n} commit${n === 1 ? '' : 's'}${title ? `: "${title}"` : ''}).\n\nNothing has been audited yet. Later pushes will be included automatically — when the team says it's finished, press **Start QA Audit** and the report lands here ~20 min later.`, true);
