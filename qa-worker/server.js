@@ -231,6 +231,7 @@ async function startAudit(req, res) {
       // force=1: re-run the previous range (e.g. after a failed frontend pass)
       try { before = fs.readFileSync(path.join(REPORTS_DIR, 'last-range.txt'), 'utf8').trim().split(' ')[0] || ''; } catch { before = ''; }
     }
+    if (req.query.force === '1' && /^[0-9a-f]{7,40}$/i.test(req.query.before || '')) before = req.query.before;
     if (req.query.dry === '1') {
       return res.json({ wouldAudit: { before: before || '(last commit only)', after: head.sha } });
     }
