@@ -738,6 +738,98 @@
       background: rgba(255, 255, 255, 0.03);
     }
 
+    .partner-registration-modal .partner-back-btn {
+      flex: 1;
+      height: 46px;
+      background: transparent;
+      color: #FFD700;
+      border: 1px solid rgba(255, 215, 0, 0.35);
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .partner-registration-modal .partner-back-btn:hover {
+      background: rgba(255, 215, 0, 0.06);
+      border-color: rgba(255, 215, 0, 0.6);
+    }
+
+    /* Step wizard: three sections, one visible at a time. Amer asked for
+       this explicitly on the 2026-08-25 call — filling section 1 and
+       clicking Next should be what reveals section 2, not everything on
+       one screen. */
+    .partner-registration-modal .partner-step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .partner-registration-modal .partner-step-dot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #555;
+    }
+    .partner-registration-modal .partner-step-dot .partner-step-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid #333;
+      color: #666;
+      font-size: 12px;
+      transition: all 0.25s ease;
+    }
+    .partner-registration-modal .partner-step-dot.is-active .partner-step-num {
+      border-color: #FFD700;
+      color: #000;
+      background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+    }
+    .partner-registration-modal .partner-step-dot.is-active {
+      color: #FFD700;
+    }
+    .partner-registration-modal .partner-step-dot.is-done .partner-step-num {
+      border-color: #FFD700;
+      color: #FFD700;
+      background: transparent;
+    }
+    .partner-registration-modal .partner-step-dot .partner-step-label {
+      display: none;
+    }
+    @media (min-width: 640px) {
+      .partner-registration-modal .partner-step-dot .partner-step-label {
+        display: inline;
+      }
+    }
+    .partner-registration-modal .partner-step-line {
+      width: 28px;
+      height: 1px;
+      background: #2a2a2a;
+    }
+    .partner-registration-modal .partner-columns.partner-wizard {
+      grid-template-columns: 1fr;
+    }
+    .partner-registration-modal .partner-col.partner-step {
+      display: none;
+    }
+    .partner-registration-modal .partner-col.partner-step.is-active {
+      display: block;
+      animation: partnerModalFadeIn 0.25s ease;
+    }
+
     /* Animations */
     @keyframes partnerModalFadeIn {
       from {
@@ -1120,11 +1212,30 @@
                       ->values();
                   @endphp
 
-                  <!-- 3-column layout, same pattern as the Agent Registration form -->
-                  <div class="partner-columns">
+                  <!-- Three sections, shown one at a time via Next/Back — the client
+                       asked for this explicitly (2026-08-25 call): fill section 1,
+                       click Next, section 2 appears, and so on. -->
+                  <div class="partner-step-indicator">
+                    <div class="partner-step-dot is-active" data-step-dot="1">
+                      <span class="partner-step-num">1</span>
+                      <span class="partner-step-label">Company Details</span>
+                    </div>
+                    <div class="partner-step-line"></div>
+                    <div class="partner-step-dot" data-step-dot="2">
+                      <span class="partner-step-num">2</span>
+                      <span class="partner-step-label">Registering From</span>
+                    </div>
+                    <div class="partner-step-line"></div>
+                    <div class="partner-step-dot" data-step-dot="3">
+                      <span class="partner-step-num">3</span>
+                      <span class="partner-step-label">Services</span>
+                    </div>
+                  </div>
 
-                    <!-- Column 1: Company / Contact Details -->
-                    <div class="partner-col">
+                  <div class="partner-columns partner-wizard">
+
+                    <!-- Step 1: Company / Contact Details -->
+                    <div class="partner-col partner-step is-active" data-step="1">
                       <div class="partner-col-title">Company / Contact Details</div>
 
                       <div class="partner-field-row">
@@ -1171,10 +1282,34 @@
                         <input type="text" id="partnerAddress" name="address" placeholder="Their address" required>
                         <span class="partner-error-msg" id="partnerAddress-error"></span>
                       </div>
+
+                      <div class="partner-field-row">
+                        <div class="partner-form-group">
+                          <label for="partnerDocument">Trade License Document</label>
+                          <input type="file" name="trade_license_document" id="partnerDocument"
+                            accept=".pdf,.jpg,.jpeg,.png" required>
+                          <p class="partner-form-helper-text">PDF, JPG or PNG, up to 5MB.</p>
+                          <span class="partner-error-msg" id="partnerDocument-error"></span>
+                        </div>
+                      </div>
+                      <div class="partner-field-row">
+                        <div class="partner-form-group">
+                          <label for="partnerPassword">Password</label>
+                          <input type="password" id="partnerPassword" name="password" placeholder="Create a secure password"
+                            required minlength="8">
+                          <span class="partner-error-msg" id="partnerPassword-error"></span>
+                        </div>
+                        <div class="partner-form-group">
+                          <label for="partnerPasswordConfirm">Confirm Password</label>
+                          <input type="password" id="partnerPasswordConfirm" name="password_confirmation" placeholder="Re-enter your password"
+                            required minlength="8">
+                          <span class="partner-error-msg" id="partnerPasswordConfirm-error"></span>
+                        </div>
+                      </div>
                     </div>
 
-                    <!-- Column 2: Registering From -->
-                    <div class="partner-col">
+                    <!-- Step 2: Registering From -->
+                    <div class="partner-col partner-step" data-step="2">
                       <div class="partner-col-title">Registering From</div>
 
                       <div class="partner-form-group">
@@ -1193,10 +1328,10 @@
 
                       <div class="partner-form-group" id="partnerEmirateBlock">
                         <label for="partnerEmirateSelect">Emirate</label>
-                        <select id="partnerEmirateSelect" name="emirate_id">
+                        <select id="partnerEmirateSelect" name="emirate">
                           <option value="">Select an Emirate...</option>
                           @foreach($partnerEmirates as $e)
-                            <option value="{{ $e->emiratesID }}">{{ $e->emiratesName }}</option>
+                            <option value="{{ $e->emiratesName }}">{{ $e->emiratesName }}</option>
                           @endforeach
                         </select>
                         <span class="partner-error-msg" id="partnerEmirateSelect-error"></span>
@@ -1214,8 +1349,8 @@
                       </div>
                     </div>
 
-                    <!-- Column 3: Services -->
-                    <div class="partner-col">
+                    <!-- Step 3: Services -->
+                    <div class="partner-col partner-step" data-step="3">
                       <div class="partner-col-title">Which products or services do you want to sell through us?</div>
 
                       <div class="partner-services-grid">
@@ -1231,34 +1366,11 @@
 
                   </div>
 
-                  <!-- Secondary row: license document + account credentials -->
-                  <div class="partner-extra-row">
-                    <div class="partner-form-group">
-                      <label for="partnerDocument">Trade License Document</label>
-                      <input type="file" name="partner_documents[]" id="partnerDocument"
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple required>
-                      <span class="partner-error-msg" id="partnerDocument-error"></span>
-                    </div>
-                    <div class="partner-form-group">
-                      <label for="partnerPassword">Password</label>
-                      <input type="password" id="partnerPassword" name="password" placeholder="Create a secure password"
-                        required minlength="8">
-                      <span class="partner-error-msg" id="partnerPassword-error"></span>
-                    </div>
-                    <div class="partner-form-group">
-                      <label for="partnerPasswordConfirm">Confirm Password</label>
-                      <input type="password" id="partnerPasswordConfirm" name="password_confirmation" placeholder="Re-enter your password"
-                        required minlength="8">
-                      <span class="partner-error-msg" id="partnerPasswordConfirm-error"></span>
-                    </div>
-                  </div>
-
-
-
-
                   <!-- Form Buttons -->
                   <div class="partner-form-actions">
-                    <button type="submit" class="partner-submit-btn">Create Partner Account</button>
+                    <button type="button" class="partner-back-btn" id="partnerBackBtn" style="display:none;">Back</button>
+                    <button type="button" class="partner-next-btn partner-submit-btn" id="partnerNextBtn">Next</button>
+                    <button type="submit" class="partner-submit-btn" id="partnerSubmitBtn" style="display:none;">Create Partner Account</button>
                     <button type="button" class="partner-cancel-btn" id="partnerCancelBtn">Cancel</button>
                   </div>
 
@@ -1285,21 +1397,6 @@
   <!-- Include jQuery & Owl Carousel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-
-  <script>
-    // Toggle emirate checkbox selection with visual feedback
-    function toggleEmirateSelection(element) {
-      const checkbox = element.querySelector('input[type="checkbox"]');
-      if (checkbox) {
-        checkbox.checked = !checkbox.checked;
-        if (checkbox.checked) {
-          element.classList.add('selected');
-        } else {
-          element.classList.remove('selected');
-        }
-      }
-    }
-  </script>
 
   <script>
     // 🎯 UNIQUE SCOPED JAVASCRIPT - All variables/functions prefixed with 'Partner'
@@ -1423,6 +1520,7 @@
           // Show modal
           partnerModal.style.display = 'block';
           document.body.style.overflow = 'hidden';
+          partnerGoToStep(1);
         });
 
         // Close Modal Functions
@@ -1432,10 +1530,7 @@
           document.body.style.overflow = 'auto';
           partnerClearErrors();
           partnerRegistrationForm.reset();
-          // Clear emirate selections
-          document.querySelectorAll('.partner-emirate-checkbox-item').forEach(item => {
-            item.classList.remove('selected');
-          });
+          partnerGoToStep(1);
         }
 
         partnerCloseModal.addEventListener('click', partnerCloseModalFunction);
@@ -1448,86 +1543,58 @@
           }
         });
 
-        // Load emirates function
-        function partnerLoadEmirates() {
-          console.log('🌍 Loading partner emirates...');
+        // --- Step wizard: 3 sections, one visible at a time ---
+        const partnerSteps = Array.from(document.querySelectorAll('#partnerRegistrationModal .partner-step'));
+        const partnerStepDots = Array.from(document.querySelectorAll('#partnerRegistrationModal .partner-step-dot'));
+        const partnerBackBtn = document.getElementById('partnerBackBtn');
+        const partnerNextBtn = document.getElementById('partnerNextBtn');
+        const partnerSubmitBtn = document.getElementById('partnerSubmitBtn');
+        let partnerCurrentStep = 1;
+        const partnerTotalSteps = partnerSteps.length;
 
-          const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-          if (!csrfToken) {
-            console.error('❌ CSRF token not found');
-            partnerEmiratesContainer.innerHTML = '<div class="partner-emirates-loading" style="color: #ff6b6b;">Error: Please refresh the page</div>';
-            return;
-          }
-
-          fetch('/get-emirates', {
-            method: 'GET',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'X-CSRF-TOKEN': csrfToken,
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            }
-          })
-            .then(response => {
-              console.log('📡 Partner emirates response status:', response.status);
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              return response.json();
-            })
-            .then(data => {
-              console.log('✅ Partner emirates data received:', data);
-              if (data.success && data.emirates) {
-                partnerRenderEmiratesCheckboxes(data.emirates);
-              } else {
-                console.error('❌ Failed to load partner emirates:', data);
-                partnerEmiratesContainer.innerHTML = '<div class="partner-emirates-loading" style="color: #ff6b6b;">Failed to load emirates. Please try again.</div>';
-              }
-            })
-            .catch(error => {
-              console.error('❌ Error loading partner emirates:', error);
-              partnerEmiratesContainer.innerHTML = '<div class="partner-emirates-loading" style="color: #ff6b6b;">Network error. Please check your connection and try again.</div>';
-            });
-        }
-
-        // Render emirates checkboxes with proper HTML structure
-        function partnerRenderEmiratesCheckboxes(emirates) {
-          console.log('🎨 Rendering partner emirates checkboxes:', emirates);
-          const container = partnerEmiratesContainer;
-
-          if (!emirates || emirates.length === 0) {
-            container.innerHTML = '<div class="partner-emirates-loading" style="color: #ff6b6b;">No emirates available</div>';
-            return;
-          }
-
-          let html = '';
-          emirates.forEach(emirate => {
-            // Clean the emirate name and ID
-            const emirateName = String(emirate.name || '').trim();
-            const emirateId = String(emirate.id || '').trim();
-
-            if (emirateName && emirateId) {
-              html += `
-                    <div class="partner-emirate-checkbox-item">
-                        <input type="checkbox" 
-                               id="partnerEmirate_${emirateId}" 
-                               name="emirates[]" 
-                               value="${emirateId}" 
-                               class="partner-emirate-checkbox">
-                        <label for="partnerEmirate_${emirateId}" class="partner-emirate-label">${emirateName}</label>
-                    </div>
-                `;
+        function partnerStepIsValid(stepEl) {
+          const fields = stepEl.querySelectorAll('input, select, textarea');
+          let valid = true;
+          fields.forEach(field => {
+            if (field.type === 'radio') return; // radios are always one-of, no reportValidity spam
+            if (field.offsetParent === null) return; // skip hidden fields (e.g. the country select while "In UAE")
+            if (!field.checkValidity()) {
+              valid = false;
+              field.reportValidity();
             }
           });
-
-          if (html) {
-            container.innerHTML = html;
-            console.log('✅ Partner emirates checkboxes rendered successfully');
-          } else {
-            container.innerHTML = '<div class="partner-emirates-loading" style="color: #ff6b6b;">No valid emirates found</div>';
+          if (stepEl.dataset.step === '3') {
+            const anyService = stepEl.querySelectorAll('input[name="services[]"]:checked').length > 0;
+            if (!anyService) {
+              document.getElementById('partnerServices-error').textContent = 'Select at least one product/service';
+              valid = false;
+            }
           }
+          return valid;
         }
+
+        function partnerGoToStep(step) {
+          partnerCurrentStep = step;
+          partnerSteps.forEach(el => el.classList.toggle('is-active', Number(el.dataset.step) === step));
+          partnerStepDots.forEach(dot => {
+            const dotStep = Number(dot.dataset.stepDot);
+            dot.classList.toggle('is-active', dotStep === step);
+            dot.classList.toggle('is-done', dotStep < step);
+          });
+          partnerBackBtn.style.display = step > 1 ? '' : 'none';
+          partnerNextBtn.style.display = step < partnerTotalSteps ? '' : 'none';
+          partnerSubmitBtn.style.display = step === partnerTotalSteps ? '' : 'none';
+        }
+
+        partnerNextBtn.addEventListener('click', function () {
+          const stepEl = partnerSteps.find(el => Number(el.dataset.step) === partnerCurrentStep);
+          if (stepEl && !partnerStepIsValid(stepEl)) return;
+          if (partnerCurrentStep < partnerTotalSteps) partnerGoToStep(partnerCurrentStep + 1);
+        });
+
+        partnerBackBtn.addEventListener('click', function () {
+          if (partnerCurrentStep > 1) partnerGoToStep(partnerCurrentStep - 1);
+        });
 
         // Clear error messages
         function partnerClearErrors() {
@@ -1551,22 +1618,33 @@
             'address': 'partnerAddress',
             'trade_license_number': 'partnerLicenseNumber',
             'trade_license_expiry_date': 'partnerLicenseExpiry',
-            'emirate_id': 'partnerEmirateSelect',
+            'emirate': 'partnerEmirateSelect',
             'country': 'partnerCountrySelect',
+            'registering_from_uae': 'partnerEmirateSelect',
             'services': 'partnerServices',
-            'partner_documents': 'partnerDocument'
+            'trade_license_document': 'partnerDocument'
           };
 
+          let firstErrorStep = null;
           Object.keys(errors).forEach(field => {
-            // Laravel keys array-item errors as "partner_documents.0" — strip
-            // the index so it still matches fieldMapping's plain 'partner_documents'.
+            // Laravel keys array-item errors as "services.0" — strip the
+            // index so it still matches fieldMapping's plain 'services'.
             const baseField = field.replace(/\.\d+$/, '');
             const mappedField = fieldMapping[baseField] || fieldMapping[field] || field;
             const errorElement = document.getElementById(mappedField + '-error');
             if (errorElement && errors[field][0]) {
               errorElement.textContent = errors[field][0];
+              const stepEl = errorElement.closest('.partner-step');
+              const stepNum = stepEl ? Number(stepEl.dataset.step) : null;
+              if (stepNum && (firstErrorStep === null || stepNum < firstErrorStep)) firstErrorStep = stepNum;
             }
           });
+
+          // A server-side error can land on a field the applicant already
+          // stepped past (e.g. the email was taken by someone else since
+          // step 1) — jump back to whichever step actually has the error
+          // rather than leaving it silently hidden on step 3.
+          if (firstErrorStep !== null) partnerGoToStep(firstErrorStep);
         }
 
         // Form submission with AJAX
@@ -1574,7 +1652,7 @@
           e.preventDefault();
           console.log('📤 Partner form submitted');
 
-          const submitBtn = document.querySelector('.partner-submit-btn');
+          const submitBtn = partnerSubmitBtn;
 
           // Client-side nicety: require at least one service before even
           // hitting the server (which also enforces this).
@@ -1605,13 +1683,17 @@
 
           console.log('📡 Sending partner registration request...');
 
-          // AJAX request
-          fetch('/register', {
+          // AJAX request — same self-service application pipeline as
+          // /agent/register (agent_applications → manager review under
+          // "Agent Applications" → approval activates the real account),
+          // so this is no longer instant: it goes to a manager for review.
+          fetch('{{ route('agent.register.submit') }}', {
             method: 'POST',
             body: formData,
             headers: {
               'X-Requested-With': 'XMLHttpRequest',
-              'X-CSRF-TOKEN': csrfToken
+              'X-CSRF-TOKEN': csrfToken,
+              'Accept': 'application/json'
             }
           })
             .then(response => {
@@ -1622,9 +1704,8 @@
               console.log('📋 Partner registration response data:', data);
 
               if (data.success) {
-                alert('🎉 Partner registration successful! Welcome aboard!');
+                alert('🎉 Application received! Our team will review your trade license and be in touch once it\'s approved.');
                 partnerCloseModalFunction();
-                window.location.reload();
               } else if (data.errors) {
                 partnerDisplayErrors(data.errors);
               } else {

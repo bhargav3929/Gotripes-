@@ -1541,24 +1541,38 @@
             document.getElementById('hotelRow').style.display = hotelCheckbox.checked ? 'flex' : 'none';
             document.getElementById('ticketRow').style.display = ticketCheckbox.checked ? 'flex' : 'none';
 
-            // Show only the net refundable amount to the customer — never the
-            // gross deposit or the processing fee taken out of it. The full
-            // gross `depositCost` is still what's added to `grandTotal` above
-            // and what the server independently charges, so this is a display
-            // simplification only, not a change to what's actually collected.
+            // Show the gross deposit, the processing fee held back from it, and
+            // the net refundable amount as three separate lines — the customer
+            // asked to see all three, not just a single collapsed net figure.
+            // `depositCost` (gross) is still what's added to `grandTotal` above
+            // and what the server independently charges either way.
             const depRow = document.getElementById('depositRow');
             const refRow = document.getElementById('refundRow');
             const feeRow = document.getElementById('adminFeeRow');
             if (depRow) {
                 if (takesDeposit) {
                     depRow.style.display = 'flex';
-                    document.getElementById('summaryDeposit').textContent = 'AED ' + refundCost.toFixed(2);
+                    document.getElementById('summaryDeposit').textContent = 'AED ' + depositCost.toFixed(2);
                 } else {
                     depRow.style.display = 'none';
                 }
             }
-            if (refRow) refRow.style.display = 'none';
-            if (feeRow) feeRow.style.display = 'none';
+            if (feeRow) {
+                if (takesDeposit && adminFeeCost > 0) {
+                    feeRow.style.display = 'flex';
+                    document.getElementById('summaryAdminFee').textContent = 'AED ' + adminFeeCost.toFixed(2);
+                } else {
+                    feeRow.style.display = 'none';
+                }
+            }
+            if (refRow) {
+                if (takesDeposit) {
+                    refRow.style.display = 'flex';
+                    document.getElementById('summaryRefund').textContent = 'AED ' + refundCost.toFixed(2);
+                } else {
+                    refRow.style.display = 'none';
+                }
+            }
 
             // Show/hide Sharjah refund bank details
             const refundFieldsDiv = document.getElementById('sharjahRefundFields');

@@ -104,7 +104,7 @@
     }
     .gt-modal .modal-header {
         position: relative;
-        padding: 18px 24px;
+        padding: 14px 24px;
         background: linear-gradient(180deg, rgba(255, 215, 0, 0.06), transparent);
         border-bottom: 1px solid var(--wp-border);
     }
@@ -126,24 +126,43 @@
         opacity: 0.55; transition: opacity 0.15s ease, transform 0.15s ease;
     }
     .gt-modal .btn-close:hover { opacity: 1; transform: rotate(90deg); }
-    /* Force an explicit scrollable height directly, instead of relying on
-       Bootstrap's modal-dialog-scrollable calc() (which can end up taller
-       than the viewport in some browser/zoom combinations and silently
-       fail to scroll). This guarantees the body scrolls and shows an
-       obvious gold bar, regardless of that outer calculation. */
     .gt-modal .modal-body {
-        padding: 24px;
-        max-height: 60vh;
-        overflow-y: scroll;
+        padding: 20px 24px;
+        max-height: 88vh;
+        overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: var(--wp-primary) transparent;
+    }
+    /* Create Package modal is laid out (two columns, see .create-pkg-columns)
+       to fit within one screen on common desktop sizes without scrolling.
+       It uses modal-dialog-scrollable as a safety net instead — header and
+       footer (Create Package button) always stay pinned in view, and only
+       the body would ever scroll, for the one rare combination (a
+       deposit-taking emirate, on the smallest common screen sizes) tight
+       enough to need it. A fixed max-height here would fight that
+       mechanism, so let modal-dialog-scrollable size the body instead. */
+    #createPackageModal .modal-body {
+        max-height: none;
+        min-height: 0;
+    }
+    /* The <form> wrapping modal-body + modal-footer (needed so the whole
+       thing submits as one POST) is a plain block box by default, breaking
+       Bootstrap's modal-content > header + body + footer flex chain that
+       modal-dialog-scrollable relies on — without this, modal-body can't
+       actually shrink/scroll and the footer (Create Package button) just
+       gets silently clipped instead. */
+    #createPackageModal .modal-content > form {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
     }
     .gt-modal .modal-body::-webkit-scrollbar { width: 12px; }
     .gt-modal .modal-body::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
     .gt-modal .modal-body::-webkit-scrollbar-thumb { background: var(--wp-primary); border-radius: 6px; border: 2px solid transparent; background-clip: padding-box; }
     .gt-modal .modal-body::-webkit-scrollbar-thumb:hover { background: var(--wp-primary-hover, var(--wp-primary)); background-clip: padding-box; }
     .gt-modal .modal-footer {
-        padding: 16px 24px;
+        padding: 12px 24px;
         background: rgba(0, 0, 0, 0.15);
         border-top: 1px solid var(--wp-border-light);
     }
@@ -157,10 +176,50 @@
         border: 1px solid var(--wp-border);
         border-left: 3px solid var(--wp-primary);
         border-radius: 4px;
-        padding: 14px 14px 4px;
+        padding: 12px 14px 6px;
         margin-bottom: 8px;
         background: rgba(255, 215, 0, 0.03);
     }
+
+    /* Create Package modal: package details and pricing run side by side
+       instead of fully stacked, so the whole form fits in one screen on
+       common desktop sizes without scrolling. Capped at 900px — the
+       sidebar (.wp-sidebar, z-index:1060) renders above the modal, so a
+       wider dialog would get centered far enough left to run underneath
+       it and clip visually at common 1366px-wide screens. */
+    #createPackageModal .modal-dialog {
+        max-width: 900px;
+        /* Overriding margin-top/bottom directly (instead of this variable)
+           would desync modal-dialog-scrollable's own height formula
+           (calc(100% - var(--bs-modal-margin) * 2)), which still reads the
+           default 1.75rem, leaving the dialog free to overflow the
+           viewport uncapped instead of scrolling its body. */
+        --bs-modal-margin: 0.75rem;
+    }
+    .create-pkg-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+    @media (max-width: 900px) {
+        .create-pkg-columns { grid-template-columns: 1fr; }
+    }
+    .create-pkg-columns .field-group-label:first-child { margin-top: 0; }
+    #createPackageModal .price-row-box .wp-form-group,
+    #createPackageModal .price-row-box .row { margin-bottom: 10px; }
+    #createPackageModal .wp-form-help { margin: 4px 0 0; font-size: 11px; line-height: 1.35; }
+    /* The deposit block's two fields wrap to stacked rows in this narrower
+       half-width column (not enough room for field-cols' 260px min-basis
+       side by side) — tighten spacing to compensate for the extra height. */
+    #createDepositBlock {
+        padding: 10px 14px;
+    }
+    #createDepositBlock .deposit-block-title { margin-bottom: 6px; }
+    #createDepositBlock .field-cols { gap: 10px; }
+    #createDepositBlock .wp-form-group { margin-bottom: 8px; }
+    #createPackageModal .field-group-label { margin: 0 0 6px; padding-bottom: 4px; }
+    #createPackageModal .field-grid { row-gap: 10px; }
 </style>
 
 <div class="wp-card">
@@ -271,23 +330,24 @@
                                                         </div>
                                                         <div class="field-cols">
                                                             <div class="wp-form-group mb-0">
-                                                                <label class="wp-form-label">Default Security Deposit (AED)</label>
+                                                                <label class="wp-form-label">Package Default Security Deposit (AED)</label>
                                                                 <input type="number" class="wp-input" name="security_deposit" value="{{ $p->security_deposit }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Deposit (AED)">
                                                             </div>
                                                             <div class="wp-form-group mb-0">
-                                                                <label class="wp-form-label">Default Processing Fee (AED)</label>
+                                                                <label class="wp-form-label">Package Default Processing Fee (AED)</label>
                                                                 <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ $p->deposit_admin_fee }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Processing fee">
                                                             </div>
                                                         </div>
-                                                        <p class="wp-form-help" style="margin-top:6px;">Used for every nationality with no override below (e.g. India/Pakistan/Nepal &rarr; AED 1,040).</p>
+                                                        <p class="wp-form-help" style="margin-top:6px;">Applies to every nationality unless overridden below (e.g. India/Pakistan/Nepal &rarr; AED 1,040).</p>
 
                                                         @if($p->deposits->isNotEmpty())
-                                                            <table class="wp-table" style="margin-top:10px;">
+                                                            <p class="wp-form-help" style="margin-top:10px;">Nationality rows below override the package default above, for that nationality only.</p>
+                                                            <table class="wp-table" style="margin-top:6px;">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Nationality</th>
-                                                                        <th style="width:110px;">Deposit</th>
-                                                                        <th style="width:110px;">Fee</th>
+                                                                        <th style="width:110px;">Deposit (Override)</th>
+                                                                        <th style="width:110px;">Fee (Override)</th>
                                                                         <th style="width:110px;">Status</th>
                                                                         <th style="width:40px;"></th>
                                                                     </tr>
@@ -483,7 +543,7 @@
 
 {{-- ==================== Add Package modal ==================== --}}
 <div class="modal fade" id="createPackageModal" tabindex="-1" aria-labelledby="createPackageModalLabel" aria-hidden="true" data-bs-theme="dark">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content gt-modal" style="background: var(--wp-white); color: var(--wp-text);">
             <div class="modal-header">
                 <h5 class="modal-title" id="createPackageModalLabel">
@@ -495,122 +555,129 @@
             <form action="{{ route('manager.visa-packages.store') }}" method="POST" id="createPackageForm">
                 @csrf
                 <div class="modal-body">
-                    <div class="field-grid">
-                        <div class="wp-form-group mb-0">
-                            <label class="wp-form-label">Emirate <span class="required">*</span></label>
-                            <select class="wp-input" name="emirates_id" id="createEmirate" required>
-                                <option value="">Select Emirate...</option>
-                                @foreach($emirates as $e)
-                                    <option value="{{ $e->emiratesID }}" {{ old('emirates_id') == $e->emiratesID ? 'selected' : '' }}>{{ $e->emiratesName }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="wp-form-group mb-0">
-                            <label class="wp-form-label">Processing Type <span class="required">*</span></label>
-                            <select class="wp-input" name="package_type" required>
-                                <option value="Standard" {{ old('package_type') === 'Standard' ? 'selected' : '' }}>Standard</option>
-                                <option value="Urgent" {{ old('package_type') === 'Urgent' ? 'selected' : '' }}>Urgent</option>
-                            </select>
-                        </div>
-                        <div class="wp-form-group mb-0">
-                            <label class="wp-form-label">Package Name <span class="required">*</span></label>
-                            <input type="text" class="wp-input" name="name" value="{{ old('name') }}" required placeholder="e.g. Tourist Visa" maxlength="100">
-                        </div>
-                        <div class="wp-form-group mb-0">
-                            <label class="wp-form-label">Our Company Email</label>
-                            <input type="text" class="wp-input" name="company_email" value="{{ old('company_email') }}" placeholder="visas@gotrips.ai">
-                        </div>
-                        <div class="wp-form-group mb-0">
-                            <label class="wp-form-label">Description</label>
-                            <textarea class="wp-input" name="description" placeholder="Processing time, requirements, anything the customer should know..." rows="2" maxlength="1000">{{ old('description') }}</textarea>
-                        </div>
-                        <div class="wp-form-group mb-0">
-                            <label class="wp-form-label">Supplier Email</label>
-                            <input type="text" class="wp-input" name="supplier_email" value="{{ old('supplier_email') }}" placeholder="supplier@example.com, second@example.com">
-                            <p class="wp-form-help">Comma-separate two suppliers. Leave blank to use the company-wide supplier.</p>
-                        </div>
-                    </div>
+                    <div class="create-pkg-columns">
+                        <div>
+                            <div class="field-group-label">Package Details</div>
+                            <div class="field-grid">
+                                <div class="wp-form-group mb-0">
+                                    <label class="wp-form-label">Emirate <span class="required">*</span></label>
+                                    <select class="wp-input" name="emirates_id" id="createEmirate" required>
+                                        <option value="">Select Emirate...</option>
+                                        @foreach($emirates as $e)
+                                            <option value="{{ $e->emiratesID }}" {{ old('emirates_id') == $e->emiratesID ? 'selected' : '' }}>{{ $e->emiratesName }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="wp-form-group mb-0">
+                                    <label class="wp-form-label">Processing Type <span class="required">*</span></label>
+                                    <select class="wp-input" name="package_type" required>
+                                        <option value="Standard" {{ old('package_type') === 'Standard' ? 'selected' : '' }}>Standard</option>
+                                        <option value="Urgent" {{ old('package_type') === 'Urgent' ? 'selected' : '' }}>Urgent</option>
+                                    </select>
+                                </div>
+                                <div class="wp-form-group mb-0">
+                                    <label class="wp-form-label">Package Name <span class="required">*</span></label>
+                                    <input type="text" class="wp-input" name="name" value="{{ old('name') }}" required placeholder="e.g. Tourist Visa" maxlength="100">
+                                </div>
+                                <div class="wp-form-group mb-0">
+                                    <label class="wp-form-label">Our Company Email</label>
+                                    <input type="text" class="wp-input" name="company_email" value="{{ old('company_email') }}" placeholder="visas@gotrips.ai">
+                                </div>
+                                <div class="wp-form-group mb-0" style="grid-column: 1 / -1;">
+                                    <label class="wp-form-label">Supplier Email</label>
+                                    <input type="text" class="wp-input" name="supplier_email" value="{{ old('supplier_email') }}" placeholder="supplier@example.com, second@example.com">
+                                    <p class="wp-form-help">Comma-separate two suppliers. Leave blank to use the company-wide supplier.</p>
+                                </div>
+                                <div class="wp-form-group mb-0" style="grid-column: 1 / -1;">
+                                    <label class="wp-form-label">Description</label>
+                                    <textarea class="wp-input" name="description" placeholder="Processing time, requirements, anything the customer should know..." rows="2" maxlength="1000">{{ old('description') }}</textarea>
+                                </div>
+                            </div>
 
-                    {{-- Only Sharjah takes a deposit today; the block is driven by a
-                         data attribute so another emirate can be added server-side. --}}
-                    <div class="deposit-block" id="createDepositBlock">
-                        <div class="deposit-block-title">
-                            <i class="fas fa-shield-halved"></i> Refundable security deposit
-                        </div>
-                        <div class="field-cols">
-                            <div class="wp-form-group mb-0">
-                                <label class="wp-form-label">Security Deposit — per applicant (AED)</label>
-                                <input type="number" class="wp-input" name="security_deposit" value="{{ old('security_deposit') }}" step="0.01" min="0" placeholder="e.g. 5000">
-                                <p class="wp-form-help">Charged on top of the visa price, refunded after the visit. Enter 0 for no deposit.</p>
+                            {{-- Only Sharjah takes a deposit today; the block is driven by a
+                                 data attribute so another emirate can be added server-side. --}}
+                            <div class="deposit-block" id="createDepositBlock" style="margin-top: 10px;">
+                                <div class="deposit-block-title">
+                                    <i class="fas fa-shield-halved"></i> Refundable security deposit
+                                </div>
+                                <div class="field-cols">
+                                    <div class="wp-form-group mb-0">
+                                        <label class="wp-form-label">Package Default Security Deposit (AED)</label>
+                                        <input type="number" class="wp-input" name="security_deposit" value="{{ old('security_deposit') }}" step="0.01" min="0" placeholder="e.g. 5000">
+                                        <p class="wp-form-help">Refunded after the visit. Applies to every nationality unless overridden below. Enter 0 for none.</p>
+                                    </div>
+                                    <div class="wp-form-group mb-0">
+                                        <label class="wp-form-label">Package Default Processing Fee (AED)</label>
+                                        <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ old('deposit_admin_fee') }}" step="0.01" min="0" placeholder="e.g. 150">
+                                        <p class="wp-form-help">Held back from the refund. Can't exceed the deposit. Applies to every nationality unless overridden below.</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="wp-form-group mb-0">
-                                <label class="wp-form-label">Processing Fee — per applicant (AED)</label>
-                                <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ old('deposit_admin_fee') }}" step="0.01" min="0" placeholder="e.g. 150">
-                                <p class="wp-form-help">Held back when the deposit is returned. Cannot exceed the deposit.</p>
-                            </div>
                         </div>
-                    </div>
 
-                    <div class="field-group-label">First price row</div>
-                    <div class="price-row-box">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="wp-form-group">
-                                    <label class="wp-form-label">Visa For <span class="required">*</span></label>
-                                    <select class="wp-input" name="traveller_type" required>
-                                        <option value="Adult">Adult</option>
-                                        <option value="Child">Child (2-12 yrs)</option>
-                                    </select>
+                        <div>
+                            <div class="field-group-label">First price row</div>
+                            <div class="price-row-box">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="wp-form-group">
+                                            <label class="wp-form-label">Visa For <span class="required">*</span></label>
+                                            <select class="wp-input" name="traveller_type" required>
+                                                <option value="Adult">Adult</option>
+                                                <option value="Child">Child (2-12 yrs)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="wp-form-group">
+                                            <label class="wp-form-label">Duration <span class="required">*</span></label>
+                                            <select class="wp-input" name="duration" required>
+                                                <option value="30 Days">30 Days</option>
+                                                <option value="60 Days">60 Days</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="wp-form-group">
-                                    <label class="wp-form-label">Duration <span class="required">*</span></label>
-                                    <select class="wp-input" name="duration" required>
-                                        <option value="30 Days">30 Days</option>
-                                        <option value="60 Days">60 Days</option>
-                                    </select>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="wp-form-group">
+                                            <label class="wp-form-label">Entry Type <span class="required">*</span></label>
+                                            <select class="wp-input" name="entry_type" required>
+                                                <option value="Single Entry">Single Entry</option>
+                                                <option value="Multiple Entry">Multiple Entry</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="wp-form-group">
+                                            <label class="wp-form-label">Price (AED) <span class="required">*</span></label>
+                                            <input type="number" class="wp-input" name="price" value="{{ old('price') }}" required step="0.01" min="0" placeholder="e.g. 350.00">
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="wp-form-group mb-0">
+                                            <label class="wp-form-label">Nationality (optional)</label>
+                                            <input type="text" class="wp-input" name="nationality" value="{{ old('nationality') }}" placeholder="e.g. India">
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="wp-form-group mb-0">
+                                            <label class="wp-form-label">Deposit Override for this Nationality (AED)</label>
+                                            <input type="number" class="wp-input" name="nationality_security_deposit" value="{{ old('nationality_security_deposit') }}" step="0.01" min="0" placeholder="Optional">
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="wp-form-group mb-0">
+                                            <label class="wp-form-label">Fee Override for this Nationality (AED)</label>
+                                            <input type="number" class="wp-input" name="nationality_deposit_admin_fee" value="{{ old('nationality_deposit_admin_fee') }}" step="0.01" min="0" placeholder="Optional">
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="wp-form-help" style="margin-top:6px;">Leave Nationality blank to apply this price to everyone. Typing one makes this price specific to that nationality, and the two fields above (same as the "Package Default" deposit/fee, but for this nationality only) become a nationality override — the same override you'd otherwise add later from the package's own row.</p>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="wp-form-group">
-                                    <label class="wp-form-label">Entry Type <span class="required">*</span></label>
-                                    <select class="wp-input" name="entry_type" required>
-                                        <option value="Single Entry">Single Entry</option>
-                                        <option value="Multiple Entry">Multiple Entry</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="wp-form-group">
-                                    <label class="wp-form-label">Price (AED) <span class="required">*</span></label>
-                                    <input type="number" class="wp-input" name="price" value="{{ old('price') }}" required step="0.01" min="0" placeholder="e.g. 350.00">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="wp-form-group mb-0">
-                                    <label class="wp-form-label">Nationality (optional)</label>
-                                    <input type="text" class="wp-input" name="nationality" value="{{ old('nationality') }}" placeholder="e.g. India">
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="wp-form-group mb-0">
-                                    <label class="wp-form-label">Nationality Deposit (AED)</label>
-                                    <input type="number" class="wp-input" name="nationality_security_deposit" value="{{ old('nationality_security_deposit') }}" step="0.01" min="0" placeholder="Overrides default">
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="wp-form-group mb-0">
-                                    <label class="wp-form-label">Nationality Processing Fee (AED)</label>
-                                    <input type="number" class="wp-input" name="nationality_deposit_admin_fee" value="{{ old('nationality_deposit_admin_fee') }}" step="0.01" min="0" placeholder="Overrides default">
-                                </div>
-                            </div>
-                        </div>
-                        <p class="wp-form-help" style="margin-top:6px;">Leave Nationality blank to apply this price to everyone, or type one to make this price/deposit specific to that nationality only.</p>
                     </div>
                 </div>
                 <div class="modal-footer">

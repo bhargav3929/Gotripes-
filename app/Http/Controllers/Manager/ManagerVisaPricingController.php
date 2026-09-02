@@ -10,6 +10,7 @@ use App\Models\UAEVisaPackage;
 use App\Models\UAEVisaPrice;
 use App\Models\UAEVisaPackageDeposit;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ManagerVisaPricingController extends Controller
 {
@@ -23,6 +24,14 @@ class ManagerVisaPricingController extends Controller
      */
     public const DEPOSIT_EMIRATES = ['sharjah'];
 
+    /**
+     * UAE Visa packages are only ever sold for these emirates. Restricting
+     * the create/edit dropdown to just these two (rather than every emirate
+     * in tbl_emirates) keeps a manager from accidentally putting a 3rd
+     * emirate's visa live on the public site.
+     */
+    public const VISA_EMIRATES = ['dubai', 'sharjah'];
+
     // Mirrors the option lists in the Pricing tab's dropdowns — kept here so
     // storePackage() can pre-generate the full matrix for a new package.
     private const ENTRY_TYPES = ['Single Entry', 'Multiple Entry'];
@@ -31,7 +40,11 @@ class ManagerVisaPricingController extends Controller
 
     public function index()
     {
-        $emirates = Emirates::where('isActive', 1)->orderBy('emiratesName')->get();
+        $emirates = Emirates::where('isActive', 1)
+            ->orderBy('emiratesName')
+            ->get()
+            ->filter(fn($e) => in_array(strtolower(trim($e->emiratesName)), self::VISA_EMIRATES, true))
+            ->values();
         $packages = UAEVisaPackage::with(['emirate', 'prices', 'deposits'])->orderBy('name')->get();
         $prices   = UAEVisaPrice::with('package.emirate')->get();
 
@@ -216,8 +229,13 @@ class ManagerVisaPricingController extends Controller
      */
     private function packageRules(bool $forUpdate = false): array
     {
+        $allowedEmirateIds = Emirates::where('isActive', 1)
+            ->get()
+            ->filter(fn($e) => in_array(strtolower(trim($e->emiratesName)), self::VISA_EMIRATES, true))
+            ->pluck('emiratesID');
+
         $rules = [
-            'emirates_id'       => 'required|exists:tbl_emirates,emiratesID',
+            'emirates_id'       => ['required', Rule::in($allowedEmirateIds)],
             'name'              => 'required|string|max:100',
             // Required once a package exists and is being edited — the update
             // form always sends one. Optional on creation so a bare

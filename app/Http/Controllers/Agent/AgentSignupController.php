@@ -97,6 +97,14 @@ class AgentSignupController extends Controller
             ]);
         }
 
+        // The public homepage's "Create Partner Account" modal submits this
+        // same endpoint via AJAX (Accept: application/json) instead of the
+        // full-page form post this controller was originally built for —
+        // give it a JSON body instead of a redirect it can't follow.
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true]);
+        }
+
         return redirect()->route('agent.register.submitted');
     }
 
