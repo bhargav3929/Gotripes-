@@ -438,36 +438,97 @@
       transition: background-color 9999s ease-in-out 0s;
     }
 
-    /* UAE / Outside toggle */
+    /* UAE / Outside toggle — step 2's two big selectable cards */
     .partner-registration-modal .partner-uae-toggle {
       display: flex;
-      gap: 8px;
+      gap: 16px;
     }
     .partner-registration-modal .partner-uae-option {
+      position: relative;
       flex: 1;
       margin: 0 !important;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 16px;
       border: 1px solid #222;
-      border-radius: 8px;
-      padding: 9px 10px;
+      border-radius: 14px;
+      padding: 22px 24px;
       cursor: pointer;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: none;
-      letter-spacing: normal;
       color: #ddd;
       background: linear-gradient(145deg, #0e0e0e 0%, #0a0a0a 100%);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+    .partner-registration-modal .partner-uae-option:hover {
+      border-color: rgba(255, 215, 0, 0.35);
+    }
+    .partner-registration-modal .partner-uae-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      font-size: 18px;
+      color: #666;
+      background: rgba(255, 255, 255, 0.03);
       transition: all 0.2s ease;
+    }
+    .partner-registration-modal .partner-uae-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .partner-registration-modal .partner-uae-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #eee;
+    }
+    .partner-registration-modal .partner-uae-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: #666;
+      text-transform: none;
+      letter-spacing: normal;
     }
     .partner-registration-modal .partner-uae-option:has(input:checked) {
       border-color: #FFD700;
-      background: linear-gradient(145deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 215, 0, 0.03) 100%);
+      background: linear-gradient(145deg, rgba(255, 215, 0, 0.10) 0%, rgba(255, 215, 0, 0.03) 100%);
+      box-shadow: 0 8px 24px rgba(255, 215, 0, 0.12);
+      transform: scale(1.03);
+    }
+    .partner-registration-modal .partner-uae-option:has(input:checked) .partner-uae-icon {
+      color: #000;
+      background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+    }
+    .partner-registration-modal .partner-uae-option:has(input:checked) .partner-uae-title {
+      color: #FFD700;
     }
     .partner-registration-modal .partner-uae-option input {
-      accent-color: #FFD700;
-      cursor: pointer;
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    @media (max-width: 640px) {
+      .partner-registration-modal .partner-uae-toggle {
+        flex-direction: column;
+      }
+      .partner-registration-modal .partner-uae-option:has(input:checked) {
+        transform: none;
+      }
+    }
+
+    /* Step 2's selects get a slightly larger, more deliberate feel than the
+       dense form-grid fields on step 1 — this step only has 1-2 fields, so
+       there's room to make them feel less like an afterthought. */
+    .partner-registration-modal #partnerEmirateBlock select,
+    .partner-registration-modal #partnerCountryBlock select {
+      height: 52px;
+      font-size: 14px;
+      border-radius: 10px;
     }
 
     /* Services checkboxes */
@@ -1246,7 +1307,7 @@
                         </div>
                         <div class="partner-form-group">
                           <label for="partnerPhone">Contact No.</label>
-                          <input type="tel" id="partnerPhone" name="phone" placeholder="+971 50 123 4567" required>
+                          <input type="text" id="partnerPhone" name="phone" placeholder="+971 50 123 4567" data-no-intl required>
                           <span class="partner-error-msg" id="partnerPhone-error"></span>
                         </div>
                       </div>
@@ -1292,20 +1353,6 @@
                           <span class="partner-error-msg" id="partnerDocument-error"></span>
                         </div>
                       </div>
-                      <div class="partner-field-row">
-                        <div class="partner-form-group">
-                          <label for="partnerPassword">Password</label>
-                          <input type="password" id="partnerPassword" name="password" placeholder="Create a secure password"
-                            required minlength="8">
-                          <span class="partner-error-msg" id="partnerPassword-error"></span>
-                        </div>
-                        <div class="partner-form-group">
-                          <label for="partnerPasswordConfirm">Confirm Password</label>
-                          <input type="password" id="partnerPasswordConfirm" name="password_confirmation" placeholder="Re-enter your password"
-                            required minlength="8">
-                          <span class="partner-error-msg" id="partnerPasswordConfirm-error"></span>
-                        </div>
-                      </div>
                     </div>
 
                     <!-- Step 2: Registering From -->
@@ -1317,11 +1364,19 @@
                         <div class="partner-uae-toggle">
                           <label class="partner-uae-option">
                             <input type="radio" name="registering_from_uae" id="partnerUaeYes" value="1" checked>
-                            In UAE
+                            <span class="partner-uae-icon"><i class="fa-solid fa-location-dot"></i></span>
+                            <span class="partner-uae-text">
+                              <span class="partner-uae-title">In UAE</span>
+                              <span class="partner-uae-sub">Based inside the Emirates</span>
+                            </span>
                           </label>
                           <label class="partner-uae-option">
                             <input type="radio" name="registering_from_uae" id="partnerUaeNo" value="0">
-                            Outside UAE
+                            <span class="partner-uae-icon"><i class="fa-solid fa-earth-americas"></i></span>
+                            <span class="partner-uae-text">
+                              <span class="partner-uae-title">Outside UAE</span>
+                              <span class="partner-uae-sub">Based in another country</span>
+                            </span>
                           </label>
                         </div>
                       </div>

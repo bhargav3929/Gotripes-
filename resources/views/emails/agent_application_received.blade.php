@@ -17,6 +17,17 @@
                 <p style="margin:0 0 14px;font-size:14px;line-height:1.6;color:#374151;">
                     Your application is now under review. We'll email you as soon as a decision is made.
                 </p>
+                @if($generatedPassword)
+                    <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#374151;">
+                        We've set a temporary password for your account — you'll use this to log in once approved:
+                    </p>
+                    <p style="margin:0 0 14px;">
+                        <span style="display:inline-block;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;padding:8px 14px;font-family:monospace;font-size:15px;letter-spacing:0.5px;">{{ $generatedPassword }}</span>
+                    </p>
+                    <p style="margin:0 0 14px;font-size:13px;line-height:1.6;color:#6b7280;">
+                        Keep this email until your application is approved — you'll need it to log in.
+                    </p>
+                @endif
             </div>
 
             <div style="padding:16px 28px;background:#fafafa;border-top:1px solid #f0f0f0;color:#9ca3af;font-size:12px;line-height:1.5;">

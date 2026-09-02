@@ -656,26 +656,14 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-12">
                                         <div class="wp-form-group mb-0">
                                             <label class="wp-form-label">Nationality (optional)</label>
                                             <input type="text" class="wp-input" name="nationality" value="{{ old('nationality') }}" placeholder="e.g. India">
                                         </div>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="wp-form-group mb-0">
-                                            <label class="wp-form-label">Deposit Override for this Nationality (AED)</label>
-                                            <input type="number" class="wp-input" name="nationality_security_deposit" value="{{ old('nationality_security_deposit') }}" step="0.01" min="0" placeholder="Optional">
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="wp-form-group mb-0">
-                                            <label class="wp-form-label">Fee Override for this Nationality (AED)</label>
-                                            <input type="number" class="wp-input" name="nationality_deposit_admin_fee" value="{{ old('nationality_deposit_admin_fee') }}" step="0.01" min="0" placeholder="Optional">
-                                        </div>
-                                    </div>
                                 </div>
-                                <p class="wp-form-help" style="margin-top:6px;">Leave Nationality blank to apply this price to everyone. Typing one makes this price specific to that nationality, and the two fields above (same as the "Package Default" deposit/fee, but for this nationality only) become a nationality override — the same override you'd otherwise add later from the package's own row.</p>
+                                <p class="wp-form-help" style="margin-top:6px;">Leave Nationality blank to apply this price to everyone, or type one to make this price specific to that nationality only. Deposit/fee overrides per nationality are added after the package is created, from its own row below — there's only one deposit and one fee field here so it's never ambiguous which one applies.</p>
                             </div>
                         </div>
                     </div>

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
@@ -57,7 +58,12 @@ class AgentSignupController extends Controller
             'registering_from_uae' => 'required|boolean',
             'emirate'       => ['required_if:registering_from_uae,1', 'nullable', 'string', Rule::in($emirateNames)],
             'country'       => ['required_if:registering_from_uae,0', 'nullable', 'string', 'max:100'],
-            'password'      => 'required|string|min:8|confirmed',
+            // The homepage "Create Partner Account" modal no longer collects
+            // a password up front — the application isn't a live account
+            // yet anyway. When it's left blank we generate one below and
+            // email it in the "application received" confirmation. The
+            // full-page /agent/register form can still send its own.
+            'password'      => 'nullable|string|min:8|confirmed',
             'services'      => 'required|array|min:1',
             'services.*'    => ['string', Rule::in(array_keys($services))],
             'trade_license_number'       => 'required|string|max:100',
@@ -71,12 +77,17 @@ class AgentSignupController extends Controller
 
         $licensePath = $request->file('trade_license_document')->store('agents/trade_licenses', 'public');
 
+        // Only generate (and email) a password when the applicant didn't set
+        // their own — the plaintext only ever exists here, in memory, and in
+        // the confirmation email; the DB only ever stores the hash.
+        $generatedPassword = empty($validated['password']) ? Str::password(12) : null;
+
         $application = AgentApplication::create([
             'company_id'   => current_company_id(),
             'name'         => $validated['name'],
             'company_name' => $validated['company_name'],
             'email'        => $validated['email'],
-            'password'     => Hash::make($validated['password']),
+            'password'     => Hash::make($validated['password'] ?? $generatedPassword),
             'phone'        => $validated['phone'],
             'address'      => $validated['address'],
             'country'      => $isUae ? AgentApplication::UAE_COUNTRY_NAME : $validated['country'],
@@ -89,7 +100,7 @@ class AgentSignupController extends Controller
         ]);
 
         try {
-            Mail::to($application->email)->send(new AgentApplicationReceivedMail($application));
+            Mail::to($application->email)->send(new AgentApplicationReceivedMail($application, $generatedPassword));
         } catch (\Throwable $e) {
             Log::error('Agent application received email failed', [
                 'application_id' => $application->id,

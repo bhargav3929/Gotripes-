@@ -15,7 +15,7 @@
                 </p>
                 @if($decision === 'approved')
                     <p style="margin:0 0 14px;font-size:14px;line-height:1.6;color:#374151;">
-                        Your GoTrips agent application has been approved. You can now log in to your agent dashboard with the email and password you registered with.
+                        Your GoTrips agent application has been approved. You can now log in to your agent dashboard with the email and password from your application confirmation email.
                     </p>
                     <p style="margin:0 0 14px;">
                         <a href="{{ route('agent.login') }}" style="display:inline-block;background:#FFD700;color:#1a1a1a;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:14px;">Log In</a>

@@ -17,7 +17,17 @@ class AgentApplicationReceivedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public AgentApplication $application) {}
+    /**
+     * @param string|null $generatedPassword Plaintext, only set when the
+     * applicant didn't choose their own password at registration (the
+     * homepage "Create Partner Account" modal no longer asks for one) — this
+     * is the only place it's ever visible, since the DB only ever stores the
+     * hash.
+     */
+    public function __construct(
+        public AgentApplication $application,
+        public ?string $generatedPassword = null,
+    ) {}
 
     public function envelope(): Envelope
     {
@@ -30,7 +40,10 @@ class AgentApplicationReceivedMail extends Mailable
     {
         return new Content(
             view: 'emails.agent_application_received',
-            with: ['application' => $this->application],
+            with: [
+                'application' => $this->application,
+                'generatedPassword' => $this->generatedPassword,
+            ],
         );
     }
 }

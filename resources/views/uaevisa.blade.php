@@ -542,6 +542,8 @@
     .summary-row {
         display: flex;
         justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
         padding: 12px 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
@@ -552,12 +554,15 @@
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 1px;
+        min-width: 0;
     }
 
     .summary-value {
         color: #eee;
         font-weight: 600;
         font-size: 14px;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .summary-total {
@@ -1132,16 +1137,12 @@
                         <span class="summary-value" id="summaryTicket">AED {{ number_format($ticketFee ?? 25, 2) }}</span>
                     </div>
                     <div class="summary-row" id="depositRow" style="display: none;">
-                        <span class="summary-label" style="color: #FFD700;">Security Deposit (Refundable)</span>
+                        <span class="summary-label" style="color: #FFD700;">Security Deposit</span>
                         <span class="summary-value" id="summaryDeposit" style="color: #FFD700;">AED 0.00</span>
                     </div>
                     <div class="summary-row" id="adminFeeRow" style="display: none;">
-                        <span class="summary-label" style="color: #9a9a9a;">Admin / Processing Fee</span>
+                        <span class="summary-label" style="color: #9a9a9a;">Processing Fee</span>
                         <span class="summary-value" id="summaryAdminFee" style="color: #9a9a9a;">AED 0.00</span>
-                    </div>
-                    <div class="summary-row" id="refundRow" style="display: none;">
-                        <span class="summary-label" style="color: #22c55e;">Refundable Amount</span>
-                        <span class="summary-value" id="summaryRefund" style="color: #22c55e;">AED 0.00</span>
                     </div>
                     <div class="summary-total">
                         <span class="total-label">Total Payable</span>
@@ -1541,13 +1542,11 @@
             document.getElementById('hotelRow').style.display = hotelCheckbox.checked ? 'flex' : 'none';
             document.getElementById('ticketRow').style.display = ticketCheckbox.checked ? 'flex' : 'none';
 
-            // Show the gross deposit, the processing fee held back from it, and
-            // the net refundable amount as three separate lines — the customer
-            // asked to see all three, not just a single collapsed net figure.
-            // `depositCost` (gross) is still what's added to `grandTotal` above
-            // and what the server independently charges either way.
+            // Show the gross deposit and the processing fee held back from it
+            // as two plain lines. `depositCost` (gross) is still what's added
+            // to `grandTotal` above and what the server independently charges
+            // either way — the fee is informational, not an extra charge.
             const depRow = document.getElementById('depositRow');
-            const refRow = document.getElementById('refundRow');
             const feeRow = document.getElementById('adminFeeRow');
             if (depRow) {
                 if (takesDeposit) {
@@ -1563,14 +1562,6 @@
                     document.getElementById('summaryAdminFee').textContent = 'AED ' + adminFeeCost.toFixed(2);
                 } else {
                     feeRow.style.display = 'none';
-                }
-            }
-            if (refRow) {
-                if (takesDeposit) {
-                    refRow.style.display = 'flex';
-                    document.getElementById('summaryRefund').textContent = 'AED ' + refundCost.toFixed(2);
-                } else {
-                    refRow.style.display = 'none';
                 }
             }
 
