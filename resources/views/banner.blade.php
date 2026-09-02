@@ -206,6 +206,17 @@
       padding: 20px 0;
     }
 
+    /* The Contact No. field's intl-tel-input country list (built with
+       dropdownContainer: document.body, see the script below, so it isn't
+       clipped by this modal's own scrolling body) is appended as
+       `.iti--container` — a direct child of <body>, outside this modal's
+       stacking context — at the library's default z-index:1060, well below
+       the modal's z-index:10000, so it renders invisibly behind it without
+       this override. */
+    body > .iti--container {
+      z-index: 10001;
+    }
+
     .partner-registration-modal .partner-modal-content {
       background: linear-gradient(165deg, #0e0e0e 0%, #080808 100%);
       margin: 20px auto;
@@ -1307,7 +1318,12 @@
                         </div>
                         <div class="partner-form-group">
                           <label for="partnerPhone">Contact No.</label>
-                          <input type="text" id="partnerPhone" name="phone" placeholder="+971 50 123 4567" data-no-intl required>
+                          {{-- data-no-intl: this modal builds its own intl-tel-input below (with
+                               dropdownContainer: document.body) — the global auto-init from
+                               partials/intl-tel-init would otherwise build a second widget nested
+                               inside the modal's scrollable body, where its country-list dropdown
+                               gets clipped/mispositioned by the modal's own overflow. --}}
+                          <input type="tel" id="partnerPhone" name="phone" placeholder="50 123 4567" data-no-intl required>
                           <span class="partner-error-msg" id="partnerPhone-error"></span>
                         </div>
                       </div>
@@ -1478,8 +1494,25 @@
         const partnerEmirateSelect = document.getElementById('partnerEmirateSelect');
         const partnerCountrySelect = document.getElementById('partnerCountrySelect');
 
+        // Built explicitly (data-no-intl on the input opts it out of the
+        // global auto-init) with dropdownContainer: document.body so the
+        // country-list dropdown escapes this modal's scrollable body instead
+        // of being clipped/mispositioned inside it.
+        (function initPartnerPhone() {
+          const phoneInput = document.getElementById('partnerPhone');
+          if (!phoneInput || phoneInput.__iti || typeof window.intlTelInput !== 'function') return;
+          const iti = window.intlTelInput(phoneInput, {
+            initialCountry: 'ae',
+            preferredCountries: ['ae', 'sa', 'in', 'pk', 'gb', 'us'],
+            separateDialCode: true,
+            dropdownContainer: document.body,
+            utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js',
+          });
+          phoneInput.__iti = iti;
+        })();
+
         // Keeps the phone widget's own dial-code flag (intl-tel-input, set up
-        // by partials/intl-tel-init) in step with the Registering From
+        // above) in step with the Registering From
         // choice — otherwise it silently stays on its 'ae' default and an
         // Outside-UAE number gets saved with the wrong country code.
         function partnerSyncPhoneCountry() {

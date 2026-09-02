@@ -622,6 +622,21 @@
         cursor: not-allowed;
     }
 
+    .refund-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        color: #4ade80;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
     .secure-badge {
         display: flex;
         align-items: center;
@@ -1153,6 +1168,11 @@
                         <i class="bi bi-shield-lock-fill"></i> PAY SECURELY
                     </button>
 
+                    <div class="refund-note" id="refundNote" style="display: none;">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>AED <span id="refundNoteAmount">0.00</span> refundable to you after your visit</span>
+                    </div>
+
                     <div class="secure-badge">
                         <i class="bi bi-shield-check"></i> 256-BIT SSL SECURED PAYMENT
                     </div>
@@ -1562,6 +1582,18 @@
                     document.getElementById('summaryAdminFee').textContent = 'AED ' + adminFeeCost.toFixed(2);
                 } else {
                     feeRow.style.display = 'none';
+                }
+            }
+
+            // Reassurance note under the Pay button — not another summary
+            // line item, just confirms what comes back after the visit.
+            const refundNote = document.getElementById('refundNote');
+            if (refundNote) {
+                if (takesDeposit && refundCost > 0) {
+                    refundNote.style.display = 'flex';
+                    document.getElementById('refundNoteAmount').textContent = refundCost.toFixed(2);
+                } else {
+                    refundNote.style.display = 'none';
                 }
             }
 
