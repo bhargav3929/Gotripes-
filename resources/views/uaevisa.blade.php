@@ -1587,9 +1587,12 @@
 
             // Reassurance note under the Pay button — not another summary
             // line item, just confirms what comes back after the visit.
+            // Shown for every deposit-taking visa, including when the
+            // configured processing fee eats the whole deposit (refund 0),
+            // so the line is never silently missing.
             const refundNote = document.getElementById('refundNote');
             if (refundNote) {
-                if (takesDeposit && refundCost > 0) {
+                if (takesDeposit) {
                     refundNote.style.display = 'flex';
                     document.getElementById('refundNoteAmount').textContent = refundCost.toFixed(2);
                 } else {
