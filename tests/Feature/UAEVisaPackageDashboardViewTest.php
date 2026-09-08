@@ -87,4 +87,14 @@ class UAEVisaPackageDashboardViewTest extends TestCase
         $response->assertOk();
         $response->assertSee('777', false);
     }
+
+    public function test_manager_package_dropdown_lists_every_active_emirate(): void
+    {
+        $response = $this->actingAs($this->manager())->get(route('manager.visa-pricing.index'));
+
+        $response->assertOk();
+        foreach (['Abu Dhabi', 'Ajman', 'Dubai', 'Fujairah', 'Ras Al Khaimah', 'Sharjah', 'Umm Al Quwain'] as $name) {
+            $response->assertSee($name);
+        }
+    }
 }

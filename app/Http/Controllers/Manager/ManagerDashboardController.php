@@ -7,6 +7,7 @@ use App\Models\ActivityBooking;
 use App\Models\Announcement;
 use App\Models\EsimOrder;
 use App\Models\HomepageAd;
+use App\Models\SupportTicket;
 use App\Models\TenantCommission;
 use App\Models\UAEActivity;
 use App\Models\UAEVApplication;
@@ -68,6 +69,20 @@ class ManagerDashboardController extends Controller
         $announcementCount = Announcement::where('isActive', 1)->count();
         $activityCount     = UAEActivity::where('isActive', 1)->count();
 
+        // ─── Support operations ───────────────────────────────────────
+        $supportOpen = SupportTicket::whereNotIn('status', ['resolved', 'closed'])->count();
+        $supportAwaiting = SupportTicket::whereNull('first_response_at')
+            ->whereNotIn('status', ['resolved', 'closed'])->count();
+        $supportOverdue = SupportTicket::whereNull('first_response_at')
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->where('first_response_due_at', '<', now())->count();
+        $supportResponded = SupportTicket::whereNotNull('first_response_at')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->get(['created_at', 'first_response_at']);
+        $supportAverageResponse = $supportResponded->isEmpty()
+            ? null
+            : (int) round($supportResponded->avg(fn ($ticket) => $ticket->created_at->diffInMinutes($ticket->first_response_at)));
+
         // ─── Umrah & Saudi module KPIs ──────────────────────────────────
         $umrahTotalPackages  = UmrahPackage::count();
         $umrahActivePackages = UmrahPackage::where('isActive', 1)->count();
@@ -83,6 +98,7 @@ class ManagerDashboardController extends Controller
             'period',
             'totalBookings', 'revenue', 'commission', 'last7DaysBookings',
             'series',
+            'supportOpen', 'supportAwaiting', 'supportOverdue', 'supportAverageResponse',
             'adCount', 'announcementCount', 'activityCount',
             'umrahTotalPackages', 'umrahActivePackages', 'umrahUpcomingDeps',
             'umrahTotalBookings', 'umrahAvailSeats'

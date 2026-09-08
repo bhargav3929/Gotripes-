@@ -3023,6 +3023,32 @@
         margin-bottom: 28px;
     }
 
+    .esim-install-video {
+        max-width: 900px;
+        margin: 0 auto 32px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 215, 0, 0.24);
+        border-radius: 16px;
+        background: #080706;
+        box-shadow: 0 22px 58px rgba(0, 0, 0, 0.36);
+    }
+
+    .esim-install-video video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #080706;
+    }
+
+    .esim-install-video-caption {
+        margin: 0;
+        padding: 12px 18px;
+        border-top: 1px solid rgba(255, 215, 0, 0.16);
+        color: rgba(255, 255, 255, 0.62);
+        font: 400 13px/1.5 'Outfit', sans-serif;
+        text-align: left;
+    }
+
     .esim-install-tab {
         display: inline-flex;
         align-items: center;
@@ -4513,7 +4539,7 @@
             </div>
             <div class="esim-how-num">1</div>
             <h3 class="esim-how-card-title">Check Compatibility</h3>
-            <p class="esim-how-card-desc">Make sure your device supports eSIM. Most modern smartphones (iPhone XS+, Pixel 3+, Samsung S20+) are compatible.</p>
+            <p class="esim-how-card-desc">Make sure your device supports eSIM and is carrier-unlocked. Compatibility varies by phone model, region and carrier.</p>
         </div>
 
         <!-- Step 2: Installation Part B -->
@@ -4561,6 +4587,14 @@
         before you fly, while you still have Wi-Fi.
     </p>
 
+    <div class="esim-install-video esim-reveal">
+        <video controls preload="metadata" playsinline aria-label="How to install your GoTrips eSIM on iPhone or Android">
+            <source src="{{ asset('assets/esim/how-to-install-esim.mp4') }}" type="video/mp4">
+            Your browser cannot play this video. <a href="{{ asset('assets/esim/how-to-install-esim.mp4') }}">Download the installation guide</a>.
+        </video>
+        <p class="esim-install-video-caption">Watch the 80-second guide for iPhone, Android, same-phone QR setup and safe troubleshooting.</p>
+    </div>
+
     <div class="esim-install-tabs esim-reveal" role="tablist">
         <button type="button" class="esim-install-tab active" data-panel="iphone" role="tab" aria-selected="true">
             <i class="fa-brands fa-apple"></i> iPhone
@@ -4580,9 +4614,9 @@
                 <li><span>Open <strong>Settings</strong> → <strong>Cellular</strong> (or <strong>Mobile Data</strong>).</span></li>
                 <li><span>Tap <strong>Add eSIM</strong>.</span></li>
                 <li><span>Select <strong>Use QR Code</strong>.</span></li>
-                <li><span>Scan the QR code from your email.</span></li>
+                <li><span>Scan the QR code from another screen. On iOS 17.4 or later, you can instead press and hold a QR code shown in your default email app or browser, then choose <strong>Add eSIM</strong>.</span></li>
                 <li><span>Follow the on-screen prompts to install the eSIM.</span></li>
-                <li><span>Once installed: turn the eSIM <strong>On</strong>, set it as the <strong>Mobile Data</strong> line, and enable <strong>Data Roaming</strong> — a travel eSIM will not connect without it.</span></li>
+                <li><span>Once installed: turn the eSIM <strong>On</strong>, set it as the <strong>Mobile Data</strong> line, and follow your GoTrips plan instructions for <strong>Data Roaming</strong>.</span></li>
                 <li><span>Restart your phone if the network does not appear immediately.</span></li>
             </ol>
         </div>
@@ -4590,8 +4624,8 @@
         <div class="esim-install-panel" data-panel="android" role="tabpanel">
             <ol class="esim-install-steps">
                 <li><span>Connect to <strong>Wi-Fi</strong>.</span></li>
-                <li><span>Open <strong>Settings</strong> → <strong>Connections</strong> (or <strong>Network &amp; Internet</strong>) → <strong>SIM Manager</strong>.</span></li>
-                <li><span>Tap <strong>Add eSIM</strong>.</span></li>
+                <li><span>Open <strong>Settings</strong> → <strong>Connections</strong> (or <strong>Network &amp; Internet</strong>) → <strong>SIM Manager</strong> (or <strong>SIMs</strong>).</span></li>
+                <li><span>Tap <strong>Add eSIM</strong>, <strong>Set up an eSIM</strong>, or <strong>Add mobile plan</strong>. Wording varies by phone.</span></li>
                 <li><span>Select <strong>Scan QR Code</strong>.</span></li>
                 <li><span>Scan the QR code from your email.</span></li>
                 <li><span>Complete the installation and enable the eSIM.</span></li>
@@ -4611,15 +4645,15 @@
                 <li><span>Copy the <strong>SM-DP+ address</strong> from your email into the first field.</span></li>
                 <li><span>Copy the <strong>activation code</strong> into the second field.</span></li>
                 <li><span>Leave any "confirmation code" field blank unless your phone insists on one.</span></li>
-                <li><span>Turn <strong>Data roaming ON</strong> for the new plan.</span></li>
+                <li><span>Follow your plan instructions for <strong>Data Roaming</strong>.</span></li>
             </ol>
         </div>
     </div>
 
     <p class="esim-install-footnote esim-reveal">
-        Most phones from the last few years support eSIM — iPhone XS and newer,
-        Samsung Galaxy S20 and newer, Google Pixel 3 and newer. Your phone must
-        also be carrier-unlocked.
+        Compatibility varies by phone model, region and carrier. Confirm that your
+        device supports eSIM and is carrier-unlocked before purchase. Do not delete
+        an installed eSIM while troubleshooting; contact GoTrips support first.
     </p>
 </section>
 
@@ -4677,7 +4711,7 @@
                 <span class="esim-faq-toggle">+</span>
             </div>
             <div class="esim-faq-answer">
-                <div class="esim-faq-answer-inner">Most recent smartphones support eSIM, including iPhone XS and newer, Samsung Galaxy S20 and newer, Google Pixel 3 and newer, and many other Android devices. Check your device settings for eSIM compatibility.</div>
+                <div class="esim-faq-answer-inner">Compatibility varies by phone model, region and carrier. Check your device settings for an Add eSIM option and confirm that the phone is carrier-unlocked before purchase.</div>
             </div>
         </div>
         <div class="esim-faq-item">

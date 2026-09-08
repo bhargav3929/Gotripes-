@@ -743,6 +743,16 @@
                      hidden. The routes and screens still exist: reach them directly at
                      /manager/fifa-tickets to settle any outstanding ticket requests. --}}
 
+                {{-- ────────────────  CUSTOMER CARE  ──────────────── --}}
+                <div class="wp-nav-separator"></div>
+                <li class="wp-nav-label">Customer Care</li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.support.index') }}" class="{{ request()->routeIs('manager.support.*') ? 'active' : '' }}">
+                        <i class="fas fa-headset"></i>
+                        <span>Support Tickets</span>
+                    </a>
+                </li>
+
                 {{-- ────────────────  TEAM  ──────────────── --}}
                 <div class="wp-nav-separator"></div>
                 <li class="wp-nav-label">Team</li>

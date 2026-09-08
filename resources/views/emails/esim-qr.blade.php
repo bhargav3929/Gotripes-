@@ -77,6 +77,12 @@
                     </div>
                 @endforeach
 
+                <div style="margin:22px 0;text-align:center;padding:18px;background:#111827;border-radius:10px;">
+                    <div style="color:#ffffff;font-size:15px;font-weight:700;margin-bottom:6px;">Need help installing?</div>
+                    <div style="color:#cbd5e1;font-size:12px;line-height:1.5;margin-bottom:14px;">Watch the step-by-step iPhone and Android guide, including same-phone QR setup.</div>
+                    <a href="{{ url('/assets/esim/how-to-install-esim.mp4') }}" style="display:inline-block;background:#d4af37;color:#111827;text-decoration:none;font-size:13px;font-weight:700;padding:10px 16px;border-radius:7px;">Watch the installation video</a>
+                </div>
+
                 {{-- Installation steps. With one eSIM the manual credentials are
                      shown inside this block; with several they are already printed
                      beside each QR above, so they are not repeated. --}}

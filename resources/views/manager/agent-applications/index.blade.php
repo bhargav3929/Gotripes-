@@ -17,6 +17,32 @@
             </a>
         @endforeach
     </div>
+    <div class="wp-card-body" style="border-bottom:1px solid var(--wp-border-light);">
+        <form method="GET" action="{{ route('manager.agent-applications.index') }}" class="application-filters">
+            <input type="hidden" name="status" value="{{ $status }}">
+            @foreach($filters as $key => $filter)
+                <label>
+                    <span>{{ $filter['label'] }}</span>
+                    @if(($filter['input'] ?? 'select') === 'text')
+                        <input class="wp-input" type="search" name="{{ $key }}" value="{{ $filter['value'] }}" placeholder="{{ $filter['placeholder'] ?? '' }}">
+                    @else
+                        <select class="wp-select" name="{{ $key }}">
+                            <option value="">All</option>
+                            @foreach($filter['options'] ?? [] as $value => $label)
+                                <option value="{{ $value }}" @selected((string)$filter['value'] === (string)$value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    @endif
+                </label>
+            @endforeach
+            <div class="application-filter-actions">
+                <button class="wp-btn wp-btn-primary" type="submit"><i class="fas fa-filter"></i> Apply filters</button>
+                @if(collect($filters)->contains(fn($filter) => $filter['value'] !== ''))
+                    <a class="wp-btn wp-btn-secondary" href="{{ route('manager.agent-applications.index', ['status' => $status]) }}">Clear</a>
+                @endif
+            </div>
+        </form>
+    </div>
     <div class="table-responsive">
         <table class="wp-table">
             <thead>
@@ -81,4 +107,7 @@
         </div>
     @endif
 </div>
+<style>
+.application-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}.application-filters label>span{display:block;color:#aaa;font-size:11px;text-transform:uppercase;margin-bottom:4px}.application-filter-actions{display:flex;gap:7px;align-items:center}@media(max-width:600px){.application-filters{grid-template-columns:1fr}}
+</style>
 @endsection

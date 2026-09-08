@@ -62,6 +62,20 @@
     </div>
 </div>
 
+<div class="analytics-chart-card support-operations-card">
+    <div class="analytics-chart-header">
+        <i class="fas fa-headset"></i>
+        <span>Customer support operations</span>
+        <a href="{{ route('manager.support.index') }}" class="support-dashboard-link">Open ticket queue →</a>
+    </div>
+    <div class="analytics-grid support-dashboard-grid">
+        <div class="analytics-card"><div class="analytics-meta"><div class="analytics-label">Active tickets</div><div class="analytics-value">{{ $supportOpen }}</div></div></div>
+        <div class="analytics-card"><div class="analytics-meta"><div class="analytics-label">Awaiting first reply</div><div class="analytics-value">{{ $supportAwaiting }}</div></div></div>
+        <div class="analytics-card {{ $supportOverdue ? 'support-dashboard-overdue' : '' }}"><div class="analytics-meta"><div class="analytics-label">Overdue</div><div class="analytics-value">{{ $supportOverdue }}</div></div></div>
+        <div class="analytics-card"><div class="analytics-meta"><div class="analytics-label">Avg. first response · 30d</div><div class="analytics-value">{{ $supportAverageResponse === null ? '—' : $supportAverageResponse.' min' }}</div></div></div>
+    </div>
+</div>
+
 <div class="analytics-chart-card">
     <div class="analytics-chart-header">
         <i class="fas fa-chart-line"></i>
@@ -141,6 +155,11 @@
                                 border-bottom:1px solid rgba(255,215,0,.08); }
     .analytics-chart-card canvas { padding:18px; }
     .analytics-chart-empty { padding:40px 20px; text-align:center; color:#666; font-size:13px; }
+    .support-operations-card { margin-top:0; }
+    .support-dashboard-grid { padding:16px; margin:0; }
+    .support-dashboard-link { margin-left:auto; color:#FFD700; text-decoration:none; text-transform:none; letter-spacing:0; }
+    .support-dashboard-overdue { border-color:rgba(239,68,68,.65); }
+    .support-dashboard-overdue .analytics-value { color:#f87171; }
 </style>
 
 <!-- At a Glance -->

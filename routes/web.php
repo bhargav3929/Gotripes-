@@ -27,6 +27,17 @@ use App\Http\Controllers\Admin\UmrahPackageController;
 use App\Http\Controllers\UmrahPaymentController;
 use App\Http\Controllers\EsimController;
 
+// Customer support is deliberately not feature-gated: every storefront must
+// offer a way to ask for help, including when a checkout cannot complete.
+Route::middleware('throttle:10,1')->group(function () {
+    Route::post('/support/tickets', [\App\Http\Controllers\SupportTicketController::class, 'store'])
+        ->name('support.tickets.store');
+    Route::post('/support/tickets/track', [\App\Http\Controllers\SupportTicketController::class, 'track'])
+        ->name('support.tickets.track');
+    Route::post('/support/tickets/reply', [\App\Http\Controllers\SupportTicketController::class, 'reply'])
+        ->name('support.tickets.reply');
+});
+
 // Search API
 Route::get('/api/search', [SearchController::class, 'search'])->name('search');
 
@@ -715,6 +726,13 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
     Route::post('/settings/notifications/test', [SettingsController::class, 'sendTestNotification'])->name('settings.notifications.test');
 
+    // Customer support — the manager portal is always the system of record.
+    Route::get('/support', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'index'])->name('support.index');
+    Route::get('/support/{ticket}', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'show'])->name('support.show');
+    Route::post('/support/{ticket}/reply', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'reply'])->name('support.reply');
+    Route::post('/support/{ticket}/update', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'update'])->name('support.update');
+    Route::post('/support-settings', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'updateSettings'])->name('support.settings');
+
     // Finance: earnings, bookings, bank accounts, withdrawals
     Route::get('/finance', [ManagerFinanceController::class, 'index'])->name('finance.index');
     Route::get('/finance/bookings', [ManagerFinanceController::class, 'bookings'])->name('finance.bookings');
@@ -960,4 +978,3 @@ require __DIR__.'/superadmin.php';
 
 // ─── Client Admin Routes ────────────────────────────────────────────
 require __DIR__.'/client.php';
-

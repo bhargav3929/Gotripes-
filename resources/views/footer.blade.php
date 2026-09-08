@@ -177,36 +177,9 @@
 
 
 
-<!-- Tawk.to Script -->
-<script type="text/javascript">
-  var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-  (function () {
-    var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-    s1.async = true;
-    s1.src = 'https://embed.tawk.to/67a073313a8427326078f27b/1ij5c3v7a';
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin', '*');
-    s0.parentNode.insertBefore(s1, s0);
-  })();
-</script>
-<!--End of Tawk.to Script-->
-
-{{-- Keep the chat bubble clear of the sticky booking bars.
-
-     On phones the widget sits bottom-right at the exact spot where the Umrah
-     "Book Now" and Saudi-visa "Pay" bars put their button, and the chat iframe
-     wins the tap. Customers were pressing the chat bubble while trying to book.
-
-     Tawk positions its iframes with inline styles, so this needs !important. --}}
-<style>
-@media (max-width: 1100px) {
-    iframe[title*="chat" i],
-    iframe[id^="tawk"],
-    .tawk-min-container {
-        bottom: 88px !important;
-    }
-}
-</style>
+{{-- GoTrips-owned support/ticket window. This replaces Tawk so every request
+     receives a traceable ID and always lands in the manager portal. --}}
+@include('partials.support-widget')
 @php
     $footerCompanyName = (isset($company) && $company && $company->name) ? $company->name : 'Go Trips';
     $footerLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');

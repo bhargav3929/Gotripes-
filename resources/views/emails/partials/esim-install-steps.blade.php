@@ -1,10 +1,8 @@
 {{--
     Activation instructions shipped inside the QR email.
 
-    The wording follows the steps the client supplied verbatim — including the
-    "connect to Wi-Fi first" opener, the Pixel wording for Android, and the
-    restart-if-no-network fallback on iPhone. Their support line fields these
-    calls, so their phrasing wins over mine.
+    The wording follows current Apple and Android setup paths while keeping
+    manufacturer-specific menu differences explicit.
 
     Built from tables and inline styles because Outlook and Gmail strip <style>
     blocks, flexbox and grid.
@@ -46,9 +44,9 @@
                 {!! $step(2, 'Open <strong>Settings</strong> → <strong>Cellular</strong> (or <strong>Mobile Data</strong>).', '#111827') !!}
                 {!! $step(3, 'Tap <strong>Add eSIM</strong>.', '#111827') !!}
                 {!! $step(4, 'Select <strong>Use QR Code</strong>.', '#111827') !!}
-                {!! $step(5, 'Scan the QR code above.', '#111827') !!}
+                {!! $step(5, 'Scan the QR code from another screen. On iOS 17.4 or later, press and hold the QR shown in your default email app or browser, then choose <strong>Add eSIM</strong>.', '#111827') !!}
                 {!! $step(6, 'Follow the on-screen prompts to install the eSIM.', '#111827') !!}
-                {!! $step(7, 'Once installed: turn the eSIM <strong>On</strong>, set it as the <strong>Mobile Data</strong> line, and enable <strong>Data Roaming</strong> — a travel eSIM will not connect without it.', '#111827') !!}
+                {!! $step(7, 'Once installed: turn the eSIM <strong>On</strong>, set it as the <strong>Mobile Data</strong> line, and follow your GoTrips plan instructions for <strong>Data Roaming</strong>.', '#111827') !!}
                 {!! $step(8, 'Restart your phone if the network does not appear immediately.', '#111827') !!}
             </table>
         </div>
@@ -62,12 +60,12 @@
         <div style="padding:16px 16px 4px;">
             <table style="width:100%;border-collapse:collapse;">
                 {!! $step(1, 'Connect to <strong>Wi-Fi</strong>.', '#1f4e9c') !!}
-                {!! $step(2, 'Open <strong>Settings</strong> → <strong>Connections</strong> (or <strong>Network &amp; Internet</strong>) → <strong>SIM Manager</strong>.', '#1f4e9c') !!}
-                {!! $step(3, 'Tap <strong>Add eSIM</strong>.', '#1f4e9c') !!}
+                {!! $step(2, 'Open <strong>Settings</strong> → <strong>Connections</strong> (or <strong>Network &amp; Internet</strong>) → <strong>SIM Manager</strong> (or <strong>SIMs</strong>).', '#1f4e9c') !!}
+                {!! $step(3, 'Tap <strong>Add eSIM</strong>, <strong>Set up an eSIM</strong>, or <strong>Add mobile plan</strong>. Wording varies by phone.', '#1f4e9c') !!}
                 {!! $step(4, 'Select <strong>Scan QR Code</strong>.', '#1f4e9c') !!}
                 {!! $step(5, 'Scan the QR code above.', '#1f4e9c') !!}
                 {!! $step(6, 'Complete the installation and enable the eSIM.', '#1f4e9c') !!}
-                {!! $step(7, 'Set it as your <strong>preferred data SIM</strong> and enable <strong>Data Roaming</strong> if required.', '#1f4e9c') !!}
+                {!! $step(7, 'Set it as your <strong>preferred data SIM</strong> and follow your GoTrips plan instructions for <strong>Data Roaming</strong>.', '#1f4e9c') !!}
             </table>
         </div>
     </div>
@@ -105,6 +103,7 @@
                 </table>
                 <p style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#9ca3af;">
                     Leave any "confirmation code" field blank unless your phone insists on one.
+                    Do not delete an installed eSIM while troubleshooting; contact GoTrips support first.
                 </p>
             </div>
         </div>
