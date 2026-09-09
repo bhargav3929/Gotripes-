@@ -46,28 +46,39 @@ class SupportTicketFlowTest extends TestCase
         $this->assertSame('not_configured', $ticket->whatsapp_delivery_status);
         $this->assertCount(2, $ticket->messages); // customer problem + auto acknowledgement
 
-        Mail::assertSent(SupportTicketMail::class, 2);
+        Mail::assertSent(fn (SupportTicketMail $mail) => $mail->kind === 'customer_created');
+        Mail::assertSent(fn (SupportTicketMail $mail) => $mail->kind === 'staff_created');
 
+        // Tracking is by ticket number alone — the number is the credential.
         $this->withoutMiddleware(VerifyCsrfToken::class)
             ->postJson(route('support.tickets.track'), [
                 'ticket_number' => strtolower($ticket->ticket_number),
-                'email' => 'TRAVELLER@example.com',
             ])
             ->assertOk()
             ->assertJsonPath('ticket.ticket_number', $ticket->ticket_number)
             ->assertJsonCount(2, 'ticket.messages');
     }
 
-    public function test_tracking_requires_the_matching_email_address(): void
+    public function test_tracking_needs_only_the_ticket_number_and_rejects_unknown_ones(): void
     {
         $ticketData = $this->createTicket();
 
+        // No email: a customer who mistyped the address they signed up with must
+        // still be able to reach their own conversation.
         $this->withoutMiddleware(VerifyCsrfToken::class)
             ->postJson(route('support.tickets.track'), [
                 'ticket_number' => $ticketData['ticket_number'],
-                'email' => 'someone-else@example.com',
             ])
-            ->assertNotFound();
+            ->assertOk()
+            ->assertJsonPath('ticket.ticket_number', $ticketData['ticket_number']);
+
+        // An unknown number gets an actionable message, not a raw model error.
+        $this->withoutMiddleware(VerifyCsrfToken::class)
+            ->postJson(route('support.tickets.track'), [
+                'ticket_number' => 'GT-260101-NOPE00',
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('ticket_number');
     }
 
     public function test_ticket_uses_the_referring_page_when_source_url_is_not_posted(): void
@@ -116,12 +127,12 @@ class SupportTicketFlowTest extends TestCase
         $this->assertNotNull($ticket->first_response_at);
         $this->assertSame($manager->id, $ticket->assigned_to);
         $this->assertSame('waiting_customer', $ticket->status);
-        Mail::assertSent(SupportTicketMail::class, 1);
+        Mail::assertSent(fn (SupportTicketMail $mail) => $mail->kind === 'customer_reply'
+            && $mail->ticket->is($ticket));
 
         $this->withoutMiddleware(VerifyCsrfToken::class)
             ->postJson(route('support.tickets.reply'), [
                 'ticket_number' => $ticket->ticket_number,
-                'email' => $ticket->customer_email,
                 'message' => 'I found it, but my phone says the code has already been used.',
             ])
             ->assertOk()

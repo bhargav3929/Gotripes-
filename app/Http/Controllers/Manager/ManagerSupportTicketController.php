@@ -94,7 +94,10 @@ class ManagerSupportTicketController extends Controller
             ]);
         });
 
-        $notifier->notifyStaffReply($ticket->fresh('company'), $message);
+        // Sent after the response for the same reason as the customer side:
+        // synchronous SMTP otherwise stalls the manager's reply for seconds.
+        $fresh = $ticket->fresh('company');
+        dispatch(fn () => $notifier->notifyStaffReply($fresh, $message))->afterResponse();
 
         return back()->with('success', "Reply sent on {$ticket->ticket_number}.");
     }

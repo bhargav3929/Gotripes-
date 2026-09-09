@@ -68,8 +68,12 @@ class SupportTicketController extends Controller
         });
 
         // Ticket persistence is authoritative: notification trouble must never
-        // turn a successfully-created ticket into a customer-facing 500.
-        $notifier->notifyCreated($ticket);
+        // turn a successfully-created ticket into a customer-facing 500. SMTP is
+        // synchronous here (QUEUE_CONNECTION=sync), and two mails plus a WhatsApp
+        // call added ~9s to the request, so send once the customer already has
+        // the response. afterResponse needs no queue worker, which matters on
+        // shared hosting. The notifier logs and swallows its own failures.
+        dispatch(fn () => $notifier->notifyCreated($ticket))->afterResponse();
 
         return response()->json([
             'ticket' => $this->publicTicket($ticket->fresh('messages')),
@@ -82,10 +86,9 @@ class SupportTicketController extends Controller
     {
         $validated = $request->validate([
             'ticket_number' => 'required|string|max:32',
-            'email' => 'required|email:rfc|max:255',
         ]);
 
-        $ticket = $this->findForCustomer($validated['ticket_number'], $validated['email']);
+        $ticket = $this->findByNumber($validated['ticket_number']);
 
         return response()->json(['ticket' => $this->publicTicket($ticket)]);
     }
@@ -94,11 +97,10 @@ class SupportTicketController extends Controller
     {
         $validated = $request->validate([
             'ticket_number' => 'required|string|max:32',
-            'email' => 'required|email:rfc|max:255',
             'message' => 'required|string|min:2|max:4000',
         ]);
 
-        $ticket = $this->findForCustomer($validated['ticket_number'], $validated['email']);
+        $ticket = $this->findByNumber($validated['ticket_number']);
         if ($ticket->status === 'closed') {
             throw ValidationException::withMessages([
                 'ticket_number' => 'This ticket is closed. Please create a new ticket if you still need help.',
@@ -123,17 +125,33 @@ class SupportTicketController extends Controller
             ]);
         });
 
-        $notifier->notifyCustomerFollowup($ticket->fresh('company'), $message);
+        $fresh = $ticket->fresh('company');
+        dispatch(fn () => $notifier->notifyCustomerFollowup($fresh, $message))->afterResponse();
 
         return response()->json(['ticket' => $this->publicTicket($ticket->fresh('messages'))]);
     }
 
-    private function findForCustomer(string $number, string $email): SupportTicket
+    /**
+     * Resolve a ticket from the reference the customer was given.
+     *
+     * The ticket number is the bearer credential: it is 6 random characters on
+     * top of the date, and the customer endpoints are rate limited, so guessing
+     * one is impractical. Scoping still applies, so a number cannot be read
+     * across tenants.
+     */
+    private function findByNumber(string $number): SupportTicket
     {
-        return SupportTicket::with(['messages' => fn ($query) => $query->where('visibility', 'public')])
+        $ticket = SupportTicket::with(['messages' => fn ($query) => $query->where('visibility', 'public')])
             ->where('ticket_number', strtoupper(trim($number)))
-            ->whereRaw('LOWER(customer_email) = ?', [strtolower(trim($email))])
-            ->firstOrFail();
+            ->first();
+
+        if (!$ticket) {
+            throw ValidationException::withMessages([
+                'ticket_number' => 'We could not find that ticket number. Please check it and try again.',
+            ]);
+        }
+
+        return $ticket;
     }
 
     private function publicTicket(SupportTicket $ticket): array

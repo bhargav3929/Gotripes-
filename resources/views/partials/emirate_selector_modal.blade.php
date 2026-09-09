@@ -8,26 +8,66 @@
         'name' => $emirate->emiratesName,
         'image' => $emirate->emiratesImage ? asset($emirate->emiratesImage) : null,
     ])->values();
+
+    // The disc is fixed, so the three-circle geometry only holds if the circles
+    // shrink as more emirates start issuing visas. Two routes = the layout the
+    // client signed off on; more than two step down so nothing touches the ring.
+    $modalCount = $modalEmirates->count();
+    $ringScale = $modalCount <= 2 ? '.235' : ($modalCount === 3 ? '.20' : '.165');
+    $gapScale  = $modalCount <= 2 ? '.09'  : ($modalCount === 3 ? '.05' : '.035');
 @endphp
 
 <style>
-.emirate-overlay{position:fixed;inset:0;z-index:11000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}.emirate-overlay.active{opacity:1;visibility:visible}.emirate-modal{position:relative;width:min(720px,94vw);aspect-ratio:1;background:radial-gradient(circle at 50% 42%,#151515 0,#070707 62%,#000 100%);border:clamp(8px,1.8vw,18px) solid #d4af37;border-radius:50%;box-shadow:0 30px 90px rgba(0,0,0,.85),0 0 0 3px #7b5910 inset,0 0 45px rgba(212,175,55,.12) inset;display:grid;grid-template-rows:1fr 1fr;align-items:center;justify-items:center;padding:8% 9% 9%;transform:scale(.92);transition:transform .35s cubic-bezier(.34,1.56,.64,1);overflow:hidden;font-family:'Outfit',sans-serif}.emirate-overlay.active .emirate-modal{transform:scale(1)}.emirate-close-btn{position:absolute;top:6.5%;right:9%;z-index:4;width:34px;height:34px;border:1px solid rgba(255,215,0,.45);border-radius:50%;background:#111;color:#d4af37;font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer;transition:.2s}.emirate-close-btn:hover{background:#d4af37;color:#111;transform:rotate(90deg)}.emirate-brand-medallion,.emirate-card{width:clamp(150px,25vw,220px);aspect-ratio:1;border:clamp(5px,.8vw,9px) solid #d4af37;border-radius:50%;background:#050505;box-shadow:0 8px 24px rgba(0,0,0,.55),0 0 0 2px rgba(255,235,150,.25) inset}.emirate-brand-medallion{grid-row:1;align-self:end;display:grid;place-items:center;padding:11px}.emirate-logo{display:block;width:82%;height:82%;object-fit:contain}.emirate-cards-grid{grid-row:2;align-self:start;width:100%;display:flex;justify-content:center;gap:clamp(24px,7vw,74px);margin-top:3.5%}.emirate-card{position:relative;overflow:hidden;padding:0;cursor:pointer;color:#fff;transition:transform .2s,box-shadow .2s}.emirate-card:hover,.emirate-card:focus-visible{transform:translateY(-5px);box-shadow:0 14px 34px rgba(212,175,55,.25),0 0 0 3px #fff2ac}.emirate-card.selected{box-shadow:0 0 0 4px #fff,0 0 0 8px #d4af37}.emirate-flag-img,.emirate-card-icon{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.emirate-card-icon{display:grid;place-items:center;background:linear-gradient(135deg,#222,#050505);color:#d4af37;font-size:30px}.emirate-card::after{content:'';position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.92))}.emirate-card-name{position:absolute;z-index:2;left:9%;right:9%;bottom:10%;font-size:clamp(16px,2.2vw,25px);font-weight:900;letter-spacing:1.5px;text-transform:uppercase;text-shadow:0 2px 5px #000}.emirate-card-hover-hint{display:none}.emirate-modal-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@media(max-height:780px){.emirate-modal{width:min(620px,88vh)}}
-@media(max-width:620px){.emirate-modal{width:min(94vw,520px);padding:10% 7%}.emirate-brand-medallion,.emirate-card{width:clamp(108px,31vw,158px)}.emirate-cards-grid{gap:15px}.emirate-close-btn{top:7%;right:10%;width:30px;height:30px}.emirate-card-name{font-size:clamp(13px,4vw,18px);letter-spacing:.8px}}
-@media(max-width:390px){.emirate-modal{padding:12% 5%}.emirate-brand-medallion,.emirate-card{width:105px}.emirate-cards-grid{gap:10px}}
-@media(prefers-reduced-motion:reduce){.emirate-overlay,.emirate-modal,.emirate-card{transition:none}}
+/* Emirates route selector — medallion layout per client reference (Sep 2026):
+   one large gold-ringed disc, three equal circles (brand on top, routes below),
+   caption inside the disc. All geometry derives from --disc so the whole thing
+   scales as one unit and never spills outside the circle. */
+.emirate-overlay{position:fixed;inset:0;z-index:11000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.9);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.emirate-overlay.active{opacity:1;visibility:visible}
+.emirate-modal{--disc:min(720px,94vw,88vh);--ring:calc(var(--disc) * var(--ring-scale,.235));--gold:#d4af37;--gold-lite:#f0cf6b;position:relative;width:var(--disc);height:var(--disc);border-radius:50%;background:radial-gradient(circle at 50% 40%,#161616 0,#080808 60%,#000 100%);border:calc(var(--disc) * .022) solid var(--gold);box-shadow:0 30px 90px rgba(0,0,0,.85),0 0 50px rgba(212,175,55,.14);display:grid;grid-template-rows:auto auto auto;align-content:center;justify-items:center;row-gap:calc(var(--disc) * .035);font-family:'Outfit',sans-serif;transform:scale(.92);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.emirate-overlay.active .emirate-modal{transform:scale(1)}
+/* Thin concentric ring — the reference shows a double gold outline, not one band. */
+.emirate-modal::before{content:'';position:absolute;inset:calc(var(--disc) * .035);border:2px solid rgba(212,175,55,.65);border-radius:50%;pointer-events:none}
+.emirate-brand-medallion,.emirate-card{width:var(--ring);height:var(--ring);border-radius:50%;background:#050505;box-shadow:0 10px 26px rgba(0,0,0,.6)}
+.emirate-card{border:calc(var(--disc) * .011) solid var(--gold);box-shadow:0 10px 26px rgba(0,0,0,.6),0 0 0 1px rgba(120,86,20,.9) inset}
+.emirate-brand-medallion{position:relative;overflow:hidden}
+.emirate-logo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.emirate-cards-row{position:relative;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:calc(var(--disc) * var(--gap-scale,.09))}
+/* Divider between the two route circles, as drawn in the reference. */
+.emirate-cards-row[data-count="2"]::before{content:'';position:absolute;top:8%;bottom:8%;left:50%;width:1px;transform:translateX(-.5px);background:linear-gradient(transparent,rgba(212,175,55,.85),transparent)}
+.emirate-card{position:relative;overflow:hidden;padding:0;cursor:pointer;color:#fff;transition:transform .2s,box-shadow .2s;animation:emirateHalo 3.4s ease-in-out infinite}
+.emirate-card:nth-of-type(2){animation-delay:1.7s}
+/* drop-shadow, not box-shadow: the card clips its own overflow, so a spread
+   shadow would be cut off at the rim. */
+@keyframes emirateHalo{0%,100%{filter:drop-shadow(0 0 0 rgba(212,175,55,0))}50%{filter:drop-shadow(0 0 13px rgba(212,175,55,.85))}}
+/* Slow drift on the photo itself, so the motion lives inside the circle and
+   never fights the hover transform on the card. */
+.emirate-flag-img{animation:emirateDrift 11s ease-in-out infinite}
+.emirate-card:nth-of-type(2) .emirate-flag-img{animation-delay:-5.5s}
+@keyframes emirateDrift{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+.emirate-card:hover,.emirate-card:focus-visible{transform:translateY(-4px);box-shadow:0 16px 34px rgba(0,0,0,.6),0 0 0 3px var(--gold-lite)}
+.emirate-card.selected{box-shadow:0 0 0 3px #0a0a0a,0 0 0 7px var(--gold-lite)}
+.emirate-flag-img,.emirate-card-icon{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.emirate-card-icon{display:grid;place-items:center;background:linear-gradient(135deg,#222,#050505);color:var(--gold);font-size:calc(var(--disc) * .05);font-weight:800;letter-spacing:.04em}
+.emirate-card::after{content:'';position:absolute;inset:34% 0 0;background:linear-gradient(transparent 0,rgba(0,0,0,.88) 62%,rgba(0,0,0,.7) 100%)}
+/* Sits at ~20% from the bottom, not on the rim: a circle's chord is far
+   narrower near its base, which is where long names like "Abu Dhabi" spill. */
+.emirate-card-name{position:absolute;z-index:2;left:8%;right:8%;bottom:20%;font-size:calc(var(--disc) * .03);line-height:1.12;font-weight:800;letter-spacing:.04em;text-transform:uppercase;text-align:center;text-shadow:0 2px 6px #000}
+.emirate-modal-title{margin:calc(var(--disc) * -.012) 0 0;font-size:calc(var(--disc) * .036);font-weight:800;letter-spacing:.045em;text-transform:uppercase;color:var(--gold);text-align:center;white-space:nowrap}
+.emirate-modal-title b{color:#fff;font-weight:800}
+@media(max-width:620px){.emirate-modal{--disc:min(94vw,78vh);row-gap:calc(var(--disc) * .03)}.emirate-modal-title{font-size:calc(var(--disc) * .030);letter-spacing:.02em}}
+@media(prefers-reduced-motion:reduce){.emirate-overlay,.emirate-modal,.emirate-card{transition:none}.emirate-card,.emirate-flag-img{animation:none}}
 </style>
 
 <div id="emirateSelectorOverlay" class="emirate-overlay" role="dialog" aria-modal="true" aria-labelledby="emirateModalTitle">
-    <div class="emirate-modal">
-        <h2 class="emirate-modal-title" id="emirateModalTitle">Choose your Emirates visa route</h2>
-        <button type="button" class="emirate-close-btn" id="emirateCloseBtn" aria-label="Close modal">&times;</button>
-
-        <div class="emirate-brand-medallion" aria-label="{{ $modalName }}">
-            <img src="{{ $modalLogo }}" alt="{{ $modalName }}" class="emirate-logo">
+    <div class="emirate-modal" style="--ring-scale:{{ $ringScale }};--gap-scale:{{ $gapScale }}">
+        <div class="emirate-brand-medallion" aria-hidden="true">
+            <img src="{{ $modalLogo }}" alt="" class="emirate-logo">
         </div>
 
-        <div class="emirate-cards-grid" id="emirateGrid" aria-label="Available Emirates visa routes"></div>
+        <div class="emirate-cards-row" id="emirateGrid" data-count="{{ $modalEmirates->count() }}" aria-label="Available Emirates visa routes"></div>
+
+        <h2 class="emirate-modal-title" id="emirateModalTitle">Which <b>Emirates</b> visa route ?</h2>
     </div>
 </div>
 
@@ -36,20 +76,21 @@
     const available=@json($modalEmirates);
     const overlay=document.getElementById('emirateSelectorOverlay');
     const grid=document.getElementById('emirateGrid');
-    const closeButton=document.getElementById('emirateCloseBtn');
     const hiddenInput=document.getElementById('selectedEmirate');
     if(!overlay||!grid)return;
 
     const escapeHtml=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
     grid.innerHTML=available.map(emirate=>{
         const name=escapeHtml(emirate.name),id=escapeHtml(emirate.id),image=emirate.image?escapeHtml(emirate.image):'';
+        // Bootstrap Icons' webfont 404s on production, so the no-image fallback
+        // is the emirate's initial rather than a glyph that renders as a box.
         const visual=image
             ?`<img class="emirate-flag-img" src="${image}" alt="" loading="lazy">`
-            :'<span class="emirate-card-icon"><i class="bi bi-flag-fill" aria-hidden="true"></i></span>';
+            :`<span class="emirate-card-icon" aria-hidden="true">${name.slice(0,1)}</span>`;
         return `<button type="button" class="emirate-card" data-emirate="${id}" aria-label="Select ${name}">${visual}<span class="emirate-card-name">${name}</span></button>`;
     }).join('');
 
-    function closeSelector(){overlay.classList.remove('active')}
+    function closeSelector(){overlay.classList.remove('active');document.body.style.overflow=''}
     function selectEmirate(name){
         if(hiddenInput)hiddenInput.value=name;
         document.dispatchEvent(new CustomEvent('emirateChanged',{detail:name}));
@@ -59,11 +100,15 @@
         grid.querySelectorAll('.emirate-card').forEach(item=>{item.classList.remove('selected');item.removeAttribute('aria-pressed')});
         this.classList.add('selected');this.setAttribute('aria-pressed','true');selectEmirate(this.dataset.emirate);
     }));
-    closeButton?.addEventListener('click',closeSelector);
-    overlay.addEventListener('click',event=>{if(event.target===overlay)closeSelector()});
-    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&overlay.classList.contains('active'))closeSelector()});
+    // Picking a route is mandatory — the rest of the form is priced off it, so
+    // there is deliberately no close button, no backdrop dismiss and no Escape.
+    // Tab still moves between the routes and Enter selects, so it is not a trap.
     window.showEmirateSelector=function(){
+        // Nothing to choose from (no emirate has an active package) would leave
+        // the customer staring at an empty disc she cannot dismiss. Stay shut.
+        if(!grid.querySelector('.emirate-card'))return;
         overlay.classList.add('active');
+        document.body.style.overflow='hidden';
         grid.querySelectorAll('.emirate-card').forEach(item=>{item.classList.remove('selected');item.removeAttribute('aria-pressed')});
         setTimeout(()=>grid.querySelector('.emirate-card')?.focus(),50);
     };
