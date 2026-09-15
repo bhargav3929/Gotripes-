@@ -732,6 +732,12 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::post('/support/{ticket}/reply', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'reply'])->name('support.reply');
     Route::post('/support/{ticket}/update', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'update'])->name('support.update');
     Route::post('/support-settings', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'updateSettings'])->name('support.settings');
+    Route::post('/support/customer-care', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'storeCustomerCare'])->name('support.customer-care.store');
+
+    // Product help guide, rendered from docs/help/*.md. Also the onboarding
+    // reading for the customer_care role, so it stays reachable for them.
+    Route::get('/help', [\App\Http\Controllers\Manager\ManagerHelpController::class, 'index'])->name('help.index');
+    Route::get('/help/{slug}', [\App\Http\Controllers\Manager\ManagerHelpController::class, 'show'])->name('help.show');
 
     // Finance: earnings, bookings, bank accounts, withdrawals
     Route::get('/finance', [ManagerFinanceController::class, 'index'])->name('finance.index');

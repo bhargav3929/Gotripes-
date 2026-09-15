@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,7 @@ class ManagerAuthController extends Controller
     public function showLogin()
     {
         if (Auth::check() && $this->canAccessManager(Auth::user())) {
-            return redirect()->route('manager.dashboard');
+            return redirect()->to($this->homeRoute(Auth::user()));
         }
         return view('manager.login');
     }
@@ -37,6 +38,16 @@ class ManagerAuthController extends Controller
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['credentials' => 'This account does not have manager access.']);
+        }
+
+        // Mirrors Agent/AgentAuthController: a deactivated account must not get
+        // a session even if the password is right. Legacy rows carry NULL here,
+        // which still counts as active.
+        if ($user->is_active === false) {
+            $this->logoutAndInvalidate($request);
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['credentials' => 'This account has been deactivated. Contact your manager.']);
         }
 
         $tenant = app()->bound('current_company') ? app('current_company') : null;
@@ -67,7 +78,19 @@ class ManagerAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('manager.dashboard'));
+        return redirect()->intended($this->homeRoute($user));
+    }
+
+    /**
+     * Where a freshly signed-in manager lands. Customer-care staff only ever
+     * see the support queue, so that is their home; everyone else gets the
+     * dashboard.
+     */
+    private function homeRoute(User $user): string
+    {
+        return $user->role === 'customer_care'
+            ? route('manager.support.index')
+            : route('manager.dashboard');
     }
 
     public function logout(Request $request)
@@ -83,7 +106,7 @@ class ManagerAuthController extends Controller
         }
 
         $isSuperAdmin = $user->is_super_admin || $user->role === 'super_admin';
-        $isCompanyManager = in_array($user->role, ['company_owner', 'company_admin'], true);
+        $isCompanyManager = in_array($user->role, ['company_owner', 'company_admin', 'customer_care'], true);
 
         return $isSuperAdmin || $isCompanyManager;
     }

@@ -1,0 +1,232 @@
+<template id="captions-template" data-composition-id="captions" data-width="1920" data-height="1080">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+
+
+<style data-brand-tokens>
+      :root {
+      --ink-black: #080706;
+      --ink-black-alt: #1A1A18;
+      --fire-orange: #D4AF37;
+      --cream: #F4EBD0;
+      --cream-muted: #D4AF37;
+      --cream-hint: #504E48;
+      --border-dark: #282826;
+      --ink-on-orange-muted: rgba(17,17,17,0.75);
+      --ink-on-orange-hint: rgba(17,17,17,0.55);
+      --ink-on-orange-faint: rgba(17,17,17,0.40);
+      --ink-on-orange-border: rgba(17,17,17,0.20);
+      --cap-ink: #080706;
+      --cap-canvas: #F4EBD0;
+      --cap-accent: #D4AF37;
+      --cap-accent-2: #D4AF37;
+      --font-display: "Barlow", system-ui, serif;
+      --font-body: "Barlow", system-ui, sans-serif;
+      --cap-band-top: 900px;
+      --cap-band-height: 180px;
+      }
+    </style>
+
+<style>
+  @font-face {
+    font-family: "Barlow";
+    src: local("Arial");
+    font-style: normal;
+    font-weight: 400 900;
+  }
+
+  #captions-root {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .caption-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+  }
+  /* the keep-out band, from captionBand(H) — frame content stays above it */
+  .caption-stage {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--cap-band-top, 900px);
+    height: var(--cap-band-height, 180px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .caption-group {
+    /* every group is absolutely stacked over the SAME band — exactly one shown at a
+       time via opacity. Must be absolute: in-flow groups would lay out side-by-side. */
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+  }
+
+  /* THE ink-black plate — single 1px fire-orange hairline (broadside's lone accent),
+     SHARP corners (0 radius), NO shadow (the plane is flat) */
+  .caption-pill {
+    max-width: 80%;
+    padding: 18px 44px 22px;
+    background: var(--cap-ink, #111111);
+    border: 1px solid var(--cap-accent, #e85d26);
+    border-radius: 0;
+  }
+  .caption-line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.04em 0.3em;
+    font-family: "Barlow", system-ui, sans-serif;
+    font-weight: 900;
+    font-size: clamp(38px, 4.2vw, 56px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    text-transform: lowercase;
+  }
+
+  /* upcoming — faint cream, no block (massive lowercase Barlow 900 as graphic primitive) */
+  .caption-word {
+    display: inline-block;
+    padding: 0 0.08em;
+    color: color-mix(in srgb, var(--cap-canvas, #f0ece5) 42%, var(--cap-ink, #111111));
+  }
+  /* current word — THE register flip: a hard flat fire-orange block (box-shadow spread =
+     a sharp rectangle w/o layout shift; no blur), ink reading on top — the lone accent */
+  .caption-word.is-active {
+    color: var(--cap-ink, #111111);
+    background: var(--cap-accent, #e85d26);
+    box-shadow: 0 0 0 0.06em var(--cap-accent, #e85d26);
+  }
+  /* already spoken — solid cream, the orange block cleared */
+  .caption-word.is-spoken {
+    color: var(--cap-canvas, #f0ece5);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* optional per-word accents (dormant until a word-classer tags them) */
+  /* brand / key term — fire-orange ink, the cream-on-ink register's only inflection */
+  .caption-word.cap-brand {
+    color: var(--cap-accent, #e85d26);
+  }
+  /* numerals / data — the IBM Plex Mono chrome voice, uppercase + tracked, recessed */
+  .caption-word.cap-num {
+    font-family: "Barlow", ui-monospace, monospace;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--cap-canvas, #f0ece5) 72%, var(--cap-ink, #111111));
+  }
+  /* emphasis — a fire-orange hairline underline (no second hue; the lone accent again) */
+  .caption-word.cap-cta {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--cap-accent-2, #e85d26);
+    text-underline-offset: 0.1em;
+  }
+
+  @media (max-aspect-ratio: 9/16) {
+    .caption-pill {
+      max-width: 92%;
+    }
+    .caption-line {
+      font-size: clamp(32px, 5.2vw, 46px);
+    }
+  }
+</style>
+
+<div
+  id="captions-root"
+  data-composition-id="captions"
+  data-timeline-locked
+  data-start="0"
+  data-duration="84.259"
+  data-fps="30"
+  data-width="1920"
+  data-height="1080"
+>
+  <div class="caption-layer" aria-hidden="true">
+    <div id="caption-stage" class="caption-stage"></div>
+  </div>
+</div>
+
+<script>
+  // captions.mjs injects the engine's scene-aware groups + real duration here.
+  var GROUPS = [{"id":"caption-group-0","frame":1,"start":2.739,"end":3.879,"text":"Your travel eSIM","words":[{"id":"caption-word-0-0","text":"Your","start":2.739,"end":2.899},{"id":"caption-word-0-1","text":"travel","start":2.939,"end":3.24},{"id":"caption-word-0-2","text":"eSIM","start":3.339,"end":3.839}]},{"id":"caption-group-1","frame":1,"start":3.879,"end":4.579,"text":"is already","words":[{"id":"caption-word-1-0","text":"is","start":3.879,"end":4.059},{"id":"caption-word-1-1","text":"already","start":4.12,"end":4.519}]},{"id":"caption-group-2","frame":1,"start":4.579,"end":5.519,"text":"in your inbox.","words":[{"id":"caption-word-2-0","text":"in","start":4.579,"end":4.659},{"id":"caption-word-2-1","text":"your","start":4.7,"end":4.779},{"id":"caption-word-2-2","text":"inbox.","start":4.859,"end":5.399}]},{"id":"caption-group-3","frame":1,"start":5.799,"end":6.059,"text":"In the","words":[{"id":"caption-word-3-0","text":"In","start":5.799,"end":5.879},{"id":"caption-word-3-1","text":"the","start":5.899,"end":5.98}]},{"id":"caption-group-4","frame":1,"start":6.059,"end":6.659,"text":"next minute,","words":[{"id":"caption-word-4-0","text":"next","start":6.059,"end":6.279},{"id":"caption-word-4-1","text":"minute,","start":6.339,"end":6.539}]},{"id":"caption-group-5","frame":1,"start":6.9,"end":7.179,"text":"we’ll get","words":[{"id":"caption-word-5-0","text":"we’ll","start":6.9,"end":7.039},{"id":"caption-word-5-1","text":"get","start":7.079,"end":7.159}]},{"id":"caption-group-6","frame":1,"start":7.179,"end":7.779,"text":"it safely","words":[{"id":"caption-word-6-0","text":"it","start":7.179,"end":7.319},{"id":"caption-word-6-1","text":"safely","start":7.359,"end":7.739}]},{"id":"caption-group-7","frame":1,"start":7.779,"end":8.599,"text":"onto your phone.","words":[{"id":"caption-word-7-0","text":"onto","start":7.779,"end":8.0},{"id":"caption-word-7-1","text":"your","start":8.019,"end":8.159},{"id":"caption-word-7-2","text":"phone.","start":8.199,"end":8.479}]},{"id":"caption-group-8","frame":2,"start":8.902,"end":9.863,"text":"Before you begin:","words":[{"id":"caption-word-8-0","text":"Before","start":8.902,"end":9.222},{"id":"caption-word-8-1","text":"you","start":9.243,"end":9.342},{"id":"caption-word-8-2","text":"begin:","start":9.402,"end":9.743}]},{"id":"caption-group-9","frame":2,"start":10.142,"end":11.282,"text":"connect to Wi-Fi,","words":[{"id":"caption-word-9-0","text":"connect","start":10.142,"end":10.462},{"id":"caption-word-9-1","text":"to","start":10.482,"end":10.542},{"id":"caption-word-9-2","text":"Wi-Fi,","start":10.642,"end":11.162}]},{"id":"caption-group-10","frame":2,"start":11.562,"end":11.902,"text":"check that","words":[{"id":"caption-word-10-0","text":"check","start":11.562,"end":11.743},{"id":"caption-word-10-1","text":"that","start":11.782,"end":11.882}]},{"id":"caption-group-11","frame":2,"start":11.902,"end":12.342,"text":"your phone","words":[{"id":"caption-word-11-0","text":"your","start":11.902,"end":12.042},{"id":"caption-word-11-1","text":"phone","start":12.062,"end":12.243}]},{"id":"caption-group-12","frame":2,"start":12.342,"end":13.842,"text":"supports eSIM and is","words":[{"id":"caption-word-12-0","text":"supports","start":12.342,"end":12.762},{"id":"caption-word-12-1","text":"eSIM","start":12.842,"end":13.482},{"id":"caption-word-12-2","text":"and","start":13.542,"end":13.622},{"id":"caption-word-12-3","text":"is","start":13.623,"end":13.802}]},{"id":"caption-group-13","frame":2,"start":13.842,"end":14.482,"text":"unlocked,","words":[{"id":"caption-word-13-0","text":"unlocked,","start":13.842,"end":14.362}]},{"id":"caption-group-14","frame":2,"start":14.802,"end":15.362,"text":"then open","words":[{"id":"caption-word-14-0","text":"then","start":14.802,"end":15.022},{"id":"caption-word-14-1","text":"open","start":15.082,"end":15.302}]},{"id":"caption-group-15","frame":2,"start":15.362,"end":16.502,"text":"your GoTrips QR","words":[{"id":"caption-word-15-0","text":"your","start":15.362,"end":15.482},{"id":"caption-word-15-1","text":"GoTrips","start":15.522,"end":16.062},{"id":"caption-word-15-2","text":"QR","start":16.203,"end":16.382}]},{"id":"caption-group-16","frame":2,"start":16.522,"end":17.743,"text":"code or activation","words":[{"id":"caption-word-16-0","text":"code","start":16.522,"end":16.862},{"id":"caption-word-16-1","text":"or","start":16.902,"end":17.022},{"id":"caption-word-16-2","text":"activation","start":17.102,"end":17.703}]},{"id":"caption-group-17","frame":2,"start":17.743,"end":18.423,"text":"details.","words":[{"id":"caption-word-17-0","text":"details.","start":17.743,"end":18.303}]},{"id":"caption-group-18","frame":3,"start":18.895,"end":19.695,"text":"On iPhone,","words":[{"id":"caption-word-18-0","text":"On","start":18.895,"end":19.015},{"id":"caption-word-18-1","text":"iPhone,","start":19.115,"end":19.575}]},{"id":"caption-group-19","frame":3,"start":19.855,"end":20.795,"text":"open Settings.","words":[{"id":"caption-word-19-0","text":"open","start":19.855,"end":20.075},{"id":"caption-word-19-1","text":"Settings.","start":20.196,"end":20.675}]},{"id":"caption-group-20","frame":3,"start":21.156,"end":22.255,"text":"Choose Cellular or","words":[{"id":"caption-word-20-0","text":"Choose","start":21.156,"end":21.436},{"id":"caption-word-20-1","text":"Cellular","start":21.495,"end":21.975},{"id":"caption-word-20-2","text":"or","start":22.075,"end":22.135}]},{"id":"caption-group-21","frame":3,"start":22.255,"end":23.015,"text":"Mobile Data,","words":[{"id":"caption-word-21-0","text":"Mobile","start":22.255,"end":22.515},{"id":"caption-word-21-1","text":"Data,","start":22.615,"end":22.895}]},{"id":"caption-group-22","frame":3,"start":23.275,"end":24.595,"text":"tap Add eSIM,","words":[{"id":"caption-word-22-0","text":"tap","start":23.275,"end":23.555},{"id":"caption-word-22-1","text":"Add","start":23.696,"end":23.895},{"id":"caption-word-22-2","text":"eSIM,","start":24.015,"end":24.475}]},{"id":"caption-group-23","frame":3,"start":24.815,"end":25.375,"text":"then Use","words":[{"id":"caption-word-23-0","text":"then","start":24.815,"end":24.955},{"id":"caption-word-23-1","text":"Use","start":25.116,"end":25.255}]},{"id":"caption-group-24","frame":3,"start":25.475,"end":26.176,"text":"QR Code","words":[{"id":"caption-word-24-0","text":"QR","start":25.475,"end":25.676},{"id":"caption-word-24-1","text":"Code","start":25.815,"end":26.136}]},{"id":"caption-group-25","frame":3,"start":26.176,"end":26.696,"text":"and scan","words":[{"id":"caption-word-25-0","text":"and","start":26.176,"end":26.275},{"id":"caption-word-25-1","text":"scan","start":26.375,"end":26.656}]},{"id":"caption-group-26","frame":3,"start":26.696,"end":27.156,"text":"the code","words":[{"id":"caption-word-26-0","text":"the","start":26.696,"end":26.795},{"id":"caption-word-26-1","text":"code","start":26.855,"end":27.116}]},{"id":"caption-group-27","frame":3,"start":27.156,"end":28.215,"text":"from another screen.","words":[{"id":"caption-word-27-0","text":"from","start":27.156,"end":27.275},{"id":"caption-word-27-1","text":"another","start":27.295,"end":27.616},{"id":"caption-word-27-2","text":"screen.","start":27.715,"end":28.095}]},{"id":"caption-group-28","frame":4,"start":28.527,"end":28.926,"text":"Is the","words":[{"id":"caption-word-28-0","text":"Is","start":28.527,"end":28.706},{"id":"caption-word-28-1","text":"the","start":28.766,"end":28.866}]},{"id":"caption-group-29","frame":4,"start":28.926,"end":29.607,"text":"QR code","words":[{"id":"caption-word-29-0","text":"QR","start":28.926,"end":29.266},{"id":"caption-word-29-1","text":"code","start":29.387,"end":29.566}]},{"id":"caption-group-30","frame":4,"start":29.607,"end":29.946,"text":"on this","words":[{"id":"caption-word-30-0","text":"on","start":29.607,"end":29.706},{"id":"caption-word-30-1","text":"this","start":29.747,"end":29.887}]},{"id":"caption-group-31","frame":4,"start":29.946,"end":30.866,"text":"same iPhone?","words":[{"id":"caption-word-31-0","text":"same","start":29.946,"end":30.146},{"id":"caption-word-31-1","text":"iPhone?","start":30.286,"end":30.746}]},{"id":"caption-group-32","frame":4,"start":31.466,"end":33.366,"text":"On iOS 17.4","words":[{"id":"caption-word-32-0","text":"On","start":31.466,"end":31.586},{"id":"caption-word-32-1","text":"iOS","start":31.726,"end":32.186},{"id":"caption-word-32-2","text":"17.4","start":32.246,"end":33.246}]},{"id":"caption-group-33","frame":4,"start":33.406,"end":34.046,"text":"or later,","words":[{"id":"caption-word-33-0","text":"or","start":33.406,"end":33.466},{"id":"caption-word-33-1","text":"later,","start":33.566,"end":33.926}]},{"id":"caption-group-34","frame":4,"start":34.327,"end":34.786,"text":"press and","words":[{"id":"caption-word-34-0","text":"press","start":34.327,"end":34.566},{"id":"caption-word-34-1","text":"and","start":34.606,"end":34.726}]},{"id":"caption-group-35","frame":4,"start":34.786,"end":35.126,"text":"hold it","words":[{"id":"caption-word-35-0","text":"hold","start":34.786,"end":34.966},{"id":"caption-word-35-1","text":"it","start":35.006,"end":35.086}]},{"id":"caption-group-36","frame":4,"start":35.126,"end":35.526,"text":"in your","words":[{"id":"caption-word-36-0","text":"in","start":35.126,"end":35.226},{"id":"caption-word-36-1","text":"your","start":35.266,"end":35.426}]},{"id":"caption-group-37","frame":4,"start":35.526,"end":36.746,"text":"email or browser,","words":[{"id":"caption-word-37-0","text":"email","start":35.526,"end":35.926},{"id":"caption-word-37-1","text":"or","start":35.966,"end":36.046},{"id":"caption-word-37-2","text":"browser,","start":36.146,"end":36.626}]},{"id":"caption-group-38","frame":4,"start":37.026,"end":38.046,"text":"then choose Add","words":[{"id":"caption-word-38-0","text":"then","start":37.026,"end":37.206},{"id":"caption-word-38-1","text":"choose","start":37.326,"end":37.566},{"id":"caption-word-38-2","text":"Add","start":37.706,"end":37.926}]},{"id":"caption-group-39","frame":4,"start":38.066,"end":38.666,"text":"eSIM.","words":[{"id":"caption-word-39-0","text":"eSIM.","start":38.066,"end":38.546}]},{"id":"caption-group-40","frame":4,"start":39.086,"end":39.646,"text":"Or enter","words":[{"id":"caption-word-40-0","text":"Or","start":39.086,"end":39.206},{"id":"caption-word-40-1","text":"enter","start":39.366,"end":39.606}]},{"id":"caption-group-41","frame":4,"start":39.646,"end":40.786,"text":"the supplied details","words":[{"id":"caption-word-41-0","text":"the","start":39.646,"end":39.706},{"id":"caption-word-41-1","text":"supplied","start":39.786,"end":40.187},{"id":"caption-word-41-2","text":"details","start":40.246,"end":40.706}]},{"id":"caption-group-42","frame":4,"start":40.786,"end":41.427,"text":"manually.","words":[{"id":"caption-word-42-0","text":"manually.","start":40.786,"end":41.307}]},{"id":"caption-group-43","frame":5,"start":41.798,"end":42.758,"text":"On Android,","words":[{"id":"caption-word-43-0","text":"On","start":41.798,"end":41.958},{"id":"caption-word-43-1","text":"Android,","start":42.098,"end":42.638}]},{"id":"caption-group-44","frame":5,"start":42.939,"end":44.159,"text":"menu names vary.","words":[{"id":"caption-word-44-0","text":"menu","start":42.939,"end":43.199},{"id":"caption-word-44-1","text":"names","start":43.298,"end":43.598},{"id":"caption-word-44-2","text":"vary.","start":43.678,"end":44.039}]},{"id":"caption-group-45","frame":5,"start":44.658,"end":45.778,"text":"Look under Network","words":[{"id":"caption-word-45-0","text":"Look","start":44.658,"end":44.819},{"id":"caption-word-45-1","text":"under","start":44.918,"end":45.138},{"id":"caption-word-45-2","text":"Network","start":45.278,"end":45.698}]},{"id":"caption-group-46","frame":5,"start":45.778,"end":46.498,"text":"and internet,","words":[{"id":"caption-word-46-0","text":"and","start":45.778,"end":45.858},{"id":"caption-word-46-1","text":"internet,","start":45.959,"end":46.378}]},{"id":"caption-group-47","frame":5,"start":46.598,"end":47.679,"text":"or Connections;","words":[{"id":"caption-word-47-0","text":"or","start":46.598,"end":46.718},{"id":"caption-word-47-1","text":"Connections;","start":46.838,"end":47.559}]},{"id":"caption-group-48","frame":5,"start":48.079,"end":49.058,"text":"open SIMs or","words":[{"id":"caption-word-48-0","text":"open","start":48.079,"end":48.338},{"id":"caption-word-48-1","text":"SIMs","start":48.458,"end":48.838},{"id":"caption-word-48-2","text":"or","start":48.878,"end":48.938}]},{"id":"caption-group-49","frame":5,"start":49.079,"end":49.898,"text":"SIM manager;","words":[{"id":"caption-word-49-0","text":"SIM","start":49.079,"end":49.258},{"id":"caption-word-49-1","text":"manager;","start":49.318,"end":49.778}]},{"id":"caption-group-50","frame":5,"start":50.278,"end":50.999,"text":"then choose","words":[{"id":"caption-word-50-0","text":"then","start":50.278,"end":50.518},{"id":"caption-word-50-1","text":"choose","start":50.579,"end":50.879}]},{"id":"caption-group-51","frame":5,"start":51.138,"end":52.058,"text":"Add eSIM,","words":[{"id":"caption-word-51-0","text":"Add","start":51.138,"end":51.358},{"id":"caption-word-51-1","text":"eSIM,","start":51.499,"end":51.938}]},{"id":"caption-group-52","frame":5,"start":52.398,"end":53.378,"text":"Set up eSIM,","words":[{"id":"caption-word-52-0","text":"Set","start":52.398,"end":52.539},{"id":"caption-word-52-1","text":"up","start":52.598,"end":52.718},{"id":"caption-word-52-2","text":"eSIM,","start":52.838,"end":53.258}]},{"id":"caption-group-53","frame":5,"start":53.558,"end":54.018,"text":"or Add","words":[{"id":"caption-word-53-0","text":"or","start":53.558,"end":53.638},{"id":"caption-word-53-1","text":"Add","start":53.778,"end":53.919}]},{"id":"caption-group-54","frame":5,"start":54.018,"end":54.798,"text":"mobile plan.","words":[{"id":"caption-word-54-0","text":"mobile","start":54.018,"end":54.318},{"id":"caption-word-54-1","text":"plan.","start":54.358,"end":54.678}]},{"id":"caption-group-55","frame":6,"start":55.165,"end":56.346,"text":"After installation,","words":[{"id":"caption-word-55-0","text":"After","start":55.165,"end":55.445},{"id":"caption-word-55-1","text":"installation,","start":55.485,"end":56.226}]},{"id":"caption-group-56","frame":6,"start":56.645,"end":57.125,"text":"label the","words":[{"id":"caption-word-56-0","text":"label","start":56.645,"end":56.905},{"id":"caption-word-56-1","text":"the","start":56.965,"end":57.065}]},{"id":"caption-group-57","frame":6,"start":57.125,"end":58.205,"text":"new line Travel,","words":[{"id":"caption-word-57-0","text":"new","start":57.125,"end":57.206},{"id":"caption-word-57-1","text":"line","start":57.305,"end":57.565},{"id":"caption-word-57-2","text":"Travel,","start":57.685,"end":58.085}]},{"id":"caption-group-58","frame":6,"start":58.665,"end":59.185,"text":"select it","words":[{"id":"caption-word-58-0","text":"select","start":58.665,"end":59.025},{"id":"caption-word-58-1","text":"it","start":59.045,"end":59.145}]},{"id":"caption-group-59","frame":6,"start":59.185,"end":60.145,"text":"for mobile data,","words":[{"id":"caption-word-59-0","text":"for","start":59.185,"end":59.245},{"id":"caption-word-59-1","text":"mobile","start":59.345,"end":59.605},{"id":"caption-word-59-2","text":"data,","start":59.705,"end":60.025}]},{"id":"caption-group-60","frame":6,"start":60.466,"end":61.045,"text":"and enable","words":[{"id":"caption-word-60-0","text":"and","start":60.466,"end":60.565},{"id":"caption-word-60-1","text":"enable","start":60.605,"end":60.926}]},{"id":"caption-group-61","frame":6,"start":61.045,"end":62.085,"text":"data roaming only","words":[{"id":"caption-word-61-0","text":"data","start":61.045,"end":61.245},{"id":"caption-word-61-1","text":"roaming","start":61.325,"end":61.725},{"id":"caption-word-61-2","text":"only","start":61.825,"end":62.065}]},{"id":"caption-group-62","frame":6,"start":62.085,"end":62.385,"text":"if your","words":[{"id":"caption-word-62-0","text":"if","start":62.085,"end":62.205},{"id":"caption-word-62-1","text":"your","start":62.225,"end":62.365}]},{"id":"caption-group-63","frame":6,"start":62.385,"end":63.985,"text":"GoTrips plan instructions","words":[{"id":"caption-word-63-0","text":"GoTrips","start":62.385,"end":62.946},{"id":"caption-word-63-1","text":"plan","start":63.025,"end":63.245},{"id":"caption-word-63-2","text":"instructions","start":63.285,"end":63.926}]},{"id":"caption-group-64","frame":6,"start":63.985,"end":64.705,"text":"tell you to.","words":[{"id":"caption-word-64-0","text":"tell","start":63.985,"end":64.165},{"id":"caption-word-64-1","text":"you","start":64.205,"end":64.325},{"id":"caption-word-64-2","text":"to.","start":64.365,"end":64.585}]},{"id":"caption-group-65","frame":7,"start":64.999,"end":65.38,"text":"Do not","words":[{"id":"caption-word-65-0","text":"Do","start":64.999,"end":65.059},{"id":"caption-word-65-1","text":"not","start":65.139,"end":65.279}]},{"id":"caption-group-66","frame":7,"start":65.38,"end":65.839,"text":"delete the","words":[{"id":"caption-word-66-0","text":"delete","start":65.38,"end":65.659},{"id":"caption-word-66-1","text":"the","start":65.679,"end":65.739}]},{"id":"caption-group-67","frame":7,"start":65.839,"end":66.38,"text":"eSIM if","words":[{"id":"caption-word-67-0","text":"eSIM","start":65.839,"end":66.219},{"id":"caption-word-67-1","text":"if","start":66.259,"end":66.339}]},{"id":"caption-group-68","frame":7,"start":66.38,"end":66.699,"text":"it does","words":[{"id":"caption-word-68-0","text":"it","start":66.38,"end":66.439},{"id":"caption-word-68-1","text":"does","start":66.479,"end":66.659}]},{"id":"caption-group-69","frame":7,"start":66.699,"end":68.019,"text":"not connect immediately.","words":[{"id":"caption-word-69-0","text":"not","start":66.699,"end":66.819},{"id":"caption-word-69-1","text":"connect","start":66.919,"end":67.219},{"id":"caption-word-69-2","text":"immediately.","start":67.259,"end":67.899}]},{"id":"caption-group-70","frame":7,"start":68.719,"end":69.779,"text":"Restart the phone,","words":[{"id":"caption-word-70-0","text":"Restart","start":68.719,"end":69.139},{"id":"caption-word-70-1","text":"the","start":69.179,"end":69.24},{"id":"caption-word-70-2","text":"phone,","start":69.36,"end":69.659}]},{"id":"caption-group-71","frame":7,"start":70.019,"end":70.559,"text":"confirm the","words":[{"id":"caption-word-71-0","text":"confirm","start":70.019,"end":70.38},{"id":"caption-word-71-1","text":"the","start":70.419,"end":70.479}]},{"id":"caption-group-72","frame":7,"start":70.559,"end":71.119,"text":"travel line","words":[{"id":"caption-word-72-0","text":"travel","start":70.559,"end":70.86},{"id":"caption-word-72-1","text":"line","start":70.919,"end":71.099}]},{"id":"caption-group-73","frame":7,"start":71.119,"end":71.619,"text":"is on,","words":[{"id":"caption-word-73-0","text":"is","start":71.119,"end":71.219},{"id":"caption-word-73-1","text":"on,","start":71.32,"end":71.499}]},{"id":"caption-group-74","frame":7,"start":71.86,"end":73.159,"text":"and contact GoTrips","words":[{"id":"caption-word-74-0","text":"and","start":71.86,"end":71.999},{"id":"caption-word-74-1","text":"contact","start":72.079,"end":72.559},{"id":"caption-word-74-2","text":"GoTrips","start":72.659,"end":73.119}]},{"id":"caption-group-75","frame":7,"start":73.159,"end":73.68,"text":"support with","words":[{"id":"caption-word-75-0","text":"support","start":73.159,"end":73.499},{"id":"caption-word-75-1","text":"with","start":73.539,"end":73.64}]},{"id":"caption-group-76","frame":7,"start":73.68,"end":74.84,"text":"your ticket details.","words":[{"id":"caption-word-76-0","text":"your","start":73.68,"end":73.8},{"id":"caption-word-76-1","text":"ticket","start":73.859,"end":74.099},{"id":"caption-word-76-2","text":"details.","start":74.14,"end":74.72}]},{"id":"caption-group-77","frame":8,"start":75.275,"end":75.975,"text":"That’s it.","words":[{"id":"caption-word-77-0","text":"That’s","start":75.275,"end":75.535},{"id":"caption-word-77-1","text":"it.","start":75.636,"end":75.855}]},{"id":"caption-group-78","frame":8,"start":76.695,"end":78.055,"text":"Your GoTrips eSIM","words":[{"id":"caption-word-78-0","text":"Your","start":76.695,"end":76.815},{"id":"caption-word-78-1","text":"GoTrips","start":76.876,"end":77.496},{"id":"caption-word-78-2","text":"eSIM","start":77.555,"end":77.976}]},{"id":"caption-group-79","frame":8,"start":78.055,"end":78.895,"text":"is installed,","words":[{"id":"caption-word-79-0","text":"is","start":78.055,"end":78.155},{"id":"caption-word-79-1","text":"installed,","start":78.215,"end":78.775}]},{"id":"caption-group-80","frame":8,"start":79.075,"end":79.695,"text":"connected,","words":[{"id":"caption-word-80-0","text":"connected,","start":79.075,"end":79.575}]},{"id":"caption-group-81","frame":8,"start":79.916,"end":80.436,"text":"and ready","words":[{"id":"caption-word-81-0","text":"and","start":79.916,"end":80.035},{"id":"caption-word-81-1","text":"ready","start":80.135,"end":80.335}]},{"id":"caption-group-82","frame":8,"start":80.436,"end":81.115,"text":"to travel.","words":[{"id":"caption-word-82-0","text":"to","start":80.436,"end":80.476},{"id":"caption-word-82-1","text":"travel.","start":80.575,"end":80.995}]}];
+  var DURATION = 84.259;
+
+  (function () {
+    var stage = document.getElementById("caption-stage");
+
+    // build DOM: one .caption-group per group, .caption-word per word
+    GROUPS.forEach(function (group, g) {
+      var groupEl = document.createElement("div");
+      groupEl.className = "caption-group";
+      groupEl.id = "caption-group-" + g;
+      var pill = document.createElement("div");
+      pill.className = "caption-pill";
+      var line = document.createElement("div");
+      line.className = "caption-line";
+      (group.words || []).forEach(function (w, i) {
+        var span = document.createElement("span");
+        span.className = "caption-word";
+        span.id = "caption-word-" + g + "-" + i;
+        span.textContent = String(w.text);
+        line.appendChild(span);
+      });
+      pill.appendChild(line);
+      groupEl.appendChild(pill);
+      stage.appendChild(groupEl);
+    });
+
+    window.__timelines = window.__timelines || {};
+    var tl = gsap.timeline({ paused: true });
+
+    GROUPS.forEach(function (group, g) {
+      var groupEl = document.getElementById("caption-group-" + g);
+      var words = group.words || [];
+      var next = GROUPS[g + 1];
+      var isLast = g === GROUPS.length - 1;
+      var start = Math.max(0, Number(group.start));
+      var end = isLast ? Math.min(DURATION, Number(group.end) + 0.3) : Math.min(Number(next.start), Number(group.end) + 0.3);
+      if (end <= start) end = start + 0.01;
+
+      // group on/off — exactly one group visible at a time
+      tl.set(groupEl, { opacity: 1 }, start);
+      tl.set(groupEl, { opacity: 0 }, end);
+
+      // 3-state karaoke via className SETS — seek-safe (gsap.set applies on the
+      // engine's frame-by-frame seek; .call callbacks would NOT fire).
+      words.forEach(function (w, i) {
+        var el = document.getElementById("caption-word-" + g + "-" + i);
+        var at = Math.max(start, Number(w.start));
+        tl.set(el, { className: "caption-word" }, start); // upcoming (also resets on reverse-seek)
+        tl.set(el, { className: "caption-word is-active" }, at); // current
+        tl.fromTo(el, { scale: 0.92 }, { scale: 1, duration: 0.1, ease: "power3.out" }, at);
+        if (i + 1 < words.length) {
+          var nextAt = Math.max(start, Number(words[i + 1].start));
+          tl.set(el, { className: "caption-word is-spoken" }, nextAt); // demote when next activates
+        }
+      });
+      if (words.length) {
+        var lastEl = document.getElementById("caption-word-" + g + "-" + (words.length - 1));
+        var lastSpoken = Math.min(end, Number(words[words.length - 1].end) + 0.1);
+        tl.set(lastEl, { className: "caption-word is-spoken" }, lastSpoken);
+      }
+    });
+
+    // full-span anchor so the sub-comp timeline spans the whole video
+    tl.to({}, { duration: DURATION }, 0);
+    window.__timelines["captions"] = tl;
+  })();
+</script>
+
+<style>
+  .caption-line { line-height: 1.1 !important; }
+</style>
+</template>

@@ -23,6 +23,21 @@
                     <p>Our support team replied to your ticket:</p>
                     <div style="background:#f9fafb;border-left:4px solid #d4af37;padding:14px 16px;white-space:pre-wrap;">{{ $messageText }}</div>
                     <p style="margin-bottom:0;margin-top:20px;">Open the help window on {{ $companyName }} and choose <strong>Track an existing ticket</strong> to view the full conversation or reply.</p>
+                @elseif($kind === 'staff_assigned')
+                    <p style="font-size:16px;margin-top:0;">Hi {{ $ticket->assignee?->name ?? 'there' }},</p>
+                    <p>Ticket <strong>{{ $ticket->ticket_number }}</strong> has been assigned to you. The customer is waiting for a reply from you.</p>
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="6" style="font-size:14px;">
+                        <tr><td style="color:#6b7280;width:120px;">Customer</td><td>{{ $ticket->customer_name }}</td></tr>
+                        <tr><td style="color:#6b7280;">Email</td><td>{{ $ticket->customer_email }}</td></tr>
+                        <tr><td style="color:#6b7280;">Phone</td><td>{{ $ticket->customer_phone }}</td></tr>
+                        <tr><td style="color:#6b7280;">Priority</td><td>{{ \App\Models\SupportTicket::PRIORITIES[$ticket->priority] ?? ucfirst($ticket->priority) }}</td></tr>
+                        <tr><td style="color:#6b7280;">Status</td><td>{{ \App\Models\SupportTicket::STATUSES[$ticket->status] ?? ucfirst($ticket->status) }}</td></tr>
+                    </table>
+                    <div style="background:#f9fafb;border-left:4px solid #d4af37;padding:14px 16px;margin-top:18px;white-space:pre-wrap;">{{ $ticket->subject }}</div>
+                    <p style="margin:24px 0 0;">
+                        <a href="{{ route('manager.support.show', $ticket) }}" style="display:inline-block;background:#d4af37;color:#0d0d0d;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:8px;">Open ticket {{ $ticket->ticket_number }}</a>
+                    </p>
+                    <p style="margin-bottom:0;margin-top:20px;color:#6b7280;font-size:13px;">Reply from the manager portal so response time and the full customer conversation are recorded.</p>
                 @else
                     <p style="font-size:16px;margin-top:0;"><strong>{{ $kind === 'staff_followup' ? 'Customer follow-up' : 'New customer support request' }}</strong></p>
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="6" style="font-size:14px;">

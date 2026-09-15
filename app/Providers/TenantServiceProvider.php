@@ -46,6 +46,12 @@ class TenantServiceProvider extends ServiceProvider
             return auth()->check() && in_array(auth()->user()->role, ['company_owner', 'company_admin']);
         });
 
+        // Restricted customer-care login (support queue + help guide only).
+        // Gives @customercare / @unlesscustomercare in the manager layout.
+        Blade::if('customercare', function () {
+            return auth()->check() && auth()->user()->role === 'customer_care';
+        });
+
         // Check if company has feature
         Blade::if('hasfeature', function (string $feature) {
             if (!app()->has('current_company')) {

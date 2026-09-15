@@ -1,0 +1,611 @@
+<template>
+  <style>
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #f4ebd0;
+      font-family: sans-serif;
+    }
+
+    .f04-one-phone-is-enough-bg,
+    .f04-one-phone-is-enough-scene {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .f04-one-phone-is-enough-bg {
+      overflow: hidden;
+      background: #080706;
+    }
+
+    .f04-one-phone-is-enough-glow {
+      position: absolute;
+      top: 28%;
+      width: 31cqw;
+      height: 31cqw;
+      border-radius: 50%;
+      background: #d4af37;
+      opacity: 0.065;
+      filter: blur(5.2cqw);
+    }
+
+    .f04-one-phone-is-enough-glow-left { left: 7%; }
+    .f04-one-phone-is-enough-glow-right { right: 7%; }
+
+    .f04-one-phone-is-enough-scene {
+      perspective: 1500px;
+    }
+
+    .f04-one-phone-is-enough-kicker {
+      position: absolute;
+      top: 5.7cqh;
+      left: 5.5cqw;
+      display: flex;
+      align-items: center;
+      gap: 0.8cqw;
+      color: #d4af37;
+      font-family: monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .f04-one-phone-is-enough-kicker::before {
+      content: "";
+      width: 36px;
+      height: 2px;
+      background: #d4af37;
+    }
+
+    .f04-one-phone-is-enough-title-wrap {
+      position: absolute;
+      top: 8.8cqh;
+      left: 5.5cqw;
+      right: 5.5cqw;
+      height: 10cqh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .f04-one-phone-is-enough-title {
+      min-width: 75cqw;
+      color: #f4ebd0;
+      font-size: 4.5cqw;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.035em;
+      text-align: center;
+      text-transform: lowercase;
+      white-space: nowrap;
+    }
+
+    .f04-one-phone-is-enough-stage {
+      position: absolute;
+      top: 23.2cqh;
+      left: 5.5cqw;
+      width: 89cqw;
+      height: 51cqh;
+      transform-style: preserve-3d;
+    }
+
+    .f04-one-phone-is-enough-divider {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: #282826;
+      opacity: 0.9;
+    }
+
+    .f04-one-phone-is-enough-route {
+      position: absolute;
+      top: 0;
+      width: 42.2cqw;
+      height: 50cqh;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .f04-one-phone-is-enough-route-left { left: 0; }
+    .f04-one-phone-is-enough-route-right { right: 0; }
+
+    .f04-one-phone-is-enough-entry {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+    }
+
+    .f04-one-phone-is-enough-card {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border: 1px solid #504e48;
+      background: #1a1a18;
+      transform-style: preserve-3d;
+    }
+
+    .f04-one-phone-is-enough-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      background: #d4af37;
+      opacity: 0.16;
+    }
+
+    .f04-one-phone-is-enough-left-card::before { right: 0; }
+    .f04-one-phone-is-enough-right-card::before { left: 0; }
+
+    .f04-one-phone-is-enough-card-head {
+      position: absolute;
+      top: 2.5cqh;
+      left: 2.25cqw;
+      right: 2.25cqw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 1.6cqh;
+      border-bottom: 1px solid #282826;
+    }
+
+    .f04-one-phone-is-enough-card-label,
+    .f04-one-phone-is-enough-os,
+    .f04-one-phone-is-enough-field-label {
+      font-family: monospace;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .f04-one-phone-is-enough-card-label {
+      color: #d4af37;
+      font-size: 0.72cqw;
+    }
+
+    .f04-one-phone-is-enough-os {
+      color: #f4ebd0;
+      font-size: 0.68cqw;
+      opacity: 0.7;
+    }
+
+    .f04-one-phone-is-enough-route-title {
+      position: absolute;
+      top: 9cqh;
+      left: 18.4cqw;
+      right: 2cqw;
+      color: #f4ebd0;
+      font-size: 2.75cqw;
+      font-weight: 900;
+      line-height: 0.96;
+      letter-spacing: -0.035em;
+      text-transform: lowercase;
+    }
+
+    .f04-one-phone-is-enough-route-title span {
+      display: block;
+      color: #d4af37;
+    }
+
+    .f04-one-phone-is-enough-phone {
+      position: absolute;
+      top: 9cqh;
+      left: 3.15cqw;
+      width: 12.7cqw;
+      height: 34cqh;
+      z-index: 5;
+      border: 2px solid #f4ebd0;
+      background: #080706;
+      will-change: transform, opacity;
+    }
+
+    .f04-one-phone-is-enough-phone::before {
+      content: "";
+      position: absolute;
+      top: 1.05cqh;
+      left: 50%;
+      width: 3.2cqw;
+      height: 0.55cqh;
+      margin-left: -1.6cqw;
+      background: #504e48;
+    }
+
+    .f04-one-phone-is-enough-mailbar {
+      position: absolute;
+      top: 4cqh;
+      left: 1cqw;
+      right: 1cqw;
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 1cqh;
+      border-bottom: 1px solid #282826;
+      color: #d4af37;
+      font-family: monospace;
+      font-size: 0.58cqw;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .f04-one-phone-is-enough-mail-lines {
+      position: absolute;
+      top: 8.1cqh;
+      left: 1.2cqw;
+      right: 1.2cqw;
+      height: 4cqh;
+      border-top: 1px solid #504e48;
+      border-bottom: 1px solid #282826;
+    }
+
+    .f04-one-phone-is-enough-mail-lines::after {
+      content: "";
+      position: absolute;
+      top: 1.55cqh;
+      left: 0;
+      width: 64%;
+      height: 1px;
+      background: #504e48;
+    }
+
+    .f04-one-phone-is-enough-qr-wrap {
+      position: absolute;
+      top: 14.3cqh;
+      left: 50%;
+      width: 8cqw;
+      height: 8cqw;
+      margin-left: -4cqw;
+    }
+
+    .f04-one-phone-is-enough-qr {
+      position: absolute;
+      inset: 0.7cqw;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(7, 1fr);
+      gap: 3px;
+      padding: 0.55cqw;
+      background: #f4ebd0;
+    }
+
+    .f04-one-phone-is-enough-qr i {
+      display: block;
+      background: #080706;
+    }
+
+    .f04-one-phone-is-enough-qr i:nth-child(3n),
+    .f04-one-phone-is-enough-qr i:nth-child(5n),
+    .f04-one-phone-is-enough-qr i:nth-child(11n) {
+      opacity: 0;
+    }
+
+    .f04-one-phone-is-enough-press-ring {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .f04-one-phone-is-enough-press-ring circle {
+      fill: none;
+      stroke: #d4af37;
+      stroke-width: 4;
+      stroke-linecap: square;
+      stroke-dasharray: 352;
+      stroke-dashoffset: 352;
+    }
+
+    .f04-one-phone-is-enough-press-core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1.25cqw;
+      height: 1.25cqw;
+      margin-top: -0.625cqw;
+      margin-left: -0.625cqw;
+      border-radius: 50%;
+      background: #d4af37;
+      opacity: 0;
+    }
+
+    .f04-one-phone-is-enough-right-title {
+      position: absolute;
+      top: 9cqh;
+      left: 2.25cqw;
+      color: #f4ebd0;
+      font-size: 2.75cqw;
+      font-weight: 900;
+      line-height: 0.96;
+      letter-spacing: -0.035em;
+      text-transform: lowercase;
+    }
+
+    .f04-one-phone-is-enough-right-title span {
+      color: #d4af37;
+    }
+
+    .f04-one-phone-is-enough-fields {
+      position: absolute;
+      top: 19cqh;
+      left: 2.25cqw;
+      right: 2.25cqw;
+    }
+
+    .f04-one-phone-is-enough-field {
+      padding: 1.55cqh 0 1.35cqh;
+      border-top: 1px solid #504e48;
+      will-change: transform, opacity;
+    }
+
+    .f04-one-phone-is-enough-field-label {
+      color: #d4af37;
+      font-size: 0.66cqw;
+    }
+
+    .f04-one-phone-is-enough-field-value {
+      margin-top: 0.8cqh;
+      width: 74%;
+      height: 2px;
+      background: #f4ebd0;
+      opacity: 0.46;
+    }
+
+    .f04-one-phone-is-enough-field:nth-child(2) .f04-one-phone-is-enough-field-value { width: 58%; }
+    .f04-one-phone-is-enough-field:nth-child(3) .f04-one-phone-is-enough-field-value { width: 66%; }
+
+    .f04-one-phone-is-enough-badge {
+      position: absolute;
+      top: 22.1cqh;
+      z-index: 10;
+      min-width: 8.6cqw;
+      padding: 1.1cqh 1.05cqw;
+      background: #d4af37;
+      color: #080706;
+      font-family: monospace;
+      font-size: 0.7cqw;
+      font-weight: 800;
+      letter-spacing: 0.11em;
+      text-align: center;
+      text-transform: uppercase;
+      will-change: transform, opacity;
+    }
+
+    .f04-one-phone-is-enough-left-badge { right: -4.25cqw; }
+    .f04-one-phone-is-enough-right-badge { left: -4.25cqw; }
+
+    .f04-one-phone-is-enough-route-mark {
+      position: absolute;
+      right: 2.25cqw;
+      bottom: 2.25cqh;
+      color: #504e48;
+      font-family: monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <div id="root" data-composition-id="04-one-phone-is-enough" data-width="1920" data-height="1080" data-duration="13.692">
+    <div class="clip f04-one-phone-is-enough-bg" data-start="0" data-duration="13.692" data-track-index="0">
+      <div class="f04-one-phone-is-enough-glow f04-one-phone-is-enough-glow-left"></div>
+      <div class="f04-one-phone-is-enough-glow f04-one-phone-is-enough-glow-right"></div>
+    </div>
+
+    <div class="clip f04-one-phone-is-enough-scene" data-start="0" data-duration="13.692" data-track-index="1">
+      <div class="f04-one-phone-is-enough-kicker">two routes · one device</div>
+      <div class="f04-one-phone-is-enough-title-wrap">
+        <div class="f04-one-phone-is-enough-title">QR on this iPhone?</div>
+      </div>
+
+      <div class="f04-one-phone-is-enough-stage">
+        <div class="f04-one-phone-is-enough-divider"></div>
+
+        <div class="f04-one-phone-is-enough-route f04-one-phone-is-enough-route-left">
+          <div class="f04-one-phone-is-enough-entry f04-one-phone-is-enough-left-entry">
+            <div class="f04-one-phone-is-enough-card f04-one-phone-is-enough-left-card">
+              <div class="f04-one-phone-is-enough-card-head">
+                <span class="f04-one-phone-is-enough-card-label">same-phone route</span>
+                <span class="f04-one-phone-is-enough-os">iOS 17.4+</span>
+              </div>
+              <div class="f04-one-phone-is-enough-route-title">press <span>+ hold</span></div>
+              <div class="f04-one-phone-is-enough-route-mark">01 / email</div>
+            </div>
+          </div>
+
+          <div class="f04-one-phone-is-enough-phone">
+            <div class="f04-one-phone-is-enough-mailbar"><span>mail</span><span>eSIM</span></div>
+            <div class="f04-one-phone-is-enough-mail-lines"></div>
+            <div class="f04-one-phone-is-enough-qr-wrap">
+              <div class="f04-one-phone-is-enough-qr" aria-label="decorative QR placeholder">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <svg class="f04-one-phone-is-enough-press-ring" viewBox="0 0 128 128" aria-hidden="true">
+                <circle cx="64" cy="64" r="56"></circle>
+              </svg>
+              <div class="f04-one-phone-is-enough-press-core"></div>
+            </div>
+          </div>
+
+          <div class="f04-one-phone-is-enough-badge f04-one-phone-is-enough-left-badge">Add eSIM</div>
+        </div>
+
+        <div class="f04-one-phone-is-enough-route f04-one-phone-is-enough-route-right">
+          <div class="f04-one-phone-is-enough-entry f04-one-phone-is-enough-right-entry">
+            <div class="f04-one-phone-is-enough-card f04-one-phone-is-enough-right-card">
+              <div class="f04-one-phone-is-enough-card-head">
+                <span class="f04-one-phone-is-enough-card-label">fallback route</span>
+                <span class="f04-one-phone-is-enough-os">activation details</span>
+              </div>
+              <div class="f04-one-phone-is-enough-right-title">enter <span>manually</span></div>
+              <div class="f04-one-phone-is-enough-fields">
+                <div class="f04-one-phone-is-enough-field">
+                  <div class="f04-one-phone-is-enough-field-label">SM-DP+ address</div>
+                  <div class="f04-one-phone-is-enough-field-value"></div>
+                </div>
+                <div class="f04-one-phone-is-enough-field">
+                  <div class="f04-one-phone-is-enough-field-label">activation code</div>
+                  <div class="f04-one-phone-is-enough-field-value"></div>
+                </div>
+                <div class="f04-one-phone-is-enough-field">
+                  <div class="f04-one-phone-is-enough-field-label">confirmation code</div>
+                  <div class="f04-one-phone-is-enough-field-value"></div>
+                </div>
+              </div>
+              <div class="f04-one-phone-is-enough-route-mark">02 / manual</div>
+            </div>
+          </div>
+          <div class="f04-one-phone-is-enough-badge f04-one-phone-is-enough-right-badge">manual details</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="04-one-phone-is-enough"]');
+      if (!root || !window.gsap) return;
+
+      const q = (selector) => root.querySelector(selector);
+      const qa = (selector) => Array.from(root.querySelectorAll(selector));
+      const tl = gsap.timeline({ paused: true });
+
+      const titleWrap = q('.f04-one-phone-is-enough-title-wrap');
+      const title = q('.f04-one-phone-is-enough-title');
+      const phone = q('.f04-one-phone-is-enough-phone');
+      const leftEntry = q('.f04-one-phone-is-enough-left-entry');
+      const rightEntry = q('.f04-one-phone-is-enough-right-entry');
+      const leftRoute = q('.f04-one-phone-is-enough-route-left');
+      const rightRoute = q('.f04-one-phone-is-enough-route-right');
+      const leftBadge = q('.f04-one-phone-is-enough-left-badge');
+      const rightBadge = q('.f04-one-phone-is-enough-right-badge');
+      const ring = q('.f04-one-phone-is-enough-press-ring circle');
+      const pressCore = q('.f04-one-phone-is-enough-press-core');
+      const fields = qa('.f04-one-phone-is-enough-field');
+
+      tl.fromTo(titleWrap,
+        { y: -72, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.78, ease: 'power3.out' },
+        0
+      );
+
+      tl.fromTo(phone,
+        { y: 30, scale: 0.9, opacity: 0 },
+        { y: 0, scale: 1, opacity: 1, duration: 0.86, ease: 'power3.out' },
+        0.12
+      );
+
+      tl.fromTo(leftEntry,
+        { x: -360, rotateY: 22, scale: 0.86, opacity: 0 },
+        { x: 0, rotateY: 13, scale: 1, opacity: 1, duration: 1.05, ease: 'power3.out' },
+        2.1
+      );
+
+      tl.fromTo(ring,
+        { strokeDashoffset: 352, opacity: 0.35 },
+        { strokeDashoffset: 0, opacity: 1, duration: 1.28, ease: 'power1.inOut' },
+        3.9
+      );
+
+      tl.fromTo(pressCore,
+        { scale: 0.3, opacity: 0 },
+        { scale: 1, opacity: 0.92, duration: 0.62, ease: 'power2.out' },
+        4.22
+      );
+
+      tl.fromTo(leftBadge,
+        { scale: 0.72, opacity: 0, x: -18 },
+        { scale: 1, opacity: 1, x: 0, duration: 0.62, ease: 'back.out(1.55)' },
+        5.45
+      );
+
+      tl.fromTo(rightEntry,
+        { x: 360, rotateY: -22, scale: 0.86, opacity: 0 },
+        { x: 0, rotateY: -13, scale: 1, opacity: 1, duration: 1.06, ease: 'power3.out' },
+        6.8
+      );
+
+      tl.fromTo(fields[0],
+        { x: 32, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.52, ease: 'power2.out' },
+        7.82
+      );
+      tl.fromTo(fields[1],
+        { x: 32, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.52, ease: 'power2.out' },
+        8.55
+      );
+      tl.fromTo(fields[2],
+        { x: 32, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.52, ease: 'power2.out' },
+        9.23
+      );
+
+      tl.fromTo(rightBadge,
+        { scale: 0.72, opacity: 0, x: 18 },
+        { scale: 1, opacity: 1, x: 0, duration: 0.62, ease: 'back.out(1.55)' },
+        9.52
+      );
+
+      const idle = { phase: 0 };
+      tl.fromTo(idle,
+        { phase: 0 },
+        {
+          phase: Math.PI * 6,
+          duration: 9.992,
+          ease: 'none',
+          onUpdate: () => {
+            const offset = Math.sin(idle.phase) * 4.5;
+            gsap.set(leftRoute, { y: -offset });
+            gsap.set(rightRoute, { y: offset });
+          }
+        },
+        3.2
+      );
+
+      const titleStates = [
+        { t: 0, text: 'QR on this iPhone?' },
+        { t: 10.1, text: 'one phone is enough' }
+      ];
+      const titleDriver = { t: 0 };
+      tl.fromTo(titleDriver,
+        { t: 0 },
+        {
+          t: 13.192,
+          duration: 13.192,
+          ease: 'none',
+          onUpdate: () => {
+            for (let i = titleStates.length - 1; i >= 0; i -= 1) {
+              if (titleDriver.t >= titleStates[i].t) {
+                title.textContent = titleStates[i].text;
+                break;
+              }
+            }
+          }
+        },
+        0
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['04-one-phone-is-enough'] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,391 @@
+<template>
+  <style>
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #f4ebd0;
+      font-family: sans-serif;
+    }
+
+    [class~="01-no-second-guessing-ground"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #080706;
+    }
+
+    [class~="01-no-second-guessing-ghost-word"] {
+      position: absolute;
+      top: 3cqh;
+      left: 4.5cqw;
+      color: #f4ebd0;
+      font-size: 31cqw;
+      font-weight: 900;
+      line-height: 0.82;
+      letter-spacing: -0.055em;
+      opacity: 0.035;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    [class~="01-no-second-guessing-grid"] {
+      position: absolute;
+      top: 0;
+      bottom: 17.04cqh;
+      left: 25cqw;
+      width: 50cqw;
+      box-sizing: border-box;
+      border-left: 1px solid #282826;
+      border-right: 1px solid #282826;
+      opacity: 0.42;
+    }
+
+    [class~="01-no-second-guessing-grid"]::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: -25cqw;
+      width: 100cqw;
+      height: 1px;
+      background: #282826;
+    }
+
+    [class~="01-no-second-guessing-stage"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    [class~="01-no-second-guessing-seed-title"] {
+      position: absolute;
+      top: 12.5cqh;
+      left: 50%;
+      width: 70cqw;
+      margin-left: -35cqw;
+      display: flex;
+      justify-content: center;
+      gap: 2.1cqw;
+      font-size: 8.4cqw;
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      text-transform: lowercase;
+      white-space: nowrap;
+      z-index: 4;
+    }
+
+    [class~="01-no-second-guessing-seed-accent"] {
+      color: #d4af37;
+    }
+
+    [class~="01-no-second-guessing-word"] {
+      display: inline-block;
+      will-change: transform, opacity;
+    }
+
+    [class~="01-no-second-guessing-qr-echo"] {
+      position: absolute;
+      left: 17.2cqw;
+      top: 43.5cqh;
+      width: 9.4cqw;
+      aspect-ratio: 1;
+      opacity: 0.2;
+    }
+
+    [class~="01-no-second-guessing-burst-wrap"] {
+      position: absolute;
+      inset: 0 0 17.04cqh 0;
+      z-index: 3;
+    }
+
+    [class~="01-no-second-guessing-burst-item"] {
+      position: absolute;
+      top: 54%;
+      left: 50%;
+      will-change: transform, opacity;
+    }
+
+    [class~="01-no-second-guessing-qr"] {
+      width: 11.4cqw;
+      aspect-ratio: 1;
+      padding: 0.78cqw;
+      box-sizing: border-box;
+      background: #d4af37;
+    }
+
+    [class~="01-no-second-guessing-qr"] svg,
+    [class~="01-no-second-guessing-qr-echo"] svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      shape-rendering: crispEdges;
+    }
+
+    [class~="01-no-second-guessing-phone"] {
+      width: 13.8cqw;
+      height: 42cqh;
+      box-sizing: border-box;
+      border: 2px solid #f4ebd0;
+      clip-path: polygon(8% 0, 92% 0, 100% 5%, 100% 95%, 92% 100%, 8% 100%, 0 95%, 0 5%);
+    }
+
+    [class~="01-no-second-guessing-phone-slot"] {
+      position: absolute;
+      top: 2.1cqh;
+      left: 50%;
+      width: 3.8cqw;
+      height: 0.55cqh;
+      margin-left: -1.9cqw;
+      background: #504e48;
+    }
+
+    [class~="01-no-second-guessing-phone-baseline"] {
+      position: absolute;
+      left: 50%;
+      bottom: 2.1cqh;
+      width: 3.1cqw;
+      height: 1px;
+      margin-left: -1.55cqw;
+      background: #504e48;
+    }
+
+    [class~="01-no-second-guessing-progress"] {
+      position: absolute;
+      top: 72.7cqh;
+      left: 34.4cqw;
+      width: 31.2cqw;
+      height: 2px;
+      background: #282826;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    [class~="01-no-second-guessing-progress-fill"] {
+      width: 100%;
+      height: 100%;
+      background: #d4af37;
+      transform: scaleX(0);
+      transform-origin: center center;
+    }
+
+    [class~="01-no-second-guessing-payoff"] {
+      position: absolute;
+      top: 22.5cqh;
+      left: 5.5cqw;
+      width: 66cqw;
+      z-index: 5;
+      font-size: 7.6cqw;
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.045em;
+      text-transform: lowercase;
+      white-space: nowrap;
+      will-change: transform, opacity, filter;
+    }
+
+    [class~="01-no-second-guessing-ready-wrap"] {
+      position: relative;
+      display: inline-block;
+      margin-right: 0.16em;
+    }
+
+    [class~="01-no-second-guessing-highlight"] {
+      position: absolute;
+      left: -0.035em;
+      right: -0.035em;
+      top: 58%;
+      height: 0.32em;
+      background: #d4af37;
+      opacity: 0.62;
+      transform: scaleX(0);
+      transform-origin: left center;
+      z-index: 0;
+    }
+
+    [class~="01-no-second-guessing-ready-text"] {
+      position: relative;
+      z-index: 1;
+    }
+
+    [class~="01-no-second-guessing-lock-rule"] {
+      position: absolute;
+      left: 5.5cqw;
+      top: 41.5cqh;
+      width: 3.1cqw;
+      height: 2px;
+      background: #d4af37;
+      z-index: 5;
+    }
+
+    [class~="01-no-second-guessing-lock-label"] {
+      position: absolute;
+      left: 9.5cqw;
+      top: 40.35cqh;
+      color: #d4af37;
+      font-family: monospace;
+      font-size: 0.82cqw;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      z-index: 5;
+    }
+  </style>
+
+  <div id="root" data-composition-id="01-no-second-guessing" data-width="1920" data-height="1080" data-duration="6.743">
+    <div class="clip 01-no-second-guessing-ground" data-start="0" data-duration="6.743" data-track-index="0">
+      <div class="01-no-second-guessing-ghost-word">eSIM</div>
+      <div class="01-no-second-guessing-grid"></div>
+    </div>
+
+    <div class="clip 01-no-second-guessing-stage" data-start="0" data-duration="6.743" data-track-index="1">
+      <div id="01-no-second-guessing-seed-title" class="01-no-second-guessing-seed-title">
+        <span class="01-no-second-guessing-word">your</span>
+        <span class="01-no-second-guessing-word 01-no-second-guessing-seed-accent">eSIM</span>
+      </div>
+
+      <div id="01-no-second-guessing-qr-echo" class="01-no-second-guessing-qr-echo" aria-hidden="true">
+        <svg viewBox="0 0 21 21">
+          <rect width="21" height="21" fill="#d4af37"/>
+          <g fill="#080706">
+            <path d="M2 2h6v6H2zm2 2v2h2V4zM13 2h6v6h-6zm2 2v2h2V4zM2 13h6v6H2zm2 2v2h2v-2z" fill-rule="evenodd"/>
+            <path d="M10 2h2v2h-2zM9 5h3v2H9zM10 9h2v2h-2zM13 9h2v2h-2zM16 9h3v2h-3zM2 10h3v2H2zM6 9h2v3H6zM9 13h2v2H9zM12 12h2v3h-2zM15 13h4v2h-4zM9 17h3v2H9zM13 16h2v3h-2zM17 16h2v3h-2z"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="01-no-second-guessing-burst-wrap">
+        <div id="01-no-second-guessing-qr" class="01-no-second-guessing-burst-item 01-no-second-guessing-qr" data-target-x="-210" data-target-y="38">
+          <svg viewBox="0 0 21 21">
+            <rect width="21" height="21" fill="#d4af37"/>
+            <g fill="#080706">
+              <path d="M2 2h6v6H2zm2 2v2h2V4zM13 2h6v6h-6zm2 2v2h2V4zM2 13h6v6H2zm2 2v2h2v-2z" fill-rule="evenodd"/>
+              <path d="M10 2h2v2h-2zM9 5h3v2H9zM10 9h2v2h-2zM13 9h2v2h-2zM16 9h3v2h-3zM2 10h3v2H2zM6 9h2v3H6zM9 13h2v2H9zM12 12h2v3h-2zM15 13h4v2h-4zM9 17h3v2H9zM13 16h2v3h-2zM17 16h2v3h-2z"/>
+            </g>
+          </svg>
+        </div>
+
+        <div id="01-no-second-guessing-phone" class="01-no-second-guessing-burst-item 01-no-second-guessing-phone" data-target-x="120" data-target-y="38">
+          <span class="01-no-second-guessing-phone-slot"></span>
+          <span class="01-no-second-guessing-phone-baseline"></span>
+        </div>
+      </div>
+
+      <div class="01-no-second-guessing-progress">
+        <div id="01-no-second-guessing-progress-fill" class="01-no-second-guessing-progress-fill"></div>
+      </div>
+
+      <div id="01-no-second-guessing-payoff" class="01-no-second-guessing-payoff">
+        <span class="01-no-second-guessing-ready-wrap">
+          <span id="01-no-second-guessing-highlight" class="01-no-second-guessing-highlight"></span>
+          <span class="01-no-second-guessing-ready-text">ready</span>
+        </span>
+        <span>in minutes</span>
+      </div>
+      <div id="01-no-second-guessing-lock-rule" class="01-no-second-guessing-lock-rule"></div>
+      <div id="01-no-second-guessing-lock-label" class="01-no-second-guessing-lock-label">setup locked</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const frameId = "01-no-second-guessing";
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const byId = (suffix) => document.getElementById(`${frameId}-${suffix}`);
+      const byClass = (suffix) => Array.from(document.getElementsByClassName(`${frameId}-${suffix}`));
+
+      const wordNodes = byClass("word");
+      const wordPlan = wordNodes.reduce((plan, node, index) => {
+        const duration = 0.22 + node.textContent.trim().length * 0.035;
+        const start = index === 0 ? 0.06 : plan[index - 1].start + plan[index - 1].duration * 0.58;
+        plan.push({ node, start, duration });
+        return plan;
+      }, []);
+
+      tl.set([byId("payoff"), byId("lock-rule"), byId("lock-label")], { opacity: 0 }, 0);
+      tl.set([byId("qr"), byId("phone")], { opacity: 0 }, 0);
+
+      wordPlan.forEach(({ node, start, duration }, index) => {
+        tl.fromTo(
+          node,
+          { y: 70, opacity: 0, scale: 0.9 },
+          { y: 0, opacity: 1, scale: 1, duration, ease: "power4.out" },
+          start,
+        );
+        if (index === 1) {
+          tl.fromTo(
+            byId("qr-echo"),
+            { x: -28, opacity: 0 },
+            { x: 0, opacity: 0.2, duration: 0.46, ease: "power3.out" },
+            start + 0.08,
+          );
+        }
+      });
+
+      tl.to(byId("seed-title"), { x: -88, y: -20, duration: 0.34, ease: "power4.in" }, 1.16);
+      tl.to(byId("qr-echo"), { x: -230, opacity: 0, duration: 0.34, ease: "power4.in" }, 1.16);
+
+      byClass("burst-item").forEach((el, index) => {
+        tl.fromTo(
+          el,
+          { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 0.58, opacity: 0 },
+          {
+            x: Number(el.dataset.targetX),
+            y: Number(el.dataset.targetY),
+            scale: 1,
+            opacity: 1,
+            duration: 1.45,
+            ease: "power3.out",
+          },
+          1.5 + index * 0.06,
+        );
+      });
+
+      tl.fromTo(
+        byId("progress-fill"),
+        { scaleX: 0 },
+        { scaleX: 1, duration: 1.05, ease: "power2.out" },
+        2.82,
+      );
+
+      tl.to(byId("seed-title"), { scale: 0.8, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 4.1);
+      tl.to(byId("seed-title"), { opacity: 0.15, duration: 0.2, ease: "none" }, 4.1);
+      tl.set(byId("seed-title"), { opacity: 0 }, 4.3);
+      tl.set(byId("payoff"), { opacity: 0.15, scale: 1.25, filter: "blur(10px)" }, 4.3);
+      tl.fromTo(
+        byId("payoff"),
+        { opacity: 0.15, scale: 1.25, filter: "blur(10px)" },
+        { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.5, ease: "expo.out" },
+        4.3,
+      );
+
+      tl.to(byId("phone"), { x: 565, duration: 0.64, ease: "power4.out" }, 4.28);
+      tl.to(byId("qr"), { x: 565, scale: 0.64, duration: 0.64, ease: "power4.out" }, 4.28);
+      tl.to(byId("progress-fill"), { scaleX: 0.24, duration: 0.34, ease: "power3.out" }, 4.3);
+      tl.fromTo(
+        byId("highlight"),
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.42, ease: "power2.out" },
+        4.78,
+      );
+      tl.fromTo(
+        byId("lock-rule"),
+        { scaleX: 0, transformOrigin: "left center", opacity: 1 },
+        { scaleX: 1, opacity: 1, duration: 0.28, ease: "power2.out" },
+        4.84,
+      );
+      tl.fromTo(
+        byId("lock-label"),
+        { y: 12, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.28, ease: "power3.out" },
+        4.95,
+      );
+
+      window.__timelines[frameId] = tl;
+    })();
+  </script>
+</template>

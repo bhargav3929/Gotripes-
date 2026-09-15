@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\SupportTicketMail;
 use App\Models\SupportTicket;
+use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -75,6 +76,45 @@ class SupportTicketNotifier
         } catch (\Throwable $e) {
             Log::error('Support reply email failed', [
                 'ticket' => $ticket->ticket_number,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * A ticket was handed to a staff member: leave an internal note on the
+     * thread (visibility 'internal' never reaches the customer view, which
+     * filters on 'public') and email the new assignee. Callers skip this when
+     * the actor assigned the ticket to themselves.
+     */
+    public function notifyAssigned(SupportTicket $ticket, User $assignee, User $actor): void
+    {
+        $ticket->loadMissing('company');
+
+        try {
+            $ticket->messages()->create([
+                'company_id' => $ticket->company_id,
+                'user_id' => $actor->id,
+                'sender_type' => 'system',
+                'sender_name' => 'System',
+                'visibility' => 'internal',
+                'message' => "Assigned to {$assignee->name} by {$actor->name}.",
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Support assignment note failed', [
+                'ticket' => $ticket->ticket_number,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $ticket->setRelation('assignee', $assignee);
+            Mail::to($assignee->email, $assignee->name)
+                ->send(new SupportTicketMail($ticket, 'staff_assigned', null));
+        } catch (\Throwable $e) {
+            Log::error('Support assignment email failed', [
+                'ticket' => $ticket->ticket_number,
+                'assignee' => $assignee->email,
                 'error' => $e->getMessage(),
             ]);
         }

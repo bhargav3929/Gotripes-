@@ -4592,7 +4592,7 @@
             <source src="{{ asset('assets/esim/how-to-install-esim.mp4') }}" type="video/mp4">
             Your browser cannot play this video. <a href="{{ asset('assets/esim/how-to-install-esim.mp4') }}">Download the installation guide</a>.
         </video>
-        <p class="esim-install-video-caption">Watch the 80-second guide for iPhone, Android, same-phone QR setup and safe troubleshooting.</p>
+        <p class="esim-install-video-caption">Watch the 84-second guide for iPhone, Android, same-phone QR setup and safe troubleshooting.</p>
     </div>
 
     <div class="esim-install-tabs esim-reveal" role="tablist">

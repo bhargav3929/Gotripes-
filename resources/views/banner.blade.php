@@ -1266,11 +1266,88 @@
 
 
           <!-- Registration Modal -->
+          @include('partials.gold-medallion-tokens')
+          @php
+            $partnerModalLogo = (isset($company) && $company && $company->logo)
+              ? asset('storage/' . $company->logo)
+              : asset('assets/index_files/logo.png');
+          @endphp
+          <style>
+          /* Medallion shell — client request 15 Sep 2026: give the registration
+             popup the same circular black-and-gold treatment as the Emirates
+             route selector. Desktop (>=900px): a true disc; the wizard sits in a
+             rectangle inscribed in the disc (0.57 x 0.44 of the diameter, whose
+             corners stay inside the inner ring), so step 1 scrolls a little and
+             steps 2-3 fit. Below 900px a circle leaves no usable width for
+             inputs, so the shell becomes a rounded card with the same ring.
+             These rules come after the base styles above and override only the
+             shell; every field, id and the wizard JS are untouched. */
+          .partner-registration-modal{padding:16px;overflow:hidden;align-items:center;justify-content:center}
+          .partner-registration-modal .partner-modal-content{--disc:min(920px,96vw,92vh);--ring-w:calc(var(--disc) * var(--gm-ring-ratio));position:relative;width:var(--disc);height:var(--disc);max-width:none;max-height:none;margin:0;padding:0;border-radius:50%;border:var(--ring-w) solid transparent;background:var(--gm-disc-fill) padding-box,var(--gm-gold-metal) border-box;box-shadow:0 30px 90px rgba(0,0,0,.85),0 0 60px rgba(212,175,55,.18),inset 0 0 0 1px rgba(60,42,8,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;animation:partnerModalSlideIn .4s cubic-bezier(.16,1,.3,1)}
+          /* Inner hairline just inside the band (replaces the old top glow line). */
+          .partner-registration-modal .partner-modal-content::before{content:'';position:absolute;inset:calc(var(--disc) * .012);left:auto;top:auto;width:auto;height:auto;transform:none;border:2px solid rgba(212,175,55,.6);border-radius:50%;background:none;pointer-events:none}
+          .partner-registration-modal .partner-brand-medallion{flex:0 0 auto;width:calc(var(--disc) * .13);height:calc(var(--disc) * .13);border-radius:50%;overflow:hidden;background:#050505;box-shadow:0 10px 26px rgba(0,0,0,.6);margin-bottom:calc(var(--disc) * .012)}
+          .partner-registration-modal .partner-brand-medallion img{display:block;width:100%;height:100%;object-fit:cover}
+          .partner-registration-modal .partner-modal-header{flex:0 0 auto;padding:0;margin-bottom:calc(var(--disc) * .012);justify-content:center;border-radius:0}
+          .partner-registration-modal .partner-modal-header h2{font-size:calc(var(--disc) * .028);font-weight:800;letter-spacing:.045em;color:var(--gm-gold);text-shadow:none;white-space:nowrap}
+          .partner-registration-modal .partner-modal-header h2 b{color:#fff;font-weight:800}
+          /* Close sits on the ring at 45deg: offset from the padding edge is
+             (0.5 - 0.46/sqrt2)D minus the band, i.e. ~0.09D, less half the button. */
+          .partner-registration-modal .partner-modal-close{position:absolute;z-index:3;top:calc(var(--disc) * .09 - 20px);right:calc(var(--disc) * .09 - 20px);width:40px;height:40px;background:#050505;border:2px solid var(--gm-gold);color:var(--gm-gold);font-size:26px;box-shadow:0 4px 14px rgba(0,0,0,.6)}
+          .partner-registration-modal .partner-modal-close:hover{background:var(--gm-gold);color:#000}
+          /* 0.54 x 0.40 of the disc: with the medallion and title stacked above,
+             the body's bottom corners sit at ~0.30D below centre, where the inner
+             ring's chord is 0.58D wide, so nothing (scrollbar included) is clipped. */
+          .partner-registration-modal .partner-modal-body{flex:0 1 auto;width:calc(var(--disc) * .54);height:calc(var(--disc) * .40);padding:4px 0 6px;box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden}
+          /* Only the fields scroll: the step dots and the Next/Back/Cancel row
+             stay pinned, so the wizard never hides its own controls inside the
+             disc's shorter usable height. */
+          .partner-registration-modal .partner-modal-body form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+          .partner-registration-modal .partner-step-indicator,
+          .partner-registration-modal .partner-form-actions{flex:0 0 auto}
+          .partner-registration-modal .partner-columns.partner-wizard{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:10px;scrollbar-width:thin;scrollbar-color:var(--gm-gold) rgba(255,255,255,.06)}
+          .partner-registration-modal .partner-columns.partner-wizard::-webkit-scrollbar{width:10px}
+          .partner-registration-modal .partner-columns.partner-wizard::-webkit-scrollbar-track{background:rgba(255,255,255,.06);border-radius:8px}
+          .partner-registration-modal .partner-columns.partner-wizard::-webkit-scrollbar-thumb{background-color:var(--gm-gold);border-radius:8px;border:2px solid #0b0b0b;background-clip:padding-box;min-height:36px}
+          .partner-registration-modal .partner-col{background:transparent;border:none;padding:0 0 4px;border-radius:0}
+          /* Dots only inside the disc: the inscribed width is too narrow for three
+             labelled steps without wrapping, and the section title below already
+             names the current step. */
+          .partner-registration-modal .partner-step-indicator{margin-bottom:12px;gap:10px}
+          .partner-registration-modal .partner-step-dot .partner-step-label{display:none}
+          .partner-registration-modal .partner-step-line{width:26px}
+          /* Fade the scroll edges so a cut-off field reads as "more below"
+             rather than as a clipped layout. */
+          .partner-registration-modal .partner-columns.partner-wizard{-webkit-mask-image:linear-gradient(#000 0,#000 calc(100% - 22px),transparent 100%);mask-image:linear-gradient(#000 0,#000 calc(100% - 22px),transparent 100%)}
+          .partner-registration-modal .partner-columns.partner-wizard.is-scroll-end{-webkit-mask-image:none;mask-image:none}
+          .partner-registration-modal .partner-step-dot.is-active .partner-step-num{background:var(--gm-gold-metal);border-color:transparent}
+          /* Tighter type so "Create Partner Account" stays on one line in the
+             narrower inscribed width. */
+          .partner-registration-modal .partner-submit-btn{background:var(--gm-gold-metal);font-size:12px;letter-spacing:1.2px;white-space:nowrap;padding:0 10px}
+          .partner-registration-modal .partner-back-btn,
+          .partner-registration-modal .partner-cancel-btn{font-size:11px;letter-spacing:1.2px;white-space:nowrap}
+          .partner-registration-modal .partner-form-actions{margin-top:14px}
+          @media (max-width:899px){
+            .partner-registration-modal{padding:12px;overflow-y:auto}
+            .partner-registration-modal .partner-modal-content{--disc:min(96vw,92vh);width:min(96vw,560px);height:auto;max-height:92vh;border-radius:32px;border-width:10px;padding:18px 0 18px;justify-content:flex-start}
+            .partner-registration-modal .partner-modal-content::before{inset:8px;border-radius:22px}
+            .partner-registration-modal .partner-brand-medallion{width:72px;height:72px;margin-bottom:8px}
+            .partner-registration-modal .partner-modal-header{margin-bottom:8px}
+            .partner-registration-modal .partner-modal-header h2{font-size:15px;white-space:normal;text-align:center;padding:0 56px}
+            .partner-registration-modal .partner-modal-close{top:12px;right:12px;width:34px;height:34px;font-size:22px}
+            .partner-registration-modal .partner-modal-body{width:100%;height:auto;max-height:none;flex:1 1 auto;min-height:0;padding:6px 16px 8px}
+          }
+          @media (prefers-reduced-motion:reduce){.partner-registration-modal,.partner-registration-modal .partner-modal-content{animation:none}}
+          </style>
+
           <div id="partnerRegistrationModal" class="partner-registration-modal">
             <div class="partner-modal-content">
+              <div class="partner-brand-medallion" aria-hidden="true">
+                <img src="{{ $partnerModalLogo }}" alt="">
+              </div>
               <div class="partner-modal-header">
-                <h2>Create Partner Account</h2>
-                <span class="partner-modal-close" id="partnerCloseModal">&times;</span>
+                <h2>Create <b>Partner</b> Account</h2>
+                <span class="partner-modal-close" id="partnerCloseModal" role="button" aria-label="Close">&times;</span>
               </div>
 
               <div class="partner-modal-body">
@@ -1606,7 +1683,7 @@
           console.log('📝 Opening partner registration modal...');
 
           // Show modal
-          partnerModal.style.display = 'block';
+          partnerModal.style.display = 'flex'; // the medallion shell centres with flex (see shell styles above)
           document.body.style.overflow = 'hidden';
           partnerGoToStep(1);
         });
@@ -1672,6 +1749,24 @@
           partnerBackBtn.style.display = step > 1 ? '' : 'none';
           partnerNextBtn.style.display = step < partnerTotalSteps ? '' : 'none';
           partnerSubmitBtn.style.display = step === partnerTotalSteps ? '' : 'none';
+          if (partnerWizard) {
+            partnerWizard.scrollTop = 0;
+            partnerUpdateScrollFade();
+          }
+        }
+
+        // The wizard scrolls inside the circular shell; the bottom fade is
+        // removed once there is nothing more to scroll to, so a fully visible
+        // step never looks faded out.
+        const partnerWizard = document.querySelector('#partnerRegistrationModal .partner-wizard');
+        function partnerUpdateScrollFade() {
+          if (!partnerWizard) return;
+          const atEnd = partnerWizard.scrollTop + partnerWizard.clientHeight >= partnerWizard.scrollHeight - 2;
+          partnerWizard.classList.toggle('is-scroll-end', atEnd);
+        }
+        if (partnerWizard) {
+          partnerWizard.addEventListener('scroll', partnerUpdateScrollFade, { passive: true });
+          window.addEventListener('resize', partnerUpdateScrollFade);
         }
 
         partnerNextBtn.addEventListener('click', function () {

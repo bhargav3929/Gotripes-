@@ -3,14 +3,24 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CustomerCareWelcomeMail;
 use App\Models\SupportTicket;
+use App\Models\User;
 use App\Services\SupportTicketNotifier;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ManagerSupportTicketController extends Controller
 {
+    /** Roles that can be handed a ticket. */
+    private const ASSIGNABLE_ROLES = ['company_owner', 'company_admin', 'customer_care'];
+
     public function index(Request $request)
     {
         $query = SupportTicket::with('assignee')
@@ -43,15 +53,18 @@ class ManagerSupportTicketController extends Controller
         $tickets = $query->paginate(25)->withQueryString();
         $stats = $this->stats();
         $company = current_company();
+        $careStaff = $this->isAdmin()
+            ? $company->users()->where('role', 'customer_care')->orderBy('name')->get()
+            : collect();
 
-        return view('manager.support.index', compact('tickets', 'stats', 'company'));
+        return view('manager.support.index', compact('tickets', 'stats', 'company', 'careStaff'));
     }
 
     public function show(SupportTicket $ticket)
     {
         $ticket->load(['messages.user', 'assignee']);
         $agents = current_company()->users()
-            ->whereIn('role', ['company_owner', 'company_admin'])
+            ->whereIn('role', self::ASSIGNABLE_ROLES)
             ->where(function ($query) {
                 $query->where('is_active', true)->orWhereNull('is_active');
             })
@@ -72,6 +85,7 @@ class ManagerSupportTicketController extends Controller
             abort_unless(current_company()->users()->whereKey($validated['assigned_to'])->exists(), 422);
         }
 
+        $previousAssigneeId = $ticket->assigned_to;
         $message = trim($validated['message']);
         DB::transaction(function () use ($ticket, $validated, $message) {
             $now = now();
@@ -97,12 +111,19 @@ class ManagerSupportTicketController extends Controller
         // Sent after the response for the same reason as the customer side:
         // synchronous SMTP otherwise stalls the manager's reply for seconds.
         $fresh = $ticket->fresh('company');
-        dispatch(fn () => $notifier->notifyStaffReply($fresh, $message))->afterResponse();
+        $newAssignee = $this->newAssignee($previousAssigneeId, $fresh);
+        $actor = auth()->user();
+        dispatch(function () use ($notifier, $fresh, $message, $newAssignee, $actor) {
+            $notifier->notifyStaffReply($fresh, $message);
+            if ($newAssignee) {
+                $notifier->notifyAssigned($fresh, $newAssignee, $actor);
+            }
+        })->afterResponse();
 
         return back()->with('success', "Reply sent on {$ticket->ticket_number}.");
     }
 
-    public function update(Request $request, SupportTicket $ticket)
+    public function update(Request $request, SupportTicket $ticket, SupportTicketNotifier $notifier)
     {
         $validated = $request->validate([
             'status' => ['required', Rule::in(array_keys(SupportTicket::STATUSES))],
@@ -114,17 +135,26 @@ class ManagerSupportTicketController extends Controller
             abort_unless(current_company()->users()->whereKey($validated['assigned_to'])->exists(), 422);
         }
 
+        $previousAssigneeId = $ticket->assigned_to;
         $ticket->update($validated + [
             'resolved_at' => in_array($validated['status'], ['resolved', 'closed'], true)
                 ? ($ticket->resolved_at ?: now())
                 : null,
         ]);
 
+        $fresh = $ticket->fresh('company');
+        if ($newAssignee = $this->newAssignee($previousAssigneeId, $fresh)) {
+            $actor = auth()->user();
+            dispatch(fn () => $notifier->notifyAssigned($fresh, $newAssignee, $actor))->afterResponse();
+        }
+
         return back()->with('success', "Ticket {$ticket->ticket_number} updated.");
     }
 
     public function updateSettings(Request $request)
     {
+        abort_unless($this->isAdmin(), 403);
+
         $validated = $request->validate([
             'support_email' => 'nullable|email:rfc|max:255',
             'support_hours' => 'required|string|max:255',
@@ -139,6 +169,81 @@ class ManagerSupportTicketController extends Controller
         }
 
         return back()->with('success', 'Support workflow settings saved.');
+    }
+
+    /**
+     * Owner/admin creates a customer-care login. The temporary password is
+     * emailed to the new staff member and flashed exactly once to the screen.
+     */
+    public function storeCustomerCare(Request $request): RedirectResponse
+    {
+        abort_unless($this->isAdmin(), 403);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email:rfc|max:255|unique:users,email',
+            'phone' => 'nullable|string|max:30',
+        ]);
+
+        $company = current_company();
+        $password = Str::password(12);
+
+        $staff = User::create([
+            'name' => trim($validated['name']),
+            'email' => strtolower(trim($validated['email'])),
+            'phone' => $validated['phone'] ?? null,
+            'password' => Hash::make($password),
+            'role' => 'customer_care',
+            'access_type' => 'manager',
+            'company_id' => $company->id,
+            'is_active' => true,
+        ]);
+
+        $loginUrl = route('manager.login');
+        $emailSent = true;
+        try {
+            Mail::to($staff->email, $staff->name)
+                ->send(new CustomerCareWelcomeMail($staff, $password, $loginUrl, $company->name ?? config('app.name', 'GoTrips')));
+        } catch (\Throwable $e) {
+            $emailSent = false;
+            Log::error('Customer care welcome email failed', [
+                'user' => $staff->email,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        return redirect()->route('manager.support.index')
+            ->with('success', $emailSent
+                ? "Customer care login created for {$staff->name}. The login details were emailed to {$staff->email}."
+                : "Customer care login created for {$staff->name}, but the welcome email could not be sent. Share the details below.")
+            ->with('care_credentials', [
+                'name' => $staff->name,
+                'email' => $staff->email,
+                'password' => $password,
+                'url' => $loginUrl,
+            ]);
+    }
+
+    /**
+     * The user a ticket was just handed to, or null when the assignee did not
+     * change, was cleared, or is the person making the change (no point
+     * notifying yourself).
+     */
+    private function newAssignee(?int $previousAssigneeId, SupportTicket $ticket): ?User
+    {
+        $currentId = $ticket->assigned_to ? (int) $ticket->assigned_to : null;
+        if (!$currentId || $currentId === (int) $previousAssigneeId || $currentId === (int) auth()->id()) {
+            return null;
+        }
+
+        return User::find($currentId);
+    }
+
+    private function isAdmin(): bool
+    {
+        $user = auth()->user();
+
+        return $user && ($user->is_super_admin || $user->isSuperAdmin() || $user->isCompanyAdmin());
     }
 
     private function stats(): array

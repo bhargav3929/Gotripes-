@@ -536,12 +536,16 @@
                 $brandName = $tenant?->name ?? 'Manager Portal';
                 $brandLogo = $tenant?->logo_url ?? asset('assets/index_files/logo.png');
             @endphp
-            <a class="sidebar-brand" href="{{ route('manager.dashboard') }}">
+            <a class="sidebar-brand" href="{{ auth()->user()?->role === 'customer_care' ? route('manager.support.index') : route('manager.dashboard') }}">
                 <img src="{{ $brandLogo }}" alt="{{ $brandName }}" class="sidebar-brand-logo">
                 <span class="sidebar-brand-text">{{ $brandName }}</span>
             </a>
 
             <ul class="wp-nav">
+                {{-- customer_care logins only get the Customer Care and Help
+                     sections below; ManagerAuthMiddleware enforces the same
+                     boundary server-side. --}}
+                @unlesscustomercare
                 {{-- ────────────────  HOME  ──────────────── --}}
                 <li class="wp-nav-item">
                     <a href="{{ route('manager.dashboard') }}" class="{{ request()->routeIs('manager.dashboard') ? 'active' : '' }}">
@@ -742,9 +746,12 @@
                 {{-- FIFA World Cup 2026 — retired from the storefront, so the sidebar link is
                      hidden. The routes and screens still exist: reach them directly at
                      /manager/fifa-tickets to settle any outstanding ticket requests. --}}
+                @endcustomercare
 
                 {{-- ────────────────  CUSTOMER CARE  ──────────────── --}}
+                @unlesscustomercare
                 <div class="wp-nav-separator"></div>
+                @endcustomercare
                 <li class="wp-nav-label">Customer Care</li>
                 <li class="wp-nav-item">
                     <a href="{{ route('manager.support.index') }}" class="{{ request()->routeIs('manager.support.*') ? 'active' : '' }}">
@@ -753,6 +760,17 @@
                     </a>
                 </li>
 
+                {{-- ────────────────  HELP  ──────────────── --}}
+                <div class="wp-nav-separator"></div>
+                <li class="wp-nav-label">Help</li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.help.index') }}" class="{{ request()->routeIs('manager.help.*') ? 'active' : '' }}">
+                        <i class="fas fa-book"></i>
+                        <span>Help Guide</span>
+                    </a>
+                </li>
+
+                @unlesscustomercare
                 {{-- ────────────────  TEAM  ──────────────── --}}
                 <div class="wp-nav-separator"></div>
                 <li class="wp-nav-label">Team</li>
@@ -810,6 +828,7 @@
                         <span>Features</span>
                     </a>
                 </li>
+                @endcustomercare
 
                 {{-- ────────────────  LOG OUT  ──────────────── --}}
                 <div class="wp-nav-separator"></div>

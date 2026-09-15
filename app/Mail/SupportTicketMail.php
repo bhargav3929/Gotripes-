@@ -27,6 +27,7 @@ class SupportTicketMail extends Mailable
             'staff_created' => "New support ticket {$this->ticket->ticket_number}",
             'staff_followup' => "Customer follow-up on {$this->ticket->ticket_number}",
             'customer_reply' => "Update on ticket {$this->ticket->ticket_number}",
+            'staff_assigned' => "Ticket {$this->ticket->ticket_number} assigned to you",
             default => "We received your ticket {$this->ticket->ticket_number}",
         };
 

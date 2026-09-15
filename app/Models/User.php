@@ -127,6 +127,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Restricted manager login that only handles the support queue. Deliberately
+     * NOT part of isCompanyAdmin(): the role is non-admin everywhere else.
+     */
+    public function isCustomerCare(): bool
+    {
+        return $this->role === 'customer_care';
+    }
+
+    /**
      * Check if user is a tenant agent (created by a manager via Add Agent)
      */
     public function isAgent()

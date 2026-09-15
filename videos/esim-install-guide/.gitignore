@@ -1,0 +1,10 @@
+# Build output and tool caches. The composition source (index.html,
+# compositions/, assets/, *.md, *.json) IS tracked so the video can be
+# re-rendered or edited later; the rendered mp4 that ships to the site
+# lives at public/assets/esim/how-to-install-esim.mp4.
+renders/
+capture/
+snapshots/
+.hyperframes/
+.media/
+node_modules/
