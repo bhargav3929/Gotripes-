@@ -2,5 +2,6 @@
 # generated voice ARE tracked, so the walkthrough can be re-recorded with:
 #   node record.mjs   (then the ffmpeg mux documented in record.mjs)
 out/
+out2/
 node_modules/
 voice/bgm.mp3
