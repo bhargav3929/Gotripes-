@@ -3048,6 +3048,24 @@
         font: 400 13px/1.5 'Outfit', sans-serif;
         text-align: left;
     }
+    .esim-install-video-alt {
+        margin: 0;
+        padding: 0 18px 14px;
+        color: rgba(255, 255, 255, 0.5);
+        font: 400 13px/1.5 'Outfit', sans-serif;
+        text-align: left;
+    }
+    .esim-install-video-alt a {
+        color: #FFD700;
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.35);
+        transition: border-color .18s ease, color .18s ease;
+    }
+    .esim-install-video-alt a:hover {
+        color: #fff;
+        border-bottom-color: #fff;
+    }
 
     .esim-install-tab {
         display: inline-flex;
@@ -4593,6 +4611,14 @@
             Your browser cannot play this video. <a href="{{ asset('assets/esim/how-to-install-esim.mp4') }}">Download the installation guide</a>.
         </video>
         <p class="esim-install-video-caption">Watch the 84-second guide for iPhone, Android, same-phone QR setup and safe troubleshooting.</p>
+        {{-- Portrait cut of the same guide, laid out for a phone screen rather
+             than scaled down from the wide version (client request, 15 Sep 2026). --}}
+        <p class="esim-install-video-alt">
+            On your phone?
+            <a href="{{ asset('assets/esim/how-to-install-esim-portrait.mp4') }}" target="_blank" rel="noopener">
+                Watch the full-screen version
+            </a>
+        </p>
     </div>
 
     <div class="esim-install-tabs esim-reveal" role="tablist">

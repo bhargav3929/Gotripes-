@@ -160,6 +160,7 @@
     </style>
 </head>
 <body>
+@include('partials.gold-medallion-page')
 <div class="wrap">
     <div class="header">
         <img src="{{ $registerTenantLogo }}" alt="{{ $registerTenantName }}">
@@ -167,7 +168,7 @@
         <p>Register your details, tell us where you operate and what you'd like to sell.</p>
     </div>
 
-    <div class="card">
+    <div class="card gm-ring-panel">
         @if($errors->any())
             <div class="alert alert-danger py-2">
                 <ul class="mb-0" style="font-size: 13px;">

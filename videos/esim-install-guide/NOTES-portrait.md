@@ -1,49 +1,35 @@
-# Portrait (9:16) version — what is done and what is left
+# Portrait (9:16) cut — DONE
 
-Amer asked on 15 Sep 2026 for "this 9:11 screen size too". Read as **9:16 portrait,
-1080 x 1920** (9:11 is not a real screen ratio). Confirm with him if it matters.
+Built 15 Sep 2026. Amer asked for "this 9:11 screen size too"; read as **9:16,
+1080 x 1920**. Worth confirming the ratio with him, but 9:11 is not a real
+screen shape and 9:16 is the standard phone/Reels/Status format.
 
-## Done
+## Where it lives
 
-- **Logo intro and outro** (`compositions/frames/00-logo-intro.html`, `09-logo-outro.html`)
-  are in the landscape composition. Root is now 84.259 s; every original scene and its
-  voice track was shifted by the 2.5 s intro. `hyperframes check` passes with 0 errors.
-- **Brand asset** `assets/brand/logo.png` — 1024 x 1024 with a real alpha channel.
-  Do NOT replace it with `public/assets/index_files/transparent_logo.png`: despite the
-  name, that file has **no alpha** and the transparency checkerboard is painted into the
-  pixels, so it renders as a grey chequered ring on any background. The clean version was
-  built by masking that file to its circle and is also saved at
-  `public/assets/index_files/logo-circle-1024.png`.
-- **Portrait captions track** `compositions/captions-portrait.html` (1080 x 1920) is written.
-- Landscape render shipped to `public/assets/esim/how-to-install-esim.mp4`.
+The portrait cut is a **separate project**: `videos/esim-install-guide-portrait/`.
+A HyperFrames project may declare only one root composition, so it could not sit
+beside `index.html` here. Its `assets/` is a symlink back to this project's
+`assets/`, so the narration, music and brand logo are shared, not duplicated.
 
-## Left to do
+- Generator: `build-portrait.py` in THIS folder writes the sibling project.
+  Re-run it after changing scene content, then `npm run check && npm run render`
+  from the portrait project.
+- Rendered file ships to `public/assets/esim/how-to-install-esim-portrait.mp4`.
+- Linked from `resources/views/esim.blade.php` (under the landscape player) and
+  `resources/views/emails/esim-qr.blade.php` (under the main button).
 
-1. Ten scene frames in `compositions/frames-portrait/` (the directory exists and is empty):
-   `00-logo-intro` … `09-logo-outro`, each 1080 x 1920.
-2. A root `index-portrait.html`: copy `index.html`, set `data-width="1080"`
-   `data-height="1920"`, point every `data-composition-src` at `frames-portrait/`,
-   and swap the captions source to `captions-portrait.html`. Keep every `data-start`
-   and `data-duration` exactly as the landscape root has them, and reuse the same
-   `assets/voice/*.wav` and `assets/bgm/track*.mp3`.
-3. Render: `npx --yes hyperframes@0.8.31 render index-portrait.html`, then copy the
-   output to `public/assets/esim/how-to-install-esim-portrait.mp4`.
-4. Link it: a secondary "phone-friendly version" link under the `<video>` in
-   `resources/views/esim.blade.php` (~line 4590) and beside the existing button in
-   `resources/views/emails/esim-qr.blade.php` (~line 83).
+## How it was built
 
-## How much work each frame is
+Not a letterbox of the wide cut. The ten scenes were laid out again for a tall
+screen: headline at the top, the device diagram or cards stacked beneath, type
+scaled up, and content kept above y=1340 because the captions track owns the
+band at 1380-1580. Same narration files, same `data-start`/`data-duration` as
+the landscape root, so the two cuts stay frame-for-frame in step.
 
-The frames are not uniformly hard, so check before estimating:
+Both cuts run 84.259s. Check passes with 0 errors and 43/43 contrast checks.
 
-| Frame | Layout basis | Effort |
-|---|---|---|
-| 00, 09 (logo cards) | centred, container units | trivial, near copy |
-| 01, 02, 08 | mostly `cqw` / `cqh` container units | light, mainly type scale and stacking |
-| 03, 04, 05, 06, 07 | hand-positioned pixels (frame 03 alone has 93 px values) | real re-layout work |
+## The logo asset trap (still true)
 
-Portrait rules to follow: stack the device diagram above the copy rather than side by
-side, scale type up about 1.6x, keep the caption band in the lower third, and leave at
-least 80 px clear top and bottom for social UI overlays. Do not letterback the 16:9
-render into a 9:16 frame: the point of the portrait cut is that the text is readable on
-a phone, and scaling the wide layout down makes it smaller, not larger.
+Use `assets/brand/logo.png`. Do NOT swap in
+`public/assets/index_files/transparent_logo.png` — despite the name it has no
+alpha channel and the transparency checkerboard is painted into the pixels.

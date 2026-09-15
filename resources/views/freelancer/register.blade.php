@@ -56,7 +56,7 @@
         .benefit-text strong { display: block; font-weight: 600; font-size: 0.9rem; color: #fff; margin-bottom: 0.15rem; }
         .benefit-text span { font-size: 0.78rem; color: var(--text-muted); font-weight: 300; }
         .form-panel { flex: 1; display: flex; align-items: center; justify-content: center; padding: 3rem 2.5rem; overflow-y: auto; }
-        .form-container { width: 100%; max-width: 480px; }
+        .form-container { width: 100%; max-width: 480px; padding: 30px 26px; }
         .form-header { margin-bottom: 2rem; }
         .form-header h2 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; color: #fff; margin-bottom: 0.4rem; }
         .form-header p { color: var(--text-muted); font-size: 0.875rem; }
@@ -94,6 +94,7 @@
     </style>
 </head>
 <body>
+@include('partials.gold-medallion-page')
     <div class="register-wrapper">
         <div class="brand-panel">
             <div class="brand-logo-mark">
@@ -124,7 +125,7 @@
         </div>
 
         <div class="form-panel">
-            <div class="form-container">
+            <div class="form-container gm-ring-panel">
                 <div class="form-header">
                     <h2>Become a freelancer</h2>
                     <p>Set up your travel-selling storefront in under 2 minutes.</p>

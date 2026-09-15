@@ -81,6 +81,10 @@
                     <div style="color:#ffffff;font-size:15px;font-weight:700;margin-bottom:6px;">Need help installing?</div>
                     <div style="color:#cbd5e1;font-size:12px;line-height:1.5;margin-bottom:14px;">Watch the step-by-step iPhone and Android guide, including same-phone QR setup.</div>
                     <a href="{{ url('/assets/esim/how-to-install-esim.mp4') }}" style="display:inline-block;background:#d4af37;color:#111827;text-decoration:none;font-size:13px;font-weight:700;padding:10px 16px;border-radius:7px;">Watch the installation video</a>
+                    {{-- Portrait cut for customers opening this on a phone. --}}
+                    <div style="margin-top:10px;">
+                        <a href="{{ url('/assets/esim/how-to-install-esim-portrait.mp4') }}" style="color:#d4af37;text-decoration:underline;font-size:12px;">Reading this on your phone? Watch the full-screen version</a>
+                    </div>
                 </div>
 
                 {{-- Installation steps. With one eSIM the manual credentials are

@@ -546,6 +546,7 @@
 </head>
 
 <body>
+@include('partials.gold-medallion-page')
     <div class="register-wrapper">
 
         <!-- Left Brand Panel -->
@@ -615,7 +616,7 @@
 
         <!-- Right Form Panel -->
         <div class="form-panel">
-            <div class="form-container">
+            <div class="form-container gm-ring-panel">
 
                 <div class="mobile-logo">
                     <img src="{{ asset('assets/index_files/logo.png') }}" alt="GoTrips" style="height:34px;width:34px;object-fit:contain;vertical-align:middle;">

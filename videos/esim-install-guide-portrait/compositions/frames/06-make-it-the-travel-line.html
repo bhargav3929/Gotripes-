@@ -1,0 +1,68 @@
+<template>
+  <style>
+    @font-face { font-family:"Barlow"; src:local("Arial"); font-style:normal; font-weight:400 900; }
+    @font-face { font-family:"IBM Plex Mono"; src:local("Courier New"); font-style:normal; font-weight:400 700; }
+    #root { position:relative; width:1080px; height:1920px; overflow:hidden;
+            container-type:size; color:#F4EBD0; font-family:"Barlow"; }
+    .stage { position:absolute; inset:0; overflow:hidden;
+             background:
+               radial-gradient(760px 620px at 50% 24%, rgba(212,175,55,.07), transparent 66%),
+               #080706; }
+    /* hairline frame, same device as the landscape cut */
+    .edge { position:absolute; inset:40px; border:1px solid rgba(212,175,55,.15); pointer-events:none; }
+    .col { position:absolute; left:100px; right:100px; top:150px; }
+    .kicker { font-family:"IBM Plex Mono"; font-size:26px; font-weight:500; letter-spacing:.22em;
+              text-transform:uppercase; color:#D4AF37; margin-bottom:34px; }
+    .head { font-size:96px; line-height:1.04; font-weight:800; letter-spacing:-.025em; color:#fff; }
+    .head em { font-style:normal; color:#D4AF37; }
+    .sub { margin-top:34px; font-size:40px; line-height:1.45; color:#B9B3A3; font-weight:400; }
+    .card { background:#12110F; border:1px solid #282826; border-radius:22px;
+            padding:38px 40px; margin-top:26px; }
+    .card-n { font-family:"IBM Plex Mono"; font-size:24px; letter-spacing:.2em; color:#D4AF37;
+              margin-bottom:16px; }
+    .card-t { font-size:46px; font-weight:700; color:#fff; letter-spacing:-.015em; line-height:1.15; }
+    .card-d { margin-top:14px; font-size:34px; line-height:1.4; color:#A9A496; }
+    .step-num { font-size:24px; }
+
+  </style>
+
+  <div id="root" data-composition-id="06-make-it-the-travel-line" data-width="1080" data-height="1920" data-duration="10.374">
+    <div class="stage">
+      <div class="edge"></div>
+
+      <div class="col">
+        <div class="kicker" id="06-make-it-the-travel-line-k">After it installs</div>
+        <div class="head" id="06-make-it-the-travel-line-h">Make it the<br><em>travel line</em>.</div>
+      </div>
+      <div style="position:absolute;left:100px;right:100px;top:680px">
+        <div class="06-make-it-the-travel-line-chk" id="06-make-it-the-travel-line-chk1" style="display:flex;gap:28px;align-items:flex-start;margin-top:36px"><span style="flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:3px solid #D4AF37;color:#D4AF37;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin-top:6px">&#10003;</span><span><span style="display:block;font-size:44px;font-weight:700;color:#fff;letter-spacing:-.01em">Label it Travel</span><span style="display:block;margin-top:10px;font-size:33px;color:#A9A496;line-height:1.4">So you can tell it from your home line.</span></span></div>
+        <div class="06-make-it-the-travel-line-chk" id="06-make-it-the-travel-line-chk2" style="display:flex;gap:28px;align-items:flex-start;margin-top:36px"><span style="flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:3px solid #D4AF37;color:#D4AF37;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin-top:6px">&#10003;</span><span><span style="display:block;font-size:44px;font-weight:700;color:#fff;letter-spacing:-.01em">Select it for mobile data</span><span style="display:block;margin-top:10px;font-size:33px;color:#A9A496;line-height:1.4">Your home line can stay off.</span></span></div>
+        <div class="06-make-it-the-travel-line-chk" id="06-make-it-the-travel-line-chk3" style="display:flex;gap:28px;align-items:flex-start;margin-top:36px"><span style="flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:3px solid #D4AF37;color:#D4AF37;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin-top:6px">&#10003;</span><span><span style="display:block;font-size:44px;font-weight:700;color:#fff;letter-spacing:-.01em">Data roaming, only if told</span><span style="display:block;margin-top:10px;font-size:33px;color:#A9A496;line-height:1.4">Follow the GoTrips plan instructions.</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const frameId = "06-make-it-the-travel-line";
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const byId = (s) => document.getElementById(frameId + "-" + s);
+      const byClass = (s) => Array.from(document.getElementsByClassName(frameId + "-" + s));
+      // Absolute positions only: every state is a pure function of time.
+      const up = (el, at, d) => {
+        if (!el) return;
+        tl.fromTo(el, { opacity: 0, y: 34 },
+                      { opacity: 1, y: 0, duration: d || .72, ease: "power3.out" }, at);
+      };
+      const pop = (el, at, d) => {
+        if (!el) return;
+        tl.fromTo(el, { opacity: 0, scale: .9 },
+                      { opacity: 1, scale: 1, duration: d || .8, ease: "expo.out" }, at);
+      };
+      up(byId("k"), .10); up(byId("h"), .26);
+      byClass("chk").forEach(function (el, i) { up(el, 0.66 + i * 0.5); });
+      window.__timelines[frameId] = tl;
+    })();
+  </script>
+</template>

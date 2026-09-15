@@ -100,13 +100,15 @@
     </style>
 </head>
 <body>
+@include('partials.gold-medallion-page')
 <div class="wrap">
     <div class="header">
         <h1><i class="fas fa-handshake"></i> Become a B2B Partner</h1>
         <p>Register your agency, upload your trade license (UAE only), and sign your partner agreement online.</p>
     </div>
 
-    <div class="card">
+    <div class="gm-brand"><img src="{{ asset('assets/index_files/logo.png') }}" alt=""></div>
+    <div class="card gm-ring-panel">
         @if($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
