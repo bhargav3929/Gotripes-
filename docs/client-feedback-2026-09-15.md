@@ -109,26 +109,73 @@ Amer's comment:
 
 ---
 
-## Action items (our interpretation, one per comment)
+## Action items — status
 
-| # | Item | Type | Amer's ask | Status |
-|---|------|------|-----------|--------|
-| A1 | Support ticket system + manager dashboard | Demo | Live demo of the ticket workflow at next week's weekly meeting | To prepare |
-| A2 | GoTrips support widget (Tawk replacement) | Await feedback | He will log a ticket himself and come back with workflow doubts | Waiting on client |
-| A3 | WhatsApp Business API integration | Deferred | Cost to be discussed; do it once eSIM + 4 more products are ready | Parked by client |
-| A4 | UAE visa Emirate availability + Sharjah deposit | Blocked (client side) | Supplier card blocked; sourcing new suppliers; will test after rates are in | Waiting on client |
-| A5a | Circular black-and-gold route selector | Design fix | Increase golden border thickness to match the logo's golden border thickness | To do |
-| A5b | Customer registration popup + all registration forms | Design change | Apply the same circular black-and-gold treatment to the customer registration popup and all registration forms | To do (confirm scope) |
-| A6a | eSIM installation video | Deliverable | Produce a portrait version. He wrote "9:11"; almost certainly means 9:16 vertical (phone / WhatsApp status / Reels) | To do (confirm ratio) |
-| A6b | eSIM installation video | Deliverable | Add the company logo at the start and end of the video (both landscape and portrait) | To do |
-| A7 | Client support proposal (draft, not sent) | No action | "At your pace, not in rush" | Parked |
-| A8a | Ticket routing question | Answer | Explain where a new ticket lands today (email + manager dashboard) | To answer in demo |
-| A8b | Customer-care employee role | Feature | Ability to assign/route tickets to an employee who logs in ONLY to handle customer care (restricted customer-care login, not full manager) | To do (confirm scope) |
-| A9 | Product help guide | Deliverable | A per-product help/reference guide covering every piece of work done on the website, written for a "stranger" as a quick reference for staff and users | To do |
+Last updated 15 September 2026, after deployment. Every "Done" below is live on
+https://gotrips.ai and verified there, not just on a developer machine.
 
-## Open questions to confirm with Amer
+| # | Item | Amer's ask | Status |
+|---|------|-----------|--------|
+| A1 | Support ticket system + manager dashboard | Demo the workflow at next week's meeting | **Ready** — script + video, see below |
+| A2 | GoTrips support widget (Tawk replacement) | He will log a ticket and come back with doubts | **With Amer** |
+| A3 | WhatsApp Business API | Cost to discuss; do it after eSIM + 4 products | **Parked by Amer** |
+| A4 | UAE visa Emirate availability + Sharjah deposit | Supplier card blocked; will test after rates | **With Amer** |
+| A5a | Route selector gold border too thin | Match the logo's border thickness | **Done — deployed** |
+| A5b | Same circular treatment on registration forms | Pop-up *and* all registration forms | **Done — deployed** |
+| A6a | eSIM video in "9:11" screen size | A portrait cut | **Done — deployed** (read as 9:16, see open question) |
+| A6b | Company logo at start and end of the video | Title cards both ends | **Done — deployed** |
+| A7 | Client support proposal (draft, not sent) | "At your pace, not in rush" | **Parked** |
+| A8a | "Where is the ticket hitting?" | Explain where a ticket lands | **Answered** |
+| A8b | Customer-care employee login | Someone who logs in only to handle support | **Done — deployed** |
+| A9 | Product help guide | Per-product reference for staff and users | **Done — deployed** |
 
-1. A5b: "customer registration pop window" and "all registrations forms" — does this cover the customer signup/login modal, the partner registration form, and the agent registration form? All three?
-2. A6a: confirm 9:16 (portrait) is the intended ratio.
-3. A8b: should the customer-care employee be a new role inside the existing manager panel (restricted menu), or a separate login area?
-4. A9: format preference for the help guide — a page on the site, a PDF, or markdown in the repo?
+**Eight of twelve delivered. Four sit with Amer.** Nothing is waiting on us.
+
+### What "Done" means for each one
+
+| # | Evidence | Where it lives | Commit |
+|---|----------|----------------|--------|
+| A5a | Ring raised from 2.2% to 8.5% of the disc, brushed-gold gradient, geometry re-fitted. Verified at 1440px and 375px | `resources/views/partials/emirate_selector_modal.blade.php`, tokens in `partials/gold-medallion-tokens.blade.php` | `5af70f4` |
+| A5b | Pop-up rebuilt as a true disc; agent, agency, freelancer and referral pages given the same ring via one shared partial. No field, id, validation or route changed | `banner.blade.php`, `partials/gold-medallion-page.blade.php`, 4 register views | `5af70f4`, `e826763` |
+| A6a | 1080x1920, 84.3s, portrait-native layout (not the wide cut scaled down). Linked under the player and in the QR email | `videos/esim-install-guide-portrait/`, `public/assets/esim/how-to-install-esim-portrait.mp4` | `e826763` |
+| A6b | Logo intro + outro scenes, re-rendered to 84.3s | `videos/esim-install-guide/compositions/frames/00`, `09` | `5af70f4` |
+| A8a | Manager portal always (saved before any email), the configured support inbox, and the customer. WhatsApp built but off until credentials arrive | `docs/help/08-customer-support.md`, demo script, both videos | `5af70f4` |
+| A8b | `customer_care` role: lands on the ticket queue, bounced from every other manager route, appears as an assignee, emailed when assigned. Owner creates one from Support settings. 19 tests pass | `ManagerAuthMiddleware`, `ManagerSupportTicketController`, `SupportTicketNotifier`, `CustomerCareRoleTest` | `5af70f4` |
+| A9 | 11 plain-language guides rendered at `/manager/help`, visible to customer-care staff too | `docs/help/`, `ManagerHelpController` | `5af70f4` |
+| A1 | 10-minute demo script plus a 97s narrated screen recording of the whole flow | `docs/support/demo-walkthrough-2026-09.md`, `videos/walkthrough/` | `da73903`, `0db7f50` |
+
+### Found and fixed along the way (not asked for)
+
+- `public/assets/index_files/transparent_logo.png` has **no alpha channel** — the
+  transparency checkerboard is painted into the pixels, so it rendered as a grey
+  chequered ring in the first video render. A correctly masked version is at
+  `public/assets/index_files/logo-circle-1024.png`. (`5af70f4`)
+
+### Deployment record
+
+| | |
+|---|---|
+| Deployed | 15 September 2026 |
+| Commits | `5af70f4`, `da73903`, `e826763`, `0db7f50` |
+| Method | Files verified byte-identical against production before upload, then FTP, then migration via the token-guarded runner, which was neutralised straight after |
+| Migration | `2026_09_15_000001_add_customer_care_to_users_role_constraint` — ran on production |
+| Verified live | homepage, eSIM, UAE visa, all four registration pages, manager login, manager help |
+| Known incident | Pages 500'd intermittently for a few minutes after deploy: PHP opcache held replaced files after the webhook's `git pull`. Fixed with an opcache reset; 23/24 checks clean afterwards |
+
+### Still to raise with Amer
+
+1. **The ratio.** He wrote "9:11", which is not a real screen shape. Built as 9:16
+   (1080x1920), the standard phone format. One command to rebuild if he meant
+   something else.
+2. **Production runs `APP_ENV=local`.** Pre-existing, `APP_DEBUG` is off so nothing
+   leaks, but Laravel treats the live site as a development environment. Not changed
+   without his say-so.
+
+### Questions that were open, and how they were settled
+
+| Question | Settled |
+|---|---|
+| Scope of "all registrations forms" | All of them: the pop-up plus the four full-page forms |
+| 9:16 vs literal 9:11 | Built 9:16; still worth confirming with Amer |
+| Customer-care login shape | A restricted role on the existing manager login, not a sixth portal |
+| Help guide format | Markdown in `docs/help/`, rendered inside the manager portal |
