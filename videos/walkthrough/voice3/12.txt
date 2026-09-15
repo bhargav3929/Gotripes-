@@ -1,0 +1,1 @@
+This is the dashboard the owner sees. The full sidebar, every section.

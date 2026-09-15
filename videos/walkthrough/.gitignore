@@ -3,5 +3,6 @@
 #   node record.mjs   (then the ffmpeg mux documented in record.mjs)
 out/
 out2/
+out3/
 node_modules/
 voice/bgm.mp3

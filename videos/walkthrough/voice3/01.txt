@@ -1,0 +1,1 @@
+This is the GoTrips website. Let me walk you through what changed.

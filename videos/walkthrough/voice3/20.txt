@@ -1,0 +1,1 @@
+And if they ask for the dashboard, the site sends them straight back to the queue. That is the whole change, running on the live site.
