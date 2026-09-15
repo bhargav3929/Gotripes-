@@ -1,0 +1,9 @@
+# Rendered output and tool caches. The composition source, narration script,
+# generated voice and the screenshots ARE tracked so this review video can be
+# rebuilt or amended later (run: python3 build.py && npm run check && npm run render).
+renders/
+capture/
+snapshots/
+.hyperframes/
+.media/
+node_modules/

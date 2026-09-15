@@ -1,0 +1,1 @@
+You asked whether a ticket can go to an employee who logs in only to handle customer care. Yes. That login now exists. It opens on the ticket queue, and every other page sends it back there. You create the person from the support settings, and they get a password by email.

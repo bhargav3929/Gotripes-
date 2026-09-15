@@ -1,0 +1,1 @@
+You asked for the same circular treatment on the customer registration window. The form now sits inside the same medallion. Every field and every step is unchanged. On a phone it becomes a rounded card with the same ring. This is the pop-up only. The separate agent and agency pages come next, once you approve the look.

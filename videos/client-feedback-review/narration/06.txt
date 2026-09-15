@@ -1,0 +1,1 @@
+You also asked for a nine by eleven screen size. We read that as nine by sixteen, the normal phone shape. This one is not finished. The captions are built, but each of the ten scenes needs laying out again for a tall screen. Scaling the wide version down would only make the text smaller on a phone.

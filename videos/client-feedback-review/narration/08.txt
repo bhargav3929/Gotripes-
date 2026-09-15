@@ -1,0 +1,1 @@
+You asked where the ticket hits. Three places. The manager portal always, saved before any email is attempted. The support inbox you configure. And the customer, who gets the ticket number. Whats-App is built, but switched off until you give us the business A P I details.

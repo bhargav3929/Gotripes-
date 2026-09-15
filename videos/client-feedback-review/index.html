@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1920px; height:1080px; overflow:hidden; background:#080706; }
+      :root {
+        --ink:#080706; --panel:#121110; --line:#2A2824;
+        --gold:#D4AF37; --gold-lite:#F0CF6B; --gold-deep:#8F6A16;
+        --cream:#F4EBD0; --muted:#8A867C; --slate:#7C8A96;
+        --display:"Avenir Next","Optima","Gill Sans",system-ui,sans-serif;
+        --body:"Avenir Next","Helvetica Neue",system-ui,sans-serif;
+        --mono:"Menlo","SF Mono",monospace;
+      }
+      .scene { position:absolute; inset:0; width:1920px; height:1080px;
+               background:
+                 radial-gradient(1200px 700px at 78% 14%, rgba(212,175,55,.055), transparent 62%),
+                 var(--ink);
+               color:var(--cream); font-family:var(--body); }
+      .scene-inner { position:absolute; inset:0; padding:92px 116px; }
+      /* hairline frame so every scene reads as one deliberate system */
+      .scene-inner::before { content:""; position:absolute; inset:44px 56px;
+               border:1px solid rgba(212,175,55,.16); pointer-events:none; }
+
+      .chip { position:absolute; top:60px; right:78px; z-index:5;
+               font-family:var(--body); font-size:19px; font-weight:700;
+               letter-spacing:.16em; text-transform:uppercase;
+               padding:11px 22px; border-radius:100px; }
+      .chip--done { background:linear-gradient(135deg,#F0CF6B,#D4AF37 55%,#9A7418);
+                     color:#120E03; border:1px solid transparent; }
+      .chip--open { color:var(--gold); border:2px solid rgba(212,175,55,.75); background:transparent; }
+      .chip--withyou { color:var(--slate); border:2px solid rgba(124,138,150,.6); background:transparent; }
+
+      .split { display:grid; grid-template-columns:1fr 880px; gap:76px; height:100%; align-items:center; }
+      .col-text { max-width:760px; }
+      .label { font-family:var(--mono); font-size:19px; letter-spacing:.20em;
+                text-transform:uppercase; color:var(--gold); margin-bottom:26px; }
+      .quote { position:relative; font-family:Georgia,"Times New Roman",serif;
+                font-style:italic; font-size:30px; line-height:1.48; color:#CFC7B2;
+                padding-left:30px; margin-bottom:34px; }
+      .quote::before { content:""; position:absolute; left:0; top:6px; bottom:6px;
+                width:3px; background:linear-gradient(var(--gold),rgba(212,175,55,.15)); }
+      .quote--center { max-width:1180px; margin:0 auto 34px; }
+      .sec-head { font-family:var(--display); font-size:62px; line-height:1.08;
+                   font-weight:600; letter-spacing:-.022em; color:#fff; margin-bottom:38px; }
+      .sec-head--center { text-align:center; }
+      .buls { list-style:none; display:flex; flex-direction:column; gap:20px; }
+      .buls--wide { max-width:1200px; margin:0 auto; }
+      .bul { display:flex; gap:20px; align-items:flex-start;
+              font-size:28px; line-height:1.5; color:#D8D2C2; }
+      .bul-dot { flex:0 0 auto; width:9px; height:9px; margin-top:14px; border-radius:50%;
+                  background:var(--gold); box-shadow:0 0 0 5px rgba(212,175,55,.12); }
+
+      .col-shot { display:flex; align-items:center; justify-content:center; }
+      .shot-frame { width:880px; height:560px; border-radius:16px; overflow:hidden;
+                     border:1px solid rgba(212,175,55,.32); background:#0B0A09;
+                     box-shadow:0 34px 90px rgba(0,0,0,.72), 0 0 48px rgba(212,175,55,.08); }
+      .shot-img { width:100%; height:100%; display:block; transform-origin:50% 45%; }
+
+      .stat { display:flex; align-items:baseline; gap:20px; margin-top:42px;
+               font-family:var(--display); }
+      .stat-from { font-size:46px; color:var(--muted); text-decoration:line-through;
+                    text-decoration-color:rgba(138,134,124,.55); }
+      .stat-arrow { font-family:var(--mono); font-size:20px; letter-spacing:.18em;
+                     text-transform:uppercase; color:var(--muted); }
+      .stat-to { font-size:70px; font-weight:700; letter-spacing:-.02em;
+                  background:linear-gradient(135deg,#F0CF6B,#D4AF37 60%,#B8922A);
+                  -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+      .title-wrap { height:100%; display:flex; flex-direction:column;
+                     align-items:center; justify-content:center; text-align:center; }
+      .title-logo { width:190px; height:190px; margin-bottom:44px; }
+      .title-eyebrow { font-family:var(--mono); font-size:21px; letter-spacing:.34em;
+                        text-transform:uppercase; color:var(--gold); margin-bottom:30px; }
+      .title-head { font-family:var(--display); font-size:104px; line-height:1.04;
+                     font-weight:600; letter-spacing:-.03em; color:#fff; }
+      .title-head em { font-style:normal;
+                        background:linear-gradient(135deg,#F0CF6B,#D4AF37 55%,#B8922A);
+                        -webkit-background-clip:text; background-clip:text; color:transparent; }
+      .title-rule { width:220px; height:2px; margin:40px 0 32px;
+                     background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+      .title-sub { font-size:30px; line-height:1.55; color:#B8B2A2; max-width:1080px; }
+      .close-big { font-family:var(--display); font-size:112px; font-weight:700;
+                    letter-spacing:-.03em;
+                    background:linear-gradient(135deg,#F0CF6B,#D4AF37 55%,#B8922A);
+                    -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+      .center-wrap { height:100%; display:flex; flex-direction:column;
+                      align-items:center; justify-content:center; text-align:center; }
+      .legend-list { display:flex; flex-direction:column; gap:30px; margin-top:16px; }
+      .legend-row { display:flex; align-items:center; gap:34px; text-align:left; }
+      .legend-row .chip { position:static; min-width:220px; text-align:center; }
+      .legend-text { font-size:30px; color:#C9C3B4; }
+
+      .routes { display:grid; grid-template-columns:repeat(3,1fr); gap:30px;
+                 width:100%; max-width:1560px; margin-top:12px; }
+      .route { background:var(--panel); border:1px solid var(--line);
+                border-radius:14px; padding:38px 34px; text-align:left; }
+      .route-num { font-family:var(--mono); font-size:19px; letter-spacing:.2em;
+                    color:var(--gold); margin-bottom:20px; }
+      .route-name { font-family:var(--display); font-size:37px; font-weight:600;
+                     color:#fff; margin-bottom:16px; letter-spacing:-.015em; }
+      .route-desc { font-size:24px; line-height:1.5; color:#B3AE9F; }
+      .route-note { margin-top:40px; font-size:25px; color:var(--muted); }
+
+      .ratio-pair { display:flex; align-items:flex-end; gap:56px; }
+      .ratio-box { display:flex; flex-direction:column; align-items:center;
+                    justify-content:center; gap:12px; border-radius:14px;
+                    font-family:var(--mono); letter-spacing:.14em; }
+      .ratio-box span { font-size:26px; }
+      .ratio-box em { font-style:normal; font-size:18px; letter-spacing:.2em;
+                       text-transform:uppercase; }
+      .ratio-wide { width:520px; height:293px; border:2px solid rgba(212,175,55,.75);
+                     color:var(--gold); background:rgba(212,175,55,.05); }
+      .ratio-tall { width:293px; height:521px; border:2px dashed rgba(138,134,124,.7);
+                     color:var(--muted); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="153.352"
+         data-width="1920" data-height="1080">
+
+    <div id="s01-title" class="clip scene" data-start="0.0" data-duration="8.967" data-track-index="0">
+      <div class="scene-inner">
+        
+        
+      <div class="title-wrap">
+        <img class="title-logo anim-logo" src="assets/shots/logo.png" alt="">
+        <div class="title-eyebrow anim-a">GoTrips · Client feedback</div>
+        <h1 class="title-head anim-b">What you asked for,<br><em>and what shipped</em></h1>
+        <div class="title-rule anim-rule"></div>
+        <p class="title-sub anim-c">Amer's comments of 15 September 2026, point by point.</p>
+      </div>
+      </div>
+    </div>
+
+    <div id="s02-legend" class="clip scene" data-start="9.417" data-duration="7.552" data-track-index="1">
+      <div class="scene-inner">
+        
+        
+      <div class="center-wrap">
+        <h2 class="sec-head anim-b">How to read this</h2>
+        <div class="legend-list"><div class="legend-row anim-item">
+                  <div class="chip chip--done">Shipped</div>
+                  <div class="legend-text">Live on the site right now.</div>
+                </div>
+<div class="legend-row anim-item">
+                  <div class="chip chip--open">Open</div>
+                  <div class="legend-text">Named, with the work that remains.</div>
+                </div>
+<div class="legend-row anim-item">
+                  <div class="chip chip--withyou">With you</div>
+                  <div class="legend-text">Waiting on your side.</div>
+                </div></div>
+      </div>
+      </div>
+    </div>
+
+    <div id="s03-border" class="clip scene" data-start="17.419" data-duration="14.642" data-track-index="0">
+      <div class="scene-inner">
+        <div class="chip chip--done anim-chip">Shipped</div>
+        
+      <div class="split">
+        <div class="col-text">
+          <div class="label anim-a">Emirates visa route selector</div>
+          <blockquote class="quote anim-q">Circular design thickness should be increased for golden border, not matching with our Logo golden border thickness.</blockquote>
+          <h2 class="sec-head anim-b">The gold ring is now as heavy as the logo</h2>
+          <ul class="buls"><li class="bul"><span class="bul-dot"></span><span>Your logo's ring is 10% of its width. The selector's was 2.2%.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>It is now 8.5%, plus the thin inner outline.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Painted as brushed gold rather than one flat band.</span></li></ul>
+          <div class="stat anim-stat">
+                  <span class="stat-from">2.2%</span>
+                  <span class="stat-arrow">to</span>
+                  <span class="stat-to">8.5%</span>
+                </div>
+        </div>
+        <div class="col-shot anim-shot">
+          <div class="shot-frame">
+            <img class="shot-img" src="assets/shots/shot-selector.png" alt="" style="object-fit:cover">
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div id="s04-registration" class="clip scene" data-start="32.511" data-duration="19.833" data-track-index="1">
+      <div class="scene-inner">
+        <div class="chip chip--done anim-chip">Shipped</div>
+        
+      <div class="split">
+        <div class="col-text">
+          <div class="label anim-a">Customer registration window</div>
+          <blockquote class="quote anim-q">If we do same for customer registration pop window also, as circular, for all registrations forms.</blockquote>
+          <h2 class="sec-head anim-b">The registration form moved into the same medallion</h2>
+          <ul class="buls"><li class="bul"><span class="bul-dot"></span><span>Same black disc, same brushed ring, your logo on top.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Every field, step and check is exactly as it was.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>On a phone it becomes a rounded card with the same ring.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>This is the pop-up only. The separate agent, agency and partner pages are next, once you approve the look.</span></li></ul>
+          
+        </div>
+        <div class="col-shot anim-shot">
+          <div class="shot-frame">
+            <img class="shot-img" src="assets/shots/shot-popup.png" alt="" style="object-fit:cover">
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div id="s05-videologo" class="clip scene" data-start="52.794" data-duration="10.383" data-track-index="0">
+      <div class="scene-inner">
+        <div class="chip chip--done anim-chip">Shipped</div>
+        
+      <div class="split">
+        <div class="col-text">
+          <div class="label anim-a">eSIM installation video</div>
+          <blockquote class="quote anim-q">Log of our company in beginning of video and ending.</blockquote>
+          <h2 class="sec-head anim-b">Logo title cards at both ends</h2>
+          <ul class="buls"><li class="bul"><span class="bul-dot"></span><span>Opening and closing cards added, then re-rendered.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>The guide now runs 84 seconds.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Fixed a logo file that had a checkerboard baked into it.</span></li></ul>
+          
+        </div>
+        <div class="col-shot anim-shot">
+          <div class="shot-frame">
+            <img class="shot-img" src="assets/shots/shot-video-intro.png" alt="" style="object-fit:cover">
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div id="s06-portrait" class="clip scene" data-start="63.627" data-duration="18.231" data-track-index="1">
+      <div class="scene-inner">
+        <div class="chip chip--open anim-chip">Open</div>
+        
+      <div class="split">
+        <div class="col-text">
+          <div class="label anim-a">eSIM installation video</div>
+          <blockquote class="quote anim-q">Can we have this 9:11 screen size too.</blockquote>
+          <h2 class="sec-head anim-b">The portrait cut is the one thing not finished</h2>
+          <ul class="buls"><li class="bul"><span class="bul-dot"></span><span>We read 9:11 as 9:16, the normal phone shape. Please confirm.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>The captions track for it is already built.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Ten scenes still need laying out for a tall screen.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Shrinking the wide cut would only make the text smaller.</span></li></ul>
+        </div>
+        <div class="col-shot">
+          <div class="ratio-pair">
+            <div class="ratio-box ratio-wide anim-r1"><span>16 : 9</span><em>done</em></div>
+            <div class="ratio-box ratio-tall anim-r2"><span>9 : 16</span><em>to build</em></div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div id="s07-care" class="clip scene" data-start="82.308" data-duration="16.931" data-track-index="0">
+      <div class="scene-inner">
+        <div class="chip chip--done anim-chip">Shipped</div>
+        
+      <div class="split">
+        <div class="col-text">
+          <div class="label anim-a">Support tickets</div>
+          <blockquote class="quote anim-q">Can we assign / route this ticket to an employee joined, or login only to handle customer care.</blockquote>
+          <h2 class="sec-head anim-b">Yes. There is now a customer-care login</h2>
+          <ul class="buls"><li class="bul"><span class="bul-dot"></span><span>It opens on the ticket queue and nothing else.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Every other manager page sends them straight back.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>You create the person in support settings; they get a password by email.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Assigning a ticket now emails them and notes it on the thread.</span></li></ul>
+          
+        </div>
+        <div class="col-shot anim-shot">
+          <div class="shot-frame">
+            <img class="shot-img" src="assets/shots/shot-care-sidebar.png" alt="" style="object-fit:contain">
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div id="s08-routing" class="clip scene" data-start="99.689" data-duration="17.581" data-track-index="1">
+      <div class="scene-inner">
+        <div class="chip chip--done anim-chip">Answered</div>
+        
+      <div class="center-wrap">
+        <div class="label anim-a">Support tickets</div>
+        <blockquote class="quote quote--center anim-q">Whre is the ticket hitting? Email, and Manager dashboard...</blockquote>
+        <h2 class="sec-head sec-head--center anim-b">Every ticket lands in three places</h2>
+        <div class="routes"><div class="route anim-item">
+                  <div class="route-num">01</div>
+                  <div class="route-name">Manager portal</div>
+                  <div class="route-desc">Always. Saved before any email is attempted, so a ticket is never lost.</div>
+                </div>
+<div class="route anim-item">
+                  <div class="route-num">02</div>
+                  <div class="route-name">Your support inbox</div>
+                  <div class="route-desc">The address you set in Workflow settings.</div>
+                </div>
+<div class="route anim-item">
+                  <div class="route-num">03</div>
+                  <div class="route-name">The customer</div>
+                  <div class="route-desc">Ticket number, support hours and the response target.</div>
+                </div></div>
+        <div class="route-note anim-note">WhatsApp is built and switched off until you send the Business API details.</div>
+      </div>
+      </div>
+    </div>
+
+    <div id="s09-help" class="clip scene" data-start="117.72" data-duration="12.437" data-track-index="0">
+      <div class="scene-inner">
+        <div class="chip chip--done anim-chip">Shipped</div>
+        
+      <div class="split">
+        <div class="col-text">
+          <div class="label anim-a">Product documentation</div>
+          <blockquote class="quote anim-q">We will also need a product help guide for all work you do for website.</blockquote>
+          <h2 class="sec-head anim-b">Eleven guides, one for each product</h2>
+          <ul class="buls"><li class="bul"><span class="bul-dot"></span><span>Inside the manager portal, under Help.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Written for someone who has never seen the system.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>Customer-care staff can read them too.</span></li></ul>
+          
+        </div>
+        <div class="col-shot anim-shot">
+          <div class="shot-frame">
+            <img class="shot-img" src="assets/shots/shot-help.png" alt="" style="object-fit:contain">
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div id="s10-withyou" class="clip scene" data-start="130.607" data-duration="11.643" data-track-index="1">
+      <div class="scene-inner">
+        <div class="chip chip--withyou anim-chip">With you</div>
+        
+      <div class="center-wrap">
+        <div class="label anim-a">Nothing blocked on us</div>
+        <h2 class="sec-head sec-head--center anim-b">Four things are on your side</h2>
+        <ul class="buls buls--wide"><li class="bul"><span class="bul-dot"></span><span>Testing the support widget and logging a ticket.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>The WhatsApp Business API cost and credentials.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>The blocked supplier card on the UAE visa.</span></li>
+<li class="bul"><span class="bul-dot"></span><span>The support proposal, which you said is not urgent.</span></li></ul>
+      </div>
+      </div>
+    </div>
+
+    <div id="s11-close" class="clip scene" data-start="142.7" data-duration="10.652" data-track-index="0">
+      <div class="scene-inner">
+        
+        
+      <div class="title-wrap">
+        <img class="title-logo anim-logo" src="assets/shots/logo.png" alt="">
+        <div class="close-big anim-b">6 shipped · 1 open</div>
+        <div class="title-rule anim-rule"></div>
+        <p class="title-sub anim-c">Live on gotrips.ai now. The ticket workflow demo is ready for next week's meeting.</p>
+      </div>
+      </div>
+    </div>
+
+    <audio id="v-s01-title" src="assets/voice/01.wav" data-start="0.0" data-duration="8.467" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s02-legend" src="assets/voice/02.wav" data-start="9.417" data-duration="7.052" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s03-border" src="assets/voice/03.wav" data-start="17.419" data-duration="14.142" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s04-registration" src="assets/voice/04.wav" data-start="32.511" data-duration="19.333" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s05-videologo" src="assets/voice/05.wav" data-start="52.794" data-duration="9.883" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s06-portrait" src="assets/voice/06.wav" data-start="63.627" data-duration="17.731" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s07-care" src="assets/voice/07.wav" data-start="82.308" data-duration="16.431" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s08-routing" src="assets/voice/08.wav" data-start="99.689" data-duration="17.081" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s09-help" src="assets/voice/09.wav" data-start="117.72" data-duration="11.937" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s10-withyou" src="assets/voice/10.wav" data-start="130.607" data-duration="11.143" data-track-index="10" data-volume="1"></audio>
+    <audio id="v-s11-close" src="assets/voice/11.wav" data-start="142.7" data-duration="8.952" data-track-index="10" data-volume="1"></audio>
+    <audio id="bgm-1" src="assets/bgm/track.loop.mp3" data-start="0" data-duration="84.259" data-track-index="11" data-volume="0.16"></audio>
+    <audio id="bgm-2" src="assets/bgm/track.loop.mp3" data-start="84.259" data-duration="69.093" data-track-index="11" data-volume="0.16"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      // Absolute-positioned tweens only: every state is a pure function of time,
+      // so scrubbing and frame-accurate rendering agree.
+      function a(sel, from, at, d) {
+        if (!document.querySelector(sel)) return;
+        tl.fromTo(sel, from, { opacity:1, x:0, y:0, scale:1,
+                                ease:"power2.out", duration:d }, at);
+      }
+      function w(sel, at, d) {
+        if (!document.querySelector(sel)) return;
+        tl.fromTo(sel, { scaleX:0, opacity:0 },
+                       { scaleX:1, opacity:1, ease:"power2.out", duration:d }, at);
+      }
+      function stagger(sel, at) {
+        const els = document.querySelectorAll(sel);
+        els.forEach(function (el, i) {
+          tl.fromTo(el, { opacity:0, y:16 },
+                        { opacity:1, y:0, ease:"power2.out", duration:.62 },
+                        at + i * 0.16);
+        });
+      }
+  a("#s01-title .anim-logo", {opacity:0, scale:.86}, 0.100, 1.10);
+  a("#s01-title .anim-a", {opacity:0, y:14}, 0.180, .70);
+  a("#s01-title .anim-q", {opacity:0, y:16}, 0.340, .80);
+  a("#s01-title .anim-b", {opacity:0, y:22}, 0.500, .85);
+  a("#s01-title .anim-c", {opacity:0, y:14}, 0.800, .80);
+  a("#s01-title .anim-chip", {opacity:0, x:18}, 0.300, .70);
+  w("#s01-title .anim-rule", 0.700, .90);
+  stagger("#s01-title .bul", 0.850);
+  stagger("#s01-title .anim-item", 0.800);
+  a("#s01-title .anim-stat", {opacity:0, y:16}, 1.600, .80);
+  a("#s01-title .anim-note", {opacity:0, y:12}, 2.400, .80);
+  a("#s01-title .anim-r1", {opacity:0, x:-24}, 0.700, .85);
+  a("#s01-title .anim-r2", {opacity:0, x:24}, 1.000, .85);
+  a("#s02-legend .anim-logo", {opacity:0, scale:.86}, 9.517, 1.10);
+  a("#s02-legend .anim-a", {opacity:0, y:14}, 9.597, .70);
+  a("#s02-legend .anim-q", {opacity:0, y:16}, 9.757, .80);
+  a("#s02-legend .anim-b", {opacity:0, y:22}, 9.917, .85);
+  a("#s02-legend .anim-c", {opacity:0, y:14}, 10.217, .80);
+  a("#s02-legend .anim-chip", {opacity:0, x:18}, 9.717, .70);
+  w("#s02-legend .anim-rule", 10.117, .90);
+  stagger("#s02-legend .bul", 10.267);
+  stagger("#s02-legend .anim-item", 10.217);
+  a("#s02-legend .anim-stat", {opacity:0, y:16}, 11.017, .80);
+  a("#s02-legend .anim-note", {opacity:0, y:12}, 11.817, .80);
+  a("#s02-legend .anim-r1", {opacity:0, x:-24}, 10.117, .85);
+  a("#s02-legend .anim-r2", {opacity:0, x:24}, 10.417, .85);
+  a("#s03-border .anim-logo", {opacity:0, scale:.86}, 17.519, 1.10);
+  a("#s03-border .anim-a", {opacity:0, y:14}, 17.599, .70);
+  a("#s03-border .anim-q", {opacity:0, y:16}, 17.759, .80);
+  a("#s03-border .anim-b", {opacity:0, y:22}, 17.919, .85);
+  a("#s03-border .anim-c", {opacity:0, y:14}, 18.219, .80);
+  a("#s03-border .anim-chip", {opacity:0, x:18}, 17.719, .70);
+  w("#s03-border .anim-rule", 18.119, .90);
+  stagger("#s03-border .bul", 18.269);
+  stagger("#s03-border .anim-item", 18.219);
+  a("#s03-border .anim-stat", {opacity:0, y:16}, 19.019, .80);
+  a("#s03-border .anim-note", {opacity:0, y:12}, 19.819, .80);
+  a("#s03-border .anim-r1", {opacity:0, x:-24}, 18.119, .85);
+  a("#s03-border .anim-r2", {opacity:0, x:24}, 18.419, .85);
+  a("#s03-border .anim-shot", {opacity:0, x:26}, 17.969, .90);
+  tl.fromTo("#s03-border .shot-img", {scale:1.0}, {scale:1.05, ease:"none", duration:14.642}, 17.419);
+  a("#s04-registration .anim-logo", {opacity:0, scale:.86}, 32.611, 1.10);
+  a("#s04-registration .anim-a", {opacity:0, y:14}, 32.691, .70);
+  a("#s04-registration .anim-q", {opacity:0, y:16}, 32.851, .80);
+  a("#s04-registration .anim-b", {opacity:0, y:22}, 33.011, .85);
+  a("#s04-registration .anim-c", {opacity:0, y:14}, 33.311, .80);
+  a("#s04-registration .anim-chip", {opacity:0, x:18}, 32.811, .70);
+  w("#s04-registration .anim-rule", 33.211, .90);
+  stagger("#s04-registration .bul", 33.361);
+  stagger("#s04-registration .anim-item", 33.311);
+  a("#s04-registration .anim-stat", {opacity:0, y:16}, 34.111, .80);
+  a("#s04-registration .anim-note", {opacity:0, y:12}, 34.911, .80);
+  a("#s04-registration .anim-r1", {opacity:0, x:-24}, 33.211, .85);
+  a("#s04-registration .anim-r2", {opacity:0, x:24}, 33.511, .85);
+  a("#s04-registration .anim-shot", {opacity:0, x:26}, 33.061, .90);
+  tl.fromTo("#s04-registration .shot-img", {scale:1.0}, {scale:1.05, ease:"none", duration:19.833}, 32.511);
+  a("#s05-videologo .anim-logo", {opacity:0, scale:.86}, 52.894, 1.10);
+  a("#s05-videologo .anim-a", {opacity:0, y:14}, 52.974, .70);
+  a("#s05-videologo .anim-q", {opacity:0, y:16}, 53.134, .80);
+  a("#s05-videologo .anim-b", {opacity:0, y:22}, 53.294, .85);
+  a("#s05-videologo .anim-c", {opacity:0, y:14}, 53.594, .80);
+  a("#s05-videologo .anim-chip", {opacity:0, x:18}, 53.094, .70);
+  w("#s05-videologo .anim-rule", 53.494, .90);
+  stagger("#s05-videologo .bul", 53.644);
+  stagger("#s05-videologo .anim-item", 53.594);
+  a("#s05-videologo .anim-stat", {opacity:0, y:16}, 54.394, .80);
+  a("#s05-videologo .anim-note", {opacity:0, y:12}, 55.194, .80);
+  a("#s05-videologo .anim-r1", {opacity:0, x:-24}, 53.494, .85);
+  a("#s05-videologo .anim-r2", {opacity:0, x:24}, 53.794, .85);
+  a("#s05-videologo .anim-shot", {opacity:0, x:26}, 53.344, .90);
+  tl.fromTo("#s05-videologo .shot-img", {scale:1.0}, {scale:1.05, ease:"none", duration:10.383}, 52.794);
+  a("#s06-portrait .anim-logo", {opacity:0, scale:.86}, 63.727, 1.10);
+  a("#s06-portrait .anim-a", {opacity:0, y:14}, 63.807, .70);
+  a("#s06-portrait .anim-q", {opacity:0, y:16}, 63.967, .80);
+  a("#s06-portrait .anim-b", {opacity:0, y:22}, 64.127, .85);
+  a("#s06-portrait .anim-c", {opacity:0, y:14}, 64.427, .80);
+  a("#s06-portrait .anim-chip", {opacity:0, x:18}, 63.927, .70);
+  w("#s06-portrait .anim-rule", 64.327, .90);
+  stagger("#s06-portrait .bul", 64.477);
+  stagger("#s06-portrait .anim-item", 64.427);
+  a("#s06-portrait .anim-stat", {opacity:0, y:16}, 65.227, .80);
+  a("#s06-portrait .anim-note", {opacity:0, y:12}, 66.027, .80);
+  a("#s06-portrait .anim-r1", {opacity:0, x:-24}, 64.327, .85);
+  a("#s06-portrait .anim-r2", {opacity:0, x:24}, 64.627, .85);
+  a("#s07-care .anim-logo", {opacity:0, scale:.86}, 82.408, 1.10);
+  a("#s07-care .anim-a", {opacity:0, y:14}, 82.488, .70);
+  a("#s07-care .anim-q", {opacity:0, y:16}, 82.648, .80);
+  a("#s07-care .anim-b", {opacity:0, y:22}, 82.808, .85);
+  a("#s07-care .anim-c", {opacity:0, y:14}, 83.108, .80);
+  a("#s07-care .anim-chip", {opacity:0, x:18}, 82.608, .70);
+  w("#s07-care .anim-rule", 83.008, .90);
+  stagger("#s07-care .bul", 83.158);
+  stagger("#s07-care .anim-item", 83.108);
+  a("#s07-care .anim-stat", {opacity:0, y:16}, 83.908, .80);
+  a("#s07-care .anim-note", {opacity:0, y:12}, 84.708, .80);
+  a("#s07-care .anim-r1", {opacity:0, x:-24}, 83.008, .85);
+  a("#s07-care .anim-r2", {opacity:0, x:24}, 83.308, .85);
+  a("#s07-care .anim-shot", {opacity:0, x:26}, 82.858, .90);
+  tl.fromTo("#s07-care .shot-img", {scale:1.0}, {scale:1.05, ease:"none", duration:16.931}, 82.308);
+  a("#s08-routing .anim-logo", {opacity:0, scale:.86}, 99.789, 1.10);
+  a("#s08-routing .anim-a", {opacity:0, y:14}, 99.869, .70);
+  a("#s08-routing .anim-q", {opacity:0, y:16}, 100.029, .80);
+  a("#s08-routing .anim-b", {opacity:0, y:22}, 100.189, .85);
+  a("#s08-routing .anim-c", {opacity:0, y:14}, 100.489, .80);
+  a("#s08-routing .anim-chip", {opacity:0, x:18}, 99.989, .70);
+  w("#s08-routing .anim-rule", 100.389, .90);
+  stagger("#s08-routing .bul", 100.539);
+  stagger("#s08-routing .anim-item", 100.489);
+  a("#s08-routing .anim-stat", {opacity:0, y:16}, 101.289, .80);
+  a("#s08-routing .anim-note", {opacity:0, y:12}, 102.089, .80);
+  a("#s08-routing .anim-r1", {opacity:0, x:-24}, 100.389, .85);
+  a("#s08-routing .anim-r2", {opacity:0, x:24}, 100.689, .85);
+  a("#s09-help .anim-logo", {opacity:0, scale:.86}, 117.820, 1.10);
+  a("#s09-help .anim-a", {opacity:0, y:14}, 117.900, .70);
+  a("#s09-help .anim-q", {opacity:0, y:16}, 118.060, .80);
+  a("#s09-help .anim-b", {opacity:0, y:22}, 118.220, .85);
+  a("#s09-help .anim-c", {opacity:0, y:14}, 118.520, .80);
+  a("#s09-help .anim-chip", {opacity:0, x:18}, 118.020, .70);
+  w("#s09-help .anim-rule", 118.420, .90);
+  stagger("#s09-help .bul", 118.570);
+  stagger("#s09-help .anim-item", 118.520);
+  a("#s09-help .anim-stat", {opacity:0, y:16}, 119.320, .80);
+  a("#s09-help .anim-note", {opacity:0, y:12}, 120.120, .80);
+  a("#s09-help .anim-r1", {opacity:0, x:-24}, 118.420, .85);
+  a("#s09-help .anim-r2", {opacity:0, x:24}, 118.720, .85);
+  a("#s09-help .anim-shot", {opacity:0, x:26}, 118.270, .90);
+  tl.fromTo("#s09-help .shot-img", {scale:1.0}, {scale:1.05, ease:"none", duration:12.437}, 117.720);
+  a("#s10-withyou .anim-logo", {opacity:0, scale:.86}, 130.707, 1.10);
+  a("#s10-withyou .anim-a", {opacity:0, y:14}, 130.787, .70);
+  a("#s10-withyou .anim-q", {opacity:0, y:16}, 130.947, .80);
+  a("#s10-withyou .anim-b", {opacity:0, y:22}, 131.107, .85);
+  a("#s10-withyou .anim-c", {opacity:0, y:14}, 131.407, .80);
+  a("#s10-withyou .anim-chip", {opacity:0, x:18}, 130.907, .70);
+  w("#s10-withyou .anim-rule", 131.307, .90);
+  stagger("#s10-withyou .bul", 131.457);
+  stagger("#s10-withyou .anim-item", 131.407);
+  a("#s10-withyou .anim-stat", {opacity:0, y:16}, 132.207, .80);
+  a("#s10-withyou .anim-note", {opacity:0, y:12}, 133.007, .80);
+  a("#s10-withyou .anim-r1", {opacity:0, x:-24}, 131.307, .85);
+  a("#s10-withyou .anim-r2", {opacity:0, x:24}, 131.607, .85);
+  a("#s11-close .anim-logo", {opacity:0, scale:.86}, 142.800, 1.10);
+  a("#s11-close .anim-a", {opacity:0, y:14}, 142.880, .70);
+  a("#s11-close .anim-q", {opacity:0, y:16}, 143.040, .80);
+  a("#s11-close .anim-b", {opacity:0, y:22}, 143.200, .85);
+  a("#s11-close .anim-c", {opacity:0, y:14}, 143.500, .80);
+  a("#s11-close .anim-chip", {opacity:0, x:18}, 143.000, .70);
+  w("#s11-close .anim-rule", 143.400, .90);
+  stagger("#s11-close .bul", 143.550);
+  stagger("#s11-close .anim-item", 143.500);
+  a("#s11-close .anim-stat", {opacity:0, y:16}, 144.300, .80);
+  a("#s11-close .anim-note", {opacity:0, y:12}, 145.100, .80);
+  a("#s11-close .anim-r1", {opacity:0, x:-24}, 143.400, .85);
+  a("#s11-close .anim-r2", {opacity:0, x:24}, 143.700, .85);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
