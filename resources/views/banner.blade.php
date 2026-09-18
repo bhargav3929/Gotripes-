@@ -1273,69 +1273,103 @@
               : asset('assets/index_files/logo.png');
           @endphp
           <style>
-          /* Medallion shell — client request 15 Sep 2026: give the registration
-             popup the same circular black-and-gold treatment as the Emirates
-             route selector. Desktop (>=900px): a true disc; the wizard sits in a
-             rectangle inscribed in the disc (0.57 x 0.44 of the diameter, whose
-             corners stay inside the inner ring), so step 1 scrolls a little and
-             steps 2-3 fit. Below 900px a circle leaves no usable width for
-             inputs, so the shell becomes a rounded card with the same ring.
-             These rules come after the base styles above and override only the
-             shell; every field, id and the wizard JS are untouched. */
+          /* Medallion shell for the registration pop-up.
+             Round 1 (15 Sep 2026): same circular black-and-gold treatment as the
+             Emirates route selector. Round 2 (17 Sep, Amer): thinner gold ring
+             (shared token, 4.5% of the disc), better use of the space, NO scroll
+             bar, and Next centred with Cancel beneath it (his own mock-up).
+             How "no scroll bar" is achieved: the old step 1 held eight fields and
+             could never fit in a circle, so the wizard is now four short steps,
+             none taller than the space the disc offers.
+             Circle mode needs a viewport at least 900px wide AND 770px tall. Below
+             either, a circle cannot hold a form, so the shell becomes a rounded
+             card with the same ring that grows to its content; the page scrolls
+             if it must, the form itself never does.
+             These rules follow the base styles above and change only the shell;
+             every field, id, name and the submit path are untouched. */
           .partner-registration-modal{padding:16px;overflow:hidden;align-items:center;justify-content:center}
-          .partner-registration-modal .partner-modal-content{--disc:min(920px,96vw,92vh);--ring-w:calc(var(--disc) * var(--gm-ring-ratio));position:relative;width:var(--disc);height:var(--disc);max-width:none;max-height:none;margin:0;padding:0;border-radius:50%;border:var(--ring-w) solid transparent;background:var(--gm-disc-fill) padding-box,var(--gm-gold-metal) border-box;box-shadow:0 30px 90px rgba(0,0,0,.85),0 0 60px rgba(212,175,55,.18),inset 0 0 0 1px rgba(60,42,8,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;animation:partnerModalSlideIn .4s cubic-bezier(.16,1,.3,1)}
-          /* Inner hairline just inside the band (replaces the old top glow line). */
+          .partner-registration-modal .partner-modal-content{--disc:min(920px,96vw,92vh);--ring-w:calc(var(--disc) * var(--gm-ring-ratio,.045));position:relative;width:var(--disc);height:var(--disc);max-width:none;max-height:none;margin:0;padding:0;border-radius:50%;border:var(--ring-w) solid transparent;background:var(--gm-disc-fill) padding-box,var(--gm-gold-metal) border-box;box-shadow:0 30px 90px rgba(0,0,0,.85),0 0 60px rgba(212,175,55,.18),inset 0 0 0 1px rgba(60,42,8,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible;animation:partnerModalSlideIn .4s cubic-bezier(.16,1,.3,1)}
+          /* Inner hairline just inside the band. */
           .partner-registration-modal .partner-modal-content::before{content:'';position:absolute;inset:calc(var(--disc) * .012);left:auto;top:auto;width:auto;height:auto;transform:none;border:2px solid rgba(212,175,55,.6);border-radius:50%;background:none;pointer-events:none}
-          .partner-registration-modal .partner-brand-medallion{flex:0 0 auto;width:calc(var(--disc) * .13);height:calc(var(--disc) * .13);border-radius:50%;overflow:hidden;background:#050505;box-shadow:0 10px 26px rgba(0,0,0,.6);margin-bottom:calc(var(--disc) * .012)}
+          .partner-registration-modal .partner-brand-medallion{flex:0 0 auto;width:calc(var(--disc) * .12);height:calc(var(--disc) * .12);border-radius:50%;overflow:hidden;background:#050505;box-shadow:0 10px 26px rgba(0,0,0,.6);margin-bottom:calc(var(--disc) * .012)}
           .partner-registration-modal .partner-brand-medallion img{display:block;width:100%;height:100%;object-fit:cover}
           .partner-registration-modal .partner-modal-header{flex:0 0 auto;padding:0;margin-bottom:calc(var(--disc) * .012);justify-content:center;border-radius:0}
           .partner-registration-modal .partner-modal-header h2{font-size:calc(var(--disc) * .028);font-weight:800;letter-spacing:.045em;color:var(--gm-gold);text-shadow:none;white-space:nowrap}
           .partner-registration-modal .partner-modal-header h2 b{color:#fff;font-weight:800}
-          /* Close sits on the ring at 45deg: offset from the padding edge is
-             (0.5 - 0.46/sqrt2)D minus the band, i.e. ~0.09D, less half the button. */
-          .partner-registration-modal .partner-modal-close{position:absolute;z-index:3;top:calc(var(--disc) * .09 - 20px);right:calc(var(--disc) * .09 - 20px);width:40px;height:40px;background:#050505;border:2px solid var(--gm-gold);color:var(--gm-gold);font-size:26px;box-shadow:0 4px 14px rgba(0,0,0,.6)}
+          /* Close sits on the ring at 45 degrees, like a clasp. The shell must not
+             clip (overflow:visible above): with overflow:hidden the disc cut
+             everything outside its inner edge, so this button was invisible from
+             round 1 until 18 Sep and users could only leave via Cancel. Nothing
+             else overflows: the body is measured to sit inside the inner ring.
+             The ring's centre line has
+             radius (0.5 - k/2)D for ring ratio k = 0.045; its 45-degree point lies
+             (0.5 - radius/sqrt2)D from the box corner, minus the band because
+             offsets start at the padding edge: about 0.117D. */
+          .partner-registration-modal .partner-modal-close{position:absolute;z-index:3;top:calc(var(--disc) * .117 - 20px);right:calc(var(--disc) * .117 - 20px);width:40px;height:40px;background:#050505;border:2px solid var(--gm-gold);color:var(--gm-gold);font-size:26px;box-shadow:0 4px 14px rgba(0,0,0,.6)}
           .partner-registration-modal .partner-modal-close:hover{background:var(--gm-gold);color:#000}
-          /* 0.54 x 0.40 of the disc: with the medallion and title stacked above,
-             the body's bottom corners sit at ~0.30D below centre, where the inner
-             ring's chord is 0.58D wide, so nothing (scrollbar included) is clipped. */
-          .partner-registration-modal .partner-modal-body{flex:0 1 auto;width:calc(var(--disc) * .54);height:calc(var(--disc) * .40);padding:4px 0 6px;box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden}
-          /* Only the fields scroll: the step dots and the Next/Back/Cancel row
-             stay pinned, so the wizard never hides its own controls inside the
-             disc's shorter usable height. */
+          /* Body is sized to its content in pixels, not as a share of the disc:
+             the inputs and buttons are fixed-size, so a disc-relative body shrank
+             faster than what it had to hold. 446px = dots 38 + tallest step 296 +
+             actions 102 + padding 10. A fixed height also keeps the title and
+             dots from jumping between steps. The smallest disc whose inner ring
+             still contains all of it is 700px (the Next row binds first), which
+             is why circle mode needs a viewport about 770px tall. */
+          .partner-registration-modal .partner-modal-body{flex:0 0 auto;width:480px;height:446px;padding:4px 0 6px;box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden}
           .partner-registration-modal .partner-modal-body form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
           .partner-registration-modal .partner-step-indicator,
           .partner-registration-modal .partner-form-actions{flex:0 0 auto}
-          .partner-registration-modal .partner-columns.partner-wizard{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:10px;scrollbar-width:thin;scrollbar-color:var(--gm-gold) rgba(255,255,255,.06)}
-          .partner-registration-modal .partner-columns.partner-wizard::-webkit-scrollbar{width:10px}
-          .partner-registration-modal .partner-columns.partner-wizard::-webkit-scrollbar-track{background:rgba(255,255,255,.06);border-radius:8px}
-          .partner-registration-modal .partner-columns.partner-wizard::-webkit-scrollbar-thumb{background-color:var(--gm-gold);border-radius:8px;border:2px solid #0b0b0b;background-clip:padding-box;min-height:36px}
+          /* Each step is centred in the fixed-height body, so a short step (step 1
+             has three fields) sits balanced instead of leaving a hole above Next.
+             "safe center" falls back to top alignment if a step ever overflows.
+             overflow:auto is only a safety net for a validation message pushing a
+             step past its space; at normal sizes no step overflows. */
+          .partner-registration-modal .partner-columns.partner-wizard{display:flex;flex-direction:column;justify-content:safe center;align-items:stretch;flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--gm-gold) rgba(255,255,255,.06)}
+          .partner-registration-modal .partner-columns.partner-wizard::-webkit-scrollbar{width:8px}
+          .partner-registration-modal .partner-columns.partner-wizard::-webkit-scrollbar-thumb{background-color:var(--gm-gold);border-radius:8px}
           .partner-registration-modal .partner-col{background:transparent;border:none;padding:0 0 4px;border-radius:0}
-          /* Dots only inside the disc: the inscribed width is too narrow for three
-             labelled steps without wrapping, and the section title below already
-             names the current step. */
-          .partner-registration-modal .partner-step-indicator{margin-bottom:12px;gap:10px}
+          /* Compact vertical rhythm so three rows fit a step with room to spare. */
+          .partner-registration-modal .partner-step > * + *{margin-top:12px}
+          .partner-registration-modal .partner-col-title{margin-bottom:0}
+          .partner-registration-modal .partner-form-group label{margin-bottom:6px}
+          .partner-registration-modal .partner-field-row{gap:14px}
+          .partner-registration-modal .partner-error-msg{min-height:0;margin-top:4px}
+          .partner-registration-modal .partner-error-msg:empty{display:none}
+          .partner-registration-modal .partner-form-helper-text{margin:4px 0 0}
+          .partner-registration-modal .partner-services-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+          /* Four numbered dots; the section title below each names the step. */
+          .partner-registration-modal .partner-step-indicator{margin-bottom:14px;gap:10px}
           .partner-registration-modal .partner-step-dot .partner-step-label{display:none}
-          .partner-registration-modal .partner-step-line{width:26px}
-          /* Fade the scroll edges so a cut-off field reads as "more below"
-             rather than as a clipped layout. */
+          .partner-registration-modal .partner-step-line{width:24px}
           .partner-registration-modal .partner-columns.partner-wizard{-webkit-mask-image:linear-gradient(#000 0,#000 calc(100% - 22px),transparent 100%);mask-image:linear-gradient(#000 0,#000 calc(100% - 22px),transparent 100%)}
           .partner-registration-modal .partner-columns.partner-wizard.is-scroll-end{-webkit-mask-image:none;mask-image:none}
           .partner-registration-modal .partner-step-dot.is-active .partner-step-num{background:var(--gm-gold-metal);border-color:transparent}
-          /* Tighter type so "Create Partner Account" stays on one line in the
-             narrower inscribed width. */
-          .partner-registration-modal .partner-submit-btn{background:var(--gm-gold-metal);font-size:12px;letter-spacing:1.2px;white-space:nowrap;padding:0 10px}
-          .partner-registration-modal .partner-back-btn,
-          .partner-registration-modal .partner-cancel-btn{font-size:11px;letter-spacing:1.2px;white-space:nowrap}
-          .partner-registration-modal .partner-form-actions{margin-top:14px}
-          @media (max-width:899px){
-            .partner-registration-modal{padding:12px;overflow-y:auto}
-            .partner-registration-modal .partner-modal-content{--disc:min(96vw,92vh);width:min(96vw,560px);height:auto;max-height:92vh;border-radius:32px;border-width:10px;padding:18px 0 18px;justify-content:flex-start}
+          /* Actions per Amer's mock-up: the primary button centred on its own row
+             (Back joins it from step 2), Cancel smaller and centred beneath. A
+             circle narrows toward the bottom, which a centred stack respects. */
+          .partner-registration-modal .partner-form-actions{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:14px}
+          .partner-registration-modal .partner-actions-main{display:flex;justify-content:center;align-items:center;gap:12px}
+          .partner-registration-modal .partner-submit-btn{flex:none;width:calc(var(--disc) * .30);min-width:220px;height:46px;background:var(--gm-gold-metal);font-size:12px;letter-spacing:1.4px;white-space:nowrap;padding:0 14px}
+          .partner-registration-modal .partner-back-btn{flex:none;width:118px;height:46px;font-size:11px;letter-spacing:1.2px;white-space:nowrap}
+          .partner-registration-modal .partner-cancel-btn{flex:none;width:auto;min-width:112px;height:32px;padding:0 20px;font-size:10px;letter-spacing:1.6px;white-space:nowrap;color:#8a8a8a;border-color:#2e2e2e}
+          .partner-registration-modal .partner-cancel-btn:hover{color:#fff;border-color:#555}
+          @media (max-width:899px), (max-height:769px){
+            .partner-registration-modal{padding:12px;overflow-y:auto;align-items:flex-start}
+            .partner-registration-modal .partner-modal-content{--disc:560px;width:min(96vw,560px);height:auto;max-height:none;margin:12px auto;border-radius:32px;border-width:10px;padding:20px 0 20px;justify-content:flex-start;overflow:visible}
             .partner-registration-modal .partner-modal-content::before{inset:8px;border-radius:22px}
             .partner-registration-modal .partner-brand-medallion{width:72px;height:72px;margin-bottom:8px}
             .partner-registration-modal .partner-modal-header{margin-bottom:8px}
             .partner-registration-modal .partner-modal-header h2{font-size:15px;white-space:normal;text-align:center;padding:0 56px}
             .partner-registration-modal .partner-modal-close{top:12px;right:12px;width:34px;height:34px;font-size:22px}
-            .partner-registration-modal .partner-modal-body{width:100%;height:auto;max-height:none;flex:1 1 auto;min-height:0;padding:6px 16px 8px}
+            .partner-registration-modal .partner-modal-body{width:100%;height:auto;max-height:none;flex:0 0 auto;padding:6px 20px 8px;overflow:visible}
+            .partner-registration-modal .partner-columns.partner-wizard{overflow:visible;padding-right:0;-webkit-mask-image:none;mask-image:none}
+            .partner-registration-modal .partner-submit-btn{width:min(100%,280px);min-width:0}
+          }
+          @media (max-width:420px){
+            .partner-registration-modal .partner-field-row{grid-template-columns:1fr}
+            .partner-registration-modal .partner-services-grid{grid-template-columns:1fr}
+            .partner-registration-modal .partner-actions-main{width:100%}
+            .partner-registration-modal .partner-back-btn{width:96px}
+            .partner-registration-modal .partner-submit-btn{flex:1 1 auto;width:auto}
           }
           @media (prefers-reduced-motion:reduce){.partner-registration-modal,.partner-registration-modal .partner-modal-content{animation:none}}
           </style>
@@ -1361,31 +1395,37 @@
                       ->values();
                   @endphp
 
-                  <!-- Three sections, shown one at a time via Next/Back — the client
-                       asked for this explicitly (2026-08-25 call): fill section 1,
-                       click Next, section 2 appears, and so on. -->
+                  <!-- Four short sections, shown one at a time via Next/Back. The
+                       client asked for a step-by-step form (2026-08-25 call) and
+                       for no scroll bar (17 Sep), so the old eight-field first
+                       step is split: contact, then company and licence. -->
                   <div class="partner-step-indicator">
                     <div class="partner-step-dot is-active" data-step-dot="1">
                       <span class="partner-step-num">1</span>
-                      <span class="partner-step-label">Company Details</span>
+                      <span class="partner-step-label">Contact</span>
                     </div>
                     <div class="partner-step-line"></div>
                     <div class="partner-step-dot" data-step-dot="2">
                       <span class="partner-step-num">2</span>
-                      <span class="partner-step-label">Registering From</span>
+                      <span class="partner-step-label">Company</span>
                     </div>
                     <div class="partner-step-line"></div>
                     <div class="partner-step-dot" data-step-dot="3">
                       <span class="partner-step-num">3</span>
+                      <span class="partner-step-label">Registering From</span>
+                    </div>
+                    <div class="partner-step-line"></div>
+                    <div class="partner-step-dot" data-step-dot="4">
+                      <span class="partner-step-num">4</span>
                       <span class="partner-step-label">Services</span>
                     </div>
                   </div>
 
                   <div class="partner-columns partner-wizard">
 
-                    <!-- Step 1: Company / Contact Details -->
+                    <!-- Step 1: Contact Details -->
                     <div class="partner-col partner-step is-active" data-step="1">
-                      <div class="partner-col-title">Company / Contact Details</div>
+                      <div class="partner-col-title">Contact Details</div>
 
                       <div class="partner-field-row">
                         <div class="partner-form-group">
@@ -1405,39 +1445,36 @@
                         </div>
                       </div>
 
+                      <div class="partner-form-group">
+                        <label for="partnerEmail">Email Address</label>
+                        <input type="email" id="partnerEmail" name="email" placeholder="your.email@domain.com" required>
+                        <span class="partner-error-msg" id="partnerEmail-error"></span>
+                      </div>
+                    </div>
+
+                    <!-- Step 2: Company & Licence -->
+                    <div class="partner-col partner-step" data-step="2">
+                      <div class="partner-col-title">Company &amp; Trade Licence</div>
+
                       <div class="partner-field-row">
-                        <div class="partner-form-group">
-                          <label for="partnerEmail">Email Address</label>
-                          <input type="email" id="partnerEmail" name="email" placeholder="your.email@domain.com" required>
-                          <span class="partner-error-msg" id="partnerEmail-error"></span>
-                        </div>
                         <div class="partner-form-group">
                           <label for="partnerCompanyName">Business Name / Company</label>
                           <input type="text" id="partnerCompanyName" name="company_name" placeholder="Your company name" required>
                           <span class="partner-error-msg" id="partnerCompanyName-error"></span>
                         </div>
-                      </div>
-
-                      <div class="partner-field-row">
                         <div class="partner-form-group">
                           <label for="partnerLicenseNumber">Trade License No.</label>
                           <input type="text" id="partnerLicenseNumber" name="trade_license_number" placeholder="e.g. TL-12345" required maxlength="100">
                           <span class="partner-error-msg" id="partnerLicenseNumber-error"></span>
                         </div>
+                      </div>
+
+                      <div class="partner-field-row">
                         <div class="partner-form-group">
                           <label for="partnerLicenseExpiry">Trade License Expiry</label>
                           <input type="date" id="partnerLicenseExpiry" name="trade_license_expiry_date" required>
                           <span class="partner-error-msg" id="partnerLicenseExpiry-error"></span>
                         </div>
-                      </div>
-
-                      <div class="partner-form-group">
-                        <label for="partnerAddress">Address</label>
-                        <input type="text" id="partnerAddress" name="address" placeholder="Their address" required>
-                        <span class="partner-error-msg" id="partnerAddress-error"></span>
-                      </div>
-
-                      <div class="partner-field-row">
                         <div class="partner-form-group">
                           <label for="partnerDocument">Trade License Document</label>
                           <input type="file" name="trade_license_document" id="partnerDocument"
@@ -1446,10 +1483,16 @@
                           <span class="partner-error-msg" id="partnerDocument-error"></span>
                         </div>
                       </div>
+
+                      <div class="partner-form-group">
+                        <label for="partnerAddress">Address</label>
+                        <input type="text" id="partnerAddress" name="address" placeholder="Their address" required>
+                        <span class="partner-error-msg" id="partnerAddress-error"></span>
+                      </div>
                     </div>
 
-                    <!-- Step 2: Registering From -->
-                    <div class="partner-col partner-step" data-step="2">
+                    <!-- Step 3: Registering From -->
+                    <div class="partner-col partner-step" data-step="3">
                       <div class="partner-col-title">Registering From</div>
 
                       <div class="partner-form-group">
@@ -1497,8 +1540,8 @@
                       </div>
                     </div>
 
-                    <!-- Step 3: Services -->
-                    <div class="partner-col partner-step" data-step="3">
+                    <!-- Step 4: Services -->
+                    <div class="partner-col partner-step" data-step="4">
                       <div class="partner-col-title">Which products or services do you want to sell through us?</div>
 
                       <div class="partner-services-grid">
@@ -1516,9 +1559,11 @@
 
                   <!-- Form Buttons -->
                   <div class="partner-form-actions">
-                    <button type="button" class="partner-back-btn" id="partnerBackBtn" style="display:none;">Back</button>
-                    <button type="button" class="partner-next-btn partner-submit-btn" id="partnerNextBtn">Next</button>
-                    <button type="submit" class="partner-submit-btn" id="partnerSubmitBtn" style="display:none;">Create Partner Account</button>
+                    <div class="partner-actions-main">
+                      <button type="button" class="partner-back-btn" id="partnerBackBtn" style="display:none;">Back</button>
+                      <button type="button" class="partner-next-btn partner-submit-btn" id="partnerNextBtn">Next</button>
+                      <button type="submit" class="partner-submit-btn" id="partnerSubmitBtn" style="display:none;">Create Partner Account</button>
+                    </div>
                     <button type="button" class="partner-cancel-btn" id="partnerCancelBtn">Cancel</button>
                   </div>
 
@@ -1728,7 +1773,8 @@
               field.reportValidity();
             }
           });
-          if (stepEl.dataset.step === '3') {
+          // Found by content, not number, so re-ordering steps can't break it.
+          if (stepEl.querySelector('input[name="services[]"]')) {
             const anyService = stepEl.querySelectorAll('input[name="services[]"]:checked').length > 0;
             if (!anyService) {
               document.getElementById('partnerServices-error').textContent = 'Select at least one product/service';
