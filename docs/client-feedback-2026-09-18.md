@@ -61,13 +61,13 @@ Bhargav's addition: **"also please mention as home so that users may understand 
 
 | # | Where | Ask | Status |
 |---|-------|-----|--------|
-| B1 | Visa route selector | Outer gold ring is now too thick next to the thin Dubai/Sharjah rings — reduce it and balance the two | **Done, local** — outer ring 8.5% → 4.5%; Dubai/Sharjah rings now 10%, matching the logo |
-| B2 | Registration pop-up | Reduce the gold ring thickness | **Done, local** — halved, via the shared ring token |
-| B3 | Registration pop-up | Use the space better and remove the scroll bar from the form | **Done, local** — four short steps instead of three; no step scrolls at any tested size |
-| B4 | Registration pop-up | Follow Amer's mock-up: NEXT centred on its own row, CANCEL smaller and centred beneath it | **Done, local** |
-| B5 | Help button (bottom right, support tickets) | Same black-and-gold theme; unique, stands out | **Done, local** — gold-ringed medallion, support agent inside, HELP tag, gold halo |
-| B6 | Visa route selector | Logo clickable, goes to the homepage | **Done, local** |
-| B7 | Visa route selector | Visible "Home" label on the logo so users understand it | **Done, local** — gold HOME tag with a house icon |
+| B1 | Visa route selector | Outer gold ring is now too thick next to the thin Dubai/Sharjah rings — reduce it and balance the two | **Live** — outer ring 8.5% → 4.5%; Dubai/Sharjah rings now 10%, matching the logo |
+| B2 | Registration pop-up | Reduce the gold ring thickness | **Live** — halved, via the shared ring token |
+| B3 | Registration pop-up | Use the space better and remove the scroll bar from the form | **Live** — four short steps instead of three; no step scrolls at any tested size |
+| B4 | Registration pop-up | Follow Amer's mock-up: NEXT centred on its own row, CANCEL smaller and centred beneath it | **Live** |
+| B5 | Help button (bottom right, support tickets) | Same black-and-gold theme; unique, stands out | **Live** — gold-ringed medallion, support agent inside, HELP tag, gold halo |
+| B6 | Visa route selector | Logo clickable, goes to the homepage | **Live** |
+| B7 | Visa route selector | Visible "Home" label on the logo so users understand it | **Live** — gold HOME tag with a house icon |
 
 Note on B1: round 1 asked to make this ring *thicker* to match the logo (2.2% → 8.5% of the disc).
 Amer now finds 8.5% too heavy. The target is balance with the three inner circles, not the maximum.
@@ -96,4 +96,4 @@ These explain part of what Amer saw, so they are worth knowing:
 - Help panel opens clear of the new button on desktop and phone.
 - 19 feature tests pass.
 
-Not yet deployed — waiting for approval.
+Deployed to gotrips.ai on 19 Sep 2026 (commit e1f3c35). Checked live on gotrips.ai, /uaevisa, staging and amer after the webhook pull: all 200, all round-2 markers present.
