@@ -1,0 +1,8 @@
+# Raw captures, cuts and the render stay out of git (the deploy webhook pulls
+# the whole repo; media makes that outage longer). Rebuild with:
+#   ./state.sh before && node record.mjs before
+#   ./state.sh after  && node record.mjs after
+#   ./build.sh
+out/
+shots/
+voice/*.wav

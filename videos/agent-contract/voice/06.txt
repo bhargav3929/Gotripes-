@@ -1,0 +1,1 @@
+At the bottom is the agreement. They read it, type their full name, and tick the box. Without that, the form will not submit.

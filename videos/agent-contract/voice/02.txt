@@ -1,0 +1,1 @@
+In the manager portal, under Team, there is a new page: Agent Contract. Right now nothing is published, so registration behaves exactly as it does today.

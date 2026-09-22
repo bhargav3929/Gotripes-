@@ -1,0 +1,1 @@
+You see the application as usual, with one new card: Agreement. The contract and its version, who signed, when, and from which I P address.

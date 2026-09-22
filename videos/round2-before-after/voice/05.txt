@@ -1,0 +1,1 @@
+Now the logo carries a gold Home label, so people know what it does. Click it, and you're back on the homepage.

@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const B = 'http://127.0.0.1:8000', tag = process.argv[2];
+const br = await chromium.launch();
+const p = await br.newPage({ viewport: { width: 1920, height: 1080 } });
+const hide = () => p.evaluate(() => { const e = document.getElementById('gotripsLeadPopupOverlay'); if (e) e.style.display = 'none'; });
+await p.goto(B + '/uaevisa'); await p.waitForTimeout(2500); await hide();
+await p.screenshot({ path: `shots/${tag}-selector.png` });
+await p.goto(B + '/'); await p.waitForTimeout(2500); await hide();
+await p.screenshot({ path: `shots/${tag}-help.png`, clip: { x: 1500, y: 780, width: 420, height: 300 } });
+await p.click('#partnerRegisterBtn'); await p.waitForTimeout(1500);
+await p.screenshot({ path: `shots/${tag}-popup.png` });
+const w = await p.evaluate(() => { const w = document.querySelector('#partnerRegistrationModal .partner-wizard'); return w ? [w.scrollHeight, w.clientHeight] : null; });
+console.log(tag, 'wizard scroll/client', w);
+await br.close();
