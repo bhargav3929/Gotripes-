@@ -4780,7 +4780,7 @@
 </section>
 
 <!-- ============================================================
-     PARTNER CTA BANNER (E-SIM page) — main GoTrips site only
+     PARTNER CTA BANNER (eSIM page) — main GoTrips site only
      ============================================================ -->
 @platformOnly
 <section class="esim-partner-cta-banner">
@@ -4789,7 +4789,7 @@
             <div class="epcb-icon"><i class="fa-solid fa-handshake"></i></div>
             <div class="epcb-text">
                 <span class="epcb-eyebrow">Partner Program</span>
-                <h3 class="epcb-title">E-SIM Partner Login &amp; Earn Commissions</h3>
+                <h3 class="epcb-title">eSIM Partner Login &amp; Earn Commissions</h3>
                 <p class="epcb-sub">Refer travellers, earn on every eSIM sale — paid directly to your bank.</p>
             </div>
         </div>

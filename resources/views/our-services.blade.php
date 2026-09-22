@@ -23,17 +23,14 @@
                         ['title' => 'CITY TOUR', 'img' => 'assets/index_files/service_city_tour_1767532704738.png', 'link' => '/'],
                         ['title' => 'PICK & DROP GUESTS', 'img' => 'assets/index_files/service_pick_drop_1767532722482.png', 'link' => '/'],
                         ['title' => 'LIWA GUESTS ASSISTANCE', 'img' => 'assets/index_files/service_liwa_assistance_1767532741495.png', 'link' => '/'],
-                        ['title' => 'WORLD TRAVEL ESIM AVAILABLE', 'img' => 'assets/homepageads/ad_esim.png', 'link' => '/esim'],
+                        ['title' => 'WORLD TRAVEL eSIM AVAILABLE', 'img' => 'assets/homepageads/ad_esim.png', 'link' => '/esim'],
                         ['title' => 'TRIPS ORGANISING', 'img' => 'assets/index_files/service_trips_organizing_1767532787246.png', 'link' => '/'],
                         ['title' => 'HOTEL BOOKINGS', 'img' => 'assets/index_files/service_hotel_bookings_1767532833171.png', 'link' => '/'],
                         ['title' => 'BUSINESS WHATSAPP INTEGRATION', 'img' => 'assets/index_files/service_whatsapp_integration_1767532912170.png', 'link' => '/'],
                         ['title' => 'WEBSITE DEVELOPMENT', 'img' => 'assets/index_files/service_website_development_1767532932173.png', 'link' => '/'],
                         ['title' => 'VISA SERVICES', 'img' => 'assets/index_files/service_visa_services_1767532949283.png', 'link' => '/uaevisa'],
                         ['title' => 'HAJJ UMRAH SERVICES', 'img' => 'assets/index_files/service_hajj_umrah_1767532980525.png', 'link' => '/hajj-umrah'],
-                        // Matched to the existing Transport "Coming Soon" page — its own
-                        // tagline is "Premium chauffeur, transfers and car rentals", the
-                        // same nav item other pages already link to for this service.
-                        ['title' => 'CAR RENTALS', 'img' => 'assets/index_files/service_car_rentals_1767532996883.png', 'link' => '/coming-soon/transport'],
+                        ['title' => 'CAR RENTALS', 'img' => 'assets/index_files/service_car_rentals_1767532996883.png', 'link' => '/'],
                         ['title' => 'RECRUITMENT SERVICES', 'img' => 'assets/index_files/service_recruitment_1767533016184.png', 'link' => '/'],
                         ['title' => 'INTERNSHIPS', 'img' => 'assets/index_files/service_internships_1767533036518.png', 'link' => '/'],
                         ['title' => 'WORLD CLASS TOUR PACKAGES', 'img' => 'assets/index_files/service_tour_packages_1767533057318.png', 'link' => '/countriestour'],
@@ -126,7 +123,9 @@
     .service-card:hover .service-card-img { transform: scale(1.1); }
     .service-card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.8) 100%); transition: opacity 0.4s ease; }
     .service-card-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; z-index: 2; }
-    .service-card-title { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+    /* Titles are written in capitals in the array above; no text-transform,
+       so the eSIM brand spelling survives. */
+    .service-card-title { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
     
     @media (max-width: 1199px) { .services-section .col-lg-3 { width: 33.333%; } }
     @media (max-width: 768px) {
