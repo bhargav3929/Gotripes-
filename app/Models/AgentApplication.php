@@ -30,6 +30,12 @@ class AgentApplication extends Model
         'address',
         'emirate',
         'services',
+        'contract_document_id',
+        'signature_full_name',
+        'signature_agreed',
+        'signature_ip',
+        'signed_at',
+        'signed_pdf_path',
         'trade_license_number',
         'trade_license_expiry_date',
         'trade_license_document_path',
@@ -48,11 +54,23 @@ class AgentApplication extends Model
         'services' => 'array',
         'trade_license_expiry_date' => 'date',
         'reviewed_at' => 'datetime',
+        'signature_agreed' => 'boolean',
+        'signed_at' => 'datetime',
     ];
 
     public function reviewer()
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function contract()
+    {
+        return $this->belongsTo(ContractDocument::class, 'contract_document_id');
+    }
+
+    public function hasSignedContract(): bool
+    {
+        return $this->signature_agreed && $this->signed_at !== null;
     }
 
     public function user()
@@ -99,6 +117,11 @@ class AgentApplication extends Model
             'trade_license_expiry_date'    => $this->trade_license_expiry_date,
             'trade_license_document_path'  => $this->trade_license_document_path,
             'is_active'      => true,
+            // Carried onto the live account so the portal can show what this
+            // agent signed without walking back to the application.
+            'contract_document_id'     => $this->contract_document_id,
+            'contract_signed_at'       => $this->signed_at,
+            'contract_signed_pdf_path' => $this->signed_pdf_path,
         ]);
 
         $this->update([

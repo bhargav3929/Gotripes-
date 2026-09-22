@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Manager\ManagerAgentsController;
 use App\Mail\AgentApplicationReceivedMail;
 use App\Models\AgentApplication;
+use App\Models\ContractDocument;
 use App\Models\Emirates;
 use App\Models\User;
+use App\Services\AgentContractService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -22,8 +24,11 @@ use Illuminate\Validation\Rule;
  * uploads a trade license, and submits. This does NOT create a working
  * `company_agent` login — the application sits `pending` until a manager
  * reviews the license and approves it (see ManagerAgentApplicationsController).
- * Modeled on B2bPartnerSignupController, minus the contract/e-signature
- * flow, which agent registration wasn't asked to have.
+ * Modeled on B2bPartnerSignupController.
+ *
+ * Since 22 Sep 2026 the applicant also signs the B2B contract here, when a
+ * manager has published one (Manager -> Contracts). No signature, no approval:
+ * the client's rule is contract first, access after.
  */
 class AgentSignupController extends Controller
 {
@@ -40,7 +45,9 @@ class AgentSignupController extends Controller
             ->reject(fn ($c) => $c === AgentApplication::UAE_COUNTRY_NAME)
             ->values();
 
-        return view('agent.register', compact('services', 'emirates', 'countries'));
+        $contract = ContractDocument::current();
+
+        return view('agent.register', compact('services', 'emirates', 'countries', 'contract'));
     }
 
     public function register(Request $request)
@@ -48,8 +55,14 @@ class AgentSignupController extends Controller
         $services = ManagerAgentsController::grantableServicesFor(current_company());
         $emirateNames = Emirates::getActiveEmirates()->pluck('emiratesName')->all();
         $isUae = $request->boolean('registering_from_uae');
+        $contract = ContractDocument::current();
 
-        $validated = $request->validate([
+        $contractRules = $contract ? [
+            'signature_full_name' => 'required|string|max:255',
+            'signature_agreed'    => 'accepted',
+        ] : [];
+
+        $validated = $request->validate($contractRules + [
             'name'          => 'required|string|max:255',
             'company_name'  => 'required|string|max:255',
             'email'         => 'required|email|unique:agent_applications,email|unique:users,email',
@@ -73,6 +86,8 @@ class AgentSignupController extends Controller
             'services.required' => 'Select at least one service you\'re interested in.',
             'emirate.required_if' => 'Select which Emirate you\'re registering from.',
             'country.required_if' => 'Select which country you\'re registering from.',
+            'signature_full_name.required' => 'Type your full name to sign the agreement.',
+            'signature_agreed.accepted' => 'You need to accept the agreement before we can review your application.',
         ]);
 
         $licensePath = $request->file('trade_license_document')->store('agents/trade_licenses', 'public');
@@ -97,7 +112,18 @@ class AgentSignupController extends Controller
             'trade_license_expiry_date' => $validated['trade_license_expiry_date'],
             'trade_license_document_path' => $licensePath,
             'status'       => 'pending',
+            'contract_document_id' => $contract?->id,
+            'signature_full_name'  => $contract ? $validated['signature_full_name'] : null,
+            'signature_agreed'     => (bool) $contract,
+            'signature_ip'         => $contract ? $request->ip() : null,
+            'signed_at'            => $contract ? now() : null,
         ]);
+
+        if ($contract) {
+            $application->update([
+                'signed_pdf_path' => app(AgentContractService::class)->sign($application, $contract),
+            ]);
+        }
 
         try {
             Mail::to($application->email)->send(new AgentApplicationReceivedMail($application, $generatedPassword));

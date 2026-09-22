@@ -689,6 +689,18 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::put('/{partner}/commission', [ManagerB2bPartnersController::class, 'updateCommission'])->name('commission.update');
     });
 
+    // The B2B contract agents sign at registration: publish a version (pasted
+    // text or an uploaded PDF), switch which one is current, read the signed
+    // ones back. Owner/admin only — enforced in the controller.
+    Route::prefix('contracts')->name('contracts.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'store'])->name('store');
+        Route::get('/{contract}', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'show'])->name('show');
+        Route::post('/{contract}/activate', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'activate'])->name('activate');
+        Route::post('/{contract}/deactivate', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'deactivate'])->name('deactivate');
+        Route::delete('/{contract}', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'destroy'])->name('destroy');
+    });
+
     // Agent application review — approve/deny applications that
     // self-registered at /agent/register, after checking the trade license.
     Route::prefix('agent-applications')->name('agent-applications.')->group(function () {

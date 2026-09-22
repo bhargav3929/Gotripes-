@@ -36,6 +36,11 @@ class User extends Authenticatable
         'expiry_warning_sent_at',
         'is_super_admin',
         'last_login_at',
+        // The B2B agreement this agent signed at registration, copied from
+        // their application on approval (AgentApplication::approve).
+        'contract_document_id',
+        'contract_signed_at',
+        'contract_signed_pdf_path',
     ];
 
     protected $casts = [
@@ -48,6 +53,7 @@ class User extends Authenticatable
         'pending_license_review' => 'boolean',
         'expiry_warning_sent_at' => 'datetime',
         'last_login_at' => 'datetime',
+        'contract_signed_at' => 'datetime',
     ];
 
     /**

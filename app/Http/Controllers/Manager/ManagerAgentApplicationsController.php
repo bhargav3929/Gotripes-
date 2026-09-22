@@ -92,6 +92,14 @@ class ManagerAgentApplicationsController extends Controller
                 ->with('error', 'This application has already been reviewed.');
         }
 
+        // Contract first, access after (client rule, 22 Sep 2026). Applications
+        // made before a contract was published have nothing to sign, so they
+        // are only blocked when one is live and this applicant skipped it.
+        if (\App\Models\ContractDocument::current() && !$application->hasSignedContract()) {
+            return redirect()->route('manager.agent-applications.show', $application->id)
+                ->with('error', 'This applicant has not signed the agreement, so they cannot be approved. Ask them to register again now that the contract is published.');
+        }
+
         $application->approve(auth()->user());
 
         $this->sendDecisionMail($application, 'approved');

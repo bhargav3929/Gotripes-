@@ -542,6 +542,74 @@
       border-radius: 10px;
     }
 
+    /* Agreement step: the contract scrolls inside its own box, so the step
+       itself still fits the disc without a scroll bar (client ask, 17 Sep). */
+    .partner-registration-modal .partner-agreement-version {
+      display: block;
+      margin-top: 4px;
+      color: #d4af37;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: none;
+    }
+    .partner-registration-modal .partner-agreement-text {
+      max-height: 100px;
+      overflow-y: auto;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      color: #cfcfcf;
+      font-size: 11px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .partner-registration-modal .partner-agreement-text:focus {
+      outline: none;
+      border-color: rgba(255, 215, 0, 0.45);
+    }
+    .partner-registration-modal .partner-agreement-open {
+      display: inline-block;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      border-radius: 8px;
+      padding: 9px 14px;
+      color: #FFD700;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .partner-registration-modal .partner-agreement-open:hover {
+      background: rgba(255, 215, 0, 0.08);
+    }
+    .partner-registration-modal .partner-agreement-accept {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 8px;
+    }
+    .partner-registration-modal .partner-agreement-accept input {
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
+      margin: 2px 0 0;
+      accent-color: #FFD700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .partner-registration-modal .partner-agreement-accept label {
+      margin: 0 !important;
+      color: #bbb;
+      font-size: 10.5px;
+      font-weight: 500;
+      line-height: 1.5;
+      text-transform: none;
+      letter-spacing: normal;
+      cursor: pointer;
+    }
+
     /* Services checkboxes */
     .partner-registration-modal .partner-services-grid {
       display: flex;
@@ -1393,6 +1461,11 @@
                     $partnerCountries = collect(\App\Support\CountryCodes::all())
                       ->reject(fn ($c) => $c['name'] === 'United Arab Emirates')
                       ->values();
+                    // The agreement a manager published under Manager -> Agent
+                    // Contract. When there is one, this modal grows a fifth
+                    // step, because it posts to the same endpoint as
+                    // /agent/register and unsigned applications can't be approved.
+                    $partnerContract = \App\Models\ContractDocument::current();
                   @endphp
 
                   <!-- Four short sections, shown one at a time via Next/Back. The
@@ -1419,6 +1492,13 @@
                       <span class="partner-step-num">4</span>
                       <span class="partner-step-label">Services</span>
                     </div>
+                    @if($partnerContract)
+                      <div class="partner-step-line"></div>
+                      <div class="partner-step-dot" data-step-dot="5">
+                        <span class="partner-step-num">5</span>
+                        <span class="partner-step-label">Agreement</span>
+                      </div>
+                    @endif
                   </div>
 
                   <div class="partner-columns partner-wizard">
@@ -1554,6 +1634,40 @@
                       </div>
                       <span class="partner-error-msg" id="partnerServices-error"></span>
                     </div>
+
+                    @if($partnerContract)
+                      <!-- Step 5: the agreement. Contract first, access after. -->
+                      <div class="partner-col partner-step" data-step="5">
+                        <div class="partner-col-title">
+                          Agreement
+                          <span class="partner-agreement-version">{{ $partnerContract->title }} · v{{ $partnerContract->version }}</span>
+                        </div>
+
+                        @if($partnerContract->isUpload())
+                          <a class="partner-agreement-open" href="{{ Storage::url($partnerContract->pdf_path) }}" target="_blank" rel="noopener">
+                            Read the agreement ({{ $partnerContract->file_name }})
+                          </a>
+                        @else
+                          <div class="partner-agreement-text" tabindex="0">{{ $partnerContract->body }}</div>
+                        @endif
+
+                        <div class="partner-form-group">
+                          <label for="partnerSignatureName">Type your full name to sign</label>
+                          <input type="text" id="partnerSignatureName" name="signature_full_name"
+                                 placeholder="Your full legal name" maxlength="255" required>
+                          <span class="partner-error-msg" id="partnerSignatureName-error"></span>
+                        </div>
+
+                        <div class="partner-agreement-accept">
+                          <input type="checkbox" id="partnerSignatureAgreed" name="signature_agreed" value="1" required>
+                          <label for="partnerSignatureAgreed">
+                            I have read the agreement and accept it for my company. My name, the date
+                            and my IP address are recorded with this signature.
+                          </label>
+                        </div>
+                        <span class="partner-error-msg" id="partnerSignatureAgreed-error"></span>
+                      </div>
+                    @endif
 
                   </div>
 
@@ -1851,7 +1965,9 @@
             'country': 'partnerCountrySelect',
             'registering_from_uae': 'partnerEmirateSelect',
             'services': 'partnerServices',
-            'trade_license_document': 'partnerDocument'
+            'trade_license_document': 'partnerDocument',
+            'signature_full_name': 'partnerSignatureName',
+            'signature_agreed': 'partnerSignatureAgreed'
           };
 
           let firstErrorStep = null;

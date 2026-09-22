@@ -793,6 +793,12 @@
                         <span>B2B Partners</span>
                     </a>
                 </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.contracts.index') }}" class="{{ request()->routeIs('manager.contracts.*') ? 'active' : '' }}">
+                        <i class="fas fa-file-contract"></i>
+                        <span>Agent Contract</span>
+                    </a>
+                </li>
 
                 {{-- ────────────────  SETTINGS  ──────────────── --}}
                 {{-- Profile & Preferences land in Step D. Same coming-soon

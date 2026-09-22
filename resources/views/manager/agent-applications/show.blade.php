@@ -83,6 +83,41 @@
                 </div>
             </div>
         </div>
+        <div class="wp-card gt-card">
+            <div class="wp-card-header"><i class="fas fa-file-signature text-secondary-wp"></i> Agreement</div>
+            <div class="wp-card-body">
+                @if($application->hasSignedContract())
+                    <div class="detail-row"><span>Contract</span>
+                        <span>{{ optional($application->contract)->title ?? 'Removed' }}
+                            @if($application->contract)
+                                <span class="wp-badge wp-badge-amber" style="margin-left:4px;">v{{ $application->contract->version }}</span>
+                            @endif
+                        </span>
+                    </div>
+                    <div class="detail-row"><span>Signed By</span><span>{{ $application->signature_full_name }}</span></div>
+                    <div class="detail-row"><span>Signed At</span><span>{{ optional($application->signed_at)->format('d M Y, H:i') }} UTC</span></div>
+                    <div class="detail-row"><span>IP Address</span><span>{{ $application->signature_ip ?: '—' }}</span></div>
+                    <div class="detail-row"><span>Signed Copy</span>
+                        <span>
+                            @if($application->signed_pdf_path)
+                                <a href="{{ Storage::url($application->signed_pdf_path) }}" target="_blank" style="color: var(--wp-primary);">Download PDF</a>
+                            @else
+                                &mdash;
+                            @endif
+                        </span>
+                    </div>
+                @else
+                    <p class="wp-form-help mb-0">
+                        Not signed. This applicant registered
+                        @if(\App\Models\ContractDocument::current())
+                            before the current contract was published, so they cannot be approved until they register again.
+                        @else
+                            when no contract was published, so there was nothing to sign.
+                        @endif
+                    </p>
+                @endif
+            </div>
+        </div>
     </div>
 
     <div class="col-lg-5">

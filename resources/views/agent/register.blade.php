@@ -139,6 +139,38 @@
             margin-top: 12px;
         }
 
+        /* Agreement: the contract a manager published, read and signed here
+           before the application is submitted. The text scrolls inside its own
+           box so the form itself never grows a scroll bar. */
+        .agreement {
+            margin-top: 16px; padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+        .agreement-version {
+            font-weight: 500; font-size: 11.5px; letter-spacing: 0.04em;
+            color: var(--gold); margin-left: 8px; text-transform: none;
+        }
+        .agreement-text {
+            max-height: 190px; overflow-y: auto;
+            border: 1px solid var(--border); border-radius: 6px;
+            padding: 14px 16px; margin: 8px 0 12px;
+            background: rgba(0,0,0,0.25); color: #d8d8d8;
+            font-size: 12.5px; line-height: 1.65; white-space: pre-wrap;
+        }
+        .agreement-text:focus { outline: none; border-color: var(--gold); }
+        .agreement-open {
+            display: inline-flex; align-items: center; gap: 8px;
+            border: 1px solid var(--gold); border-radius: 6px;
+            padding: 9px 14px; margin: 6px 0 12px;
+            color: var(--gold); text-decoration: none; font-size: 13px; font-weight: 600;
+            transition: background .18s ease;
+        }
+        .agreement-open:hover { background: rgba(255,215,0,0.08); color: var(--gold); }
+        .agreement-sign { display: grid; grid-template-columns: 1fr 1.4fr; gap: 14px; align-items: start; }
+        .agreement-accept { display: flex; gap: 10px; align-items: flex-start; padding-top: 26px; }
+        .agreement-accept input { accent-color: var(--gold); margin-top: 3px; flex: 0 0 auto; }
+        .agreement-accept label { margin: 0; font-size: 12px; line-height: 1.5; font-weight: 400; cursor: pointer; }
+
         .btn-submit {
             width: 100%;
             background: linear-gradient(135deg, var(--gold), var(--gold-hover));
@@ -156,6 +188,8 @@
         @media (max-width: 900px) {
             .columns, .extra-row { grid-template-columns: 1fr; }
             .field-row { grid-template-columns: 1fr; }
+            .agreement-sign { grid-template-columns: 1fr; }
+            .agreement-accept { padding-top: 0; }
         }
     </style>
 </head>
@@ -294,6 +328,46 @@
                     <input type="password" name="password_confirmation" class="form-control" required minlength="8">
                 </div>
             </div>
+
+            @if($contract)
+                {{-- The agreement, published by a manager under Contracts. No
+                     signature, no approval — the applicant reads it here and
+                     signs before the application is created. --}}
+                <div class="agreement">
+                    <div class="col-title">
+                        Agreement
+                        <span class="agreement-version">{{ $contract->title }} · v{{ $contract->version }}</span>
+                    </div>
+
+                    @if($contract->isUpload())
+                        <p class="form-text">
+                            Open the agreement, read it, then sign below.
+                        </p>
+                        <a class="agreement-open" href="{{ Storage::url($contract->pdf_path) }}" target="_blank" rel="noopener">
+                            <i class="fas fa-file-pdf"></i> Read the agreement ({{ $contract->file_name }})
+                        </a>
+                    @else
+                        <div class="agreement-text" tabindex="0">{{ $contract->body }}</div>
+                    @endif
+
+                    <div class="agreement-sign">
+                        <div>
+                            <label>Type your full name to sign <span class="required">*</span></label>
+                            <input type="text" name="signature_full_name" class="form-control"
+                                   value="{{ old('signature_full_name') }}" maxlength="255" required
+                                   placeholder="Your full legal name">
+                        </div>
+                        <div class="agreement-accept">
+                            <input type="checkbox" id="signatureAgreed" name="signature_agreed" value="1"
+                                   {{ old('signature_agreed') ? 'checked' : '' }} required>
+                            <label for="signatureAgreed">
+                                I have read the agreement above and I accept it on behalf of my company.
+                                My name, the date and my IP address will be recorded with this signature.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <button type="submit" class="btn-submit">
                 <i class="fas fa-paper-plane"></i> Click to Register
