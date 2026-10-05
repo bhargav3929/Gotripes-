@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ReferralAgent;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -12,9 +13,16 @@ class MontyEsimService
     protected string $username;
     protected string $password;
     protected float $markupPercent;
+    protected ?ReferralAgent $freelancer;
 
-    public function __construct(?float $markupPercent = null)
+    /**
+     * @param float|null         $markupPercent Company markup on supplier cost.
+     * @param ReferralAgent|null $freelancer    Freelancer whose margin is added on top
+     *                                          of the platform price for this customer.
+     */
+    public function __construct(?float $markupPercent = null, ?ReferralAgent $freelancer = null)
     {
+        $this->freelancer = $freelancer;
         $this->baseUrl = rtrim(config('montyesim.base_url'), '/');
         $this->username = config('montyesim.username') ?? '';
         $this->password = config('montyesim.password') ?? '';
@@ -271,7 +279,13 @@ class MontyEsimService
         return array_map(function ($bundle) use ($markup, $toAed) {
             $costPrice = (float) ($bundle['bundle_price_final'] ?? $bundle['subscriber_price'] ?? 0) * $toAed;
             $bundle['cost_price'] = round($costPrice, 2);
-            $bundle['selling_price'] = round($costPrice * $markup, 2);
+            // Platform price = what a direct customer pays. A freelancer's
+            // margin sits on top of it, so quote and charge always agree.
+            $platformPrice = round($costPrice * $markup, 2);
+            $margin = $this->freelancer ? $this->freelancer->esimMarginFor($platformPrice) : 0.0;
+            $bundle['platform_price'] = $platformPrice;
+            $bundle['freelancer_margin'] = $margin;
+            $bundle['selling_price'] = round($platformPrice + $margin, 2);
             return $bundle;
         }, $rawBundles);
     }

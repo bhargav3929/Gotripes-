@@ -710,6 +710,22 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::post('/{application}/reject', [\App\Http\Controllers\Manager\ManagerAgentApplicationsController::class, 'reject'])->name('reject');
     });
 
+    // Freelancer application review — approve/deny applications that
+    // self-registered at /freelancer/register, after checking the signed
+    // contract. Mirrors agent-applications above.
+    Route::prefix('freelancer-applications')->name('freelancer-applications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Manager\ManagerFreelancerApplicationsController::class, 'index'])->name('index');
+        Route::get('/{agent}', [\App\Http\Controllers\Manager\ManagerFreelancerApplicationsController::class, 'show'])->name('show');
+        Route::post('/{agent}/approve', [\App\Http\Controllers\Manager\ManagerFreelancerApplicationsController::class, 'approve'])->name('approve');
+        Route::post('/{agent}/reject', [\App\Http\Controllers\Manager\ManagerFreelancerApplicationsController::class, 'reject'])->name('reject');
+        Route::put('/{agent}/margin', [\App\Http\Controllers\Manager\ManagerFreelancerApplicationsController::class, 'updateMargin'])->name('margin.update');
+    });
+
+    // Notification bell (topbar) — mark-as-read actions only; the dropdown
+    // itself is rendered server-side in layouts/manager.blade.php.
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Manager\ManagerNotificationsController::class, 'markRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\Manager\ManagerNotificationsController::class, 'markAllRead'])->name('notifications.read-all');
+
     // FIFA World Cup 2026 tickets — SHARED across all companies (not tenant-scoped).
     // Global markup, match + ticket inventory, and the customer request inbox.
     Route::prefix('fifa-tickets')->name('fifa-tickets.')->group(function () {
@@ -907,6 +923,7 @@ use App\Http\Controllers\FreelancerSignupController;
 Route::get('/freelancer', [FreelancerSignupController::class, 'landing'])->name('freelancer.landing');
 Route::get('/freelancer/register', [FreelancerSignupController::class, 'showRegister'])->name('freelancer.register');
 Route::post('/freelancer/register', [FreelancerSignupController::class, 'register'])->name('freelancer.register.submit');
+Route::get('/freelancer/register/submitted', [FreelancerSignupController::class, 'submitted'])->name('freelancer.register.submitted');
 
 // Referral Agent Dashboard (Protected)
 Route::middleware(['referral.agent'])->prefix('partner')->name('referral.')->group(function () {

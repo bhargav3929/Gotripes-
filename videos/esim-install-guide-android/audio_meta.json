@@ -1,0 +1,1304 @@
+{
+  "bgm": {
+    "path": "assets/bgm/track.mp3",
+    "volume": 0.12,
+    "query": "calm minimal technology underscore, warm and reassuring, no vocals",
+    "duration_s": 63
+  },
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/01.wav",
+      "duration_s": 9.613,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Got",
+          "start": 0.256,
+          "end": 0.469
+        },
+        {
+          "id": "w1",
+          "text": "an",
+          "start": 0.512,
+          "end": 0.597
+        },
+        {
+          "id": "w2",
+          "text": "Android",
+          "start": 0.64,
+          "end": 0.981
+        },
+        {
+          "id": "w3",
+          "text": "phone?",
+          "start": 1.024,
+          "end": 1.536
+        },
+        {
+          "id": "w4",
+          "text": "Your",
+          "start": 1.835,
+          "end": 2.005
+        },
+        {
+          "id": "w5",
+          "text": "travel",
+          "start": 2.048,
+          "end": 2.304
+        },
+        {
+          "id": "w6",
+          "text": "eSIM",
+          "start": 2.432,
+          "end": 2.816
+        },
+        {
+          "id": "w7",
+          "text": "is",
+          "start": 2.901,
+          "end": 2.944
+        },
+        {
+          "id": "w8",
+          "text": "already",
+          "start": 2.987,
+          "end": 3.456
+        },
+        {
+          "id": "w9",
+          "text": "in",
+          "start": 3.584,
+          "end": 3.712
+        },
+        {
+          "id": "w10",
+          "text": "your",
+          "start": 3.755,
+          "end": 3.84
+        },
+        {
+          "id": "w11",
+          "text": "inbox,",
+          "start": 3.883,
+          "end": 4.437
+        },
+        {
+          "id": "w12",
+          "text": "and",
+          "start": 4.608,
+          "end": 4.9067
+        },
+        {
+          "id": "w13",
+          "text": "installing",
+          "start": 4.949,
+          "end": 5.504
+        },
+        {
+          "id": "w14",
+          "text": "it",
+          "start": 5.632,
+          "end": 5.717
+        },
+        {
+          "id": "w15",
+          "text": "takes",
+          "start": 5.845,
+          "end": 6.016
+        },
+        {
+          "id": "w16",
+          "text": "about",
+          "start": 6.187,
+          "end": 6.3147
+        },
+        {
+          "id": "w17",
+          "text": "two",
+          "start": 6.443,
+          "end": 6.613
+        },
+        {
+          "id": "w18",
+          "text": "minutes.",
+          "start": 6.656,
+          "end": 7.211
+        },
+        {
+          "id": "w19",
+          "text": "Let's",
+          "start": 7.595,
+          "end": 8.149
+        },
+        {
+          "id": "w20",
+          "text": "do",
+          "start": 8.235,
+          "end": 8.405
+        },
+        {
+          "id": "w21",
+          "text": "it",
+          "start": 8.448,
+          "end": 8.533
+        },
+        {
+          "id": "w22",
+          "text": "together.",
+          "start": 8.875,
+          "end": 9.562
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/02.wav",
+      "duration_s": 9.953,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Before",
+          "start": 0.159,
+          "end": 0.479
+        },
+        {
+          "id": "w1",
+          "text": "you",
+          "start": 0.5,
+          "end": 0.599
+        },
+        {
+          "id": "w2",
+          "text": "begin:",
+          "start": 0.659,
+          "end": 1
+        },
+        {
+          "id": "w3",
+          "text": "connect",
+          "start": 1.399,
+          "end": 1.719
+        },
+        {
+          "id": "w4",
+          "text": "to",
+          "start": 1.739,
+          "end": 1.799
+        },
+        {
+          "id": "w5",
+          "text": "Wi-Fi,",
+          "start": 1.899,
+          "end": 2.419
+        },
+        {
+          "id": "w6",
+          "text": "check",
+          "start": 2.819,
+          "end": 3
+        },
+        {
+          "id": "w7",
+          "text": "that",
+          "start": 3.039,
+          "end": 3.139
+        },
+        {
+          "id": "w8",
+          "text": "your",
+          "start": 3.159,
+          "end": 3.299
+        },
+        {
+          "id": "w9",
+          "text": "phone",
+          "start": 3.319,
+          "end": 3.5
+        },
+        {
+          "id": "w10",
+          "text": "supports",
+          "start": 3.599,
+          "end": 4.019
+        },
+        {
+          "id": "w11",
+          "text": "eSIM",
+          "start": 4.099,
+          "end": 4.739
+        },
+        {
+          "id": "w12",
+          "text": "and",
+          "start": 4.799,
+          "end": 4.879
+        },
+        {
+          "id": "w13",
+          "text": "is",
+          "start": 4.88,
+          "end": 5.059
+        },
+        {
+          "id": "w14",
+          "text": "unlocked,",
+          "start": 5.099,
+          "end": 5.619
+        },
+        {
+          "id": "w15",
+          "text": "then",
+          "start": 6.059,
+          "end": 6.279
+        },
+        {
+          "id": "w16",
+          "text": "open",
+          "start": 6.339,
+          "end": 6.559
+        },
+        {
+          "id": "w17",
+          "text": "your",
+          "start": 6.619,
+          "end": 6.739
+        },
+        {
+          "id": "w18",
+          "text": "GoTrips",
+          "start": 6.779,
+          "end": 7.319
+        },
+        {
+          "id": "w19",
+          "text": "QR",
+          "start": 7.46,
+          "end": 7.639
+        },
+        {
+          "id": "w20",
+          "text": "code",
+          "start": 7.779,
+          "end": 8.119
+        },
+        {
+          "id": "w21",
+          "text": "or",
+          "start": 8.159,
+          "end": 8.279
+        },
+        {
+          "id": "w22",
+          "text": "activation",
+          "start": 8.359,
+          "end": 8.96
+        },
+        {
+          "id": "w23",
+          "text": "details.",
+          "start": 9,
+          "end": 9.56
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/03.wav",
+      "duration_s": 13.192,
+      "words": [
+        {
+          "id": "w0",
+          "text": "On",
+          "start": 0.256,
+          "end": 0.4267
+        },
+        {
+          "id": "w1",
+          "text": "a",
+          "start": 0.469,
+          "end": 0.5547
+        },
+        {
+          "id": "w2",
+          "text": "Google",
+          "start": 0.597,
+          "end": 0.8107
+        },
+        {
+          "id": "w3",
+          "text": "Pixel,",
+          "start": 0.896,
+          "end": 1.493
+        },
+        {
+          "id": "w4",
+          "text": "open",
+          "start": 1.707,
+          "end": 1.92
+        },
+        {
+          "id": "w5",
+          "text": "Settings,",
+          "start": 2.091,
+          "end": 2.731
+        },
+        {
+          "id": "w6",
+          "text": "then",
+          "start": 2.987,
+          "end": 3.157
+        },
+        {
+          "id": "w7",
+          "text": "Network",
+          "start": 3.243,
+          "end": 3.6267
+        },
+        {
+          "id": "w8",
+          "text": "and",
+          "start": 3.755,
+          "end": 3.8827
+        },
+        {
+          "id": "w9",
+          "text": "internet,",
+          "start": 3.925,
+          "end": 4.544
+        },
+        {
+          "id": "w10",
+          "text": "then",
+          "start": 4.693,
+          "end": 4.9067
+        },
+        {
+          "id": "w11",
+          "text": "SIMs.",
+          "start": 4.992,
+          "end": 5.739
+        },
+        {
+          "id": "w12",
+          "text": "Tap",
+          "start": 6.101,
+          "end": 6.4
+        },
+        {
+          "id": "w13",
+          "text": "Add",
+          "start": 6.613,
+          "end": 7.125
+        },
+        {
+          "id": "w14",
+          "text": "SIM,",
+          "start": 7.253,
+          "end": 7.851
+        },
+        {
+          "id": "w15",
+          "text": "choose",
+          "start": 8.192,
+          "end": 8.448
+        },
+        {
+          "id": "w16",
+          "text": "Download",
+          "start": 8.576,
+          "end": 9.045
+        },
+        {
+          "id": "w17",
+          "text": "a",
+          "start": 9.131,
+          "end": 9.173
+        },
+        {
+          "id": "w18",
+          "text": "SIM",
+          "start": 9.216,
+          "end": 9.429
+        },
+        {
+          "id": "w19",
+          "text": "instead,",
+          "start": 9.557,
+          "end": 10.027
+        },
+        {
+          "id": "w20",
+          "text": "and",
+          "start": 10.325,
+          "end": 10.6667
+        },
+        {
+          "id": "w21",
+          "text": "scan",
+          "start": 10.709,
+          "end": 11.008
+        },
+        {
+          "id": "w22",
+          "text": "the",
+          "start": 11.093,
+          "end": 11.1787
+        },
+        {
+          "id": "w23",
+          "text": "QR",
+          "start": 11.221,
+          "end": 11.52
+        },
+        {
+          "id": "w24",
+          "text": "code",
+          "start": 11.605,
+          "end": 11.861
+        },
+        {
+          "id": "w25",
+          "text": "from",
+          "start": 12.032,
+          "end": 12.2027
+        },
+        {
+          "id": "w26",
+          "text": "another",
+          "start": 12.288,
+          "end": 12.4587
+        },
+        {
+          "id": "w27",
+          "text": "screen.",
+          "start": 12.587,
+          "end": 12.973
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/04.wav",
+      "duration_s": 13.845,
+      "words": [
+        {
+          "id": "w0",
+          "text": "On",
+          "start": 0.256,
+          "end": 0.427
+        },
+        {
+          "id": "w1",
+          "text": "a",
+          "start": 0.469,
+          "end": 0.512
+        },
+        {
+          "id": "w2",
+          "text": "Samsung",
+          "start": 0.555,
+          "end": 1.024
+        },
+        {
+          "id": "w3",
+          "text": "Galaxy,",
+          "start": 1.067,
+          "end": 1.664
+        },
+        {
+          "id": "w4",
+          "text": "open",
+          "start": 1.792,
+          "end": 2.304
+        },
+        {
+          "id": "w5",
+          "text": "Settings,",
+          "start": 2.475,
+          "end": 3.115
+        },
+        {
+          "id": "w6",
+          "text": "then",
+          "start": 3.371,
+          "end": 3.584
+        },
+        {
+          "id": "w7",
+          "text": "Connections,",
+          "start": 3.712,
+          "end": 4.309
+        },
+        {
+          "id": "w8",
+          "text": "then",
+          "start": 4.651,
+          "end": 4.9067
+        },
+        {
+          "id": "w9",
+          "text": "SIM",
+          "start": 5.077,
+          "end": 5.504
+        },
+        {
+          "id": "w10",
+          "text": "manager.",
+          "start": 5.589,
+          "end": 6.272
+        },
+        {
+          "id": "w11",
+          "text": "Tap",
+          "start": 6.699,
+          "end": 6.869
+        },
+        {
+          "id": "w12",
+          "text": "Add",
+          "start": 7.04,
+          "end": 7.3387
+        },
+        {
+          "id": "w13",
+          "text": "eSIM,",
+          "start": 7.467,
+          "end": 8.107
+        },
+        {
+          "id": "w14",
+          "text": "choose",
+          "start": 8.32,
+          "end": 8.661
+        },
+        {
+          "id": "w15",
+          "text": "Scan",
+          "start": 8.875,
+          "end": 9.301
+        },
+        {
+          "id": "w16",
+          "text": "QR",
+          "start": 9.429,
+          "end": 9.7707
+        },
+        {
+          "id": "w17",
+          "text": "code",
+          "start": 9.856,
+          "end": 10.069
+        },
+        {
+          "id": "w18",
+          "text": "from",
+          "start": 10.197,
+          "end": 10.325
+        },
+        {
+          "id": "w19",
+          "text": "service",
+          "start": 10.411,
+          "end": 10.581
+        },
+        {
+          "id": "w20",
+          "text": "provider,",
+          "start": 10.752,
+          "end": 11.221
+        },
+        {
+          "id": "w21",
+          "text": "and",
+          "start": 11.349,
+          "end": 11.6907
+        },
+        {
+          "id": "w22",
+          "text": "point",
+          "start": 11.776,
+          "end": 12.032
+        },
+        {
+          "id": "w23",
+          "text": "the",
+          "start": 12.16,
+          "end": 12.245
+        },
+        {
+          "id": "w24",
+          "text": "camera",
+          "start": 12.288,
+          "end": 12.501
+        },
+        {
+          "id": "w25",
+          "text": "at",
+          "start": 12.715,
+          "end": 13.013
+        },
+        {
+          "id": "w26",
+          "text": "your",
+          "start": 13.099,
+          "end": 13.2267
+        },
+        {
+          "id": "w27",
+          "text": "code.",
+          "start": 13.269,
+          "end": 13.781
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "path": "assets/voice/05.wav",
+      "duration_s": 15.882,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Is",
+          "start": 0.256,
+          "end": 0.384
+        },
+        {
+          "id": "w1",
+          "text": "the",
+          "start": 0.469,
+          "end": 0.5547
+        },
+        {
+          "id": "w2",
+          "text": "QR",
+          "start": 0.597,
+          "end": 0.9387
+        },
+        {
+          "id": "w3",
+          "text": "code",
+          "start": 1.024,
+          "end": 1.237
+        },
+        {
+          "id": "w4",
+          "text": "on",
+          "start": 1.365,
+          "end": 1.493
+        },
+        {
+          "id": "w5",
+          "text": "this",
+          "start": 1.536,
+          "end": 1.664
+        },
+        {
+          "id": "w6",
+          "text": "same",
+          "start": 1.792,
+          "end": 1.9627
+        },
+        {
+          "id": "w7",
+          "text": "phone?",
+          "start": 2.091,
+          "end": 2.731
+        },
+        {
+          "id": "w8",
+          "text": "Then",
+          "start": 3.157,
+          "end": 3.328
+        },
+        {
+          "id": "w9",
+          "text": "skip",
+          "start": 3.413,
+          "end": 3.84
+        },
+        {
+          "id": "w10",
+          "text": "the",
+          "start": 3.968,
+          "end": 4.053
+        },
+        {
+          "id": "w11",
+          "text": "scanner.",
+          "start": 4.096,
+          "end": 4.757
+        },
+        {
+          "id": "w12",
+          "text": "Choose",
+          "start": 5.077,
+          "end": 5.461
+        },
+        {
+          "id": "w13",
+          "text": "Enter",
+          "start": 5.589,
+          "end": 5.888
+        },
+        {
+          "id": "w14",
+          "text": "code",
+          "start": 6.059,
+          "end": 6.3147
+        },
+        {
+          "id": "w15",
+          "text": "manually,",
+          "start": 6.443,
+          "end": 7.061
+        },
+        {
+          "id": "w16",
+          "text": "or",
+          "start": 7.253,
+          "end": 7.509
+        },
+        {
+          "id": "w17",
+          "text": "Enter",
+          "start": 7.552,
+          "end": 7.893
+        },
+        {
+          "id": "w18",
+          "text": "activation",
+          "start": 8.021,
+          "end": 8.576
+        },
+        {
+          "id": "w19",
+          "text": "code,",
+          "start": 8.789,
+          "end": 9.131
+        },
+        {
+          "id": "w20",
+          "text": "and",
+          "start": 9.259,
+          "end": 9.5147
+        },
+        {
+          "id": "w21",
+          "text": "type",
+          "start": 9.6,
+          "end": 9.813
+        },
+        {
+          "id": "w22",
+          "text": "in",
+          "start": 9.984,
+          "end": 10.069
+        },
+        {
+          "id": "w23",
+          "text": "the",
+          "start": 10.112,
+          "end": 10.24
+        },
+        {
+          "id": "w24",
+          "text": "address",
+          "start": 10.368,
+          "end": 10.709
+        },
+        {
+          "id": "w25",
+          "text": "and",
+          "start": 10.88,
+          "end": 11.008
+        },
+        {
+          "id": "w26",
+          "text": "activation",
+          "start": 11.051,
+          "end": 11.52
+        },
+        {
+          "id": "w27",
+          "text": "code",
+          "start": 11.733,
+          "end": 11.904
+        },
+        {
+          "id": "w28",
+          "text": "from",
+          "start": 12.032,
+          "end": 12.16
+        },
+        {
+          "id": "w29",
+          "text": "your",
+          "start": 12.203,
+          "end": 12.288
+        },
+        {
+          "id": "w30",
+          "text": "email.",
+          "start": 12.331,
+          "end": 12.907
+        },
+        {
+          "id": "w31",
+          "text": "Menu",
+          "start": 13.312,
+          "end": 13.7387
+        },
+        {
+          "id": "w32",
+          "text": "names",
+          "start": 13.781,
+          "end": 13.952
+        },
+        {
+          "id": "w33",
+          "text": "vary",
+          "start": 14.08,
+          "end": 14.336
+        },
+        {
+          "id": "w34",
+          "text": "a",
+          "start": 14.464,
+          "end": 14.549
+        },
+        {
+          "id": "w35",
+          "text": "little",
+          "start": 14.592,
+          "end": 14.677
+        },
+        {
+          "id": "w36",
+          "text": "between",
+          "start": 14.805,
+          "end": 14.933
+        },
+        {
+          "id": "w37",
+          "text": "models.",
+          "start": 15.189,
+          "end": 15.655
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "path": "assets/voice/06.wav",
+      "duration_s": 9.874,
+      "words": [
+        {
+          "id": "w0",
+          "text": "After",
+          "start": 0.159,
+          "end": 0.439
+        },
+        {
+          "id": "w1",
+          "text": "installation,",
+          "start": 0.479,
+          "end": 1.22
+        },
+        {
+          "id": "w2",
+          "text": "label",
+          "start": 1.639,
+          "end": 1.899
+        },
+        {
+          "id": "w3",
+          "text": "the",
+          "start": 1.959,
+          "end": 2.059
+        },
+        {
+          "id": "w4",
+          "text": "new",
+          "start": 2.119,
+          "end": 2.2
+        },
+        {
+          "id": "w5",
+          "text": "line",
+          "start": 2.299,
+          "end": 2.559
+        },
+        {
+          "id": "w6",
+          "text": "Travel,",
+          "start": 2.679,
+          "end": 3.079
+        },
+        {
+          "id": "w7",
+          "text": "select",
+          "start": 3.659,
+          "end": 4.019
+        },
+        {
+          "id": "w8",
+          "text": "it",
+          "start": 4.039,
+          "end": 4.139
+        },
+        {
+          "id": "w9",
+          "text": "for",
+          "start": 4.179,
+          "end": 4.239
+        },
+        {
+          "id": "w10",
+          "text": "mobile",
+          "start": 4.339,
+          "end": 4.599
+        },
+        {
+          "id": "w11",
+          "text": "data,",
+          "start": 4.699,
+          "end": 5.019
+        },
+        {
+          "id": "w12",
+          "text": "and",
+          "start": 5.46,
+          "end": 5.559
+        },
+        {
+          "id": "w13",
+          "text": "enable",
+          "start": 5.599,
+          "end": 5.92
+        },
+        {
+          "id": "w14",
+          "text": "data",
+          "start": 6.039,
+          "end": 6.239
+        },
+        {
+          "id": "w15",
+          "text": "roaming",
+          "start": 6.319,
+          "end": 6.719
+        },
+        {
+          "id": "w16",
+          "text": "only",
+          "start": 6.819,
+          "end": 7.059
+        },
+        {
+          "id": "w17",
+          "text": "if",
+          "start": 7.079,
+          "end": 7.199
+        },
+        {
+          "id": "w18",
+          "text": "your",
+          "start": 7.219,
+          "end": 7.359
+        },
+        {
+          "id": "w19",
+          "text": "GoTrips",
+          "start": 7.379,
+          "end": 7.94
+        },
+        {
+          "id": "w20",
+          "text": "plan",
+          "start": 8.019,
+          "end": 8.239
+        },
+        {
+          "id": "w21",
+          "text": "instructions",
+          "start": 8.279,
+          "end": 8.92
+        },
+        {
+          "id": "w22",
+          "text": "tell",
+          "start": 8.979,
+          "end": 9.159
+        },
+        {
+          "id": "w23",
+          "text": "you",
+          "start": 9.199,
+          "end": 9.319
+        },
+        {
+          "id": "w24",
+          "text": "to.",
+          "start": 9.359,
+          "end": 9.579
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "path": "assets/voice/07.wav",
+      "duration_s": 10.136,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Do",
+          "start": 0.119,
+          "end": 0.179
+        },
+        {
+          "id": "w1",
+          "text": "not",
+          "start": 0.259,
+          "end": 0.399
+        },
+        {
+          "id": "w2",
+          "text": "delete",
+          "start": 0.5,
+          "end": 0.779
+        },
+        {
+          "id": "w3",
+          "text": "the",
+          "start": 0.799,
+          "end": 0.859
+        },
+        {
+          "id": "w4",
+          "text": "eSIM",
+          "start": 0.959,
+          "end": 1.339
+        },
+        {
+          "id": "w5",
+          "text": "if",
+          "start": 1.379,
+          "end": 1.459
+        },
+        {
+          "id": "w6",
+          "text": "it",
+          "start": 1.5,
+          "end": 1.559
+        },
+        {
+          "id": "w7",
+          "text": "does",
+          "start": 1.599,
+          "end": 1.779
+        },
+        {
+          "id": "w8",
+          "text": "not",
+          "start": 1.819,
+          "end": 1.939
+        },
+        {
+          "id": "w9",
+          "text": "connect",
+          "start": 2.039,
+          "end": 2.339
+        },
+        {
+          "id": "w10",
+          "text": "immediately.",
+          "start": 2.379,
+          "end": 3.019
+        },
+        {
+          "id": "w11",
+          "text": "Restart",
+          "start": 3.839,
+          "end": 4.259
+        },
+        {
+          "id": "w12",
+          "text": "the",
+          "start": 4.299,
+          "end": 4.36
+        },
+        {
+          "id": "w13",
+          "text": "phone,",
+          "start": 4.48,
+          "end": 4.779
+        },
+        {
+          "id": "w14",
+          "text": "confirm",
+          "start": 5.139,
+          "end": 5.5
+        },
+        {
+          "id": "w15",
+          "text": "the",
+          "start": 5.539,
+          "end": 5.599
+        },
+        {
+          "id": "w16",
+          "text": "travel",
+          "start": 5.679,
+          "end": 5.98
+        },
+        {
+          "id": "w17",
+          "text": "line",
+          "start": 6.039,
+          "end": 6.219
+        },
+        {
+          "id": "w18",
+          "text": "is",
+          "start": 6.239,
+          "end": 6.339
+        },
+        {
+          "id": "w19",
+          "text": "on,",
+          "start": 6.44,
+          "end": 6.619
+        },
+        {
+          "id": "w20",
+          "text": "and",
+          "start": 6.98,
+          "end": 7.119
+        },
+        {
+          "id": "w21",
+          "text": "contact",
+          "start": 7.199,
+          "end": 7.679
+        },
+        {
+          "id": "w22",
+          "text": "GoTrips",
+          "start": 7.779,
+          "end": 8.239
+        },
+        {
+          "id": "w23",
+          "text": "support",
+          "start": 8.279,
+          "end": 8.619
+        },
+        {
+          "id": "w24",
+          "text": "with",
+          "start": 8.659,
+          "end": 8.76
+        },
+        {
+          "id": "w25",
+          "text": "your",
+          "start": 8.8,
+          "end": 8.92
+        },
+        {
+          "id": "w26",
+          "text": "ticket",
+          "start": 8.979,
+          "end": 9.219
+        },
+        {
+          "id": "w27",
+          "text": "details.",
+          "start": 9.26,
+          "end": 9.84
+        }
+      ]
+    },
+    {
+      "frame": 8,
+      "path": "assets/voice/08.wav",
+      "duration_s": 6.243,
+      "words": [
+        {
+          "id": "w0",
+          "text": "That\u2019s",
+          "start": 0.259,
+          "end": 0.519
+        },
+        {
+          "id": "w1",
+          "text": "it.",
+          "start": 0.62,
+          "end": 0.839
+        },
+        {
+          "id": "w2",
+          "text": "Your",
+          "start": 1.679,
+          "end": 1.799
+        },
+        {
+          "id": "w3",
+          "text": "GoTrips",
+          "start": 1.86,
+          "end": 2.48
+        },
+        {
+          "id": "w4",
+          "text": "eSIM",
+          "start": 2.539,
+          "end": 2.96
+        },
+        {
+          "id": "w5",
+          "text": "is",
+          "start": 3.039,
+          "end": 3.139
+        },
+        {
+          "id": "w6",
+          "text": "installed,",
+          "start": 3.199,
+          "end": 3.759
+        },
+        {
+          "id": "w7",
+          "text": "connected,",
+          "start": 4.059,
+          "end": 4.559
+        },
+        {
+          "id": "w8",
+          "text": "and",
+          "start": 4.9,
+          "end": 5.019
+        },
+        {
+          "id": "w9",
+          "text": "ready",
+          "start": 5.119,
+          "end": 5.319
+        },
+        {
+          "id": "w10",
+          "text": "to",
+          "start": 5.42,
+          "end": 5.46
+        },
+        {
+          "id": "w11",
+          "text": "travel.",
+          "start": 5.559,
+          "end": 5.979
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

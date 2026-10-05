@@ -151,6 +151,8 @@ class ReferralAgentController extends Controller
             'referral_code' => ['nullable', 'string', 'max:50', 'alpha_dash', Rule::unique('referral_agents')->ignore($agent->id)],
             'commission_type' => 'required|in:percentage,fixed',
             'commission_value' => 'required|numeric|min:0',
+            'esim_margin_type' => 'nullable|in:fixed,percentage',
+            'esim_margin_value' => 'nullable|numeric|min:0|max:1000',
             'status' => 'required|in:active,inactive,suspended',
             'notes' => 'nullable|string|max:1000',
         ]);
@@ -161,6 +163,7 @@ class ReferralAgentController extends Controller
             unset($validated['password']);
         }
 
+        $validated = array_filter($validated, fn ($v) => $v !== null) + ['notes' => $validated['notes'] ?? null];
         $agent->update($validated);
 
         return redirect()->route('admin.referrals.agents.index')->with([

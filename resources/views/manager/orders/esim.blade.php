@@ -62,6 +62,19 @@
             }
             return '<span class="badge badge-default">—</span>';
         }],
+        ['label' => 'ICCID', 'html' => true, 'render' => function($o) {
+            // Group orders keep one ICCID per eSIM on the units; a single
+            // order keeps it on the order itself.
+            $iccids = $o->unitCount() > 1
+                ? $o->units->pluck('monty_iccid')->filter()->values()
+                : collect([$o->monty_iccid])->filter()->values();
+            if ($iccids->isEmpty()) {
+                return '<span class="badge badge-default">—</span>';
+            }
+            $more = $iccids->count() - 1;
+            return '<code style="font-size:12px;white-space:nowrap;" title="'.e($iccids->implode(', ')).'">'.e($iccids->first()).'</code>'
+                .($more > 0 ? ' <span class="badge badge-default">+'.$more.' more</span>' : '');
+        }],
         ['label' => 'QR sent', 'html' => true, 'render' => function($o) {
             // A provisioned eSIM the customer was never emailed is a silent
             // failure: the order looks complete from every other column.

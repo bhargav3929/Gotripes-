@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Middleware\ReferralTrackingMiddleware;
+use App\Models\EsimOrder;
 use App\Models\ReferralAgent;
 use App\Models\ReferralClick;
 use App\Models\ReferralTracking;
@@ -25,19 +26,32 @@ class ReferralService
         Request $request = null
     ): ?ReferralTracking {
         try {
-            // Get referral code from cookie
-            $referralCode = $request
-                ? ReferralTrackingMiddleware::getReferralCode($request)
-                : request()->cookie(ReferralTrackingMiddleware::REFERRAL_COOKIE_NAME);
+            // An eSIM order sold through a freelancer already names its seller
+            // and the margin that was added to the price. Trust the order, not
+            // the cookie: the payment callback may not carry the customer's cookie.
+            $esimOrder = $orderType === 'esim' ? $this->freelancerEsimOrder($orderId) : null;
 
-            if (!$referralCode) {
-                return null;
+            if ($esimOrder) {
+                $agent = ReferralAgent::withoutGlobalScopes()
+                    ->where('id', $esimOrder->referral_agent_id)
+                    ->where('status', 'active')
+                    ->first();
+                $referralCode = $agent?->referral_code;
+            } else {
+                // Get referral code from cookie
+                $referralCode = $request
+                    ? ReferralTrackingMiddleware::getReferralCode($request)
+                    : request()->cookie(ReferralTrackingMiddleware::REFERRAL_COOKIE_NAME);
+
+                if (!$referralCode) {
+                    return null;
+                }
+
+                // Get the referral agent
+                $agent = ReferralAgent::where('referral_code', $referralCode)
+                    ->where('status', 'active')
+                    ->first();
             }
-
-            // Get the referral agent
-            $agent = ReferralAgent::where('referral_code', $referralCode)
-                ->where('status', 'active')
-                ->first();
 
             if (!$agent) {
                 Log::info("Referral agent not found or inactive for code: {$referralCode}");
@@ -56,8 +70,22 @@ class ReferralService
                 return null;
             }
 
-            // Calculate commission
-            $commissionAmount = $agent->calculateCommission($orderAmount);
+            if ($esimOrder) {
+                // The freelancer earns exactly the margin added to each eSIM.
+                $commissionAmount = round((float) $esimOrder->freelancer_margin_unit * $esimOrder->unitCount(), 2);
+                $commissionType = 'fixed';
+                $commissionValue = (float) $esimOrder->freelancer_margin_unit;
+                $orderDetails += [
+                    'quantity' => $esimOrder->unitCount(),
+                    'platform_unit_price' => (float) $esimOrder->platform_unit_price,
+                    'freelancer_margin_unit' => (float) $esimOrder->freelancer_margin_unit,
+                ];
+            } else {
+                // Calculate commission
+                $commissionAmount = $agent->calculateCommission($orderAmount);
+                $commissionType = $agent->commission_type;
+                $commissionValue = $agent->commission_value;
+            }
 
             // Create tracking record
             $tracking = ReferralTracking::create([
@@ -69,8 +97,8 @@ class ReferralService
                 'order_amount' => $orderAmount,
                 'currency' => 'AED',
                 'commission_amount' => $commissionAmount,
-                'commission_type' => $agent->commission_type,
-                'commission_value' => $agent->commission_value,
+                'commission_type' => $commissionType,
+                'commission_value' => $commissionValue,
                 'status' => 'pending',
                 'payment_status' => 'completed',
                 'order_details' => $orderDetails,
@@ -92,6 +120,18 @@ class ReferralService
             Log::error("Error processing referral: " . $e->getMessage());
             return null;
         }
+    }
+
+    /** The eSIM order behind a reference like ORDESIM12, if a freelancer sold it. */
+    protected function freelancerEsimOrder(string $orderId): ?EsimOrder
+    {
+        if (!preg_match('/ORDESIM(\d+)/i', $orderId, $m)) {
+            return null;
+        }
+
+        $order = EsimOrder::withoutGlobalScopes()->find((int) $m[1]);
+
+        return $order && $order->referral_agent_id ? $order : null;
     }
 
     /**

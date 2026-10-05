@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\ReferralTrackingMiddleware;
 use App\Models\EsimOrder;
 use App\Models\NomodTransaction;
+use App\Models\ReferralAgent;
 use App\Services\MontyEsimService;
 use App\Services\NomodService;
 use Illuminate\Contracts\Cache\LockTimeoutException;
@@ -40,6 +42,17 @@ class EsimController extends Controller
             : null;
     }
 
+    /**
+     * The freelancer whose link brought this customer here, if any. Only an
+     * active freelancer counts; anyone else prices as a direct customer.
+     */
+    private function freelancer(Request $request): ?ReferralAgent
+    {
+        $agent = ReferralTrackingMiddleware::getReferralAgent($request);
+
+        return $agent && $agent->is_freelancer ? $agent : null;
+    }
+
     public function index()
     {
         return view('esim');
@@ -48,10 +61,10 @@ class EsimController extends Controller
     /**
      * Return available countries as JSON (proxied + cached from MontyeSIM).
      */
-    public function getCountries(): JsonResponse
+    public function getCountries(Request $request): JsonResponse
     {
         try {
-            $service = new MontyEsimService($this->tenantMarkup());
+            $service = new MontyEsimService($this->tenantMarkup(), $this->freelancer($request));
             $countries = $service->getCountries();
 
             return response()->json([
@@ -87,7 +100,7 @@ class EsimController extends Controller
         }
 
         try {
-            $service = new MontyEsimService($this->tenantMarkup());
+            $service = new MontyEsimService($this->tenantMarkup(), $this->freelancer($request));
             $bundles = $service->getBundles($request->country_code);
 
             return response()->json([
@@ -121,6 +134,9 @@ class EsimController extends Controller
             // Tour operators buy one plan for a whole coach. Capped so a typo
             // cannot drain the reseller wallet in a single click.
             'quantity' => 'nullable|integer|min:1|max:' . self::MAX_QUANTITY,
+            // The per-eSIM price the customer was shown. Compared below so a
+            // price that moved between quote and checkout is never charged silently.
+            'expected_unit_price' => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -132,6 +148,7 @@ class EsimController extends Controller
         }
 
         $quantity = max(1, (int) $request->input('quantity', 1));
+        $freelancer = $this->freelancer($request);
 
         // Duplicate-submission guard. Nothing before this point creates any
         // state, so a request that turns out to be a duplicate costs nothing.
@@ -168,6 +185,9 @@ class EsimController extends Controller
                 ->where('bundle_code', $request->bundle_code)
                 ->where('country_code', $request->country_code)
                 ->where('quantity', $quantity)
+                // Same seller too: a direct customer and a freelancer's
+                // customer are quoted different prices for the same plan.
+                ->where('referral_agent_id', $freelancer?->id)
                 ->where('payment_status', 'unpaid')
                 ->where('created_at', '>=', now()->subSeconds(self::DUPLICATE_WINDOW_SECONDS))
                 ->orderByDesc('id')
@@ -202,7 +222,7 @@ class EsimController extends Controller
             // starting with "esim_" was priced from a hardcoded table and sold
             // happily, even though no such bundle exists upstream — so the
             // customer paid and provisioning then failed every time.
-            $montyService = new MontyEsimService($this->tenantMarkup());
+            $montyService = new MontyEsimService($this->tenantMarkup(), $freelancer);
             $bundle = $montyService->findBundle($request->bundle_code, $request->country_code);
 
             if (!$bundle) {
@@ -210,6 +230,16 @@ class EsimController extends Controller
                     'success' => false,
                     'error' => 'Selected plan is no longer available. Please choose another.',
                 ], 404);
+            }
+
+            // The price on screen is the price charged. They differ only if the
+            // freelancer link (cookie) lapsed between the quote and checkout.
+            if ($request->filled('expected_unit_price')
+                && abs((float) $request->input('expected_unit_price') - (float) $bundle['selling_price']) > 0.009) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'The price for this plan has changed. Please reload the page and choose your plan again.',
+                ], 409);
             }
 
             $costPrice = $bundle['cost_price'];
@@ -268,6 +298,9 @@ class EsimController extends Controller
                     'monty_cost_price' => $costPrice,
                     'selling_price' => $sellingPrice,
                     'unit_selling_price' => $unitSellingPrice,
+                    'platform_unit_price' => $bundle['platform_price'] ?? $unitSellingPrice,
+                    'freelancer_margin_unit' => $bundle['freelancer_margin'] ?? 0,
+                    'referral_agent_id' => $freelancer?->id,
                     'currency' => 'AED',
                     'reservation_status' => 'pending',
                     'payment_status' => 'unpaid',

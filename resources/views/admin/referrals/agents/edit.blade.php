@@ -146,6 +146,30 @@
                     </div>
                 </div>
 
+                @if($agent->is_freelancer)
+                <!-- eSIM margin (freelancers only) -->
+                <div class="card mb-3">
+                    <div class="card-header"><i class="fas fa-coins me-2 text-gold"></i>eSIM Margin</div>
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Type</label>
+                                <select name="esim_margin_type" class="form-select form-select-sm">
+                                    <option value="fixed" {{ old('esim_margin_type', $agent->esim_margin_type) == 'fixed' ? 'selected' : '' }}>Flat (AED per eSIM)</option>
+                                    <option value="percentage" {{ old('esim_margin_type', $agent->esim_margin_type) == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Value</label>
+                                <input type="number" name="esim_margin_value" step="0.01" min="0" class="form-control form-control-sm"
+                                       value="{{ old('esim_margin_value', (float) $agent->esim_margin_value) }}">
+                            </div>
+                        </div>
+                        <small class="text-muted">Added on top of the platform price for customers using this freelancer's link. Applies to new sales only.</small>
+                    </div>
+                </div>
+                @endif
+
                 <!-- Notes -->
                 <div class="card mb-3">
                     <div class="card-header"><i class="fas fa-sticky-note me-2 text-gold"></i>Notes</div>

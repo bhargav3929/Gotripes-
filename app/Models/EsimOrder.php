@@ -23,6 +23,7 @@ class EsimOrder extends Model
 
     protected $fillable = [
         'company_id',
+        'referral_agent_id',   // freelancer who sold it, if any
         'order_reference',
         'customer_name',
         'customer_email',
@@ -37,6 +38,8 @@ class EsimOrder extends Model
         'monty_cost_price',   // what the bundle costs us, in AED (per unit)
         'selling_price',      // order total the customer pays, in AED
         'unit_selling_price', // price of a single eSIM, in AED
+        'platform_unit_price',   // cost + company markup, before any freelancer margin
+        'freelancer_margin_unit', // freelancer's margin on ONE eSIM, already inside unit_selling_price
         'currency',
         'monty_order_id',     // provider order id, set once assigned
         'monty_iccid',
@@ -53,6 +56,8 @@ class EsimOrder extends Model
         'monty_cost_price'   => 'decimal:2',
         'selling_price'      => 'decimal:2',
         'unit_selling_price' => 'decimal:2',
+        'platform_unit_price' => 'decimal:2',
+        'freelancer_margin_unit' => 'decimal:2',
         'quantity'           => 'integer',
         'qr_sent_at'         => 'datetime',
     ];

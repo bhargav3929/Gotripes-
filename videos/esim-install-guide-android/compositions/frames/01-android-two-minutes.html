@@ -1,0 +1,116 @@
+<template>
+  <div id="root" data-composition-id="01-android-two-minutes" data-width="1920" data-height="1080" data-duration="10.113">
+    <div class="clip" data-start="0" data-duration="10.113" data-track-index="0">
+      <div class="bg"></div><div class="rule top"></div><div class="rule bottom"></div>
+      <div class="mono catalogue">ANDROID / eSIM SETUP</div><div class="mono number">01</div>
+    </div>
+
+    <div class="clip" data-start="0" data-duration="10.113" data-track-index="1">
+      <div class="stage">
+        <div class="mono kick" id="h-kick">YOUR TRAVEL eSIM</div>
+        <div class="big" id="h-big">android.</div>
+        <div class="mid" id="h-mid"><span class="mono">IN YOUR INBOX</span><i></i></div>
+        <div class="two" id="h-two"><span class="about">about</span><span class="num">two minutes.</span></div>
+        <div class="mono together" id="h-together">LET&#8217;S DO IT TOGETHER</div>
+
+        <div class="phone" id="h-phone" style="left:67cqw;width:21cqw;">
+          <div class="mono phone-cap"><span>INBOX</span><span class="status">09:41</span></div>
+          <div class="viewport">
+            <div class="mail" id="h-mail"><div class="dot"></div><div><div class="from">GoTrips</div><div class="subj">your travel eSIM</div></div></div>
+            <div class="qrcard" id="h-qrcard"><svg viewBox="0 0 132 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 48 V10 H48" /><path d="M84 10 H122 V48" />
+        <path d="M122 84 V122 H84" /><path d="M48 122 H10 V84" />
+        <rect x="43" y="43" width="17" height="17" /><rect x="72" y="43" width="17" height="17" />
+        <rect x="43" y="72" width="17" height="17" /><rect x="72" y="72" width="17" height="17" /></svg><span class="mono">SCAN LATER</span></div>
+            <svg class="timer" id="h-timer" viewBox="0 0 120 120" aria-hidden="true">
+              <circle cx="60" cy="60" r="48" class="trk"/><circle cx="60" cy="60" r="48" class="arc" id="h-arc" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="clock" id="h-clock">2:00</div>
+          </div>
+          <div class="phone-foot"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @font-face { font-family: "Barlow"; src: local("Arial"); font-style: normal; font-weight: 400 900; }
+    @font-face { font-family: "IBM Plex Mono"; src: local("Courier New"); font-style: normal; font-weight: 400 700; }
+    #root { position: relative; width: 100%; height: 100%; overflow: hidden; container-type: size; color: #F4EBD0; font-family: "Barlow", system-ui, sans-serif; font-weight: 400; }
+    #root * { box-sizing: border-box; }
+    #root .bg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; background: #080706; }
+    #root .rule { position: absolute; left: 5.5cqw; width: 89cqw; height: 1px; background: #282826; }
+    #root .rule.top { top: 4.2cqh; }
+    #root .rule.bottom { top: 82.75cqh; }
+    #root .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500; }
+    #root .catalogue, #root .number { position: absolute; top: 1.65cqh; font-size: 0.72cqw; color: #D4AF37; }
+    #root .catalogue { left: 5.5cqw; }
+    #root .number { right: 5.5cqw; }
+    #root .stage { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; }
+    #root .headline { position: absolute; top: 5.8cqh; left: 0; width: 100%; height: 9cqh; display: flex; align-items: baseline; justify-content: center; gap: 0.8cqw; font-size: 3.35cqw; line-height: 0.95; font-weight: 800; letter-spacing: -0.03em; white-space: nowrap; }
+    #root .headline strong { color: #D4AF37; font-weight: 900; }
+    #root .phone { position: absolute; top: 16.9cqh; height: 59.5cqh; border: 1px solid #D4AF37; background: #1A1A18; z-index: 5; }
+    #root .phone-cap { height: 10cqh; padding: 2.35cqh 1.55cqw 1.6cqh; border-bottom: 1px solid #282826; display: flex; align-items: flex-end; justify-content: space-between; font-size: 0.72cqw; color: #D4AF37; }
+    #root .phone-cap .status { color: #8C897F; }
+    #root .phone-foot { position: absolute; left: 0; right: 0; bottom: 0; height: 4.1cqh; border-top: 1px solid #282826; display: flex; align-items: center; justify-content: center; gap: 1.1cqw; }
+    #root .phone-foot span { width: 0.42cqw; height: 0.42cqw; border: 1px solid #504E48; border-radius: 50%; }
+    #root .phone-foot span:nth-child(2) { background: #D4AF37; border-color: #D4AF37; }
+    #root .viewport { position: absolute; left: 1.45cqw; right: 1.45cqw; top: 11.35cqh; height: 42.5cqh; overflow: hidden; }
+    #root .kicker { font-size: 0.62cqw; color: #D4AF37; margin-bottom: 0.9cqh; }
+    #root .stitle { font-size: 1.9cqw; line-height: 1.05; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 2.1cqh; }
+    #root .row { height: 8.1cqh; border-top: 1px solid #282826; display: flex; align-items: center; justify-content: space-between; color: #F4EBD0; font-size: 1.15cqw; }
+    #root .row b { color: #D4AF37; font-size: 1.5cqw; font-weight: 400; }
+    #root .action { position: relative; min-height: 9.4cqh; border-top: 1px solid #D4AF37; display: flex; align-items: center; justify-content: space-between; gap: 1cqw; color: #D4AF37; font-size: 1.4cqw; line-height: 1.12; font-weight: 700; letter-spacing: -0.01em; }
+    #root .action b { font-size: 1.5cqw; font-weight: 400; flex: 0 0 auto; }
+    #root .qr { position: absolute; background: #1A1A18; border: 1px solid #D4AF37; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 4; }
+    #root .qr svg { width: 5.2cqw; height: 9.2cqh; margin-bottom: 1cqh; }
+    #root .qr path { fill: none; stroke: #D4AF37; stroke-width: 5; stroke-linecap: square; stroke-linejoin: miter; }
+    #root .qr rect { fill: #D4AF37; }
+    #root .qr span { color: #F4EBD0; font-size: 1.2cqw; line-height: 1; font-weight: 800; letter-spacing: -0.02em; }
+
+    #root .kick { position: absolute; left: 5.7cqw; top: 15.5cqh; font-size: 0.9cqw; color: #D4AF37; }
+    #root .big { position: absolute; left: 5.2cqw; top: 22.5cqh; font-size: 13cqw; line-height: 0.88; font-weight: 900; letter-spacing: -0.04em; }
+    #root .mid { position: absolute; left: 5.7cqw; top: 51.5cqh; width: 52cqw; display: flex; align-items: center; gap: 1.2cqw; font-size: 0.9cqw; color: #D4AF37; }
+    #root .mid i { display: block; height: 1px; flex: 1; background: #D4AF37; transform-origin: left; }
+    #root .two { position: absolute; left: 5.7cqw; top: 56.5cqh; display: flex; flex-direction: column; }
+    #root .about { font-size: 2.3cqw; font-weight: 600; letter-spacing: -0.02em; color: #F4EBD0; margin-bottom: 0.4cqh; }
+    #root .num { font-size: 7.2cqw; line-height: 0.95; font-weight: 900; letter-spacing: -0.04em; color: #D4AF37; }
+    #root .together { position: absolute; left: 5.7cqw; top: 77cqh; font-size: 0.9cqw; color: #F4EBD0; }
+    #root .mail { display: flex; gap: 1cqw; align-items: center; height: 9cqh; border-top: 1px solid #D4AF37; }
+    #root .mail .dot { width: 0.55cqw; height: 0.55cqw; border-radius: 50%; background: #D4AF37; flex: 0 0 auto; }
+    #root .from { font-size: 0.8cqw; color: #D4AF37; font-weight: 700; }
+    #root .subj { font-size: 1.25cqw; font-weight: 800; letter-spacing: -0.02em; }
+    #root .qrcard { position: absolute; left: 3.7cqw; top: 11cqh; width: 10.4cqw; height: 15cqh; border: 1px solid #282826; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    #root .qrcard svg { width: 5cqw; height: 8cqh; }
+    #root .qrcard svg path { fill: none; stroke: #504E48; stroke-width: 5; }
+    #root .qrcard svg rect { fill: #D4AF37; }
+    #root .qrcard span { font-size: 0.55cqw; color: #8C897F; margin-top: 0.8cqh; }
+    #root .timer { position: absolute; left: 4.6cqw; top: 27.5cqh; width: 8.6cqw; height: 14cqh; }
+    #root .timer circle { fill: none; stroke-width: 5; }
+    #root .timer .trk { stroke: #282826; }
+    #root .timer .arc { stroke: #D4AF37; stroke-linecap: butt; }
+    #root .clock { position: absolute; left: 4.6cqw; top: 27.5cqh; width: 8.6cqw; height: 14cqh; display: flex; align-items: center; justify-content: center; font-size: 1.7cqw; font-weight: 800; letter-spacing: -0.02em; }
+  </style>
+
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["01-android-two-minutes"] = tl;
+      const arc = document.getElementById('h-arc');
+      const L = 2 * Math.PI * 48; arc.style.strokeDasharray = String(L); arc.style.strokeDashoffset = String(L);
+
+      tl.fromTo('#h-phone', { opacity: 0.4, y: 60 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 0);
+      tl.fromTo('#h-big', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.5);
+      tl.fromTo('#h-kick', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 1.9);
+      tl.fromTo('#h-mail', { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.6, ease: 'power3.out' }, 2.1);
+      tl.fromTo('#h-mid', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 3.0);
+      tl.fromTo('#h-mid i', { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: 'power2.out' }, 3.1);
+      tl.fromTo('#h-qrcard', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' }, 3.95);
+      tl.fromTo('#h-two', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 5.7);
+      tl.fromTo('#h-timer, #h-clock', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 6.3);
+      tl.to('#h-arc', { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' }, 6.45);
+      tl.fromTo('#h-together', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 7.6);
+    })();
+  </script>
+</template>

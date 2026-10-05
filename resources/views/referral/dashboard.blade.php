@@ -38,15 +38,21 @@
                     </div>
                     <div class="col-12 col-lg-4 text-lg-end">
                         <div class="d-flex flex-column align-items-lg-end">
-                            <span class="text-muted" style="font-size: 0.7rem;">Your Commission Rate</span>
-                            <span class="h5 mb-0" style="color: var(--primary-gold);">
-                                @if($agent->commission_type === 'percentage')
-                                    {{ $agent->commission_value }}%
-                                @else
-                                    AED {{ number_format($agent->commission_value, 2) }}
-                                @endif
-                            </span>
-                            <span class="text-muted" style="font-size: 0.7rem;">per order</span>
+                            @if($agent->is_freelancer)
+                                <span class="text-muted" style="font-size: 0.7rem;">Your eSIM Margin</span>
+                                <span class="h5 mb-0" style="color: var(--primary-gold);">{{ $agent->esimMarginLabel() }}</span>
+                                <span class="text-muted" style="font-size: 0.7rem;">added to the price your customers pay</span>
+                            @else
+                                <span class="text-muted" style="font-size: 0.7rem;">Your Commission Rate</span>
+                                <span class="h5 mb-0" style="color: var(--primary-gold);">
+                                    @if($agent->commission_type === 'percentage')
+                                        {{ $agent->commission_value }}%
+                                    @else
+                                        AED {{ number_format($agent->commission_value, 2) }}
+                                    @endif
+                                </span>
+                                <span class="text-muted" style="font-size: 0.7rem;">per order</span>
+                            @endif
                         </div>
                     </div>
                 </div>

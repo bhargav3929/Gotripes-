@@ -123,7 +123,14 @@
             @endif
             <li><span class="label">Selling price</span>  <span class="value">{{ number_format($totalSell, 2) }} {{ $cur }}{{ $qty > 1 ? ' total' : '' }}</span></li>
             <li><span class="label">Cost price</span>     <span class="value">{{ number_format($totalCost, 2) }} {{ $cur }}{{ $qty > 1 ? ' ('.number_format($unitCost, 2).' × '.$qty.')' : '' }}</span></li>
+            @php $freelancerTotal = (float) $order->freelancer_margin_unit * $qty; @endphp
+            @if($order->referral_agent_id)
+            <li><span class="label">Freelancer</span>     <span class="value">{{ optional(\App\Models\ReferralAgent::withoutGlobalScopes()->find($order->referral_agent_id))->name ?? '#'.$order->referral_agent_id }}</span></li>
+            <li><span class="label">Freelancer margin</span> <span class="value">{{ number_format($freelancerTotal, 2) }} {{ $cur }}{{ $qty > 1 ? ' ('.number_format((float) $order->freelancer_margin_unit, 2).' × '.$qty.')' : '' }}</span></li>
+            <li><span class="label">GoTrips margin</span>  <span class="value">{{ number_format($totalSell - $totalCost - $freelancerTotal, 2) }} {{ $cur }}</span></li>
+            @else
             <li><span class="label">Margin</span>         <span class="value">{{ number_format($totalSell - $totalCost, 2) }} {{ $cur }}</span></li>
+            @endif
             <li><span class="label">Payment status</span> <span class="value">{{ ucfirst($order->payment_status ?: 'pending') }}</span></li>
         </ul>
     </div>

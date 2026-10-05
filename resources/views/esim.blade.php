@@ -3040,6 +3040,36 @@
         background: #080706;
     }
 
+    .esim-video-switch {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 14px 14px 12px;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.16);
+    }
+    .esim-video-pick {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.6);
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+    .esim-video-pick:hover { color: #fff; border-color: rgba(255, 215, 0, 0.35); }
+    .esim-video-pick.active {
+        background: rgba(255, 215, 0, 0.1);
+        border-color: var(--c-gold);
+        color: var(--c-gold);
+    }
+
     .esim-install-video-caption {
         margin: 0;
         padding: 12px 18px;
@@ -4606,14 +4636,27 @@
     </p>
 
     <div class="esim-install-video esim-reveal">
-        <video controls preload="metadata" playsinline aria-label="How to install your GoTrips eSIM on iPhone or Android">
+        {{-- Two guides: the full iPhone + Android one, and an Android-only cut
+             (Pixel and Samsung Galaxy paths, entering the code by hand). The
+             poster is a designed still, so the player never opens on a black frame. --}}
+        <div class="esim-video-switch" role="tablist" aria-label="Choose your install video">
+            <button type="button" class="esim-video-pick active" data-video="main" role="tab" aria-selected="true">
+                <i class="fa-brands fa-apple"></i> iPhone &amp; Android
+            </button>
+            <button type="button" class="esim-video-pick" data-video="android" role="tab" aria-selected="false">
+                <i class="fa-brands fa-android"></i> Android only
+            </button>
+        </div>
+        <video id="esimInstallVideo" controls preload="metadata" playsinline
+               poster="{{ asset('assets/esim/how-to-install-esim-poster.jpg') }}"
+               aria-label="How to install your GoTrips eSIM on iPhone or Android">
             <source src="{{ asset('assets/esim/how-to-install-esim.mp4') }}" type="video/mp4">
             Your browser cannot play this video. <a href="{{ asset('assets/esim/how-to-install-esim.mp4') }}">Download the installation guide</a>.
         </video>
-        <p class="esim-install-video-caption">Watch the 84-second guide for iPhone, Android, same-phone QR setup and safe troubleshooting.</p>
+        <p class="esim-install-video-caption" id="esimInstallVideoCaption">Watch the 84-second guide for iPhone, Android, same-phone QR setup and safe troubleshooting.</p>
         {{-- Portrait cut of the same guide, laid out for a phone screen rather
              than scaled down from the wide version (client request, 15 Sep 2026). --}}
-        <p class="esim-install-video-alt">
+        <p class="esim-install-video-alt" id="esimInstallVideoAlt">
             On your phone?
             <a href="{{ asset('assets/esim/how-to-install-esim-portrait.mp4') }}" target="_blank" rel="noopener">
                 Watch the full-screen version
@@ -5467,6 +5510,55 @@
         document.getElementById('esimPayBtn').disabled = false;
     }
 
+    // ── Install video switch (iPhone + Android / Android only) ──
+    document.addEventListener('DOMContentLoaded', function () {
+        var picks = document.querySelectorAll('.esim-video-pick');
+        var video = document.getElementById('esimInstallVideo');
+        if (!picks.length || !video) return;
+
+        var guides = {
+            main: {
+                src: @json(asset('assets/esim/how-to-install-esim.mp4')),
+                poster: @json(asset('assets/esim/how-to-install-esim-poster.jpg')),
+                label: 'How to install your GoTrips eSIM on iPhone or Android',
+                caption: 'Watch the 84-second guide for iPhone, Android, same-phone QR setup and safe troubleshooting.',
+                portrait: true
+            },
+            android: {
+                src: @json(asset('assets/esim/how-to-install-esim-android.mp4')),
+                poster: @json(asset('assets/esim/how-to-install-esim-android-poster.jpg')),
+                label: 'How to install your GoTrips eSIM on an Android phone',
+                caption: 'Watch the 94-second Android guide: Google Pixel and Samsung Galaxy menus, entering the code by hand, and safe troubleshooting.',
+                portrait: false
+            }
+        };
+
+        function show(key) {
+            var g = guides[key];
+            if (!g) return;
+            picks.forEach(function (b) {
+                var on = b.dataset.video === key;
+                b.classList.toggle('active', on);
+                b.setAttribute('aria-selected', on ? 'true' : 'false');
+            });
+            video.pause();
+            video.setAttribute('poster', g.poster);
+            video.setAttribute('aria-label', g.label);
+            video.querySelector('source').setAttribute('src', g.src);
+            video.load();
+            document.getElementById('esimInstallVideoCaption').textContent = g.caption;
+            var alt = document.getElementById('esimInstallVideoAlt');
+            if (alt) alt.style.display = g.portrait ? '' : 'none';
+        }
+
+        picks.forEach(function (b) {
+            b.addEventListener('click', function () { show(b.dataset.video); });
+        });
+
+        // Shareable deep link, e.g. /esim?video=android#esimInstall
+        if (new URLSearchParams(window.location.search).get('video') === 'android') show('android');
+    });
+
     // ── Activation instruction tabs ──────────────────────
     document.addEventListener('DOMContentLoaded', function () {
         var tabs = document.querySelectorAll('.esim-install-tab');
@@ -5681,7 +5773,9 @@
             country_name: country.name,
             // The server re-prices from the provider and multiplies by this,
             // so the browser never decides what the order costs.
-            quantity: getEsimQty()
+            quantity: getEsimQty(),
+            // Price shown on screen; the server refuses to charge a different one.
+            expected_unit_price: bundle.selling_price
         };
 
         console.log('Sending payment request:', payload);

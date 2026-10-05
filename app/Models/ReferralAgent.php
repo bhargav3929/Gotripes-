@@ -27,7 +27,19 @@ class ReferralAgent extends Authenticatable
         'referral_code',
         'commission_type',
         'commission_value',
+        'esim_margin_type',
+        'esim_margin_value',
         'status',
+        'application_status',
+        'contract_document_id',
+        'signature_full_name',
+        'signature_agreed',
+        'signature_ip',
+        'signed_at',
+        'signed_pdf_path',
+        'rejection_reason',
+        'reviewed_by',
+        'reviewed_at',
         'total_earnings',
         'pending_earnings',
         'paid_earnings',
@@ -45,12 +57,72 @@ class ReferralAgent extends Authenticatable
 
     protected $casts = [
         'commission_value' => 'decimal:2',
+        'esim_margin_value' => 'decimal:2',
         'total_earnings' => 'decimal:2',
         'pending_earnings' => 'decimal:2',
         'paid_earnings' => 'decimal:2',
         'last_login_at' => 'datetime',
         'email_verified_at' => 'datetime',
+        'signature_agreed' => 'boolean',
+        'signed_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
+
+    public function contract()
+    {
+        return $this->belongsTo(ContractDocument::class, 'contract_document_id');
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function hasSignedContract(): bool
+    {
+        return $this->signature_agreed && $this->signed_at !== null;
+    }
+
+    /**
+     * Only meaningful for the freelancer flow — the older, ungated Referral
+     * Agent sign-up leaves `application_status` null and is never "pending".
+     */
+    public function isPendingApplication(): bool
+    {
+        return $this->application_status === 'pending_review';
+    }
+
+    public function isApprovedApplication(): bool
+    {
+        return $this->application_status === 'approved';
+    }
+
+    public function isRejectedApplication(): bool
+    {
+        return $this->application_status === 'rejected';
+    }
+
+    /** Activate a pending freelancer application: it can log in from here on. */
+    public function approveApplication(User $reviewer): void
+    {
+        $this->update([
+            'status'            => 'active',
+            'application_status' => 'approved',
+            'reviewed_by'       => $reviewer->id,
+            'reviewed_at'       => now(),
+            'rejection_reason'  => null,
+        ]);
+    }
+
+    public function rejectApplication(User $reviewer, string $reason): void
+    {
+        $this->update([
+            'application_status' => 'rejected',
+            'reviewed_by'       => $reviewer->id,
+            'reviewed_at'       => now(),
+            'rejection_reason'  => $reason,
+        ]);
+    }
 
     /**
      * Boot function to generate referral code
@@ -183,6 +255,35 @@ class ReferralAgent extends Authenticatable
         }
 
         return (float) $this->commission_value;
+    }
+
+    /**
+     * The margin this freelancer earns on ONE eSIM, given the platform price
+     * (supplier cost + company markup). Percentage margins apply to that
+     * platform price; fixed margins are AED per eSIM. Only freelancers carry
+     * one; every other referral partner stays on plain commission.
+     */
+    public function esimMarginFor(float $platformUnitPrice): float
+    {
+        if (!$this->is_freelancer) {
+            return 0.0;
+        }
+
+        $value = max(0.0, (float) $this->esim_margin_value);
+
+        return $this->esim_margin_type === 'percentage'
+            ? round($platformUnitPrice * $value / 100, 2)
+            : round($value, 2);
+    }
+
+    /** Human label for the margin, e.g. "3%" or "AED 3.00 per eSIM". */
+    public function esimMarginLabel(): string
+    {
+        $value = (float) $this->esim_margin_value;
+
+        return $this->esim_margin_type === 'percentage'
+            ? rtrim(rtrim(number_format($value, 2), '0'), '.') . '%'
+            : 'AED ' . number_format($value, 2) . ' per eSIM';
     }
 
     /**
