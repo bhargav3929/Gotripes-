@@ -285,18 +285,6 @@
         box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.07);
     }
 
-    /* Chrome/Edge paint autofilled fields with their own white background,
-       ignoring background-color — override it with the inset box-shadow
-       trick so autofilled Name/Email fields stay on the dark theme. */
-    .field-input:-webkit-autofill,
-    .field-input:-webkit-autofill:hover,
-    .field-input:-webkit-autofill:focus {
-        -webkit-text-fill-color: var(--gt-text);
-        -webkit-box-shadow: 0 0 0 1000px var(--c-input-bg) inset;
-        box-shadow: 0 0 0 1000px var(--c-input-bg) inset;
-        transition: background-color 5000s ease-in-out 0s;
-    }
-
     select.field-input {
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='14' height='14' fill='%23FFD700'%3E%3Cpath d='M11.9997 13.1714L16.9495 8.22168L18.3637 9.63589L11.9997 15.9999L5.63574 9.63589L7.04996 8.22168L11.9997 13.1714Z'/%3E%3C/svg%3E");
@@ -417,13 +405,6 @@
         background: var(--gt-surface) !important;
         border: 1px solid var(--gt-border-strong) !important;
     }
-    /* Passport-scan status text is too light to read on light-theme's near-white
-       card background (measured ~1.7:1 contrast for .success, well under the
-       4.5:1 WCAG AA minimum). Darken the text only — background/border tints
-       and the dark-theme colors above are unchanged. */
-    html[data-theme="light"] .scan-result-card.success { color: #15803d; }
-    html[data-theme="light"] .scan-result-card.scanning { color: var(--gt-gold-deep); }
-    html[data-theme="light"] .scan-result-card.error { color: #b91c1c; }
     .ts-dropdown .option { padding: 9px 14px !important; color: var(--gt-text-secondary) !important; }
     .ts-dropdown .active { background: var(--gt-gold-soft) !important; color: var(--c-gold) !important; }
 
@@ -1106,7 +1087,16 @@
                 preferredCountries: ["ae", "sa", "qa", "in", "pk"],
                 utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js"
             }));
-            if (iti) phoneEl.__iti = iti;
+            if (iti) {
+                phoneEl.__iti = iti;
+                if (typeof window.GTDetectCountry === 'function') {
+                    window.GTDetectCountry().then(function (code) {
+                        if (!code) return;
+                        const current = iti.getSelectedCountryData();
+                        if (!current || current.iso2 === 'ae') iti.setCountry(code);
+                    });
+                }
+            }
         }
 
         // Nationality is no longer asked for — it is read off the passport and

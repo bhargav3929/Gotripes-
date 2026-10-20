@@ -9,12 +9,14 @@ use App\Models\AgentApplication;
 use App\Models\ContractDocument;
 use App\Models\Emirates;
 use App\Models\User;
+use App\Notifications\NewApplicationSubmitted;
 use App\Services\AgentContractService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -129,6 +131,23 @@ class AgentSignupController extends Controller
             Mail::to($application->email)->send(new AgentApplicationReceivedMail($application, $generatedPassword));
         } catch (\Throwable $e) {
             Log::error('Agent application received email failed', [
+                'application_id' => $application->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $admins = User::companyAdmins($application->company_id);
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new NewApplicationSubmitted(
+                    type: 'agent',
+                    applicantName: $application->name,
+                    applicantEmail: $application->email,
+                    reviewUrl: route('manager.agent-applications.show', $application->id),
+                ));
+            }
+        } catch (\Throwable $e) {
+            Log::error('Agent application admin notification failed', [
                 'application_id' => $application->id,
                 'error' => $e->getMessage(),
             ]);

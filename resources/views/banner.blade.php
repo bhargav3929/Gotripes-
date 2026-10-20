@@ -1335,6 +1335,7 @@
 
           <!-- Registration Modal -->
           @include('partials.gold-medallion-tokens')
+          @include('partials.gold-medallion-fit')
           @php
             $partnerModalLogo = (isset($company) && $company && $company->logo)
               ? asset('storage/' . $company->logo)
@@ -1349,14 +1350,21 @@
              How "no scroll bar" is achieved: the old step 1 held eight fields and
              could never fit in a circle, so the wizard is now four short steps,
              none taller than the space the disc offers.
-             Circle mode needs a viewport at least 900px wide AND 770px tall. Below
-             either, a circle cannot hold a form, so the shell becomes a rounded
-             card with the same ring that grows to its content; the page scrolls
-             if it must, the form itself never does.
+             Circle mode needs a window at least 900px wide and 536px tall. The disc
+             is never drawn smaller than 720px (the size that still contains the
+             form); a window too short for that gets the whole disc scaled down
+             to fit (partials/gold-medallion-fit.blade.php sets --gm-fit), so the
+             shape stays a circle on a 600px-tall laptop window. Before 1 Oct
+             2026 this switched to a rounded box below 770px of height, which is
+             what the founder's laptop showed. Narrower than 900px (phones and
+             tablets) or shorter than 536px, a circle really cannot hold a form,
+             so the shell becomes a rounded card with the same ring that grows to
+             its content; the page scrolls if it must, the form itself never does.
              These rules follow the base styles above and change only the shell;
              every field, id, name and the submit path are untouched. */
-          .partner-registration-modal{padding:16px;overflow:hidden;align-items:center;justify-content:center}
-          .partner-registration-modal .partner-modal-content{--disc:min(920px,96vw,92vh);--ring-w:calc(var(--disc) * var(--gm-ring-ratio,.045));position:relative;width:var(--disc);height:var(--disc);max-width:none;max-height:none;margin:0;padding:0;border-radius:50%;border:var(--ring-w) solid transparent;background:var(--gm-disc-fill) padding-box,var(--gm-gold-metal) border-box;box-shadow:0 30px 90px rgba(0,0,0,.85),0 0 60px rgba(212,175,55,.18),inset 0 0 0 1px rgba(60,42,8,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible;animation:partnerModalSlideIn .4s cubic-bezier(.16,1,.3,1)}
+          /* overflow:clip, not hidden: the scaled disc still occupies its full layout size, which made this a scroll container, and a browser scrolls those to reveal a focused field (the circle shifted up by up to 34px). clip cannot be scrolled. */
+          .partner-registration-modal{padding:16px;overflow:hidden;overflow:clip;align-items:center;justify-content:center}
+          .partner-registration-modal .partner-modal-content{--disc:max(680px,min(920px,96vw,92vh));scale:var(--gm-fit,1);--ring-w:calc(var(--disc) * var(--gm-ring-ratio,.045));position:relative;width:var(--disc);height:var(--disc);max-width:none;max-height:none;margin:0;padding:0;border-radius:50%;border:var(--ring-w) solid transparent;background:var(--gm-disc-fill) padding-box,var(--gm-gold-metal) border-box;box-shadow:0 30px 90px rgba(0,0,0,.85),0 0 60px rgba(212,175,55,.18),inset 0 0 0 1px rgba(60,42,8,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible;animation:partnerModalSlideIn .4s cubic-bezier(.16,1,.3,1)}
           /* Inner hairline just inside the band. */
           .partner-registration-modal .partner-modal-content::before{content:'';position:absolute;inset:calc(var(--disc) * .012);left:auto;top:auto;width:auto;height:auto;transform:none;border:2px solid rgba(212,175,55,.6);border-radius:50%;background:none;pointer-events:none}
           .partner-registration-modal .partner-brand-medallion{flex:0 0 auto;width:calc(var(--disc) * .12);height:calc(var(--disc) * .12);border-radius:50%;overflow:hidden;background:#050505;box-shadow:0 10px 26px rgba(0,0,0,.6);margin-bottom:calc(var(--disc) * .012)}
@@ -1381,7 +1389,7 @@
              actions 102 + padding 10. A fixed height also keeps the title and
              dots from jumping between steps. The smallest disc whose inner ring
              still contains all of it is 700px (the Next row binds first), which
-             is why circle mode needs a viewport about 770px tall. */
+             is why the disc is never drawn below 720px (a shorter window scales it). */
           .partner-registration-modal .partner-modal-body{flex:0 0 auto;width:480px;height:446px;padding:4px 0 6px;box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden}
           .partner-registration-modal .partner-modal-body form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
           .partner-registration-modal .partner-step-indicator,
@@ -1420,9 +1428,9 @@
           .partner-registration-modal .partner-back-btn{flex:none;width:118px;height:46px;font-size:11px;letter-spacing:1.2px;white-space:nowrap}
           .partner-registration-modal .partner-cancel-btn{flex:none;width:auto;min-width:112px;height:32px;padding:0 20px;font-size:10px;letter-spacing:1.6px;white-space:nowrap;color:#8a8a8a;border-color:#2e2e2e}
           .partner-registration-modal .partner-cancel-btn:hover{color:#fff;border-color:#555}
-          @media (max-width:899px), (max-height:769px){
+          @media (max-width:899px), (max-height:535px){
             .partner-registration-modal{padding:12px;overflow-y:auto;align-items:flex-start}
-            .partner-registration-modal .partner-modal-content{--disc:560px;width:min(96vw,560px);height:auto;max-height:none;margin:12px auto;border-radius:32px;border-width:10px;padding:20px 0 20px;justify-content:flex-start;overflow:visible}
+            .partner-registration-modal .partner-modal-content{--disc:560px;scale:none;width:min(96vw,560px);height:auto;max-height:none;margin:12px auto;border-radius:32px;border-width:10px;padding:20px 0 20px;justify-content:flex-start;overflow:visible}
             .partner-registration-modal .partner-modal-content::before{inset:8px;border-radius:22px}
             .partner-registration-modal .partner-brand-medallion{width:72px;height:72px;margin-bottom:8px}
             .partner-registration-modal .partner-modal-header{margin-bottom:8px}
@@ -1443,7 +1451,7 @@
           </style>
 
           <div id="partnerRegistrationModal" class="partner-registration-modal">
-            <div class="partner-modal-content">
+            <div class="partner-modal-content" data-gm-fit="680">
               <div class="partner-brand-medallion" aria-hidden="true">
                 <img src="{{ $partnerModalLogo }}" alt="">
               </div>
@@ -1745,6 +1753,13 @@
             utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js',
           });
           phoneInput.__iti = iti;
+          if (typeof window.GTDetectCountry === 'function') {
+            window.GTDetectCountry().then(function (code) {
+              if (!code) return;
+              const current = iti.getSelectedCountryData();
+              if (!current || current.iso2 === 'ae') iti.setCountry(code);
+            });
+          }
         })();
 
         // Keeps the phone widget's own dial-code flag (intl-tel-input, set up

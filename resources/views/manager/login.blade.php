@@ -165,6 +165,9 @@
 
             <button type="submit" class="login-btn">Log In</button>
         </form>
+        <div class="login-footer" style="margin-top:14px;">
+            <a href="{{ route('password.request') }}{{ old('email') ? '?email=' . urlencode(old('email')) : '' }}">Forgot your password?</a>
+        </div>
     </div>
 
     <div class="login-footer">

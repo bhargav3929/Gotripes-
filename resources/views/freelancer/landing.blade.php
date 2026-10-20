@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>GoTrips Freelancers — Sell Travel, Earn From Anywhere</title>
     <link rel="icon" type="image/png" href="{{ asset('assets/index_files/logo.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -31,9 +32,30 @@
             z-index: 100;
             border-bottom: 1px solid rgba(255,215,0,0.08);
         }
-        .nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'Outfit'; font-weight: 800; font-size: 20px; }
+        .nav-left { display: flex; align-items: center; gap: 20px; min-width: 0; }
+        /* The brand mark is a link, so it needs its own colour and no underline:
+           without them the browser painted "Freelancers" in default link blue
+           (purple once visited), which is what Amer's screenshot showed. */
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Outfit'; font-weight: 800; font-size: 20px;
+            color: var(--text); text-decoration: none; white-space: nowrap;
+        }
         .nav-logo img { height: 32px; }
         .nav-logo span { color: var(--gold); }
+        .nav-logo em { font-style: normal; color: var(--text); }
+        /* A plainly labelled way back to the GoTrips home page (Amer, 1 Oct 2026:
+           "there is no link to go back to home page"). */
+        .nav-home {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 16px;
+            border: 1px solid rgba(255,215,0,0.35); border-radius: 99px;
+            color: var(--gold); text-decoration: none;
+            font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+        }
+        .nav-home:hover { background: rgba(255,215,0,0.1); border-color: var(--gold); color: var(--gold); transform: translateY(-1px); }
+        .nav-home:focus-visible, .nav-logo:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 8px; }
         .nav-cta {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 10px 22px;
@@ -217,6 +239,9 @@
 
         @media (max-width: 768px) {
             .nav { padding: 14px 20px; }
+            .nav-left { gap: 12px; }
+            .nav-logo em { display: none; }
+            .nav-home { padding: 7px 12px; }
             .hero { padding: 120px 20px 60px; }
             .hero-ctas { flex-direction: column; }
             .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
@@ -228,10 +253,15 @@
 </head>
 <body>
     <nav class="nav">
-        <a class="nav-logo" href="/freelancer">
-            <img src="{{ asset('assets/index_files/logo.png') }}" alt="GoTrips">
-            <span>GoTrips</span> Freelancers
-        </a>
+        <div class="nav-left">
+            <a class="nav-logo" href="{{ url('/') }}" aria-label="GoTrips home">
+                <img src="{{ asset('assets/index_files/logo.png') }}" alt="">
+                <span>GoTrips</span> <em>Freelancers</em>
+            </a>
+            <a class="nav-home" href="{{ url('/') }}">
+                <i class="fas fa-house"></i> Home
+            </a>
+        </div>
         <a href="{{ route('referral.login') }}" class="nav-cta">
             Sign In <i class="fas fa-arrow-right"></i>
         </a>
@@ -248,7 +278,7 @@
                 Build your own travel storefront powered by GoTrips. Market UAE activities, visas, eSIMs and tour packages — and earn commissions on every sale, paid directly to your bank.
             </p>
             <div class="hero-ctas">
-                <a href="{{ route('freelancer.register') }}" class="btn-primary">
+                <a href="{{ route('freelancer.register') }}" class="btn-primary" data-open-freelancer-register>
                     Become a Freelancer <i class="fas fa-arrow-right"></i>
                 </a>
                 <a href="{{ route('referral.login') }}" class="btn-ghost">
@@ -316,9 +346,9 @@
     </section>
 
     <section class="cta-band">
-        <h2>Start earning in under 2 minutes.</h2>
-        <p>No approvals, no waiting list. Sign up today and your storefront is live by tonight.</p>
-        <a href="{{ route('freelancer.register') }}" class="btn-primary">
+        <h2>Apply in under 2 minutes.</h2>
+        <p>Sign the agreement, tell us where to pay you, and we'll review your application fast.</p>
+        <a href="{{ route('freelancer.register') }}" class="btn-primary" data-open-freelancer-register>
             Create your account <i class="fas fa-arrow-right"></i>
         </a>
     </section>
@@ -326,5 +356,8 @@
     <footer>
         © {{ date('Y') }} GoTrips Freelancers · A division of GoTrips · <a href="https://gotrips.ai" style="color: var(--gold); text-decoration: none;">gotrips.ai</a>
     </footer>
+
+    @include('partials.intl-tel-init')
+    @include('partials.freelancer_registration_modal')
 </body>
 </html>

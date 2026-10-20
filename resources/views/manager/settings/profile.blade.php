@@ -72,7 +72,37 @@
     </form>
 </div>
 
+<div class="settings-card" style="margin-top:20px;">
+    <h2>Your password</h2>
+    <p class="lede">Signed in as {{ auth()->user()->email }}. Changing the password signs out every other device.</p>
+
+    <form action="{{ route('manager.settings.password.update') }}" method="POST" autocomplete="off">
+        @csrf
+        <div class="form-row">
+            <label for="current_password">Current password <span class="req">*</span></label>
+            <input type="password" id="current_password" name="current_password" required autocomplete="current-password">
+        </div>
+        <div class="form-row">
+            <label for="new_password">New password <span class="req">*</span></label>
+            <input type="password" id="new_password" name="password" required minlength="8" autocomplete="new-password">
+            <small>At least 8 characters, with letters and numbers.</small>
+        </div>
+        <div class="form-row">
+            <label for="new_password_confirmation">Confirm new password <span class="req">*</span></label>
+            <input type="password" id="new_password_confirmation" name="password_confirmation" required minlength="8" autocomplete="new-password">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-save">Change password</button>
+        </div>
+    </form>
+</div>
+
 <style>
+    .form-row input[type=password] {
+        width:100%; padding:10px 12px; background:#222;
+        border:1px solid rgba(255,215,0,0.15); border-radius:8px;
+        color:#f0f0f0; font-size:14px;
+    }
     .settings-card {
         background:#1a1a1a; border:1px solid rgba(255,215,0,0.18);
         border-radius:12px; padding:28px 32px; max-width:760px;

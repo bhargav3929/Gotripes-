@@ -546,6 +546,7 @@
 </head>
 
 <body>
+@include('partials.home-pill')
 @include('partials.gold-medallion-page')
     <div class="register-wrapper">
 

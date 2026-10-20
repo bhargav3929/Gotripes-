@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\AgentApplication;
 use App\Models\ContractDocument;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,10 +18,16 @@ use Illuminate\Support\Facades\Storage;
  *                    signature certificate is generated instead. It names the
  *                    contract, its version and the SHA-256 of the exact file
  *                    that was shown, which is what ties the two together.
+ *
+ * Takes any signer model with `id`, `name` and `signature_*` columns —
+ * `AgentApplication` (agent flow) and `ReferralAgent` (freelancer flow) both
+ * qualify, since they share the same eSIM sub-agent contract (audience
+ * 'agent'). The stored path is prefixed generically so both flows' files
+ * live side by side without colliding.
  */
 class AgentContractService
 {
-    public function sign(AgentApplication $application, ContractDocument $contract): ?string
+    public function sign(Model $application, ContractDocument $contract): ?string
     {
         $view = $contract->isUpload()
             ? 'contracts.signature-certificate'

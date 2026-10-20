@@ -791,6 +791,12 @@
                     </a>
                 </li>
                 <li class="wp-nav-item">
+                    <a href="{{ route('manager.freelancer-applications.index') }}" class="{{ request()->routeIs('manager.freelancer-applications.*') ? 'active' : '' }}">
+                        <i class="fas fa-store"></i>
+                        <span>Freelancer Applications</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
                     <a href="{{ route('manager.b2b-partners.index') }}" class="{{ request()->routeIs('manager.b2b-partners.*') ? 'active' : '' }}">
                         <i class="fas fa-handshake"></i>
                         <span>B2B Partners</span>
@@ -862,6 +868,41 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="topbar-title">@yield('page-title', 'Dashboard')</div>
+
+                @php
+                    $wpNotifications = auth()->user()?->notifications()->latest()->take(10)->get() ?? collect();
+                    $wpUnreadCount = auth()->user()?->unreadNotifications()->count() ?? 0;
+                @endphp
+                <div class="dropdown wp-notif-bell">
+                    <button class="wp-notif-bell-btn" type="button" id="wpNotifBellToggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
+                        <i class="fas fa-bell"></i>
+                        @if($wpUnreadCount > 0)
+                            <span class="wp-notif-badge">{{ $wpUnreadCount > 9 ? '9+' : $wpUnreadCount }}</span>
+                        @endif
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end wp-notif-dropdown" aria-labelledby="wpNotifBellToggle">
+                        <div class="wp-notif-dropdown-header">
+                            <span>Notifications</span>
+                            @if($wpUnreadCount > 0)
+                                <form action="{{ route('manager.notifications.read-all') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="wp-notif-mark-all">Mark all read</button>
+                                </form>
+                            @endif
+                        </div>
+                        @forelse($wpNotifications as $wpNotif)
+                            <a href="{{ $wpNotif->data['url'] ?? '#' }}" class="wp-notif-item {{ $wpNotif->read_at ? '' : 'is-unread' }}"
+                               data-notif-read-url="{{ route('manager.notifications.read', $wpNotif->id) }}">
+                                <span class="wp-notif-item-title">{{ $wpNotif->data['title'] ?? 'Notification' }}</span>
+                                <span class="wp-notif-item-body">{{ $wpNotif->data['body'] ?? '' }}</span>
+                                <span class="wp-notif-item-time">{{ $wpNotif->created_at->diffForHumans() }}</span>
+                            </a>
+                        @empty
+                            <div class="wp-notif-empty">Nothing yet — new applications will show up here.</div>
+                        @endforelse
+                    </div>
+                </div>
+
                 <div class="topbar-user">
                     <span class="d-none d-sm-inline">{{ auth()->user()?->name ?? 'Manager' }}</span>
                     <div class="topbar-user-avatar">
@@ -869,6 +910,24 @@
                     </div>
                 </div>
             </header>
+            <style>
+                .wp-notif-bell{margin-left:auto;margin-right:14px;position:relative}
+                .wp-notif-bell-btn{position:relative;background:transparent;border:none;color:var(--wp-text-secondary,#aaa);font-size:17px;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s ease,color .15s ease}
+                .wp-notif-bell-btn:hover{background:rgba(255,215,0,.08);color:var(--wp-primary,#FFD700)}
+                .wp-notif-badge{position:absolute;top:2px;right:2px;background:#e0473e;color:#fff;font-size:10px;font-weight:700;line-height:1;min-width:16px;height:16px;padding:0 3px;border-radius:99px;display:flex;align-items:center;justify-content:center;border:2px solid var(--wp-topbar-bg,#151515)}
+                .wp-notif-dropdown{width:340px;max-width:90vw;padding:0;background:#151515;border:1px solid rgba(255,215,0,.18);box-shadow:0 20px 50px rgba(0,0,0,.5);border-radius:10px;overflow:hidden}
+                .wp-notif-dropdown-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:700;color:#eee}
+                .wp-notif-mark-all{background:none;border:none;color:var(--wp-primary,#FFD700);font-size:11px;cursor:pointer;padding:0}
+                .wp-notif-item-form{margin:0}
+                .wp-notif-item{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);padding:10px 16px;cursor:pointer;color:#ddd;text-decoration:none}
+                .wp-notif-item:hover{background:rgba(255,255,255,.04)}
+                .wp-notif-item.is-unread{background:rgba(255,215,0,.05)}
+                .wp-notif-item.is-unread .wp-notif-item-title{color:var(--wp-primary,#FFD700)}
+                .wp-notif-item-title{font-size:12.5px;font-weight:700}
+                .wp-notif-item-body{font-size:12px;color:#999}
+                .wp-notif-item-time{font-size:10.5px;color:#666;margin-top:2px}
+                .wp-notif-empty{padding:24px 16px;text-align:center;font-size:12.5px;color:#777}
+            </style>
 
             <!-- Main Content -->
             <main class="wp-content">
@@ -919,6 +978,20 @@
             });
 
             setTimeout(function() { $('#alert-message').fadeOut('slow'); }, 4000);
+
+            // Fire-and-forget mark-as-read so a click still navigates
+            // immediately even if the request is slow or fails — the bell
+            // count is a convenience, never something worth blocking on.
+            document.querySelectorAll('.wp-notif-item[data-notif-read-url]').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+                    fetch(el.dataset.notifReadUrl, {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': csrf, 'X-Requested-With': 'XMLHttpRequest' },
+                        keepalive: true,
+                    }).catch(function () {});
+                });
+            });
         });
     </script>
     @stack('scripts')

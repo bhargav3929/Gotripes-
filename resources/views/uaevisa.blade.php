@@ -1915,6 +1915,13 @@
             utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js',
         });
         phoneEl.__iti = iti;
+        if (typeof window.GTDetectCountry === 'function') {
+            window.GTDetectCountry().then(function (code) {
+                if (!code) return;
+                const current = iti.getSelectedCountryData();
+                if (!current || current.iso2 === 'ae') iti.setCountry(code);
+            });
+        }
 
         // Form Submit
         const form = document.getElementById('visaForm');

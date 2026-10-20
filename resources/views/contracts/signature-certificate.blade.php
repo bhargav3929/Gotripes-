@@ -5,8 +5,9 @@
 <html>
 <head>
     <meta charset="utf-8">
+    @include('contracts._letterhead', ['letterheadDocType' => 'Certificate of Signature'])
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #1a1a1a; line-height: 1.6; }
+        body { font-size: 12px; line-height: 1.6; }
         h1 { font-size: 18px; margin-bottom: 2px; }
         .meta { font-size: 10px; color: #666; margin-bottom: 20px; }
         h2 { font-size: 13px; margin: 24px 0 8px; }
@@ -29,9 +30,13 @@
 
     <h2>Signed by</h2>
     <div class="party-row"><strong>Name:</strong> {{ $application->signature_full_name }}</div>
+    @if($application->company_name)
     <div class="party-row"><strong>For:</strong> {{ $application->company_name }}</div>
+    @endif
     <div class="party-row"><strong>Email:</strong> {{ $application->email }}</div>
+    @if($application->trade_license_number)
     <div class="party-row"><strong>Trade licence:</strong> {{ $application->trade_license_number }}</div>
+    @endif
     <div class="party-row"><strong>IP address:</strong> {{ $application->signature_ip }}</div>
     <div class="party-row"><strong>Signed at:</strong> {{ optional($application->signed_at)->format('d M Y, H:i') }} UTC</div>
 

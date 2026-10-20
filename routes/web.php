@@ -753,6 +753,7 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::get('/settings/notifications',  [SettingsController::class, 'notifications'])->name('settings.notifications');
     Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
     Route::post('/settings/notifications/test', [SettingsController::class, 'sendTestNotification'])->name('settings.notifications.test');
+    Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password.update');
 
     // Customer support — the manager portal is always the system of record.
     Route::get('/support', [\App\Http\Controllers\Manager\ManagerSupportTicketController::class, 'index'])->name('support.index');

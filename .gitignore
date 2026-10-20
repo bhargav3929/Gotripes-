@@ -88,3 +88,10 @@ DEPLOYMENT.md
 /public/tenant-themes/
 /public/tenant-themes-test-*/
 /storage/app/theme-staging/
+
+# Files uploaded through the admin and manager panels at runtime. They live
+# only on the server; a deploy must never add, change or remove them.
+/public/uploads/
+/public/assets/homepageads/[0-9]*_*
+/public/assets/activities/*/[0-9]*_*
+/public/assets/packages/*/[0-9]*_*

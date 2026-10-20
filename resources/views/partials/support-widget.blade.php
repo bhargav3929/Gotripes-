@@ -9,18 +9,32 @@
 <div class="gt-support" id="gtSupport" data-create-url="{{ route('support.tickets.store') }}" data-track-url="{{ route('support.tickets.track') }}" data-reply-url="{{ route('support.tickets.reply') }}">
     <button class="gt-support-launcher" id="gtSupportLauncher" type="button" aria-haspopup="dialog" aria-controls="gtSupportPanel" aria-expanded="false" aria-label="Help: raise or track a support ticket">
         <span class="gt-support-medal" aria-hidden="true">
-            {{-- A support agent in a headset: the client asked for "someone
-                 standing out", so the launcher shows a person, not an icon. --}}
-            <svg viewBox="0 0 48 48" fill="none">
-                <path d="M9 42c0-8 6.7-12.6 15-12.6S39 34 39 42" fill="#e6c65a"/>
-                <circle cx="24" cy="18.5" r="8.2" fill="#f0cf6b"/>
-                <path d="M13 21a11 11 0 0 1 22 0" stroke="#050505" stroke-width="5" stroke-linecap="round"/>
-                <path d="M13 21a11 11 0 0 1 22 0" stroke="#f7e39a" stroke-width="2.4" stroke-linecap="round"/>
-                <rect x="10.6" y="18" width="4.6" height="8" rx="2.3" fill="#f7e39a" stroke="#050505" stroke-width="1.2"/>
-                <rect x="32.8" y="18" width="4.6" height="8" rx="2.3" fill="#f7e39a" stroke="#050505" stroke-width="1.2"/>
-                <path d="M35.1 26c0 3.6-2.7 5.4-6.4 5.4" stroke="#f7e39a" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="27.8" cy="31.4" r="1.9" fill="#f7e39a"/>
-            </svg>
+            {{-- Three local personas cycling in turn, not one fixed face —
+                 Amer asked for an Emirati man and woman "one after other pop
+                 up", then added a third for balance ("add one asian also...
+                 or else racism"). Same gold/cream/black palette as the ring. --}}
+            <span class="gt-support-persona">
+                <svg viewBox="0 0 48 48" fill="none">
+                    <path d="M9 42c0-8 6.7-12.6 15-12.6S39 34 39 42" fill="#e6c65a"/>
+                    <path d="M12.5 20c0-7 5.2-12.5 11.5-12.5S35.5 13 35.5 20c0 4-1.3 7.4-2.6 10.2l-3-1.4c1.2-2.6 2.1-5.5 2.1-8.8 0-5-3.6-9-8-9s-8 4-8 9c0 3.3.9 6.2 2.1 8.8l-3 1.4C13.8 27.4 12.5 24 12.5 20z" fill="#f7f3e6" stroke="#050505" stroke-width="0.6"/>
+                    <circle cx="24" cy="19.5" r="7" fill="#f0cf6b"/>
+                    <ellipse cx="24" cy="12.5" rx="8.6" ry="2.4" fill="#050505"/>
+                </svg>
+            </span>
+            <span class="gt-support-persona">
+                <svg viewBox="0 0 48 48" fill="none">
+                    <path d="M9 42c0-8 6.7-12.6 15-12.6S39 34 39 42" fill="#e6c65a"/>
+                    <path d="M13 22c-1-8 3.7-15 11-15s12 7 11 15c-.6 5-2.3 8.6-3.6 11l-3-1.6c1.3-2.4 2.7-5.5 3.2-9.6.7-6-2.9-11-7.6-11s-8.3 5-7.6 11c.5 4.1 1.9 7.2 3.2 9.6l-3 1.6C15.3 30.6 13.6 27 13 22z" fill="#8f6a16" stroke="#050505" stroke-width="0.6"/>
+                    <circle cx="24" cy="20" r="6.6" fill="#f0cf6b"/>
+                </svg>
+            </span>
+            <span class="gt-support-persona">
+                <svg viewBox="0 0 48 48" fill="none">
+                    <path d="M9 42c0-8 6.7-12.6 15-12.6S39 34 39 42" fill="#e6c65a"/>
+                    <circle cx="24" cy="19.5" r="7.5" fill="#f0cf6b"/>
+                    <path d="M16.3 18.5a7.7 7.7 0 0 1 15.4 0c0-.3-.2-3-2-4.6-1.5-1.3-3.8-2-5.7-2s-4.2.7-5.7 2c-1.8 1.6-2 4.3-2 4.6z" fill="#050505"/>
+                </svg>
+            </span>
         </span>
         <span class="gt-support-tag">Help</span>
     </button>
@@ -28,8 +42,8 @@
     <section class="gt-support-panel" id="gtSupportPanel" role="dialog" aria-modal="false" aria-labelledby="gtSupportTitle" hidden>
         <header class="gt-support-header">
             <div>
-                <strong id="gtSupportTitle">{{ $supportName }} Support</strong>
-                <span>We’re here to help</span>
+                <strong id="gtSupportTitle">Chat with {{ $supportName }}</strong>
+                <span>A real person replies here</span>
             </div>
             <button type="button" class="gt-support-close" data-support-close aria-label="Close support window">&times;</button>
         </header>
@@ -37,16 +51,16 @@
         <div class="gt-support-body" aria-live="polite">
             <section data-support-screen="home">
                 <p class="gt-support-greeting">How can we help?</p>
-                <p class="gt-support-muted">Create a request or check the progress of one you already raised.</p>
-                <button type="button" class="gt-support-choice" data-support-go="problem"><i class="fas fa-plus-circle"></i><span><strong>Create a new ticket</strong><small>Tell us what went wrong</small></span></button>
-                <button type="button" class="gt-support-choice" data-support-go="track"><i class="fas fa-search"></i><span><strong>Track an existing ticket</strong><small>Use your ticket ID and email</small></span></button>
+                <p class="gt-support-muted">Start a new conversation or pick up one you already started.</p>
+                <button type="button" class="gt-support-choice" data-support-go="problem"><i class="fas fa-comment-dots"></i><span><strong>Start a chat</strong><small>Tell us what's going on — we'll reply here</small></span></button>
+                <button type="button" class="gt-support-choice" data-support-go="track"><i class="fas fa-comments"></i><span><strong>Continue a chat</strong><small>Enter the code we sent you</small></span></button>
                 <div class="gt-support-hours"><i class="far fa-clock"></i><span><strong>Support hours</strong>{{ $supportHours }}<br>First response target: within {{ max(1, (int) ceil($supportSla / 60)) }} hours.</span></div>
             </section>
 
             <section data-support-screen="problem" hidden>
                 <button type="button" class="gt-support-back" data-support-go="home">← Back</button>
-                <h3>What problem are you facing?</h3>
-                <label class="gt-support-field">Describe the issue
+                <h3>What's going on?</h3>
+                <label class="gt-support-field">Your message
                     <textarea id="gtSupportProblem" rows="6" minlength="10" maxlength="4000" placeholder="Tell us what you were trying to do and what happened…" required></textarea>
                 </label>
                 <button type="button" class="gt-support-primary" id="gtSupportProblemNext">Continue</button>
@@ -54,21 +68,21 @@
 
             <section data-support-screen="contact" hidden>
                 <button type="button" class="gt-support-back" data-support-go="problem">← Back</button>
-                <h3>Where should we send updates?</h3>
+                <h3>Where should we send replies?</h3>
                 <form id="gtSupportCreateForm">
                     <label class="gt-support-field">Name<input type="text" name="name" maxlength="120" autocomplete="name" required></label>
                     <label class="gt-support-field">Email<input type="email" name="email" maxlength="255" autocomplete="email" required></label>
                     <label class="gt-support-field">Phone / WhatsApp<input type="tel" name="phone" minlength="7" maxlength="40" autocomplete="tel" required></label>
-                    <button type="submit" class="gt-support-primary">Create ticket</button>
+                    <button type="submit" class="gt-support-primary">Start chat</button>
                 </form>
             </section>
 
             <section data-support-screen="track" hidden>
                 <button type="button" class="gt-support-back" data-support-go="home">← Back</button>
-                <h3>Track your ticket</h3>
-                <p class="gt-support-muted">Enter the ticket ID we sent you and we will open the conversation.</p>
+                <h3>Continue your chat</h3>
+                <p class="gt-support-muted">Enter the code we sent you and we'll open the conversation.</p>
                 <form id="gtSupportTrackForm">
-                    <label class="gt-support-field">Ticket ID<input type="text" name="ticket_number" maxlength="32" placeholder="GT-260908-ABC123" autocomplete="off" required></label>
+                    <label class="gt-support-field">Conversation code<input type="text" name="ticket_number" maxlength="32" placeholder="GT-260908-ABC123" autocomplete="off" required></label>
                     <button type="submit" class="gt-support-primary">Open conversation</button>
                 </form>
             </section>
@@ -78,8 +92,8 @@
                 <div id="gtSupportTicketSummary"></div>
                 <div class="gt-support-thread" id="gtSupportThread"></div>
                 <form id="gtSupportReplyForm">
-                    <label class="gt-support-field">Add a follow-up<textarea name="message" rows="3" maxlength="4000" required></textarea></label>
-                    <button type="submit" class="gt-support-primary">Send follow-up</button>
+                    <label class="gt-support-field">Type a message<textarea name="message" rows="3" maxlength="4000" required></textarea></label>
+                    <button type="submit" class="gt-support-primary">Send</button>
                 </form>
             </section>
 
@@ -106,6 +120,15 @@
 .gt-support-launcher:focus-visible{outline:none}
 .gt-support-medal{position:relative;display:grid;place-items:center;width:66px;height:66px;border-radius:50%;border:4px solid transparent;background:radial-gradient(circle at 50% 36%,#1d1d1d 0,#060606 72%) padding-box,var(--gm-gold-metal) border-box;box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 0 1px rgba(255,236,170,.3);transition:transform .2s ease,box-shadow .2s ease}
 .gt-support-medal svg{width:38px;height:38px;margin-top:2px}
+/* Three personas share the same spot, popping in and out in turn rather than
+   one fixed face — see the persona SVGs above for why. 6s loop, three 2s
+   slots, each visible for most of its slot with a quick pop in/out at the
+   edges so the medallion is never left empty between faces. */
+.gt-support-persona{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transform:scale(.55);animation:gtPersonaCycle 6s ease-in-out infinite}
+.gt-support-persona:nth-child(2){animation-delay:2s}
+.gt-support-persona:nth-child(3){animation-delay:4s}
+@keyframes gtPersonaCycle{0%,100%{opacity:0;transform:scale(.55)}5%,28%{opacity:1;transform:scale(1)}33%{opacity:0;transform:scale(.55)}}
+@media(prefers-reduced-motion:reduce){.gt-support-persona{animation:none;opacity:0}.gt-support-persona:first-child{opacity:1;transform:scale(1)}}
 .gt-support-medal::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid rgba(240,207,107,.75);pointer-events:none;animation:gtHelpHalo 3.2s ease-out infinite}
 @keyframes gtHelpHalo{0%{transform:scale(1);opacity:.8}70%,100%{transform:scale(1.5);opacity:0}}
 .gt-support-tag{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);padding:4px 11px;border-radius:100px;background:var(--gm-gold-metal);color:#120e03;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;line-height:1;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.5),0 0 0 2px #050505;transition:filter .2s ease}
@@ -145,7 +168,10 @@
             if((data.ticket?.messages||[]).length!==lastCount)renderTicket(data.ticket);
         }catch(e){}
     };
-    const startPoll=()=>{stopPoll();if(tracked.ticket_number)pollTimer=setInterval(refreshTicket,20000)};
+    // 6s, not 20s: the client wants this to read as chat, not a ticket queue
+    // (docs/client-feedback-2026-09-27.md, D7) — replies should feel close to
+    // live without standing up a websocket/push backend for it.
+    const startPoll=()=>{stopPoll();if(tracked.ticket_number)pollTimer=setInterval(refreshTicket,6000)};
     const escapeHtml=(value)=>String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
     const renderTicket=(ticket)=>{
         tracked.ticket_number=ticket.ticket_number;

@@ -53,6 +53,35 @@ class SettingsController extends Controller
         return view('manager.settings.profile', compact('company'));
     }
 
+    /**
+     * Change the signed-in manager's own password. Needs the current one,
+     * applies the same strength rule as the reset flow, signs out every other
+     * session and tells the account holder by email.
+     */
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password'         => ['required', 'confirmed', \App\Http\Controllers\Auth\ResetPasswordController::passwordRule()],
+        ]);
+
+        $user = $request->user();
+        $user->forceFill(['password' => \Illuminate\Support\Facades\Hash::make($validated['password'])])->save();
+        \Illuminate\Support\Facades\Auth::logoutOtherDevices($validated['password']);
+
+        try {
+            $user->notify(new \App\Notifications\PasswordChanged($request->ip()));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        \Illuminate\Support\Facades\Log::info('password.changed', ['user_id' => $user->id, 'ip' => $request->ip()]);
+
+        return redirect()
+            ->route('manager.settings.profile')
+            ->with('success', 'Password changed. Every other device has been signed out.');
+    }
+
     public function updateProfile(Request $request)
     {
         $company = current_company();

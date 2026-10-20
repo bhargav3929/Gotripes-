@@ -133,6 +133,17 @@ class User extends Authenticatable
     }
 
     /**
+     * Who a new pending application (freelancer, agent, ...) should notify.
+     * Deliberately excludes customer_care — see isCustomerCare()'s docblock.
+     */
+    public static function companyAdmins(int $companyId)
+    {
+        return static::where('company_id', $companyId)
+            ->whereIn('role', ['company_owner', 'company_admin'])
+            ->get();
+    }
+
+    /**
      * Restricted manager login that only handles the support queue. Deliberately
      * NOT part of isCompanyAdmin(): the role is non-admin everywhere else.
      */

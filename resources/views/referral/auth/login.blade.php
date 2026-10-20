@@ -242,6 +242,7 @@
 </head>
 
 <body>
+    @include('partials.home-pill')
     <div class="bg-decoration top-left"></div>
     <div class="bg-decoration bottom-right"></div>
 
