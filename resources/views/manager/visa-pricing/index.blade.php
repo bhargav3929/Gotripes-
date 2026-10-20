@@ -4,6 +4,11 @@
 @section('page-title', 'UAE Visa Packages & Pricing')
 
 @section('content')
+@php
+    // Same list the public visa page's Nationality selector uses, so a value
+    // picked here always matches what a customer selects there.
+    $countryNames = array_column(\App\Support\CountryCodes::all(), 'name');
+@endphp
 <div class="wp-page-header">
     <h1 class="wp-page-title">UAE Visa Packages &amp; Pricing</h1>
 </div>
@@ -93,6 +98,40 @@
     }
 
     .wp-card-header-actions { display: flex; align-items: center; gap: 8px; }
+
+    /* Computed refund (deposit − processing fee). Read-only on purpose: it
+       mirrors what the customer is shown, so it can never drift from it. */
+    .refund-preview {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 10px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid rgba(34, 197, 94, 0.25);
+        background: rgba(34, 197, 94, 0.07);
+    }
+    .refund-preview-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #4ade80;
+    }
+    .refund-preview-value {
+        font-size: 13px;
+        font-weight: 700;
+        color: #4ade80;
+        white-space: nowrap;
+    }
+    .refund-cell {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #4ade80;
+        white-space: nowrap;
+    }
 
     /* ── Modal polish: give Create Package / Add-On Fees real depth and a
        gold accent instead of blending flat into the page behind them. ── */
@@ -324,37 +363,46 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <div class="deposit-block" id="pkgDepositBlock-{{ $p->id }}" style="margin:0;">
+                                                    <div class="deposit-block" id="pkgDepositBlock-{{ $p->id }}" style="margin:0;" data-refund-scope>
                                                         <div class="deposit-block-title">
                                                             <i class="fas fa-shield-halved"></i> Refundable security deposit
                                                         </div>
                                                         <div class="field-cols">
                                                             <div class="wp-form-group mb-0">
                                                                 <label class="wp-form-label">Package Default Security Deposit (AED)</label>
-                                                                <input type="number" class="wp-input" name="security_deposit" value="{{ $p->security_deposit }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Deposit (AED)">
+                                                                <input type="number" class="wp-input js-deposit-input" name="security_deposit" value="{{ $p->security_deposit }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Deposit (AED)">
                                                             </div>
                                                             <div class="wp-form-group mb-0">
                                                                 <label class="wp-form-label">Package Default Processing Fee (AED)</label>
-                                                                <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ $p->deposit_admin_fee }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Processing fee">
+                                                                <input type="number" class="wp-input js-fee-input" name="deposit_admin_fee" value="{{ $p->deposit_admin_fee }}" form="pkg-update-{{ $p->id }}" step="0.01" min="0" placeholder="Processing fee">
                                                             </div>
+                                                        </div>
+                                                        <div class="refund-preview">
+                                                            <span class="refund-preview-label"><i class="fas fa-rotate-left"></i> Refund to customer</span>
+                                                            <span class="refund-preview-value">AED <span data-refund-value>0.00</span></span>
                                                         </div>
                                                         <p class="wp-form-help" style="margin-top:6px;">Applies to every nationality unless overridden below (e.g. India/Pakistan/Nepal &rarr; AED 1,040).</p>
 
                                                         @if($p->deposits->isNotEmpty())
                                                             <p class="wp-form-help" style="margin-top:10px;">Nationality rows below override the package default above, for that nationality only.</p>
-                                                            <table class="wp-table" style="margin-top:6px;">
+                                                            {{-- Six columns in a half-width panel gets tight — let the table
+                                                                 scroll sideways rather than squeezing the selects down to
+                                                                 one unreadable character. --}}
+                                                            <div class="nationality-table-scroll">
+                                                            <table class="wp-table nationality-deposit-table" style="margin-top:6px;">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>Nationality</th>
-                                                                        <th style="width:110px;">Deposit (Override)</th>
-                                                                        <th style="width:110px;">Fee (Override)</th>
-                                                                        <th style="width:110px;">Status</th>
-                                                                        <th style="width:40px;"></th>
+                                                                        <th style="min-width:140px;">Nationality</th>
+                                                                        <th style="width:96px;">Deposit</th>
+                                                                        <th style="width:96px;">Fee</th>
+                                                                        <th style="width:96px;">Refund</th>
+                                                                        <th style="width:104px;">Status</th>
+                                                                        <th style="width:76px;"></th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach($p->deposits as $d)
-                                                                        <tr>
+                                                                        <tr data-refund-scope>
                                                                             <td>
                                                                                 <form id="deposit-update-{{ $d->id }}" action="{{ route('manager.visa-deposits.update', $d->id) }}" method="POST" style="display:none;">
                                                                                     @csrf @method('PUT')
@@ -362,13 +410,33 @@
                                                                                 <form id="delete-deposit-{{ $d->id }}" action="{{ route('manager.visa-deposits.destroy', $d->id) }}" method="POST" style="display:none;">
                                                                                     @csrf @method('DELETE')
                                                                                 </form>
-                                                                                <input type="text" class="wp-input" name="nationality" value="{{ $d->nationality }}" form="deposit-update-{{ $d->id }}" placeholder="All (default)" maxlength="100">
+                                                                                @php
+                                                                                    // Existing rows may hold values that aren't in the country
+                                                                                    // list (lowercase "india", or a group like "Arab Countries").
+                                                                                    // Match case-insensitively, and if it still isn't found keep
+                                                                                    // the stored value as its own option so saving never
+                                                                                    // silently rewrites it.
+                                                                                    $stored = (string) $d->nationality;
+                                                                                    $matched = collect($countryNames)->first(fn ($n) => strcasecmp($n, $stored) === 0);
+                                                                                @endphp
+                                                                                <select class="wp-input" name="nationality" form="deposit-update-{{ $d->id }}">
+                                                                                    <option value="" {{ $stored === '' ? 'selected' : '' }}>All (default)</option>
+                                                                                    @if($stored !== '' && !$matched)
+                                                                                        <option value="{{ $stored }}" selected>{{ $stored }}</option>
+                                                                                    @endif
+                                                                                    @foreach($countryNames as $n)
+                                                                                        <option value="{{ $n }}" {{ $matched === $n ? 'selected' : '' }}>{{ $n }}</option>
+                                                                                    @endforeach
+                                                                                </select>
                                                                             </td>
                                                                             <td>
-                                                                                <input type="number" class="wp-input" name="security_deposit" value="{{ $d->security_deposit }}" form="deposit-update-{{ $d->id }}" step="0.01" min="0" required>
+                                                                                <input type="number" class="wp-input js-deposit-input" name="security_deposit" value="{{ $d->security_deposit }}" form="deposit-update-{{ $d->id }}" step="0.01" min="0" required>
                                                                             </td>
                                                                             <td>
-                                                                                <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ $d->deposit_admin_fee }}" form="deposit-update-{{ $d->id }}" step="0.01" min="0">
+                                                                                <input type="number" class="wp-input js-fee-input" name="deposit_admin_fee" value="{{ $d->deposit_admin_fee }}" form="deposit-update-{{ $d->id }}" step="0.01" min="0">
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="refund-cell">AED <span data-refund-value>0.00</span></span>
                                                                             </td>
                                                                             <td>
                                                                                 <select class="wp-input" name="isActive" form="deposit-update-{{ $d->id }}">
@@ -395,7 +463,12 @@
                                                                 @csrf
                                                                 <input type="hidden" name="visa_package_id" value="{{ $p->id }}">
                                                                 <div class="col-6 col-md-4">
-                                                                    <input type="text" class="wp-input" name="nationality" placeholder="Nationality (e.g. India)" maxlength="100" required>
+                                                                    <select class="wp-input" name="nationality" required>
+                                                                        <option value="">Select nationality…</option>
+                                                                        @foreach($countryNames as $n)
+                                                                            <option value="{{ $n }}">{{ $n }}</option>
+                                                                        @endforeach
+                                                                    </select>
                                                                 </div>
                                                                 <div class="col-6 col-md-3">
                                                                     <input type="number" class="wp-input" name="security_deposit" step="0.01" min="0" placeholder="Deposit (AED)" required>
@@ -511,7 +584,12 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-6 col-md-3">
-                                                            <input type="text" class="wp-input" name="nationality" placeholder="Nationality (e.g. India)" maxlength="100" required>
+                                                            <select class="wp-input" name="nationality" required>
+                                                                <option value="">Select nationality…</option>
+                                                                @foreach($countryNames as $n)
+                                                                    <option value="{{ $n }}">{{ $n }}</option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
                                                         <div class="col-6 col-md-2">
                                                             <input type="number" class="wp-input" name="price" step="0.01" min="0" placeholder="Price (AED)" required>
@@ -596,21 +674,28 @@
 
                             {{-- Only Sharjah takes a deposit today; the block is driven by a
                                  data attribute so another emirate can be added server-side. --}}
-                            <div class="deposit-block" id="createDepositBlock" style="margin-top: 10px;">
+                            <div class="deposit-block" id="createDepositBlock" style="margin-top: 10px;" data-refund-scope>
                                 <div class="deposit-block-title">
                                     <i class="fas fa-shield-halved"></i> Refundable security deposit
                                 </div>
                                 <div class="field-cols">
                                     <div class="wp-form-group mb-0">
                                         <label class="wp-form-label">Package Default Security Deposit (AED)</label>
-                                        <input type="number" class="wp-input" name="security_deposit" value="{{ old('security_deposit') }}" step="0.01" min="0" placeholder="e.g. 5000">
+                                        <input type="number" class="wp-input js-deposit-input" id="createSecurityDeposit" name="security_deposit" value="{{ old('security_deposit') }}" step="0.01" min="0" placeholder="e.g. 5000">
                                         <p class="wp-form-help">Refunded after the visit. Applies to every nationality unless overridden below. Enter 0 for none.</p>
                                     </div>
                                     <div class="wp-form-group mb-0">
                                         <label class="wp-form-label">Package Default Processing Fee (AED)</label>
-                                        <input type="number" class="wp-input" name="deposit_admin_fee" value="{{ old('deposit_admin_fee') }}" step="0.01" min="0" placeholder="e.g. 150">
+                                        <input type="number" class="wp-input js-fee-input" id="createDepositAdminFee" name="deposit_admin_fee" value="{{ old('deposit_admin_fee') }}" step="0.01" min="0" placeholder="e.g. 150">
                                         <p class="wp-form-help">Held back from the refund. Can't exceed the deposit. Applies to every nationality unless overridden below.</p>
                                     </div>
+                                </div>
+                                {{-- Refund is always deposit − fee, never typed in, so what a
+                                     manager sees here is exactly what the customer is shown
+                                     under "Pay Securely" on the public visa page. --}}
+                                <div class="refund-preview" id="createRefundPreview">
+                                    <span class="refund-preview-label"><i class="fas fa-rotate-left"></i> Refund to customer</span>
+                                    <span class="refund-preview-value">AED <span data-refund-value>0.00</span></span>
                                 </div>
                             </div>
                         </div>
@@ -655,15 +740,26 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                {{-- Nationality-specific pricing only applies to emirates that
+                                     take a deposit (Sharjah today) — for Dubai the field is
+                                     hidden entirely rather than shown as a confusing optional
+                                     extra. Picked from the same country list the public visa
+                                     page uses (CountryCodes), never free text, so the value
+                                     always matches what a customer selects. --}}
+                                <div class="row" id="createNationalityBlock" style="display:none;">
                                     <div class="col-12">
                                         <div class="wp-form-group mb-0">
                                             <label class="wp-form-label">Nationality (optional)</label>
-                                            <input type="text" class="wp-input" name="nationality" value="{{ old('nationality') }}" placeholder="e.g. India">
+                                            <select class="wp-input" name="nationality" id="createNationality">
+                                                <option value="">All nationalities</option>
+                                                @foreach(\App\Support\CountryCodes::all() as $c)
+                                                    <option value="{{ $c['name'] }}" {{ old('nationality') === $c['name'] ? 'selected' : '' }}>{{ $c['name'] }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
-                                <p class="wp-form-help" style="margin-top:6px;">Leave Nationality blank to apply this price to everyone, or type one to make this price specific to that nationality only. Deposit/fee overrides per nationality are added after the package is created, from its own row below — there's only one deposit and one fee field here so it's never ambiguous which one applies.</p>
+                                <p class="wp-form-help" style="margin-top:6px;">Leave Nationality as "All nationalities" to apply this price to everyone, or pick one to make this price specific to that nationality only. Deposit/fee overrides per nationality are added after the package is created, from its own row below — there's only one deposit and one fee field here so it's never ambiguous which one applies.</p>
                             </div>
                         </div>
                     </div>
@@ -720,14 +816,52 @@
         const depositEmirates = @json($depositEmirateIds);
         const isDepositEmirate = (v) => depositEmirates.map(String).includes(String(v));
 
-        // Create modal: reveal the deposit block only for a deposit emirate.
+        // Create modal: reveal the deposit block only for a deposit emirate,
+        // and with it the nationality picker — nationality-specific pricing
+        // only means anything where a deposit applies (Sharjah today). For
+        // Dubai it's hidden entirely, and cleared so a stale pick can't be
+        // submitted from a previously-selected emirate.
         const createEmirate = document.getElementById('createEmirate');
         const createBlock   = document.getElementById('createDepositBlock');
+        const createNatBlock = document.getElementById('createNationalityBlock');
+        const createNat      = document.getElementById('createNationality');
         if (createEmirate && createBlock) {
-            const sync = () => createBlock.classList.toggle('show', isDepositEmirate(createEmirate.value));
+            const sync = () => {
+                const isDeposit = isDepositEmirate(createEmirate.value);
+                createBlock.classList.toggle('show', isDeposit);
+                if (createNatBlock) {
+                    createNatBlock.style.display = isDeposit ? '' : 'none';
+                    if (!isDeposit && createNat) createNat.value = '';
+                }
+                updateRefunds();
+            };
             createEmirate.addEventListener('change', sync);
             sync();
         }
+
+        // Refund is never typed in — it's always deposit minus processing fee,
+        // using the same clamp the public visa page and UAEVisaPackage apply
+        // (a fee larger than the deposit can't make the refund negative), so
+        // the number a manager sees here is the number the customer sees under
+        // "Pay Securely".
+        function updateRefunds() {
+            document.querySelectorAll('[data-refund-value]').forEach(function (out) {
+                const scope = out.closest('[data-refund-scope]');
+                if (!scope) return;
+                const depositEl = scope.querySelector('.js-deposit-input');
+                const feeEl     = scope.querySelector('.js-fee-input');
+                const deposit = Math.max(0, parseFloat(depositEl && depositEl.value) || 0);
+                const fee     = Math.max(0, Math.min(parseFloat(feeEl && feeEl.value) || 0, deposit));
+                out.textContent = Math.max(0, deposit - fee).toFixed(2);
+            });
+        }
+
+        document.addEventListener('input', function (e) {
+            if (e.target.classList && (e.target.classList.contains('js-deposit-input') || e.target.classList.contains('js-fee-input'))) {
+                updateRefunds();
+            }
+        });
+        updateRefunds();
 
         // Existing-packages table: same rule per package, tied to that row's
         // own emirate dropdown so switching a package to Sharjah reveals the
