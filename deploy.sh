@@ -2,9 +2,11 @@
 # Deploy GoTrips: bring the server to exactly what is on GitHub's main branch.
 #
 #   bash deploy.sh            deploy now (run by hand over SSH)
-#   bash deploy.sh webhook    same, started by public/webhook-deploy.php on push
+#   bash deploy.sh github     same, run by GitHub Actions over SSH on every push
+#                             (via deploy-entry.sh; see .github/workflows/deploy.yml)
 #   bash deploy.sh --check    change nothing; record whether the server still
-#                             matches GitHub (used by the Super Admin warning)
+#                             matches GitHub (daily from GitHub Actions; exit 2
+#                             drift, 3 behind, 4 ahead; feeds the Super Admin warning)
 #
 # GitHub is the only source of truth. From 19 Aug to 21 Oct 2026 every
 # deploy failed because files had been edited or uploaded on the server
@@ -37,21 +39,25 @@ if ! flock -n 9; then
     exit 0
 fi
 
-# Status for the Super Admin dashboard. $1 ok|failed|drift, $2 message, $3 file list (newline separated).
+# Status for the Super Admin dashboard. $1 ok|failed|drift|behind, $2 message,
+# $3 file list (newline separated). Hostinger disables shell_exec in PHP, so
+# everything git knows is worked out here in bash and passed in.
 write_status() {
     php -r '
-        $files = array_values(array_filter(explode("\n", $argv[3] ?? "")));
+        $files = array_values(array_filter(explode("\n", $argv[3])));
         file_put_contents($argv[4], json_encode([
-            "state"   => $argv[1],
-            "message" => $argv[2],
-            "files"   => array_slice($files, 0, 50),
+            "state"      => $argv[1],
+            "message"    => $argv[2],
+            "files"      => array_slice($files, 0, 50),
             "file_count" => count($files),
-            "commit"  => trim((string) shell_exec("git rev-parse --short HEAD 2>/dev/null")),
-            "github"  => trim((string) shell_exec("git rev-parse --short origin/main 2>/dev/null")),
-            "mode"    => $argv[5],
-            "at"      => gmdate("c"),
+            "commit"     => $argv[6],
+            "github"     => $argv[7],
+            "mode"       => $argv[5],
+            "at"         => gmdate("c"),
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-    ' "$1" "$2" "${3:-}" "$STATUS" "$MODE"
+    ' "$1" "$2" "${3:-}" "$STATUS" "$MODE" \
+      "$(git rev-parse --short HEAD 2>/dev/null)" "$(git rev-parse --short origin/main 2>/dev/null)" \
+      || echo "warning: could not write $STATUS" >&2
 }
 
 fail() {
@@ -104,12 +110,16 @@ REMOTE=$(git rev-parse origin/main)
 if [ "$MODE" = "--check" ]; then
     if [ "$LOCAL" = "$REMOTE" ]; then
         write_status ok "Live site matches GitHub main."
+        exit 0
     elif git merge-base --is-ancestor "$LOCAL" "$REMOTE"; then
         write_status behind "GitHub main has commits that are not deployed yet. Run deploy.sh."
+        say "Behind GitHub: $(git rev-parse --short HEAD) is live, origin/main is $(git rev-parse --short origin/main)."
+        exit 3
     else
         write_status failed "The server has commits that are not on GitHub main. It must be reset to origin/main."
+        say "The server has commits that are not on GitHub main."
+        exit 4
     fi
-    exit 0
 fi
 
 if [ "$LOCAL" = "$REMOTE" ]; then

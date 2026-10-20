@@ -13,7 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'payment/response',
-        'deploy/github-webhook',
         'agent/pay',
         'payment/nomod/*',
         'esim/payment/*',

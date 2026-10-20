@@ -1,90 +1,58 @@
 name: Deploy to Production
 
+# Every push to main deploys gotrips.ai by running deploy.sh on the server
+# over SSH; once a day the same key runs a read-only check. A failure in
+# either shows as a red X here and GitHub emails about it.
+#
+# The key in DEPLOY_SSH_KEY can do nothing else: the server's
+# authorized_keys pins it to deploy-entry.sh, which only accepts
+# "deploy" or "check". See docs/DEPLOYING.md.
+#
+# Until 21 Oct 2026 this workflow uploaded the repository over FTP. That
+# made every file briefly vanish for ~15 minutes per push, ran migrations
+# through a public PHP script, and left the server's git copy so out of
+# date that every real deploy failed for two months.
+
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '30 4 * * *'   # daily drift check, 08:30 Dubai
   workflow_dispatch:
+    inputs:
+      action:
+        description: 'deploy or check'
+        required: true
+        default: check
+        type: choice
+        options: [check, deploy]
+
+concurrency:
+  group: production
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  production:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install lftp
-        run: sudo apt-get install -y lftp
-
-      - name: Deploy files via FTP
+      - name: Prepare SSH
         env:
-          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
-          lftp -u "u705168859.gotrips,$FTP_PASS" ftp://145.79.212.28 << 'EOF'
-          set ftp:ssl-allow no
-          set net:timeout 30
-          set net:max-retries 3
-          mirror -R \
-            --exclude-glob=.git/ \
-            --exclude-glob=.github/ \
-            --exclude-glob=vendor/ \
-            --exclude-glob=node_modules/ \
-            --exclude=.env \
-            --exclude=.env.* \
-            --exclude-glob=storage/logs/ \
-            --exclude-glob=storage/framework/cache/ \
-            --exclude-glob=storage/framework/sessions/ \
-            --exclude-glob=storage/framework/testing/ \
-            --exclude=database/database.sqlite \
-            --exclude=public/gt-deploy-run.php \
-            --exclude=deploy-*.zip \
-            --exclude=gotrips-deploy.zip \
-            --parallel=5 \
-            . /
-          bye
-          EOF
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Pinned host key of 145.79.212.28:65002 (checked 21 Oct 2026).
+          echo '[145.79.212.28]:65002 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJFZJ7Qvs407ipubqGvGoHUpvDh8A+8oPNlEj9KPtZC2' > ~/.ssh/known_hosts
 
-      - name: Clear Laravel caches
-        env:
-          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+      - name: ${{ (github.event_name == 'push' || inputs.action == 'deploy') && 'Deploy' || 'Check the server matches GitHub' }}
         run: |
-          cat > /tmp/gt-deploy-run.php << 'PHP'
-          <?php
-          if (($_GET['token'] ?? '') !== 'gt-2026-deploy') { http_response_code(404); exit; }
-          define('LARAVEL_START', microtime(true));
-          require __DIR__.'/../vendor/autoload.php';
-          $app = require_once __DIR__.'/../bootstrap/app.php';
-          $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
-          $out = [];
-          // Run every pending migration, not a hand-picked list — the list
-          // approach silently stopped covering new migrations the moment
-          // someone added one without also editing this file, which is how
-          // production's schema fell behind its own code. migrate --force is
-          // idempotent: anything already recorded in the migrations table is
-          // skipped, so this is safe to run on every deploy.
-          ob_start();
-          $kernel->call('migrate', ['--force' => true]);
-          $out['migrate'] = trim(ob_get_clean()) ?: 'ok';
-          foreach (['view:clear', 'config:cache', 'route:cache'] as $cmd) {
-              ob_start();
-              $kernel->call($cmd);
-              $out[$cmd] = trim(ob_get_clean()) ?: 'ok';
-          }
-          echo json_encode($out, JSON_PRETTY_PRINT);
-          PHP
+          ACTION=check
+          if [ "${{ github.event_name }}" = "push" ] || [ "${{ inputs.action }}" = "deploy" ]; then ACTION=deploy; fi
+          ssh -i ~/.ssh/deploy_key -p 65002 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+              u705168859@145.79.212.28 "$ACTION"
 
-          curl -s -u "u705168859.gotrips:${FTP_PASS}" \
-            -T /tmp/gt-deploy-run.php \
-            "ftp://145.79.212.28/%2Fpublic/gt-deploy-run.php"
-
-          sleep 3
-
-          RESULT=$(curl -s -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36" \
-            "https://gotrips.ai/gt-deploy-run.php?token=gt-2026-deploy")
-          echo "Artisan result: $RESULT"
-
-          printf '<?php http_response_code(404); exit;\n' > /tmp/gt-neutralize.php
-          curl -s -u "u705168859.gotrips:${FTP_PASS}" \
-            -T /tmp/gt-neutralize.php \
-            "ftp://145.79.212.28/%2Fpublic/gt-deploy-run.php"
-
-          echo "Deploy complete."
+      - name: Remove key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

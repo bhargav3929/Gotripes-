@@ -836,69 +836,9 @@ Route::middleware(['agent.auth'])->prefix('agent')->name('agent.')->group(functi
     });
 });
 
-// GitHub auto-deploy webhook
-Route::post('/deploy/github-webhook', function (\Illuminate\Http\Request $request) {
-    $secret = env('GITHUB_WEBHOOK_SECRET', '');
-    if (empty($secret)) {
-        return response()->json(['error' => 'Webhook secret not configured'], 500);
-    }
-
-    $signature = $request->header('X-Hub-Signature-256', '');
-    $payload = $request->getContent();
-
-    $expected = 'sha256=' . hash_hmac('sha256', $payload, $secret);
-    if (!hash_equals($expected, $signature)) {
-        return response()->json(['error' => 'Invalid signature'], 403);
-    }
-
-    // Handle ping
-    if ($request->header('X-GitHub-Event') === 'ping') {
-        return response()->json(['message' => 'pong']);
-    }
-
-    // Only deploy on push to main
-    $data = $request->json()->all();
-    if (($data['ref'] ?? '') !== 'refs/heads/main') {
-        return response()->json(['message' => 'Skipped: not main branch']);
-    }
-
-    $projectDir = base_path();
-    $logFile = storage_path('logs/deploy.log');
-    $pusher = $data['pusher']['name'] ?? 'unknown';
-    $commit = substr($data['head_commit']['message'] ?? 'unknown', 0, 80);
-
-    $log = "\n===== WEBHOOK DEPLOY: " . date('Y-m-d H:i:s') . " =====\n";
-    $log .= "Pusher: {$pusher}\nCommit: {$commit}\n\n";
-
-    putenv('HOME=/home/u705168859');
-    $commands = [
-        "/usr/bin/git pull origin main",
-        "/usr/local/bin/composer dump-autoload --no-interaction",
-        "/usr/bin/php artisan route:clear",
-        "/usr/bin/php artisan config:clear",
-        "/usr/bin/php artisan cache:clear",
-        "/usr/bin/php artisan view:clear",
-        "/usr/bin/php artisan migrate --force",
-    ];
-
-    foreach ($commands as $cmd) {
-        $descriptors = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
-        $process = proc_open("cd {$projectDir} && {$cmd}", $descriptors, $pipes);
-        $output = '';
-        if (is_resource($process)) {
-            $output = stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
-            fclose($pipes[1]);
-            fclose($pipes[2]);
-            proc_close($process);
-        }
-        $log .= "> {$cmd}\n{$output}\n";
-    }
-
-    $log .= "Deploy completed at " . date('Y-m-d H:i:s') . "\n";
-    file_put_contents($logFile, $log, FILE_APPEND);
-
-    return response()->json(['success' => true, 'message' => 'Deploy completed', 'pusher' => $pusher]);
-})->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+// Deploys: GitHub Actions runs deploy.sh over SSH (docs/DEPLOYING.md). The
+// /deploy/github-webhook route that used to be here ran git pull from a web
+// request and reported success whatever happened; removed 21 Oct 2026.
 
 // ─── Referral System Routes ─────────────────────────────────────────
 use App\Http\Controllers\ReferralAgentDashboardController;
