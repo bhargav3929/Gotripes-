@@ -21,6 +21,15 @@
 
 set -uo pipefail
 
+# Bash reads a script as it runs, and this script updates itself (git merge
+# replaces deploy.sh mid-run). Run from a private copy so that can't happen.
+if [ -z "${DEPLOY_SH_COPY:-}" ]; then
+    COPY=$(mktemp "${TMPDIR:-/tmp}/gotrips-deploy.XXXXXX") || exit 1
+    cp "$0" "$COPY"
+    DEPLOY_SH_COPY="$COPY" exec bash "$COPY" "$@"
+fi
+trap 'rm -f "$DEPLOY_SH_COPY"' EXIT
+
 SITE_DIR="${DEPLOY_SITE_DIR:-$HOME/domains/gotrips.ai/public_html}"
 cd "$SITE_DIR" || { echo "DEPLOY FAILED — cannot enter $SITE_DIR" >&2; exit 1; }
 
