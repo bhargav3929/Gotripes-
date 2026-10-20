@@ -584,6 +584,23 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        @php $deployProblem = \App\Support\DeployHealth::problem(); @endphp
+        @if($deployProblem)
+        <div class="alert alert-danger" role="alert" id="deploy-health-warning">
+            <div class="d-flex align-items-start gap-2">
+                <i class="fas fa-triangle-exclamation mt-1"></i>
+                <div>
+                    <strong>The live site is not in sync with GitHub.</strong>
+                    {{ $deployProblem['message'] }}
+                    @if($deployProblem['files'])
+                        <div class="small mt-2">Files: @foreach($deployProblem['files'] as $deployFile)<code>{{ $deployFile }}</code>@if(!$loop->last), @endif @endforeach</div>
+                    @endif
+                    <div class="small mt-1 opacity-75">Live commit {{ $deployProblem['commit'] ?? 'unknown' }}@if($deployProblem['at']) · checked {{ \Illuminate\Support\Carbon::parse($deployProblem['at'])->diffForHumans() }}@endif · details in storage/logs/deploy.log</div>
+                </div>
+            </div>
+        </div>
+        @endif
+
         @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}

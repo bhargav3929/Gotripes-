@@ -1,96 +1,147 @@
 #!/bin/bash
-# Auto-deploy script for GoTrips
-# Pulls latest from GitHub main branch and runs Laravel maintenance commands.
-# Can be called manually (bash deploy.sh) or from cron (bash deploy.sh --cron).
+# Deploy GoTrips: bring the server to exactly what is on GitHub's main branch.
 #
-# Every step is checked. On 24 Jul 2026 this script printed "Deploy completed"
-# five times in a row while `git pull` was aborting every time — the server sat
-# 105 commits behind for hours and nothing in the output said so. A deploy that
-# did not deploy must now say so, on the terminal as well as in the log.
+#   bash deploy.sh            deploy now (run by hand over SSH)
+#   bash deploy.sh webhook    same, started by public/webhook-deploy.php on push
+#   bash deploy.sh --check    change nothing; record whether the server still
+#                             matches GitHub (used by the Super Admin warning)
+#
+# GitHub is the only source of truth. From 19 Aug to 21 Oct 2026 every
+# deploy failed because files had been edited or uploaded on the server
+# directly, while the webhook still reported success, so the live site drifted
+# two months away from git without anyone noticing. This script therefore:
+#   - refuses to deploy over files changed on the server, lists them, and
+#     saves their changes to storage/logs/ so nothing is lost;
+#   - only ever fast-forwards to origin/main (the server never makes commits);
+#   - writes the result to storage/app/deploy-status.json, which the Super
+#     Admin dashboard shows as a red warning when something is wrong.
+# Never edit or upload code on the server. Commit, push to main, and let this run.
 
 set -uo pipefail
 
-SITE_DIR=~/domains/gotrips.ai/public_html
+SITE_DIR="${DEPLOY_SITE_DIR:-$HOME/domains/gotrips.ai/public_html}"
+cd "$SITE_DIR" || { echo "DEPLOY FAILED — cannot enter $SITE_DIR" >&2; exit 1; }
 
-cd "$SITE_DIR" || {
-    echo "DEPLOY FAILED — cannot enter $SITE_DIR" >&2
-    exit 1
-}
-
-LOGFILE="storage/logs/deploy.log"
 MODE="${1:-manual}"
+LOGFILE="storage/logs/deploy.log"
+STATUS="storage/app/deploy-status.json"
+STAMP=$(date -u +%Y%m%d-%H%M%S)
+mkdir -p storage/logs storage/app
 
-# Report to the terminal AND the log. Previously everything went to the log
-# only, so a person running this by hand saw nothing at all.
-say() {
-    echo "$1"
-    echo "$1" >> "$LOGFILE"
+say() { echo "$1"; echo "$1" >> "$LOGFILE"; }
+
+# One deploy at a time: two pushes in quick succession must not interleave.
+exec 9>storage/app/deploy.lock
+if ! flock -n 9; then
+    say "Another deploy is running; this one ($MODE) exits without changes."
+    exit 0
+fi
+
+# Status for the Super Admin dashboard. $1 ok|failed|drift, $2 message, $3 file list (newline separated).
+write_status() {
+    php -r '
+        $files = array_values(array_filter(explode("\n", $argv[3] ?? "")));
+        file_put_contents($argv[4], json_encode([
+            "state"   => $argv[1],
+            "message" => $argv[2],
+            "files"   => array_slice($files, 0, 50),
+            "file_count" => count($files),
+            "commit"  => trim((string) shell_exec("git rev-parse --short HEAD 2>/dev/null")),
+            "github"  => trim((string) shell_exec("git rev-parse --short origin/main 2>/dev/null")),
+            "mode"    => $argv[5],
+            "at"      => gmdate("c"),
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    ' "$1" "$2" "${3:-}" "$STATUS" "$MODE"
 }
 
 fail() {
     say ""
     say "!!! DEPLOY FAILED — $1"
     say "!!! Nothing was deployed. The site is still running the previous code."
-    say "!!! See $SITE_DIR/$LOGFILE for details."
+    write_status failed "$1" "${2:-}"
     exit 1
 }
 
-# For cron mode: only deploy if there are new commits
-if [ "$MODE" = "--cron" ]; then
-    git fetch origin main --quiet 2>/dev/null
-    LOCAL=$(git rev-parse HEAD)
-    REMOTE=$(git rev-parse origin/main)
+# Files changed on the server: tracked files edited in place, and new code
+# files that git does not know about. Uploaded media is ignored by .gitignore.
+drift_files() {
+    {
+        git status --porcelain --untracked-files=no | cut -c4-
+        git status --porcelain --untracked-files=all -- app bootstrap config database resources routes public/*.php | grep '^??' | cut -c4-
+    } | sort -u
+}
 
-    if [ "$LOCAL" = "$REMOTE" ]; then
-        # Already up to date, exit silently
-        exit 0
-    fi
+say ""
+say "===== DEPLOY ($MODE): $(date -u '+%Y-%m-%d %H:%M:%S') UTC ====="
 
-    echo "" >> "$LOGFILE"
-    echo "===== AUTO-DEPLOY (cron): $(date) =====" >> "$LOGFILE"
-    echo "Local:  $LOCAL" >> "$LOGFILE"
-    echo "Remote: $REMOTE" >> "$LOGFILE"
-else
-    echo "" >> "$LOGFILE"
-    echo "===== MANUAL DEPLOY: $(date) =====" >> "$LOGFILE"
-fi
-
-# The branch is worth checking before anything else. `git pull origin main`
-# happily merges into whatever branch happens to be checked out, which is how
-# the server ended up serving code from a stale feature branch.
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [ "$BRANCH" != "main" ]; then
-    fail "on branch '$BRANCH', expected 'main'. Run: git checkout main"
+[ "$BRANCH" = "main" ] || fail "on branch '$BRANCH', expected 'main'. Run: git checkout main"
+
+if ! git fetch origin main --quiet >> "$LOGFILE" 2>&1; then
+    fail "could not fetch from GitHub (network or SSH key problem)"
 fi
 
-# Pull latest code — the step that actually matters.
-say "Pulling latest code…"
-if ! git pull origin main >> "$LOGFILE" 2>&1; then
-    fail "git pull did not succeed (see the error above in the log)"
+DRIFT=$(drift_files)
+if [ -n "$DRIFT" ]; then
+    PATCH="storage/logs/server-edits-$STAMP.patch"
+    git diff > "$PATCH" 2>/dev/null
+    COUNT=$(printf '%s\n' "$DRIFT" | wc -l | tr -d ' ')
+    say "These $COUNT file(s) were changed on the server instead of in git:"
+    printf '%s\n' "$DRIFT" | sed 's/^/    /' | tee -a "$LOGFILE"
+    say "Their edits are saved in $PATCH."
+    say "Put the changes in git (commit + push from your computer), then on the server run:"
+    say "    git checkout -- . && git clean -fd -- app bootstrap config database resources routes && bash deploy.sh"
+    if [ "$MODE" = "--check" ]; then
+        write_status drift "$COUNT file(s) on the live server differ from git. Deploys are blocked until they are committed." "$DRIFT"
+        exit 2
+    fi
+    fail "$COUNT file(s) were edited on the server instead of in git" "$DRIFT"
 fi
 
-BEFORE=$(git rev-parse --short HEAD)
-say "Now at commit $BEFORE"
+LOCAL=$(git rev-parse HEAD)
+REMOTE=$(git rev-parse origin/main)
 
-# Update autoloader
-say "Updating autoloader…"
-if ! composer dump-autoload --no-interaction >> "$LOGFILE" 2>&1; then
-    fail "composer dump-autoload failed — the app may not boot"
+if [ "$MODE" = "--check" ]; then
+    if [ "$LOCAL" = "$REMOTE" ]; then
+        write_status ok "Live site matches GitHub main."
+    elif git merge-base --is-ancestor "$LOCAL" "$REMOTE"; then
+        write_status behind "GitHub main has commits that are not deployed yet. Run deploy.sh."
+    else
+        write_status failed "The server has commits that are not on GitHub main. It must be reset to origin/main."
+    fi
+    exit 0
 fi
 
-# Clear caches. A stale compiled view will keep serving the old page even
-# though the new code is on disk, so treat a failure here as fatal too.
+if [ "$LOCAL" = "$REMOTE" ]; then
+    say "Already at $(git rev-parse --short HEAD); running maintenance steps anyway."
+elif ! git merge-base --is-ancestor "$LOCAL" "$REMOTE"; then
+    fail "the server has commits that are not on GitHub main. Reset it: git reset --hard origin/main"
+fi
+
+BEFORE=$(git rev-parse HEAD)
+if ! git merge --ff-only origin/main >> "$LOGFILE" 2>&1; then
+    fail "could not move to origin/main (see the log above)"
+fi
+say "Now at commit $(git rev-parse --short HEAD) (was $(git rev-parse --short "$BEFORE"))"
+
+if ! git diff --quiet "$BEFORE" HEAD -- composer.json composer.lock; then
+    say "composer.lock changed: installing dependencies…"
+    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader >> "$LOGFILE" 2>&1 \
+        || fail "composer install failed — the app may not boot"
+else
+    say "Updating autoloader…"
+    composer dump-autoload --no-interaction >> "$LOGFILE" 2>&1 \
+        || fail "composer dump-autoload failed — the app may not boot"
+fi
+
 say "Clearing caches…"
 for CMD in "route:clear" "config:clear" "cache:clear" "view:clear"; do
-    if ! php artisan $CMD >> "$LOGFILE" 2>&1; then
-        fail "php artisan $CMD failed"
-    fi
+    php artisan $CMD >> "$LOGFILE" 2>&1 || fail "php artisan $CMD failed"
 done
 
-# Run migrations
 say "Running migrations…"
-if ! php artisan migrate --force >> "$LOGFILE" 2>&1; then
-    fail "migrations failed — the database may be half-migrated, check it before retrying"
-fi
+php artisan migrate --force >> "$LOGFILE" 2>&1 \
+    || fail "migrations failed — the database may be half-migrated, check it before retrying"
 
-say "Deploy completed at $(date) — now at $BEFORE"
+write_status ok "Deployed $(git rev-parse --short HEAD)."
+say "Deploy completed at $(date -u '+%Y-%m-%d %H:%M:%S') UTC — now at $(git rev-parse --short HEAD)"
