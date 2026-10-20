@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Go Trips') }} - Sign In</title>
+    @php $loginTenantName = current_company()?->name ?? 'GoTrips'; @endphp
+    <title>Sign In - {{ $loginTenantName }}</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -451,7 +452,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="logo-container">
-                <img class="logo" src="{{ asset('assets/index_files/logo.png') }}" alt="Go Trips" />
+                <img class="logo" src="{{ asset('assets/index_files/logo.png') }}" alt="{{ $loginTenantName }}" />
             </div>
 
             <div class="login-header">

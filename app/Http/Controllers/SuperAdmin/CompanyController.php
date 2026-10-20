@@ -306,6 +306,10 @@ class CompanyController extends Controller
             Storage::disk('public')->delete($company->favicon);
         }
 
+        // A deleted company's developer theme must stop being served too.
+        app(\App\Services\TenantTheme\ThemeDeployer::class)->wipe($company, 'admin:' . (auth()->user()->email ?? 'unknown'));
+        $company->forceFill(['theme_enabled' => false, 'theme_webhook_secret' => null])->save();
+
         $company->delete();
 
         return redirect()

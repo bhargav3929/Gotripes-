@@ -1,0 +1,13 @@
+/*
+ * Dashboard styles: your staff's manager portal (/manager).
+ * Same rules as theme.css: start selectors with html[data-gt-theme].
+ */
+
+html[data-gt-theme] .sidebar-brand-text {
+  font-family: var(--tenant-font-heading);
+}
+
+html[data-gt-theme] .topbar-title {
+  font-family: var(--tenant-font-heading);
+  letter-spacing: -0.01em;
+}

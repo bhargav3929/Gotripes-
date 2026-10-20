@@ -1,0 +1,17 @@
+{
+  "name": "My travel brand",
+  "version": "1.0.0",
+  "colors": {
+    "primary": "#0E7C66",
+    "secondary": "#F4B942",
+    "text": "#F5F3EE",
+    "background": "#0B1412"
+  },
+  "fonts": {
+    "google": ["Bricolage Grotesque:wght@400;700", "Manrope:wght@300;500"],
+    "heading": "Bricolage Grotesque",
+    "body": "Manrope"
+  },
+  "storefront": { "css": true, "js": true },
+  "dashboard": { "css": true, "js": true }
+}

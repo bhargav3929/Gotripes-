@@ -521,6 +521,7 @@
             margin-bottom: 24px;
         }
     </style>
+    @stack('styles')
 </head>
 <body>
     @if(session('impersonating_from'))

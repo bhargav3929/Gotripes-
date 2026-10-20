@@ -97,7 +97,8 @@ display: none !important;
         html[data-theme="light"] .gt-lotus-theme-toggle .bi-moon-stars-fill { display: inline; }
         html[data-theme="light"] .gt-lotus-theme-toggle { background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.12); }
     </style>
-    </head>
+    @include('partials.tenant-theme', ['surface' => 'storefront'])
+</head>
     <body data-mobile-nav-style="classic">
     <button type="button" id="gtLotusThemeToggle" class="gt-lotus-theme-toggle" aria-label="Toggle light / dark mode" title="Toggle light / dark mode">
         <i class="bi bi-sun-fill" aria-hidden="true"></i>

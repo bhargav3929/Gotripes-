@@ -10,6 +10,8 @@
         $headTenant = current_company();
         $headTenantName = $headTenant?->name ?? 'Manager Portal';
         $headTenantFavicon = $headTenant?->favicon_url ?? asset('assets/index_files/logo.png');
+        $headDevTheme = \App\Services\TenantTheme\TenantTheme::for($headTenant);
+        $headTenantFavicon = $headDevTheme?->faviconUrl() ?? $headDevTheme?->logoUrl() ?? $headTenantFavicon;
     @endphp
     <link rel="icon" type="image/png" href="{{ $headTenantFavicon }}">
 
@@ -523,6 +525,7 @@
         }
     </style>
     @stack('styles')
+    @include('partials.tenant-theme', ['surface' => 'dashboard'])
 </head>
 
 <body>
@@ -534,7 +537,7 @@
             @php
                 $tenant = current_company();
                 $brandName = $tenant?->name ?? 'Manager Portal';
-                $brandLogo = $tenant?->logo_url ?? asset('assets/index_files/logo.png');
+                $brandLogo = \App\Services\TenantTheme\TenantTheme::for($tenant)?->logoUrl() ?? $tenant?->logo_url ?? asset('assets/index_files/logo.png');
             @endphp
             <a class="sidebar-brand" href="{{ auth()->user()?->role === 'customer_care' ? route('manager.support.index') : route('manager.dashboard') }}">
                 <img src="{{ $brandLogo }}" alt="{{ $brandName }}" class="sidebar-brand-logo">

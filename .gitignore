@@ -81,3 +81,10 @@ DEPLOYMENT.md
 /superadmin-show-fix.zip
 /*.pdf
 /public/gt-deploy-run.php
+
+# Tenant developer themes: published by ThemeDeployer from each tenant's own
+# repository at deploy time. Never committed; the guard .htaccess is rewritten
+# on every deploy.
+/public/tenant-themes/
+/public/tenant-themes-test-*/
+/storage/app/theme-staging/

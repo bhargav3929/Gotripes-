@@ -166,8 +166,9 @@
       padding: 0.5rem;
     }
 
+    /* Side padding must match the rows' negative gutter, or the page scrolls sideways */
     .container {
-      padding: 0.5rem;
+      padding: 0.5rem calc(var(--bs-gutter-x) * .5);
     }
   }
 

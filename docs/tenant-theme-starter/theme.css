@@ -1,0 +1,37 @@
+/*
+ * Storefront styles: the public site your customers see.
+ *
+ * Loaded last in <head>, after the platform's own CSS. Start selectors with
+ * html[data-gt-theme] so they win over the platform's page-level styles:
+ *
+ *     html[data-gt-theme] .gt-nav-link { ... }
+ *
+ * Colours and fonts from theme.json are available as CSS variables:
+ *   --tenant-primary, --tenant-secondary, --tenant-accent, --tenant-text,
+ *   --tenant-background, --tenant-surface, --tenant-border,
+ *   --tenant-font-heading, --tenant-font-body
+ *
+ * The fonts named in theme.json ("heading", "body") are applied for you.
+ *
+ * A few platform styles use !important (page background, body font and
+ * colour, headings). To change those, use !important too.
+ *
+ * Target one page with html[data-gt-page="..."] (see README.md).
+ */
+
+html[data-gt-theme] h1,
+html[data-gt-theme] h2 {
+  letter-spacing: -0.02em;
+}
+
+/* Top navigation links */
+html[data-gt-theme] .gt-nav-link:hover,
+html[data-gt-theme] .gt-nav-link.active {
+  color: var(--tenant-secondary) !important;
+}
+
+/* The two call-to-action buttons under the search bar */
+html[data-gt-theme] .gt-partner-btn {
+  background: var(--tenant-primary);
+  box-shadow: none;
+}

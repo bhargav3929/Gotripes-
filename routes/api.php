@@ -43,3 +43,10 @@ Route::prefix('flights')->middleware('auth:sanctum')->controller(FlightApiContro
     Route::post('cancel', 'cancel');
     Route::post('refund', 'refund');
 });
+
+// GitHub push webhook for a tenant's developer-theme repository. Signed with
+// that company's own secret; see TenantThemeWebhookController.
+Route::post('tenant-themes/{company}/webhook', \App\Http\Controllers\TenantThemeWebhookController::class)
+    ->whereNumber('company')
+    ->middleware('throttle:30,1')
+    ->name('tenant-themes.webhook');

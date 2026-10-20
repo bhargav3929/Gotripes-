@@ -23,6 +23,10 @@
                 <i class="fas fa-user-secret me-1"></i>Impersonate
             </button>
         </form>
+        <a href="{{ route('superadmin.companies.theme.show', $company) }}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-code me-1"></i>Developer Theme
+            @if($company->theme_enabled)<span class="badge bg-success ms-1">On</span>@endif
+        </a>
         <a href="{{ route('superadmin.companies.edit', $company) }}" class="btn btn-warning btn-sm">
             <i class="fas fa-edit me-1"></i>Edit
         </a>

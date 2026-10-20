@@ -59,10 +59,15 @@ class Company extends Model
         'paid_commission' => 'decimal:2',
         'total_commission' => 'decimal:2',
         'total_revenue' => 'decimal:2',
+        // Developer theme. Deliberately not in $fillable: only the super-admin
+        // theme screen and the deployer set these, with forceFill().
+        'theme_enabled' => 'boolean',
+        'theme_webhook_secret' => 'encrypted',
     ];
 
     protected $hidden = [
         'api_keys',
+        'theme_webhook_secret',
     ];
 
     public const RESERVED_SUBDOMAINS = [
@@ -138,6 +143,17 @@ class Company extends Model
     public function referralAgents(): HasMany
     {
         return $this->hasMany(ReferralAgent::class);
+    }
+
+    public function themeDeployments(): HasMany
+    {
+        return $this->hasMany(ThemeDeployment::class)->latest('id');
+    }
+
+    /** The developer-theme deployment that is live right now, if any. */
+    public function activeThemeDeployment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(ThemeDeployment::class, 'theme_deployment_id');
     }
 
     public function commissions(): HasMany

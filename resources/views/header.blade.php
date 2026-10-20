@@ -6,10 +6,13 @@
     <script>(function(){try{var t=localStorage.getItem('gt-theme');if(t==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();</script>
     @php
         $tenantLogo = (isset($company) && $company && $company->logo) ? asset('storage/' . $company->logo) : asset('assets/index_files/logo.png');
+        $tenantDevTheme = \App\Services\TenantTheme\TenantTheme::for(current_company());
+        $tenantLogo = $tenantDevTheme?->logoUrl() ?? $tenantLogo;
+        $tenantFavicon = $tenantDevTheme?->faviconUrl() ?? $tenantLogo;
         $tenantName = (isset($company) && $company && $company->name) ? $company->name : 'Go Trips';
         $tenantTagline = (isset($company) && $company && $company->getSetting('tagline')) ? $company->getSetting('tagline') : 'Your Gateway to Amazing Adventures';
     @endphp
-    <link rel="icon" type="image/png" href="{{ $tenantLogo }}">
+    <link rel="icon" href="{{ $tenantFavicon }}">
 
     <meta charset="UTF-8">
     <title>{{ $tenantName }}</title>
@@ -934,6 +937,19 @@
                 font-size: 10px;
                 letter-spacing: 1.2px;
             }
+
+            .gt-esim-label {
+                font-size: 10px;
+            }
+
+            .gt-esim-title {
+                font-size: 11px;
+            }
+
+            .gt-esim-btn {
+                padding: 0 14px;
+                font-size: 10px;
+            }
         }
 
         /* =====================================================
@@ -1331,6 +1347,7 @@
 
     {{-- Light theme overrides (activated by <html data-theme="light">). Loaded last so it wins over template + page styles. --}}
     <link rel="stylesheet" href="{{ asset('css/gt-theme.css') }}?v={{ @filemtime(public_path('css/gt-theme.css')) ?: time() }}">
+    @include('partials.tenant-theme', ['surface' => 'storefront'])
 </head>
 
 <body class="{{ request()->is('/') ? 'has-ticker' : '' }}">

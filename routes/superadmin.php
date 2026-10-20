@@ -6,6 +6,7 @@ use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\SuperAdmin\ReportController;
 use App\Http\Controllers\SuperAdmin\SettingsController;
 use App\Http\Controllers\SuperAdmin\SuperAdminAuthController;
+use App\Http\Controllers\SuperAdmin\TenantThemeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,6 +46,15 @@ Route::middleware(['web', 'super.admin'])->prefix('superadmin')->name('superadmi
     // Provision the Hostinger subdomain + symlink for this company
     Route::post('companies/{company}/provision-subdomain', [CompanyController::class, 'provisionSubdomain'])
         ->name('companies.provision-subdomain');
+
+    // Developer theme: the tenant's own GitHub repo of CSS/JS/assets.
+    Route::get('companies/{company}/theme', [TenantThemeController::class, 'show'])->name('companies.theme.show');
+    Route::put('companies/{company}/theme', [TenantThemeController::class, 'update'])->name('companies.theme.update');
+    Route::post('companies/{company}/theme/secret', [TenantThemeController::class, 'generateSecret'])->name('companies.theme.secret');
+    Route::post('companies/{company}/theme/deploy', [TenantThemeController::class, 'deploy'])->name('companies.theme.deploy');
+    Route::post('companies/{company}/theme/upload', [TenantThemeController::class, 'upload'])->name('companies.theme.upload');
+    Route::post('companies/{company}/theme/rollback/{deployment}', [TenantThemeController::class, 'rollback'])->name('companies.theme.rollback');
+    Route::post('companies/{company}/theme/wipe', [TenantThemeController::class, 'wipe'])->name('companies.theme.wipe');
 
     // Return from impersonation
     Route::get('stop-impersonation', function () {
