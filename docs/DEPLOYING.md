@@ -70,3 +70,20 @@ matches GitHub.
 Before any risky change, back up the code and the database into
 `~/site-backups/<date>/` on the server. The 21 Oct 2026 reconciliation backup
 is in `~/site-backups/2026-10-21-pre-reconcile/`.
+
+## The deploy key (one-time setup, done 21 Oct 2026)
+
+- **GitHub:** the secret `DEPLOY_SSH_KEY` (repo → Settings → Secrets and variables → Actions)
+  holds a private ed25519 key. No other copy exists.
+- **Server:** its public half is in `~/.ssh/authorized_keys`, pinned like this:
+  ```
+  command="bash ~/domains/gotrips.ai/public_html/deploy-entry.sh",no-pty,no-port-forwarding,no-agent-forwarding,no-X11-forwarding ssh-ed25519 AAAA... github-actions-deploy@gotrips
+  ```
+- **To rotate it:**
+  1. Generate a new key with `ssh-keygen -t ed25519 -N ""`.
+  2. Replace that line on the server with the new public key, keeping the `command=...` part.
+  3. Run `gh secret set DEPLOY_SSH_KEY < newkey`.
+  4. Delete the local private key.
+- **If the server's SSH host key ever changes** (Hostinger migration),
+  update the pinned `known_hosts` line in `.github/workflows/deploy.yml`.
+  Check the new fingerprint in hPanel first.
