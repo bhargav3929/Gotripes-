@@ -229,6 +229,15 @@ Route::prefix('/')->group(function () {
     Route::post('tour-packages/{id}/enquire', [\App\Http\Controllers\PackageEnquiryController::class, 'submit'])
         ->whereNumber('id')->middleware('tenant.feature:tours')->name('tour-packages.enquire');
 
+    // Online booking wizard for packages priced from supplier net rates
+    // (package_type = 'wizard'). Prices are always worked out on the server.
+    Route::middleware('tenant.feature:tours')->whereNumber('id')->group(function () {
+        Route::get('tour-packages/{id}/book', [\App\Http\Controllers\TourPackageBookingController::class, 'show'])->name('tour-packages.book');
+        Route::post('tour-packages/{id}/quote', [\App\Http\Controllers\TourPackageBookingController::class, 'quote'])->middleware('throttle:tour-quote')->name('tour-packages.quote');
+        Route::get('tour-packages/{id}/visa', [\App\Http\Controllers\TourPackageBookingController::class, 'visa'])->middleware('throttle:tour-quote')->name('tour-packages.visa');
+        Route::post('tour-packages/{id}/checkout', [\App\Http\Controllers\TourPackageBookingController::class, 'book'])->middleware('throttle:tour-checkout')->name('tour-packages.checkout');
+    });
+
     // Dedicated country packages page — e.g. /tour-packages/canada
     // whereNumber on the route above ensures numeric IDs never reach here.
     Route::get('tour-packages/{country}', function (string $country) {
@@ -619,6 +628,21 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     // Tenant content: tour packages, hajj/umrah packages, visa pricing.
     // BelongsToCompany trait auto-scopes queries; CRUD is per-tenant.
     Route::resource('packages', ManagerTravelPackagesController::class)->except(['show']);
+    // Booking-wizard packages: rates, hotels, options, itinerary, seasons; bookings; visa rules.
+    Route::get('packages/{id}/booking-setup', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'show'])->whereNumber('id')->name('packages.booking-setup');
+    Route::put('packages/{id}/booking-setup/rates', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveRates'])->whereNumber('id')->name('packages.booking-setup.rates');
+    Route::post('packages/{id}/booking-setup/rates/import', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'importRates'])->whereNumber('id')->name('packages.booking-setup.import');
+    Route::put('packages/{id}/booking-setup/hotels', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveHotels'])->whereNumber('id')->name('packages.booking-setup.hotels');
+    Route::put('packages/{id}/booking-setup/addons', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveAddons'])->whereNumber('id')->name('packages.booking-setup.addons');
+    Route::post('packages/{id}/booking-setup/days', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveDays'])->whereNumber('id')->name('packages.booking-setup.days');
+    Route::put('packages/{id}/booking-setup/seasons', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveSeasons'])->whereNumber('id')->name('packages.booking-setup.seasons');
+    Route::get('tour-bookings', [\App\Http\Controllers\Manager\ManagerTourBookingsController::class, 'index'])->name('tour-bookings.index');
+    Route::get('tour-bookings/{id}', [\App\Http\Controllers\Manager\ManagerTourBookingsController::class, 'show'])->whereNumber('id')->name('tour-bookings.show');
+    Route::post('tour-bookings/{id}/status', [\App\Http\Controllers\Manager\ManagerTourBookingsController::class, 'updateStatus'])->whereNumber('id')->name('tour-bookings.status');
+    Route::get('visa-rules', [\App\Http\Controllers\Manager\ManagerVisaRulesController::class, 'index'])->name('visa-rules.index');
+    Route::post('visa-rules', [\App\Http\Controllers\Manager\ManagerVisaRulesController::class, 'store'])->name('visa-rules.store');
+    Route::put('visa-rules/{id}', [\App\Http\Controllers\Manager\ManagerVisaRulesController::class, 'update'])->whereNumber('id')->name('visa-rules.update');
+    Route::delete('visa-rules/{id}', [\App\Http\Controllers\Manager\ManagerVisaRulesController::class, 'destroy'])->whereNumber('id')->name('visa-rules.destroy');
     Route::resource('umrah-packages', ManagerUmrahPackagesController::class)->except(['show']);
     Route::post('umrah-packages/{id}/toggle', [\App\Http\Controllers\Manager\ManagerUmrahPackagesController::class, 'toggle'])->name('umrah-packages.toggle');
     Route::post('umrah-packages/{id}/duplicate', [\App\Http\Controllers\Manager\ManagerUmrahPackagesController::class, 'duplicate'])->name('umrah-packages.duplicate');

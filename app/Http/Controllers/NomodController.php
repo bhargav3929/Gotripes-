@@ -11,6 +11,7 @@ use App\Models\EsimOrder;
 use App\Models\FifaTicket;
 use App\Models\FifaTicketRequest;
 use App\Models\UAEActivity;
+use App\Models\TourPackageBooking;
 use App\Mail\PaymentStatusMail;
 use App\Mail\SupplierBookingMail;
 use App\Mail\CustomerPaymentConfirmationMail;
@@ -52,8 +53,11 @@ class NomodController extends Controller
             ]);
         }
 
-        // Look up the transaction by order_id (which we used as reference_id)
-        $transaction = NomodTransaction::where('order_id', $referenceId)->first();
+        // Look up the transaction by order_id (which we used as reference_id).
+        // Unscoped: Nomod always returns customers to the main domain, so a
+        // payment started on a tenant subdomain would otherwise not be found
+        // and a paid booking would never be confirmed. order_id is unique.
+        $transaction = NomodTransaction::withoutCompanyScope()->where('order_id', $referenceId)->first();
 
         if (!$transaction) {
             return view('payment.status')->with('response', [
@@ -317,6 +321,9 @@ class NomodController extends Controller
     {
         $services = config('commission.eligible_services', []);
 
+        if ($tour = $this->tourPackageBooking($referenceId)) {
+            return [$tour, $services['tour_package'] ?? null];
+        }
         if (str_contains($referenceId, 'ORDAB')) {
             $id = (int) str_replace('ORDAB', '', $referenceId);
             return [ActivityBooking::find($id), $services['activity'] ?? null];
@@ -377,6 +384,20 @@ class NomodController extends Controller
 
     private function getBookingData($orderId)
     {
+        if ($tour = $this->tourPackageBooking($orderId)) {
+            return ['type' => 'tour_package', 'data' => [
+                'name'          => $tour->customer_name,
+                'email'         => $tour->customer_email,
+                'phone'         => $tour->customer_phone,
+                'activity_name' => ($tour->package?->title ?? 'Tour package') . ' — ' . $tour->days . ' days',
+                'activityLocation' => $tour->package?->country,
+                'booking_date'  => $tour->start_date->format('D j M Y') . ' to ' . $tour->end_date->format('D j M Y'),
+                'adults'        => $tour->adults,
+                'childrens'     => $tour->children + $tour->infants,
+                'amount'        => $tour->total,
+                'currency'      => $tour->currency,
+            ]];
+        }
         if (stripos($orderId, 'ORDFIFA') !== false) {
             $booking = FifaTicketRequest::find(str_replace('ORDFIFA', '', $orderId));
             if ($booking) {
@@ -425,7 +446,7 @@ class NomodController extends Controller
                 ];
             }
         } elseif (stripos($orderId, 'ORDUM') !== false) {
-            $transaction = NomodTransaction::where('order_id', $orderId)->first();
+            $transaction = NomodTransaction::withoutCompanyScope()->where('order_id', $orderId)->first();
             if ($transaction) {
                 return [
                     'type' => 'umrah',
@@ -537,6 +558,19 @@ class NomodController extends Controller
 
     private function updateBookingStatus($orderId, $paymentStatus, $bookingType)
     {
+        if ($bookingType === 'tour_package') {
+            $tour = $this->tourPackageBooking($orderId);
+            // A paid booking is never downgraded by a late or repeated callback.
+            if ($tour && $tour->payment_status !== 'paid') {
+                $tour->update(['payment_status' => match ($paymentStatus) {
+                    'Success' => 'paid', 'Cancelled' => 'cancelled', default => 'failed',
+                }]);
+            }
+            if ($paymentStatus === 'Success') {
+                $this->processReferralTracking($orderId, $bookingType);
+            }
+            return;
+        }
         // Process referral tracking for successful payments
         if ($paymentStatus === 'Success') {
             $this->processReferralTracking($orderId, $bookingType);
@@ -828,6 +862,9 @@ class NomodController extends Controller
 
     private function getCustomerData($orderId, $bookingType)
     {
+        if ($tour = $this->tourPackageBooking($orderId)) {
+            return ['name' => $tour->customer_name, 'email' => $tour->customer_email, 'phone' => $tour->customer_phone];
+        }
         if ($bookingType === 'fifa' || stripos($orderId, 'ORDFIFA') !== false) {
             $booking = FifaTicketRequest::find(str_replace('ORDFIFA', '', $orderId));
             if ($booking) {
@@ -882,8 +919,22 @@ class NomodController extends Controller
         return null;
     }
 
+    /**
+     * Tour package bookings are looked up without the tenant scope: the
+     * payment callback lands on the main domain, where a booking made on a
+     * tenant subdomain would otherwise be invisible.
+     */
+    private function tourPackageBooking($orderId): ?TourPackageBooking
+    {
+        $id = TourPackageBooking::idFromOrder((string) $orderId);
+        return $id ? TourPackageBooking::withoutCompanyScope()->with('package')->find($id) : null;
+    }
+
     private function determineBookingType($orderId)
     {
+        if (TourPackageBooking::idFromOrder((string) $orderId) !== null) {
+            return 'tour_package';
+        }
         if (stripos($orderId, 'ORDFIFA') !== false) {
             return 'fifa';
         } elseif (stripos($orderId, 'ORDUMB') !== false) {
@@ -912,7 +963,7 @@ class NomodController extends Controller
     private function processReferralTracking($orderId, $bookingType)
     {
         try {
-            $transaction = NomodTransaction::where('order_id', $orderId)->first();
+            $transaction = NomodTransaction::withoutCompanyScope()->where('order_id', $orderId)->first();
 
             if (!$transaction) {
                 return;
@@ -932,6 +983,7 @@ class NomodController extends Controller
                 3 => 'agent_booking',
                 4 => 'esim',
                 'umrah' => 'umrah',
+                'tour_package' => 'tour_package',
             ];
             $orderType = $orderTypeMap[$bookingType] ?? 'other';
 

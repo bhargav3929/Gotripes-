@@ -35,5 +35,11 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        // Tour package wizard. Named limiters keep their own counters: plain
+        // throttle:N,M middleware all share one counter per IP, so the many
+        // live price quotes a customer triggers would use up checkout's limit.
+        RateLimiter::for('tour-quote', fn (Request $request) => Limit::perMinute(120)->by('tour-quote|' . $request->ip()));
+        RateLimiter::for('tour-checkout', fn (Request $request) => Limit::perMinute(10)->by('tour-checkout|' . $request->ip()));
     }
 }

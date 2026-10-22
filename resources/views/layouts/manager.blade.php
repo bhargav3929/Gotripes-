@@ -678,6 +678,18 @@
                         <span>Tour Packages</span>
                     </a>
                 </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.tour-bookings.index') }}" class="{{ request()->routeIs('manager.tour-bookings.*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Tour Bookings</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.visa-rules.index') }}" class="{{ request()->routeIs('manager.visa-rules.*') ? 'active' : '' }}">
+                        <i class="fas fa-passport"></i>
+                        <span>Visa Rules</span>
+                    </a>
+                </li>
                 @endfeature
 
                 @feature('hajj_umrah')

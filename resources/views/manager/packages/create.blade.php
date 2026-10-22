@@ -152,11 +152,14 @@
                         <select name="package_type" class="wp-select" required>
                             <option value="enquire" @selected(old('package_type','enquire')==='enquire')>Enquire — custom, customer contacts you</option>
                             <option value="purchase" @selected(old('package_type')==='purchase')>Purchase — ready-made, customer pays online</option>
+                            <option value="wizard" @selected(old('package_type')==='wizard')>Booking wizard — priced from supplier net rates, customer books & pays online</option>
                         </select>
-                        <p class="wp-form-help"><strong>Enquire:</strong> shows an enquiry / WhatsApp button.<br><strong>Purchase:</strong> shows a price calculator + Pay button.</p>
+                        <p class="wp-form-help"><strong>Enquire:</strong> shows an enquiry / WhatsApp button.<br><strong>Purchase:</strong> shows a price calculator + Pay button.<br><strong>Booking wizard:</strong> dates, travellers, hotel, options and visa check, priced from your rate sheet.</p>
                     </div>
                 </div>
             </div>
+
+            @include('manager.packages._wizard-settings', ['package' => $package ?? null])
 
             {{-- Cover image --}}
             <div class="wp-card">

@@ -151,10 +151,13 @@
                         <select name="package_type" class="wp-select" required>
                             <option value="enquire" @selected(old('package_type', $package->package_type)==='enquire')>Enquire — custom, customer contacts you</option>
                             <option value="purchase" @selected(old('package_type', $package->package_type)==='purchase')>Purchase — ready-made, customer pays online</option>
+                            <option value="wizard" @selected(old('package_type', $package->package_type)==='wizard')>Booking wizard — priced from supplier net rates, customer books & pays online</option>
                         </select>
                     </div>
                 </div>
             </div>
+
+            @include('manager.packages._wizard-settings', ['package' => $package ?? null])
 
             {{-- Cover image --}}
             <div class="wp-card">

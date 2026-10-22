@@ -33,6 +33,10 @@ class TravelPackage extends Model
         'createdDate',
         'modifiedBy',
         'modifiedDate',
+        'margin_percent',
+        'insurance_required',
+        'child_max_age',
+        'infant_max_age',
     ];
 
     protected $casts = [
@@ -43,6 +47,10 @@ class TravelPackage extends Model
         'price_infant' => 'decimal:2',
         'createdDate' => 'datetime',
         'modifiedDate' => 'datetime',
+        'margin_percent' => 'float',
+        'insurance_required' => 'boolean',
+        'child_max_age' => 'integer',
+        'infant_max_age' => 'integer',
     ];
 
     public function scopeActive($query)
@@ -84,5 +92,48 @@ class TravelPackage extends Model
     public function isPurchasable(): bool
     {
         return $this->package_type === 'purchase';
+    }
+
+    /** Booked online through the step-by-step wizard, priced from net rates + margin. */
+    public function isWizard(): bool
+    {
+        return $this->package_type === 'wizard';
+    }
+
+    public function rates()
+    {
+        return $this->hasMany(TourPackageRate::class, 'package_id')->orderBy('days')->orderBy('hotel_stars');
+    }
+
+    public function hotels()
+    {
+        return $this->hasMany(TourPackageHotel::class, 'package_id')->orderBy('hotel_stars');
+    }
+
+    public function addons()
+    {
+        return $this->hasMany(TourPackageAddon::class, 'package_id')->orderBy('category')->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function itineraryDays()
+    {
+        return $this->hasMany(TourPackageDay::class, 'package_id')->orderBy('day_number');
+    }
+
+    public function seasons()
+    {
+        return $this->hasMany(TourPackageSeason::class, 'package_id')->orderBy('starts_on');
+    }
+
+    public function wizardBookings()
+    {
+        return $this->hasMany(TourPackageBooking::class, 'package_id');
+    }
+
+    /** Lowest adult selling price across all durations and tiers (for "From AED x"). */
+    public function wizardFromPrice(): ?float
+    {
+        $min = $this->rates->min('adult_net');
+        return $min === null ? null : round($min * (1 + (float) $this->margin_percent / 100), 2);
     }
 }

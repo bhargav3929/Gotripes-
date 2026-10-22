@@ -95,3 +95,4 @@ DEPLOYMENT.md
 /public/assets/homepageads/[0-9]*_*
 /public/assets/activities/*/[0-9]*_*
 /public/assets/packages/*/[0-9]*_*
+/public/assets/packages/*/itinerary/

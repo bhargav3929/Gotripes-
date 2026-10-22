@@ -35,6 +35,7 @@ return [
         'esim'          => 'esim_order',
         'visa'          => 'visa_application',
         'agent_booking' => 'agent_booking',  // flights / hotels via agent
+        'tour_package'  => 'tour_package_booking',
     ],
 
 ];

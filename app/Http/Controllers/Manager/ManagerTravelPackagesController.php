@@ -76,6 +76,10 @@ class ManagerTravelPackagesController extends Controller
             'price_infant'     => $validated['price_infant'] ?? null,
             'description'      => $validated['description'],
             'duration'         => $validated['duration'],
+            'margin_percent'     => $validated['margin_percent'] ?? 0,
+            'insurance_required' => $request->boolean('insurance_required'),
+            'child_max_age'      => $validated['child_max_age'] ?? 11,
+            'infant_max_age'     => $validated['infant_max_age'] ?? 1,
             'image'            => $coverPath,
             'isActive'         => 1,
             'createdBy'        => auth()->user()?->name ?? 'manager',
@@ -83,6 +87,11 @@ class ManagerTravelPackagesController extends Controller
         ]);
 
         $this->storeGallery($request, $package);
+
+        if ($package->isWizard()) {
+            return redirect()->route('manager.packages.booking-setup', $package->id)
+                ->with('success', 'Package created. Now add its rates, hotels and options.');
+        }
 
         return redirect()->route('manager.packages.index')
             ->with('success', 'Tour package created successfully.');
@@ -102,7 +111,12 @@ class ManagerTravelPackagesController extends Controller
         return [
             'title'            => 'required|string|max:255',
             'country'          => $countryRule,
-            'package_type'     => 'required|in:enquire,purchase',
+            'package_type'     => 'required|in:enquire,purchase,wizard',
+            // Booking wizard: supplier rates are net; margin is added on top.
+            'margin_percent'     => 'nullable|numeric|min:0|max:500',
+            'insurance_required' => 'nullable|boolean',
+            'child_max_age'      => 'nullable|integer|min:1|max:17',
+            'infant_max_age'     => 'nullable|integer|min:0|max:5|lt:child_max_age',
             'partner_email'    => 'nullable|email|max:255',
             'partner_whatsapp' => 'nullable|string|max:30',
             'notification_emails' => ['nullable', new \App\Rules\EmailList],
@@ -170,6 +184,10 @@ class ManagerTravelPackagesController extends Controller
             'price_infant'     => $validated['price_infant'] ?? null,
             'description'      => $validated['description'],
             'duration'         => $validated['duration'],
+            'margin_percent'     => $validated['margin_percent'] ?? 0,
+            'insurance_required' => $request->boolean('insurance_required'),
+            'child_max_age'      => $validated['child_max_age'] ?? 11,
+            'infant_max_age'     => $validated['infant_max_age'] ?? 1,
             'image'            => $imagePath,
             'modifiedBy'       => auth()->user()?->name ?? 'manager',
             'modifiedDate'     => now(),
@@ -187,6 +205,11 @@ class ManagerTravelPackagesController extends Controller
         }
 
         $this->storeGallery($request, $package);
+
+        if ($package->isWizard()) {
+            return redirect()->route('manager.packages.booking-setup', $package->id)
+                ->with('success', 'Package saved. Set up its rates and options below.');
+        }
 
         return redirect()->route('manager.packages.index')
             ->with('success', 'Tour package updated successfully.');

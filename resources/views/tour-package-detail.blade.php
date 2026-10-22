@@ -51,7 +51,13 @@
                     <h1 class="tpd-title">{{ $package->title }}</h1>
                     <p class="tpd-duration"><i class="bi bi-clock"></i> {{ $package->duration }}</p>
 
-                    @if($isPurchase)
+                    @if($package->isWizard() && $package->rates()->exists())
+                        @php $package->load('rates'); $wizFrom = $package->wizardFromPrice(); @endphp
+                        {{-- Priced online from supplier rates: the booking wizard does the rest. --}}
+                        @if($wizFrom)<div class="tpd-from">From <strong>AED {{ number_format($wizFrom, 0) }}</strong> / adult</div>@endif
+                        <p class="tpd-enquire-note">Choose your dates, travellers, hotel and options, see the full price, and pay securely online. Visa requirements are checked as you go.</p>
+                        <a class="tpd-btn tpd-btn-pay" href="{{ route('tour-packages.book', $package->id) }}"><i class="bi bi-calendar-check"></i> Book online</a>
+                    @elseif($isPurchase)
                         <div class="tpd-from">From <strong>AED {{ number_format($pAdult, 0) }}</strong> / adult</div>
 
                         {{-- Dynamic price calculator --}}

@@ -85,6 +85,11 @@
                     </td>
                     <td>
                         <div style="display: flex; gap: 6px;">
+                            @if($package->isWizard())
+                            <a href="{{ route('manager.packages.booking-setup', $package->id) }}" class="wp-btn wp-btn-primary wp-btn-sm" title="Rates, hotels, options, itinerary">
+                                <i class="fas fa-route"></i> Booking setup
+                            </a>
+                            @endif
                             <a href="{{ route('manager.packages.edit', $package->id) }}" class="wp-btn wp-btn-secondary wp-btn-sm">
                                 <i class="fas fa-pen"></i> Edit
                             </a>
