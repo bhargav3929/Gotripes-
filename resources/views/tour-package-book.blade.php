@@ -205,8 +205,8 @@
     .tpw-kids-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
     .tpw-link { background:none; border:0; color:#FFD23F; font-weight:600; }
     .tpw-child-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-    .tpw-child { display:flex; align-items:center; gap:6px; background:#111; border:1px solid #2a2a2a; border-radius:10px; padding:6px 8px; }
-    .tpw-child select { background:transparent; color:#fff; border:0; }
+    .tpw-child { display:flex; align-items:center; gap:6px; background:#111; border:1px solid #2a2a2a; border-radius:10px; padding:6px 10px; white-space:nowrap; font-size:14px; }
+    .tpw-child select { background:#111; color:#fff; border:0; width:auto; height:auto; padding:2px 4px; font-size:14px; }
     .tpw-child button { background:none; border:0; color:#888; }
     .tpw-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
     .tpw-tab { padding:10px 18px; border-radius:99px; border:1px solid #2a2a2a; cursor:pointer; position:relative; }
