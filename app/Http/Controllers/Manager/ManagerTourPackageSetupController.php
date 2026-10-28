@@ -160,7 +160,7 @@ class ManagerTourPackageSetupController extends Controller
             // Meal plan supplements must use the plan code so they match the hotel's plans.
             $code = $a['category'] === 'meal_plan'
                 ? (string) ($a['code'] ?? '')
-                : (Str::slug(($a['code'] ?? '') ?: $a['label'], '_') ?: 'option');
+                : (trim(substr(Str::slug(($a['code'] ?? '') ?: $a['label'], '_'), 0, 40), '_') ?: 'option'); // column is 40 chars
             if ($a['category'] === 'meal_plan' && !array_key_exists($code, TourPackageHotel::MEAL_PLANS)) {
                 throw ValidationException::withMessages(["addons.$i.code" => 'Pick which meal plan this supplement is for.']);
             }

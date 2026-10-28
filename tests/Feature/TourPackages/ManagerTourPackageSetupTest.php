@@ -162,6 +162,19 @@ class ManagerTourPackageSetupTest extends TestCase
         $this->assertSame(4, TourPackageAddon::where('package_id', $p->id)->count());
     }
 
+    public function test_a_long_option_name_gets_a_code_that_fits_the_column(): void
+    {
+        $company = $this->tenant();
+        $p = $this->georgia($company);
+        $this->actingAs($this->owner($company))->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/addons"), ['addons' => [
+            ['category' => 'insurance', 'label' => 'Travel insurance (medical and cancellation)', 'net_price' => 45, 'charge_basis' => 'per_person'],
+        ]])->assertSessionHasNoErrors();
+
+        $code = TourPackageAddon::where('package_id', $p->id)->value('code');
+        $this->assertSame('travel_insurance_medical_and_cancellatio', $code);
+        $this->assertLessThanOrEqual(40, strlen($code));
+    }
+
     public function test_itinerary_days_with_pictures(): void
     {
         $company = $this->tenant();
