@@ -443,6 +443,9 @@
 
     // ---------- navigation ----------
     function stepError(msg) { const e = $('tpwStepError'); e.textContent = msg || ''; e.hidden = !msg; }
+    // Once a message is showing, keep it in step with the form: it goes when the field is fixed,
+    // or moves on to the next thing still missing.
+    ['input', 'change'].forEach(t => form.addEventListener(t, () => { if (!$('tpwStepError').hidden) stepError(check(step)); }));
     function check(n) {
         if (n === 1) {
             if (!form.start_date.value) return 'Choose your travel start date.';
