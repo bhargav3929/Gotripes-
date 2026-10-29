@@ -260,6 +260,12 @@
         .tpw-cards4 { grid-template-columns:1fr 1fr; }
         .tpw-steps li { font-size:0; padding:6px; } .tpw-steps li span { font-size:12px; }
         .tpw-steps li.is-current { font-size:13px; padding:6px 12px; }
+        /* Back / Continue stay on screen. The floating WhatsApp and Help buttons covered them and the
+           +/- counters on phones, so this checkout page goes without them there. */
+        .tpw-nav { position:sticky; bottom:0; z-index:50; margin:24px -12px 0; padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+            background:#070708; border-top:1px solid rgba(255,215,0,.15); }
+        .tpw-nav .tpw-btn { flex:1; }
+        .whats, #gtSupportLauncher { display:none !important; }
     }
 </style>
 
@@ -455,7 +461,10 @@
         });
         $('tpwPrev').hidden = step === 1; $('tpwNext').hidden = step === 6;
         stepError('');
-        window.scrollTo({top: document.querySelector('.tpw-steps').offsetTop - 90, behavior: 'smooth'});
+        // Land with the step bar just below the sticky header, whatever its height on this screen.
+        const header = document.querySelector('.gt-header');
+        const top = document.querySelector('.tpw-steps').getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({top: top - (header ? header.offsetHeight : 90) - 12, behavior: 'smooth'});
     }
     $('tpwNext').addEventListener('click', async () => {
         const msg = check(step);
