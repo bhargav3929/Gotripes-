@@ -466,14 +466,22 @@
         const top = document.querySelector('.tpw-steps').getBoundingClientRect().top + window.scrollY;
         window.scrollTo({top: top - (header ? header.offsetHeight : 90) - 12, behavior: 'smooth'});
     }
+    // Locked while the price loads, so a double tap on a slow connection cannot skip a step.
     $('tpwNext').addEventListener('click', async () => {
+        const btn = $('tpwNext');
+        if (btn.disabled) return;
         const msg = check(step);
         if (msg) return stepError(msg);
-        if (step >= 2) {
-            await fetchQuote();
-            if (!lastQuote && step >= 3) return stepError($('tpwSummary').textContent);
+        btn.disabled = true;
+        try {
+            if (step >= 2) {
+                await fetchQuote();
+                if (!lastQuote && step >= 3) return stepError($('tpwSummary').textContent);
+            }
+            go(step + 1);
+        } finally {
+            btn.disabled = false;
         }
-        go(step + 1);
     });
     $('tpwPrev').addEventListener('click', () => go(step - 1));
 
