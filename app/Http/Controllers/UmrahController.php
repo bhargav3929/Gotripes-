@@ -210,6 +210,7 @@ class UmrahController extends Controller
                 'order_id' => $orderId,
                 'description' => "Umrah Bus Package: {$package->title} ({$totalPassengers} Pax)",
                 'customer' => [
+                    'name' => $validated['customer_name'],
                     'email' => $validated['customer_email'],
                     'phone' => $validated['customer_phone'],
                 ],

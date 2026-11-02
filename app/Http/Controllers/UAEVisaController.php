@@ -437,10 +437,11 @@ class UAEVisaController extends Controller
             'currency' => 'AED',
             'order_id' => $orderId,
             'description' => 'UAE Visa Application - ' . $validated['visaDuration'],
-            'customer' => [
+            'customer' => array_filter([
+                'name' => trim((string) ($validated['applicant_name'] ?? '')),
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
-            ],
+            ]),
         ]);
 
         if (!$checkout['success']) {

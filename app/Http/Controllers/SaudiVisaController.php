@@ -153,6 +153,7 @@ class SaudiVisaController extends Controller
                 'order_id' => $orderId,
                 'description' => "Saudi Visa Application: {$visaType->name} ({$validated['full_name']})",
                 'customer' => [
+                    'name' => $validated['full_name'],
                     'email' => $validated['email'],
                     'phone' => $validated['phone'],
                 ],

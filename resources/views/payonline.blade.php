@@ -149,6 +149,13 @@
         border-color: #ff4d4f;
     }
 
+    .field-help {
+        display: block;
+        color: #8a8a8a;
+        font-size: 12px;
+        margin-top: 6px;
+    }
+
     .field-error-msg {
         display: block;
         color: #ff6b6b;
@@ -436,6 +443,7 @@
                             <label class="field-label">Email Address</label>
                             <input type="email" class="field-input" id="client_email" name="client_email"
                                 placeholder="john@example.com" required>
+                            <span class="field-error-msg" id="client_email-error"></span>
                         </div>
 
                         <div class="form-field full">
@@ -454,6 +462,8 @@
                                     data-no-intl required>
                             </div>
                             <input type="hidden" id="client_phone" name="client_phone">
+                            <span class="field-error-msg" id="client_phone-error"></span>
+                            <span class="field-help">Use the client's own email and mobile. Tabby and Tamara check them against the client's account and send their code to this number.</span>
                         </div>
 
                         <div class="form-field">
@@ -591,6 +601,40 @@
         });
         nameInput.addEventListener('blur', validateName);
 
+        // The client's own email and mobile, never ours: Nomod reuses the phone saved for an
+        // email it has seen, and Tabby / Tamara check the client against their own account.
+        const OWN_DOMAINS = @json(config('nomod.own_email_domains', []));
+        const OWN_PHONES = @json(config('nomod.own_phones', []));
+        const emailInput = document.getElementById('client_email');
+        const phoneInput = document.getElementById('client_phone_number');
+
+        function fieldError(id, msg) {
+            const input = id === 'client_phone' ? phoneInput : document.getElementById(id);
+            input.classList.toggle('invalid', !!msg);
+            document.getElementById(id + '-error').textContent = msg || '';
+        }
+        function validateEmail() {
+            const domain = (emailInput.value.trim().toLowerCase().split('@')[1] || '');
+            const ours = OWN_DOMAINS.includes(domain);
+            fieldError('client_email', ours ? "Enter the client's own email, not ours. Tabby and Tamara check it against the client's account." : '');
+            return !ours;
+        }
+        function fullPhoneDigits() {
+            const cc = (document.getElementById('country_code').value || '').replace(/\D/g, '');
+            let pn = (phoneInput.value || '').replace(/\D/g, '');
+            if (cc && pn.startsWith(cc)) pn = pn.slice(cc.length);
+            return cc + pn.replace(/^0+/, '');
+        }
+        function validatePhone() {
+            const ours = phoneInput.value.trim() !== '' && OWN_PHONES.includes(fullPhoneDigits());
+            fieldError('client_phone', ours ? "Enter the client's own mobile, not ours. Tabby and Tamara send their code to this number." : '');
+            return !ours;
+        }
+        emailInput.addEventListener('blur', validateEmail);
+        emailInput.addEventListener('input', function () { if (emailInput.classList.contains('invalid')) validateEmail(); });
+        phoneInput.addEventListener('blur', validatePhone);
+        phoneInput.addEventListener('input', function () { if (phoneInput.classList.contains('invalid')) validatePhone(); });
+
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -598,6 +642,8 @@
                 nameInput.focus();
                 return;
             }
+            if (!validateEmail()) { emailInput.focus(); return; }
+            if (!validatePhone()) { phoneInput.focus(); return; }
 
             const orig = btn.innerHTML;
             btn.disabled = true;
@@ -623,7 +669,15 @@
                 headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
                 body: fd
             })
-                .then(r => {
+                .then(async r => {
+                    // Show the server's reason next to the field it is about.
+                    if (r.status === 422) {
+                        const d = await r.json().catch(() => ({}));
+                        const errs = d.errors || {};
+                        ['client_name', 'client_email', 'client_phone'].forEach(k => { if (errs[k]) fieldError(k, errs[k][0]); });
+                        const first = Object.values(errs)[0];
+                        throw new Error(first ? first[0] : (d.message || 'Please check the form.'));
+                    }
                     if (!r.ok) {
                         if (r.status === 419) {
                             throw new Error('Session expired. Please refresh the page and try again.');

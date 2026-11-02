@@ -20,7 +20,7 @@ class AgentBookingController extends Controller
             // already blocks this client-side) so a request that bypasses
             // the browser check still fails fast with a clear message.
             'client_name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ\s\'.-]*$/'],
-            'client_email' => 'nullable|email|max:255',
+            'client_email' => 'required|email|max:255',
             'client_phone' => 'required|string|max:50',
             'service' => 'required|string',
             'amount' => 'required|numeric|min:1',
@@ -28,6 +28,22 @@ class AgentBookingController extends Controller
         ], [
             'client_name.regex' => 'Name can only contain letters, spaces, hyphens and apostrophes — no numbers or symbols.',
         ]);
+
+        // Tabby and Tamara check the client against their own account, and Nomod reuses the phone
+        // saved for an email it has seen before. Payments taken with the agency's own email went
+        // to Tabby with the agency's phone and were declined, so the client's own details are required.
+        $validator->after(function ($v) use ($request) {
+            $email = strtolower(trim((string) $request->client_email));
+            $domain = substr(strrchr($email, '@') ?: '', 1);
+            $companyEmail = strtolower(trim((string) current_company()?->email));
+            if ($email !== '' && (in_array($domain, config('nomod.own_email_domains', []), true) || ($companyEmail !== '' && $email === $companyEmail))) {
+                $v->errors()->add('client_email', "Enter the client's own email, not ours. Tabby and Tamara check it against the client's account.");
+            }
+            $phone = preg_replace('/\D/', '', (string) $request->client_phone);
+            if ($phone !== '' && in_array($phone, config('nomod.own_phones', []), true)) {
+                $v->errors()->add('client_phone', "Enter the client's own mobile, not ours. Tabby and Tamara send their code to this number.");
+            }
+        });
 
         if ($validator->fails()) {
             if ($isAjax) {
@@ -60,7 +76,7 @@ class AgentBookingController extends Controller
             $booking = AgentBooking::create([
                 'agent_name' => $request->input('agent_name', 'Agent'),
                 'client_name' => $request->client_name,
-                'client_email' => $request->input('client_email', 'no-email-provided@gotrips.com'),
+                'client_email' => $request->client_email,
                 'client_phone' => $request->client_phone,
                 'service_type' => $request->service,
                 'amount' => $request->amount,
