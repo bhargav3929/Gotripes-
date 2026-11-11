@@ -47,7 +47,7 @@
     </section>
 
     <!-- Content Sections -->
-    <div class="container mt-5">
+    <div class="container mt-3">
         
         <!-- 🚌 Umrah by Bus Section -->
         <section id="bus-tab" class="tab-content active">
@@ -345,7 +345,7 @@
         padding-bottom: 0 !important;
     }
     .tab-content {
-        padding-top: 25px !important;
+        padding-top: 8px !important;
         padding-bottom: 60px !important;
     }
     html[data-theme="light"] .tab-btn {
@@ -426,6 +426,25 @@
             font-size: 18px !important;
         }
     }
+
+    /* =========================================================
+       COMPACT — the client wants the tabs, the filters and a full
+       row of packages on one screen with no empty band between them.
+       ========================================================= */
+    .umrah-hero { height: 190px !important; min-height: 0 !important; padding: 0 !important; }
+    .umrah-hero h1 { font-size: clamp(26px, 4vw, 40px) !important; margin-bottom: 8px !important; }
+    .umrah-hero p { font-size: 15px !important; }
+    /* The theme scales Bootstrap's mt-3 up to ~43px; pin it to 16px. */
+    .umrah-visa-page > .container.mt-3 { margin-top: 16px !important; }
+    .tab-content { padding-top: 0 !important; }
+    .tab-content > .d-flex.flex-wrap:first-child { margin-bottom: 16px !important; }
+    .package-card .package-img-wrap { height: 160px !important; }
+    .package-card .package-body { padding: 18px !important; }
+    .package-card .package-body h3 { font-size: 18px !important; margin-bottom: 6px !important; }
+    .package-card .package-body p { margin-bottom: 12px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .package-card .pkg-meta { margin-bottom: 8px !important; }
+    .package-card .pkg-meta > div { margin-bottom: 4px !important; }
+    .package-card .package-footer { padding-top: 14px !important; }
 </style>
 
 <script>

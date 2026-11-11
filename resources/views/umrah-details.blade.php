@@ -417,11 +417,6 @@ body, main { font-family: 'Outfit', sans-serif; }
        modal telling the customer to "scroll to the booking form above". The form
        was not above; it was not rendered at all, so no one could book on a
        phone. */
-    .ud-booking-col { display: none; }
-    .ud-booking-col.mobile-open {
-        display: block; position: static; max-height: none; overflow: visible;
-        margin-top: 20px; scroll-margin-top: 80px;
-    }
     .ud-page { padding-bottom: 90px; }
 }
 .ud-mobile-price { flex: 1; }
@@ -481,52 +476,415 @@ body, main { font-family: 'Outfit', sans-serif; }
 @media(prefers-color-scheme: light) {
     /* Respect system default but keep dark explicitly since GoTrips is dark-first */
 }
+
+/* ═══ BOOKING FIRST ═══════════════════════════════════════════════════
+   The booking form opens the page, full width, with large type and big
+   tap targets. The package details follow underneath. */
+.ud-hero { height: auto; min-height: 0; padding: 18px 0 20px; align-items: flex-end; }
+.ud-hero .ud-back-btn { margin: 0 10px 10px 0; padding: 7px 16px; font-size: 13px; box-shadow: none; }
+.ud-hero .badge-cat { margin-bottom: 10px; }
+.ud-hero h1 { font-size: clamp(24px, 3.2vw, 36px); margin-bottom: 10px; }
+.ud-hero .info-pill { padding: 5px 12px; font-size: 13px; }
+
+.ud-book { margin-top: 16px; padding: 0; scroll-margin-top: 190px; }
+.ud-book .ud-booking-card { box-shadow: 0 16px 48px rgba(0,0,0,0.55); }
+.ud-book .ud-bk-header { padding: 16px 32px; gap: 16px; flex-wrap: wrap; }
+.ud-bk-kicker { display: block; font-size: 14px; font-weight: 700; color: #FFD700; letter-spacing: 0.4px; margin-bottom: 4px; }
+.ud-book .ud-bk-title { font-size: clamp(22px, 2.6vw, 28px); letter-spacing: -0.01em; }
+.ud-book .ud-bk-price { font-size: clamp(26px, 3vw, 34px); text-align: right; }
+.ud-bk-was { display: block; text-decoration: line-through; font-size: 15px; color: #888; font-weight: 500; }
+
+.ud-book .ud-steps { padding: 16px 32px 4px; }
+.ud-book .ud-step::after { top: 17px; }
+.ud-book .ud-step-dot { width: 36px; height: 36px; font-size: 15px; }
+.ud-book .ud-step-label { font-size: 15px; margin-top: 8px; }
+
+.ud-bk-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; }
+.ud-book .ud-bk-body { padding: 20px 32px 28px; min-width: 0; }
+.ud-bk-aside { border-left: 1px solid #1a1a1a; padding: 24px; background: #0a0a0a; }
+.ud-aside-title { font-size: 14px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin: 0 0 14px; }
+.ud-bk-aside .ud-sum-row { font-size: 15px; line-height: 1.4; gap: 12px; }
+.ud-incl { list-style: none; padding: 16px 0 0; margin: 16px 0 0; border-top: 1px solid #1e1e1e; }
+.ud-incl li { font-size: 15px; color: #ccc; padding: 4px 0; display: flex; gap: 10px; align-items: center; }
+.ud-incl li i { color: #22c55e; }
+
+/* Step heading: says what to do in plain words */
+.ud-step-head { margin-bottom: 16px; }
+.ud-step-count { display: inline-block; font-size: 13px; font-weight: 800; color: #000; background: #FFD700; padding: 3px 12px; border-radius: 50px; margin-bottom: 8px; }
+.ud-step-head h3 { font-size: clamp(22px, 2.6vw, 28px); font-weight: 800; color: #fff; margin: 0 0 6px; line-height: 1.2; letter-spacing: -0.01em; }
+.ud-step-head p { font-size: 17px; color: #aaa; margin: 0; line-height: 1.5; }
+.ud-step-head p strong { color: #FFD700; }
+
+/* Date cards replace the month calendar: every open date is one big button */
+.ud-dates { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 12px; }
+.ud-date {
+    background: rgba(34,197,94,0.08); border: 2px solid rgba(34,197,94,0.35); color: #fff;
+    border-radius: 14px; padding: 14px 10px; text-align: center; cursor: pointer;
+    font-family: inherit; transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+.ud-date:hover { border-color: #4ade80; transform: translateY(-2px); }
+.ud-date:focus-visible { outline: 3px solid #FFD700; outline-offset: 2px; }
+.ud-date .d-dow { display: block; font-size: 14px; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: 0.6px; }
+.ud-date .d-day { display: block; font-size: 34px; font-weight: 800; line-height: 1.1; margin: 2px 0; }
+.ud-date .d-mon { display: block; font-size: 15px; color: #ccc; font-weight: 600; }
+.ud-date .d-seats { display: block; font-size: 13px; color: #4ade80; margin-top: 6px; font-weight: 600; }
+.ud-date.selected { background: #FFD700; border-color: #FFD700; color: #000; box-shadow: 0 0 18px rgba(255,215,0,0.45); }
+.ud-date.selected .d-dow, .ud-date.selected .d-mon, .ud-date.selected .d-seats { color: #000; }
+.ud-dates-empty { grid-column: 1 / -1; background: #111; border: 1px solid #222; border-radius: 14px; padding: 20px; font-size: 17px; color: #ccc; line-height: 1.5; }
+.ud-dates-empty a { color: #FFD700; font-weight: 700; }
+
+/* Travellers: one row per type, big + and − buttons */
+.ud-pax-list { display: flex; flex-direction: column; gap: 12px; }
+.ud-pax-line { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #111; border: 1px solid #1e1e1e; border-radius: 14px; padding: 16px 20px; }
+.ud-pax-who { display: flex; align-items: center; gap: 14px; }
+.ud-pax-who > i { font-size: 26px; color: #FFD700; }
+.ud-pax-who strong { display: block; font-size: 19px; color: #fff; }
+.ud-pax-who span { display: block; font-size: 15px; color: #999; }
+.ud-book .ud-pax-controls { gap: 16px; }
+.ud-book .ud-pax-btn { width: 48px; height: 48px; font-size: 26px; }
+.ud-book .ud-pax-val { font-size: 24px; min-width: 28px; text-align: center; }
+
+/* Inputs and labels */
+.ud-input-label { display: block; font-size: 16px; font-weight: 700; color: #ddd; margin: 16px 0 8px; }
+.ud-input-label:first-of-type { margin-top: 0; }
+.ud-book .ud-input { font-size: 17px; padding: 15px 16px !important; border-radius: 12px !important; }
+.ud-book .ud-pax-field-card { padding: 18px 20px; border-radius: 14px; margin-bottom: 14px; }
+.ud-book .ud-pax-field-card h6 { font-size: 17px; margin-bottom: 14px; }
+.ud-book .ud-pax-fields-grid { gap: 12px; }
+.ud-book .ud-pax-upload { padding: 16px; border-radius: 12px; }
+.ud-book .ud-pax-upload i { font-size: 22px; }
+.ud-book .ud-pax-upload-text { font-size: 16px; }
+.ud-book .ud-pax-upload-hint { font-size: 13px; color: #888; }
+.ud-book .ud-pax-status { font-size: 15px; }
+
+/* Payment choices */
+.ud-book .ud-gw-row { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.ud-book .ud-gw-btn { display: flex; align-items: center; gap: 12px; text-align: left; padding: 16px; border-radius: 14px; font-size: 17px; color: #ddd; height: 100%; }
+.ud-book .ud-gw-btn > i { font-size: 24px; color: #FFD700; }
+.ud-book .ud-gw-btn strong { display: block; font-size: 18px; }
+.ud-book .ud-gw-btn small { display: block; font-size: 14px; font-weight: 500; color: #999; }
+.ud-book .ud-gw-label input:checked + .ud-gw-btn > i,
+.ud-book .ud-gw-label input:checked + .ud-gw-btn small { color: #000; }
+.ud-book .ud-install-box { margin-top: 14px; padding: 18px 20px; }
+.ud-book .ud-install-badge { font-size: 13px; padding: 4px 12px; }
+.ud-book .ud-install-total { font-size: 28px; margin-bottom: 12px; }
+.ud-book .ud-install-cell .ic-label { font-size: 14px; }
+.ud-book .ud-install-cell .ic-val { font-size: 22px; }
+.ud-install-by { font-size: 14px; color: #999; margin: 12px 0 0; text-align: center; }
+
+/* Review */
+.ud-review { background: #111; border: 1px solid #1e1e1e; border-radius: 14px; padding: 8px 20px 18px; }
+.ud-book .ud-review-row { font-size: 16px; padding: 12px 0; gap: 16px; }
+.ud-book .ud-review-row .rv { text-align: right; }
+.ud-book .ud-sum-total .tlabel { font-size: 18px; }
+.ud-book .ud-sum-total .tval { font-size: 28px; }
+
+/* Navigation */
+.ud-book .ud-nav-row { gap: 12px; margin-top: 24px; }
+.ud-book .ud-btn-back { font-size: 17px; padding: 15px 22px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; }
+.ud-book .ud-btn-next { font-size: 18px; padding: 16px 20px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+.ud-book .ud-alert { font-size: 16px; padding: 14px 18px; border-radius: 12px; }
+
+/* Details section under the booking */
+.ud-details { margin-top: 56px; }
+.ud-details-title { font-size: clamp(24px, 3vw, 32px); font-weight: 800; color: #fff; margin: 0 0 20px; letter-spacing: -0.01em; }
+
+@media (max-width: 991px) {
+    .ud-bk-grid { grid-template-columns: 1fr; }
+    .ud-bk-aside { border-left: none; border-top: 1px solid #1a1a1a; }
+}
+@media (max-width: 640px) {
+    .ud-hero { padding: 20px 0 22px; }
+    .ud-book { margin-top: 16px; }
+    .ud-book .ud-bk-header { padding: 18px 16px; }
+    .ud-book .ud-bk-price { text-align: left; }
+    .ud-book .ud-steps { padding: 18px 8px 4px; }
+    .ud-book .ud-step-dot { width: 30px; height: 30px; font-size: 13px; }
+    .ud-book .ud-step::after { top: 14px; }
+    /* Six labels do not fit side by side on a phone; name only the current step. */
+    .ud-book .ud-step-label { font-size: 13px; visibility: hidden; white-space: nowrap; }
+    .ud-book .ud-step.active .ud-step-label { visibility: visible; }
+    .ud-book .ud-bk-price small { text-align: left; }
+    .ud-book .ud-bk-body { padding: 20px 16px 24px; }
+    .ud-bk-aside { padding: 20px 16px; }
+    .ud-dates { grid-template-columns: repeat(2, 1fr); }
+    .ud-book .ud-gw-row { grid-template-columns: 1fr; }
+    .ud-pax-line { padding: 14px 14px; }
+    .ud-book .ud-pax-btn { width: 44px; height: 44px; }
+    .ud-book .ud-pax-controls { gap: 10px; }
+    .ud-book .ud-btn-back { padding: 15px 16px; }
+}
 </style>
+
 
 <main class="ud-page">
 
-    {{-- ───────────────── HERO ───────────────── --}}
+    {{-- ───────────────── HERO (compact, so booking shows on the first screen) ───────────────── --}}
     <section class="ud-hero">
         <div class="container" style="position:relative;z-index:2;">
             <a href="{{ route('going-saudi.index') }}" class="ud-back-btn">
                 <i class="bi bi-arrow-left"></i> Back to Hajj & Umrah
             </a>
-            <div class="row align-items-end g-4">
-                <div class="col-lg-8">
-                    <span class="badge-cat">{{ $package->category === 'air' ? '✈️ Umrah Air' : '🚌 Umrah Bus' }}</span>
-                    <h1>{{ $package->title }}</h1>
-                    <div class="d-flex flex-wrap gap-2 mt-2">
-                        <span class="info-pill"><i class="bi bi-clock text-warning"></i>{{ $package->duration }}</span>
-                        <span class="info-pill"><i class="bi bi-building text-warning"></i>{{ $package->hotels ? Str::limit($package->hotels, 40) : 'Hotels Included' }}</span>
-                        <span class="info-pill"><i class="bi bi-bus-front text-warning"></i>{{ $package->transport ? Str::limit($package->transport, 40) : 'Coach Travel' }}</span>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="ud-hero-price-card">
-                        <span class="from-label">Starting from</span>
-                        <div class="ud-price">
-                            @if($package->discount_price && $package->discount_price < $package->original_price)
-                                <span style="text-decoration: line-through; font-size: 20px; color: #888; margin-right: 8px;">AED {{ number_format($package->original_price, 0) }}</span>
-                                AED {{ number_format($package->starting_price, 0) }}
-                            @else
-                                AED {{ number_format($package->starting_price, 0) }}
-                            @endif
-                        </div>
-                        <button onclick="scrollToBooking()" class="ud-btn-next w-100 mt-3" style="border-radius:9px;padding:11px;">
-                            Book Now <i class="bi bi-arrow-down-short"></i>
-                        </button>
-                    </div>
-                </div>
+            <span class="badge-cat">{{ $package->category === 'air' ? 'Umrah by Air' : 'Umrah by Bus' }}</span>
+            <h1>{{ $package->title }}</h1>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="info-pill"><i class="bi bi-clock text-warning"></i>{{ $package->duration }}</span>
+                <span class="info-pill"><i class="bi bi-building text-warning"></i>{{ $package->hotels ? Str::limit($package->hotels, 40) : 'Hotels Included' }}</span>
+                <span class="info-pill"><i class="bi bi-bus-front text-warning"></i>{{ $package->transport ? Str::limit($package->transport, 40) : 'Coach Travel' }}</span>
             </div>
         </div>
     </section>
 
-    {{-- ───────────────── MAIN GRID ───────────────── --}}
-    <div class="container mt-4">
-        <div class="ud-content-row">
+    {{-- ───────────────── BOOKING — first thing on the page ───────────────── --}}
+    <div class="container">
+        <section class="ud-book" id="bookingCardCol">
+            <div class="ud-booking-card">
+                {{-- Header --}}
+                <div class="ud-bk-header">
+                    <div>
+                        <span class="ud-bk-kicker">Book in 6 simple steps</span>
+                        <h2 class="ud-bk-title">Book Your Pilgrimage</h2>
+                    </div>
+                    <div class="ud-bk-price">
+                        @if($package->discount_price && $package->discount_price < $package->original_price)
+                            <span class="ud-bk-was">AED {{ number_format($package->original_price, 0) }}</span>
+                        @endif
+                        AED {{ number_format($package->starting_price, 0) }}
+                        <small>per person</small>
+                    </div>
+                </div>
 
-            {{-- ── LEFT COLUMN ── --}}
-            <div>
+                {{-- Step progress --}}
+                <div class="ud-steps" id="step-indicator">
+                    <div class="ud-step active" id="si-1"><div class="ud-step-dot">1</div><div class="ud-step-label">Date</div></div>
+                    <div class="ud-step" id="si-2"><div class="ud-step-dot">2</div><div class="ud-step-label">Travellers</div></div>
+                    <div class="ud-step" id="si-3"><div class="ud-step-dot">3</div><div class="ud-step-label">Passports</div></div>
+                    <div class="ud-step" id="si-4"><div class="ud-step-dot">4</div><div class="ud-step-label">Contact</div></div>
+                    <div class="ud-step" id="si-5"><div class="ud-step-dot">5</div><div class="ud-step-label">Payment</div></div>
+                    <div class="ud-step" id="si-6"><div class="ud-step-dot">6</div><div class="ud-step-label">Confirm</div></div>
+                </div>
+
+                <div class="ud-bk-grid">
+                    {{-- Form body --}}
+                    <div class="ud-bk-body">
+                        <div id="ud-alert" class="ud-alert" role="alert"></div>
+                        <form id="umrah-booking-form" onsubmit="submitBooking(event)">
+                            @csrf
+                            <input type="hidden" id="departure_date" name="departure_date">
+
+                            {{-- ─── STEP 1: Date ─── --}}
+                            <div class="ud-step-section active" id="step-1">
+                                <div class="ud-step-head">
+                                    <span class="ud-step-count">Step 1 of 6</span>
+                                    <h3>When do you want to travel?</h3>
+                                    <p>
+                                        @if($package->category === 'air')
+                                            Tap a date below. Book at least 5 days before you travel.
+                                        @else
+                                            The bus leaves every <strong>Wednesday</strong>. Tap a date below.
+                                        @endif
+                                    </p>
+                                </div>
+                                <div class="ud-dates" id="cal-days"></div>
+                                <div class="ud-nav-row">
+                                    <button type="button" class="ud-btn-next" onclick="goStep(2)" id="btn-step1-next" disabled>
+                                        Pick a date first
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- ─── STEP 2: Passenger Count ─── --}}
+                            <div class="ud-step-section" id="step-2">
+                                <div class="ud-step-head">
+                                    <span class="ud-step-count">Step 2 of 6</span>
+                                    <h3>How many people are travelling?</h3>
+                                    <p>Press <strong>+</strong> to add a person and <strong>−</strong> to remove one.</p>
+                                </div>
+                                <div class="ud-pax-list">
+                                    <div class="ud-pax-line">
+                                        <div class="ud-pax-who"><i class="bi bi-person-fill"></i><div><strong>Adults</strong><span>Age 12 and above</span></div></div>
+                                        <div class="ud-pax-controls">
+                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('adults',-1)" aria-label="Remove adult">−</button>
+                                            <span class="ud-pax-val" id="adults-count">1</span>
+                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('adults',1)" aria-label="Add adult">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="ud-pax-line">
+                                        <div class="ud-pax-who"><i class="bi bi-person"></i><div><strong>Children</strong><span>Age 2 to 11</span></div></div>
+                                        <div class="ud-pax-controls">
+                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('children',-1)" aria-label="Remove child">−</button>
+                                            <span class="ud-pax-val" id="children-count">0</span>
+                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('children',1)" aria-label="Add child">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="ud-pax-line">
+                                        <div class="ud-pax-who"><i class="bi bi-balloon-heart"></i><div><strong>Infants</strong><span>Under 2 years</span></div></div>
+                                        <div class="ud-pax-controls">
+                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('infants',-1)" aria-label="Remove infant">−</button>
+                                            <span class="ud-pax-val" id="infants-count">0</span>
+                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('infants',1)" aria-label="Add infant">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ud-nav-row">
+                                    <button type="button" class="ud-btn-back" onclick="goStep(1)"><i class="bi bi-arrow-left"></i> Back</button>
+                                    <button type="button" class="ud-btn-next" onclick="goStep(3)">Next: Passports <i class="bi bi-arrow-right"></i></button>
+                                </div>
+                            </div>
+
+                            {{-- ─── STEP 3: Passenger Details ─── --}}
+                            <div class="ud-step-section" id="step-3">
+                                <div class="ud-step-head">
+                                    <span class="ud-step-count">Step 3 of 6</span>
+                                    <h3>Add each person's passport</h3>
+                                    <p>Type the name, then upload a photo of the passport. We read the rest for you.</p>
+                                </div>
+                                <div id="pax-fields-wrap"></div>
+                                <div class="ud-nav-row">
+                                    <button type="button" class="ud-btn-back" onclick="goStep(2)"><i class="bi bi-arrow-left"></i> Back</button>
+                                    <button type="button" class="ud-btn-next" onclick="goStep(4)">Next: Contact <i class="bi bi-arrow-right"></i></button>
+                                </div>
+                            </div>
+
+                            {{-- ─── STEP 4: Contact ─── --}}
+                            <div class="ud-step-section" id="step-4">
+                                <div class="ud-step-head">
+                                    <span class="ud-step-count">Step 4 of 6</span>
+                                    <h3>How can we reach you?</h3>
+                                    <p>We send your booking confirmation here.</p>
+                                </div>
+                                <label class="ud-input-label" for="ud-cname">Your full name</label>
+                                <input type="text" id="ud-cname" name="customer_name" class="ud-input" placeholder="e.g. Mohammed Ali" autocomplete="name" required>
+                                <label class="ud-input-label" for="ud-cemail">Email</label>
+                                <input type="email" id="ud-cemail" name="customer_email" class="ud-input" placeholder="e.g. name@gmail.com" autocomplete="email" required>
+                                <label class="ud-input-label" for="ud-cphone">Mobile / WhatsApp number</label>
+                                <input type="tel" id="ud-cphone" name="customer_phone" class="ud-input" placeholder="e.g. 050 123 4567" autocomplete="tel" required>
+                                <div class="ud-nav-row">
+                                    <button type="button" class="ud-btn-back" onclick="goStep(3)"><i class="bi bi-arrow-left"></i> Back</button>
+                                    <button type="button" class="ud-btn-next" onclick="goStep(5)">Next: Payment <i class="bi bi-arrow-right"></i></button>
+                                </div>
+                            </div>
+
+                            {{-- ─── STEP 5: Payment ─── --}}
+                            <div class="ud-step-section" id="step-5">
+                                <div class="ud-step-head">
+                                    <span class="ud-step-count">Step 5 of 6</span>
+                                    <h3>How do you want to pay?</h3>
+                                    <p>Pay in full by card, or split it into 4 payments.</p>
+                                </div>
+                                <div class="ud-gw-row">
+                                    <label class="ud-gw-label">
+                                        <input type="radio" name="payment_gateway" value="Card" checked onchange="updatePaymentUI()">
+                                        <div class="ud-gw-btn"><i class="bi bi-credit-card"></i><span><strong>Card</strong><small>Pay the full amount now</small></span></div>
+                                    </label>
+                                    <label class="ud-gw-label">
+                                        <input type="radio" name="payment_gateway" value="Tabby" onchange="updatePaymentUI()">
+                                        <div class="ud-gw-btn"><i class="bi bi-calendar3"></i><span><strong>Tabby</strong><small>4 payments, no interest</small></span></div>
+                                    </label>
+                                    <label class="ud-gw-label">
+                                        <input type="radio" name="payment_gateway" value="Tamara" onchange="updatePaymentUI()">
+                                        <div class="ud-gw-btn"><i class="bi bi-calendar3"></i><span><strong>Tamara</strong><small>4 payments, no interest</small></span></div>
+                                    </label>
+                                </div>
+
+                                {{-- Installments widget (hidden unless Tabby/Tamara) --}}
+                                <div id="install-widget" style="display:none;">
+                                    <div class="ud-install-box">
+                                        <span class="ud-install-badge">0% interest</span>
+                                        <div class="ud-install-total" id="install-total">AED 0</div>
+                                        <div class="ud-install-plan">
+                                            <div class="ud-install-cell">
+                                                <span class="ic-label">Pay today</span>
+                                                <span class="ic-val" id="install-down">AED 0</span>
+                                            </div>
+                                            <div class="ud-install-cell">
+                                                <span class="ic-label">Then 3 more of</span>
+                                                <span class="ic-val" id="install-monthly">AED 0</span>
+                                            </div>
+                                        </div>
+                                        <p class="ud-install-by" id="install-gateway-label">Powered by Tabby</p>
+                                    </div>
+                                </div>
+
+                                <div class="ud-nav-row">
+                                    <button type="button" class="ud-btn-back" onclick="goStep(4)"><i class="bi bi-arrow-left"></i> Back</button>
+                                    <button type="button" class="ud-btn-next" onclick="goStep(6)">Next: Check and confirm <i class="bi bi-arrow-right"></i></button>
+                                </div>
+                            </div>
+
+                            {{-- ─── STEP 6: Review ─── --}}
+                            <div class="ud-step-section" id="step-6">
+                                <div class="ud-step-head">
+                                    <span class="ud-step-count">Step 6 of 6</span>
+                                    <h3>Check your booking</h3>
+                                    <p>If everything is right, press the yellow button to pay.</p>
+                                </div>
+
+                                <div class="ud-review">
+                                    <div class="ud-review-row"><span>Package</span><span class="rv">{{ $package->title }}</span></div>
+                                    <div class="ud-review-row"><span>Travel date</span><span class="rv" id="rv-date">—</span></div>
+                                    <div class="ud-review-row"><span>Adults</span><span class="rv" id="rv-adults">1</span></div>
+                                    <div class="ud-review-row"><span>Children</span><span class="rv" id="rv-children">0</span></div>
+                                    <div class="ud-review-row"><span>Infants</span><span class="rv" id="rv-infants">0</span></div>
+                                    <div class="ud-review-row"><span>Name</span><span class="rv" id="rv-name">—</span></div>
+                                    <div class="ud-review-row"><span>Email</span><span class="rv" id="rv-email">—</span></div>
+                                    <div class="ud-review-row"><span>Mobile</span><span class="rv" id="rv-phone">—</span></div>
+                                    <div class="ud-review-row"><span>Payment</span><span class="rv" id="rv-gateway">Card</span></div>
+                                    <hr class="ud-sum-divider">
+                                    <div class="ud-sum-total">
+                                        <span class="tlabel">Total to pay</span>
+                                        <span class="tval" id="rv-total">AED 0</span>
+                                    </div>
+                                </div>
+
+                                <div class="ud-nav-row">
+                                    <button type="button" class="ud-btn-back" onclick="goStep(5)"><i class="bi bi-arrow-left"></i> Back</button>
+                                    <button type="submit" class="ud-btn-next" id="book-btn">
+                                        <i class="bi bi-lock-fill"></i> Confirm and pay
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    {{-- Summary — beside the form on desktop, under it on phones --}}
+                    <aside class="ud-bk-aside" id="live-summary-box">
+                        <p class="ud-aside-title">Your booking</p>
+                        <div class="ud-sum-row"><span>Package</span><span class="val">{{ $package->title }}</span></div>
+                        <div class="ud-sum-row"><span>Travel date</span><span class="val" id="sum-date">Not picked yet</span></div>
+                        <div class="ud-sum-row"><span>Hotel</span><span class="val">{{ $package->hotels ? Str::limit($package->hotels, 30) : '—' }}</span></div>
+                        @if($package->category === 'air')
+                        <div class="ud-sum-row"><span>Airline</span><span class="val">{{ $package->airline ?: '—' }}</span></div>
+                        @else
+                        <div class="ud-sum-row"><span>Transport</span><span class="val">{{ $package->transport ? Str::limit($package->transport, 30) : '—' }}</span></div>
+                        @endif
+                        <div class="ud-sum-row"><span>Adults</span><span class="val" id="sum-adults">1</span></div>
+                        <div class="ud-sum-row"><span>Children</span><span class="val" id="sum-children">0</span></div>
+                        <div class="ud-sum-row"><span>Infants</span><span class="val" id="sum-infants">0</span></div>
+                        <hr class="ud-sum-divider">
+                        <div class="ud-sum-total">
+                            <span class="tlabel">Total</span>
+                            <span class="tval" id="sum-total">AED {{ number_format($package->adult_price ?? $package->effectivePrice(), 0) }}</span>
+                        </div>
+                        <ul class="ud-incl">
+                            <li><i class="bi bi-check-circle-fill"></i> Visa included</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Hotel included</li>
+                            @if($package->category === 'air')
+                            <li><i class="bi bi-check-circle-fill"></i> Flights included</li>
+                            @else
+                            <li><i class="bi bi-check-circle-fill"></i> AC coach included</li>
+                            @endif
+                            <li><i class="bi bi-shield-lock-fill"></i> Secure payment</li>
+                        </ul>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        {{-- ───────────────── PACKAGE DETAILS — below the booking ───────────────── --}}
+        <div class="ud-details">
+            <h2 class="ud-details-title">About this package</h2>
                 {{-- Gallery --}}
                 <div class="ud-panel" style="padding:10px; margin-bottom:20px;">
                     <div id="ud-gallery" class="carousel slide" data-bs-ride="carousel">
@@ -868,310 +1226,20 @@ body, main { font-family: 'Outfit', sans-serif; }
                     </div>
                 </div>
                 @endif
-            </div>
 
-            {{-- ── RIGHT COLUMN: STICKY BOOKING SIDEBAR ── --}}
-            <div class="ud-booking-col" id="bookingCardCol">
-
-                <div class="ud-booking-card">
-                    {{-- Header --}}
-                    <div class="ud-bk-header">
-                        <h3 class="ud-bk-title">Book Your Pilgrimage</h3>
-                        <div>
-                            <div class="ud-bk-price">
-                                @if($package->discount_price && $package->discount_price < $package->original_price)
-                                    <span style="text-decoration: line-through; font-size: 13px; color: #888; margin-right: 4px;">AED {{ number_format($package->original_price, 0) }}</span>
-                                    AED {{ number_format($package->starting_price, 0) }}
-                                @else
-                                    AED {{ number_format($package->starting_price, 0) }}
-                                @endif
-                                <small>per person</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Feature strip --}}
-                    <div class="ud-feat-strip">
-                        <div class="ud-feat-strip-item"><i class="bi bi-shield-check"></i><span>Visa Incl.</span></div>
-                        <div class="ud-feat-strip-item"><i class="bi bi-building"></i><span>Hotel Incl.</span></div>
-                        @if($package->category === 'air')
-                        <div class="ud-feat-strip-item"><i class="bi bi-airplane"></i><span>Flights Incl.</span></div>
-                        @else
-                        <div class="ud-feat-strip-item"><i class="bi bi-bus-front"></i><span>AC Coach</span></div>
-                        @endif
-                        <div class="ud-feat-strip-item"><i class="bi bi-lightning-charge"></i><span>Instant</span></div>
-                    </div>
-
-                    {{-- Step progress --}}
-                    <div class="ud-steps" id="step-indicator">
-                        <div class="ud-step active" id="si-1"><div class="ud-step-dot">1</div><div class="ud-step-label">Date</div></div>
-                        <div class="ud-step" id="si-2"><div class="ud-step-dot">2</div><div class="ud-step-label">Pax</div></div>
-                        <div class="ud-step" id="si-3"><div class="ud-step-dot">3</div><div class="ud-step-label">Details</div></div>
-                        <div class="ud-step" id="si-4"><div class="ud-step-dot">4</div><div class="ud-step-label">Contact</div></div>
-                        <div class="ud-step" id="si-5"><div class="ud-step-dot">5</div><div class="ud-step-label">Payment</div></div>
-                        <div class="ud-step" id="si-6"><div class="ud-step-dot">6</div><div class="ud-step-label">Review</div></div>
-                    </div>
-
-                    {{-- Form body --}}
-                    <div class="ud-bk-body">
-                        <div id="ud-alert" class="ud-alert"></div>
-                        <form id="umrah-booking-form" onsubmit="submitBooking(event)">
-                            @csrf
-                            <input type="hidden" id="departure_date" name="departure_date">
-
-                            {{-- ─── STEP 1: Date ─── --}}
-                            <div class="ud-step-section active" id="step-1">
-                                <span class="ud-field-label">Step 1 — Select Departure Date</span>
-                                <div class="ud-cal-hint">
-                                    <i class="bi bi-info-circle text-warning me-1"></i>
-                                    @if($package->category === 'air')
-                                        Book your departure at least 5 days in advance.
-                                    @else
-                                        Bus departures operate every <strong style="color:#FFD700;">Wednesday</strong>. Book at least 5 days before departure.
-                                    @endif
-                                </div>
-                                <div class="ud-calendar">
-                                    <div class="ud-cal-nav">
-                                        <button type="button" class="ud-cal-nav-btn" onclick="navigateMonth(-1)"><i class="bi bi-chevron-left"></i></button>
-                                        <span class="ud-cal-month" id="cal-month-label"></span>
-                                        <button type="button" class="ud-cal-nav-btn" onclick="navigateMonth(1)"><i class="bi bi-chevron-right"></i></button>
-                                    </div>
-                                    <div class="ud-cal-dow">
-                                        <span>Su</span><span>Mo</span><span>Tu</span>
-                                        <span class="wed">We</span>
-                                        <span>Th</span><span>Fr</span><span>Sa</span>
-                                    </div>
-                                    <div class="ud-cal-days" id="cal-days"></div>
-                                </div>
-                                <div class="ud-nav-row">
-                                    <button type="button" class="ud-btn-next w-100" onclick="goStep(2)" id="btn-step1-next" disabled>
-                                        Choose Passengers <i class="bi bi-chevron-right ms-1"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {{-- ─── STEP 2: Passenger Count ─── --}}
-                            <div class="ud-step-section" id="step-2">
-                                <span class="ud-field-label">Step 2 — Select Passengers</span>
-                                <div class="ud-pax-row mb-3">
-                                    <div class="ud-pax-box">
-                                        <span class="pax-label">Adults</span>
-                                        <div class="ud-pax-controls">
-                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('adults',-1)">−</button>
-                                            <span class="ud-pax-val" id="adults-count">1</span>
-                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('adults',1)">+</button>
-                                        </div>
-                                    </div>
-                                    <div class="ud-pax-box">
-                                        <span class="pax-label">Children</span>
-                                        <div class="ud-pax-controls">
-                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('children',-1)">−</button>
-                                            <span class="ud-pax-val" id="children-count">0</span>
-                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('children',1)">+</button>
-                                        </div>
-                                    </div>
-                                    <div class="ud-pax-box">
-                                        <span class="pax-label">Infants</span>
-                                        <div class="ud-pax-controls">
-                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('infants',-1)">−</button>
-                                            <span class="ud-pax-val" id="infants-count">0</span>
-                                            <button type="button" class="ud-pax-btn" onclick="updateCounter('infants',1)">+</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="ud-nav-row">
-                                    <button type="button" class="ud-btn-back" onclick="goStep(1)"><i class="bi bi-chevron-left"></i></button>
-                                    <button type="button" class="ud-btn-next" onclick="goStep(3)">Enter Passenger Details <i class="bi bi-chevron-right ms-1"></i></button>
-                                </div>
-                            </div>
-
-                            {{-- ─── STEP 3: Passenger Details ─── --}}
-                            <div class="ud-step-section" id="step-3">
-                                <span class="ud-field-label">Step 3 — Passenger Details</span>
-                                <div id="pax-fields-wrap"></div>
-                                <div class="ud-nav-row">
-                                    <button type="button" class="ud-btn-back" onclick="goStep(2)"><i class="bi bi-chevron-left"></i></button>
-                                    <button type="button" class="ud-btn-next" onclick="goStep(4)">Contact Information <i class="bi bi-chevron-right ms-1"></i></button>
-                                </div>
-                            </div>
-
-                            {{-- ─── STEP 4: Contact ─── --}}
-                            <div class="ud-step-section" id="step-4">
-                                <span class="ud-field-label">Step 4 — Contact Information</span>
-                                <div class="mb-2">
-                                    <input type="text" name="customer_name" class="ud-input" placeholder="Full Name" required>
-                                </div>
-                                <div class="mb-2">
-                                    <input type="email" name="customer_email" class="ud-input" placeholder="Email Address" required>
-                                </div>
-                                <div class="mb-2">
-                                    <input type="tel" name="customer_phone" class="ud-input" placeholder="Phone / WhatsApp" required>
-                                </div>
-                                <div class="ud-nav-row">
-                                    <button type="button" class="ud-btn-back" onclick="goStep(3)"><i class="bi bi-chevron-left"></i></button>
-                                    <button type="button" class="ud-btn-next" onclick="goStep(5)">Payment Method <i class="bi bi-chevron-right ms-1"></i></button>
-                                </div>
-                            </div>
-
-                            {{-- ─── STEP 5: Payment ─── --}}
-                            <div class="ud-step-section" id="step-5">
-                                <span class="ud-field-label">Step 5 — Payment Method</span>
-                                <div class="ud-gw-row mb-3">
-                                    <label class="ud-gw-label">
-                                        <input type="radio" name="payment_gateway" value="Card" checked onchange="updatePaymentUI()">
-                                        <div class="ud-gw-btn"><i class="bi bi-credit-card d-block mb-1" style="font-size:16px;"></i>Card</div>
-                                    </label>
-                                    <label class="ud-gw-label">
-                                        <input type="radio" name="payment_gateway" value="Tabby" onchange="updatePaymentUI()">
-                                        <div class="ud-gw-btn"><i class="bi bi-calendar3 d-block mb-1" style="font-size:16px;"></i>Tabby</div>
-                                    </label>
-                                    <label class="ud-gw-label">
-                                        <input type="radio" name="payment_gateway" value="Tamara" onchange="updatePaymentUI()">
-                                        <div class="ud-gw-btn"><i class="bi bi-calendar3 d-block mb-1" style="font-size:16px;"></i>Tamara</div>
-                                    </label>
-                                </div>
-
-                                {{-- Installments widget (hidden unless Tabby/Tamara) --}}
-                                <div id="install-widget" style="display:none;">
-                                    <div class="ud-install-box">
-                                        <span class="ud-install-badge">0% Interest-Free</span>
-                                        <div class="ud-install-total" id="install-total">AED 0</div>
-                                        <div class="ud-install-arrow">↓</div>
-                                        <div class="ud-install-plan">
-                                            <div class="ud-install-cell">
-                                                <span class="ic-label">4 payments</span>
-                                                <span class="ic-val" id="install-monthly">AED 0</span>
-                                                <span style="font-size:10px;color:#888;display:block;margin-top:2px;">/month</span>
-                                            </div>
-                                            <div class="ud-install-cell">
-                                                <span class="ic-label">Today pay</span>
-                                                <span class="ic-val" id="install-down">AED 0</span>
-                                                <span style="font-size:10px;color:#888;display:block;margin-top:2px;">deposit</span>
-                                            </div>
-                                        </div>
-                                        <p style="font-size:10.5px;color:#888;margin:10px 0 0;text-align:center;" id="install-gateway-label">Powered by Tabby</p>
-                                    </div>
-                                </div>
-
-                                <div class="ud-nav-row">
-                                    <button type="button" class="ud-btn-back" onclick="goStep(4)"><i class="bi bi-chevron-left"></i></button>
-                                    <button type="button" class="ud-btn-next" onclick="goStep(6)">Review Booking <i class="bi bi-chevron-right ms-1"></i></button>
-                                </div>
-                            </div>
-
-                            {{-- ─── STEP 6: Review ─── --}}
-                            <div class="ud-step-section" id="step-6">
-                                <span class="ud-field-label">Step 6 — Review Your Booking</span>
-
-                                {{-- Review panel --}}
-                                <div style="background:#111;border:1px solid #1e1e1e;border-radius:12px;padding:16px;margin-bottom:14px;">
-                                    <div class="ud-review-row"><span>Package</span><span class="rv">{{ $package->title }}</span></div>
-                                    <div class="ud-review-row"><span>Category</span><span class="rv" style="text-transform:capitalize;">{{ $package->category }}</span></div>
-                                    <div class="ud-review-row"><span>Departure</span><span class="rv" id="rv-date">—</span></div>
-                                    <div class="ud-review-row"><span>Hotel</span><span class="rv">{{ $package->hotels ? Str::limit($package->hotels, 40) : '—' }}</span></div>
-                                    @if($package->category === 'air')
-                                    <div class="ud-review-row"><span>Airline</span><span class="rv">{{ $package->airline ?: '—' }}</span></div>
-                                    @else
-                                    <div class="ud-review-row"><span>Transport</span><span class="rv">{{ $package->transport ? Str::limit($package->transport, 40) : '—' }}</span></div>
-                                    @endif
-                                    <div class="ud-review-row"><span>Visa</span><span class="rv" style="color:#22c55e;">✓ Included</span></div>
-                                    <div class="ud-review-row"><span>Adults</span><span class="rv" id="rv-adults">1</span></div>
-                                    <div class="ud-review-row"><span>Children</span><span class="rv" id="rv-children">0</span></div>
-                                    <div class="ud-review-row"><span>Infants</span><span class="rv" id="rv-infants">0</span></div>
-                                    <div class="ud-review-row"><span>Name</span><span class="rv" id="rv-name">—</span></div>
-                                    <div class="ud-review-row"><span>Email</span><span class="rv" id="rv-email">—</span></div>
-                                    <div class="ud-review-row"><span>Phone</span><span class="rv" id="rv-phone">—</span></div>
-                                    <div class="ud-review-row"><span>Payment</span><span class="rv" id="rv-gateway">Card</span></div>
-                                    <hr class="ud-sum-divider">
-                                    <div class="ud-sum-total">
-                                        <span class="tlabel">Total Amount</span>
-                                        <span class="tval" id="rv-total">AED 0</span>
-                                    </div>
-                                </div>
-
-                                <div class="ud-nav-row">
-                                    <button type="button" class="ud-btn-back" onclick="goStep(5)"><i class="bi bi-chevron-left"></i></button>
-                                    <button type="submit" class="ud-btn-next" id="book-btn">
-                                        <i class="bi bi-cart-plus me-1"></i> Add to Cart
-                                    </button>
-                                </div>
-                            </div>
-
-                        </form>
-
-                        {{-- Persistent compact summary (always visible) --}}
-                        <div style="background:#111;border:1px solid #1a1a1a;border-radius:11px;padding:14px;margin-top:16px;" id="live-summary-box">
-                            <p style="font-size:10.5px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;">Booking Summary</p>
-                            <div class="ud-sum-row"><span>Package</span><span class="val">{{ $package->title }}</span></div>
-                            <div class="ud-sum-row"><span>Category</span><span class="val" style="text-transform:capitalize;">{{ $package->category }}</span></div>
-                            <div class="ud-sum-row"><span>Departure</span><span class="val" id="sum-date">Not selected</span></div>
-                            <div class="ud-sum-row"><span>Hotel</span><span class="val">{{ $package->hotels ? Str::limit($package->hotels, 30) : '—' }}</span></div>
-                            @if($package->category === 'air')
-                            <div class="ud-sum-row"><span>Airline</span><span class="val">{{ $package->airline ?: '—' }}</span></div>
-                            @else
-                            <div class="ud-sum-row"><span>Transport</span><span class="val">{{ $package->transport ? Str::limit($package->transport, 30) : '—' }}</span></div>
-                            @endif
-                            <div class="ud-sum-row"><span>Visa</span><span class="val" style="color:#22c55e;">Included ✓</span></div>
-                            <div class="ud-sum-row"><span>Adults</span><span class="val" id="sum-adults">1</span></div>
-                            <div class="ud-sum-row"><span>Children</span><span class="val" id="sum-children">0</span></div>
-                            <div class="ud-sum-row"><span>Infants</span><span class="val" id="sum-infants">0</span></div>
-                            <hr class="ud-sum-divider">
-                            <div class="ud-sum-total">
-                                <span class="tlabel">Total</span>
-                                <span class="tval" id="sum-total">AED {{ number_format($package->adult_price ?? $package->effectivePrice(), 0) }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Trust Section --}}
-                <div class="ud-panel mt-3">
-                    <ul class="ud-trust-list">
-                        <li><i class="bi bi-patch-check-fill"></i> Licensed Travel Agency · DTCM Registered</li>
-                        <li><i class="bi bi-shield-lock-fill"></i> Secure Payment · SSL Encrypted Checkout</li>
-                        <li><i class="bi bi-file-earmark-check-fill"></i> Visa Assistance Included in All Packages</li>
-                        <li><i class="bi bi-lightning-charge-fill"></i> Instant Booking Confirmation by Email</li>
-                        <li><i class="bi bi-headset"></i> 24×7 Customer Support on WhatsApp</li>
-                    </ul>
-                </div>
-
+            {{-- Trust Section --}}
+            <div class="ud-panel mt-4">
+                <ul class="ud-trust-list">
+                    <li><i class="bi bi-patch-check-fill"></i> Licensed Travel Agency · DTCM Registered</li>
+                    <li><i class="bi bi-shield-lock-fill"></i> Secure Payment · SSL Encrypted Checkout</li>
+                    <li><i class="bi bi-file-earmark-check-fill"></i> Visa Assistance Included in All Packages</li>
+                    <li><i class="bi bi-lightning-charge-fill"></i> Instant Booking Confirmation by Email</li>
+                    <li><i class="bi bi-headset"></i> 24×7 Customer Support on WhatsApp</li>
+                </ul>
             </div>
         </div>
     </div>
 </main>
-
-{{-- ─── Mobile Floating CTA ─── --}}
-<div class="ud-mobile-cta">
-    <div class="ud-mobile-price">
-        <div class="mprice">
-            @if($package->discount_price && $package->discount_price < $package->original_price)
-                <span style="text-decoration: line-through; font-size: 12px; color: #888; margin-right: 4px;">AED {{ number_format($package->original_price, 0) }}</span>
-                AED {{ number_format($package->starting_price, 0) }}
-            @else
-                AED {{ number_format($package->starting_price, 0) }}
-            @endif
-        </div>
-        <div class="mlabel">per person · <span id="mob-date-label">No date selected</span></div>
-    </div>
-    <button class="ud-mobile-book-btn" onclick="openMobileModal()">
-        Book Now
-    </button>
-</div>
-
-{{-- ─── Mobile Booking Modal ─── --}}
-<div class="ud-mobile-modal" id="mob-modal">
-    <div class="ud-mobile-modal-inner">
-        <div class="ud-modal-handle"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-            <h4 style="margin:0;font-size:18px;font-weight:800;color:#fff;">Book This Package</h4>
-            <button onclick="closeMobileModal()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;">✕</button>
-        </div>
-        <p style="font-size:13px;color:#888;margin-bottom:0;">Complete your booking below — it only takes a minute.</p>
-        <a href="#bookingCardCol" onclick="closeMobileModal(); openMobileModal(); return false;" class="ud-btn-next d-block text-center mt-3" style="text-decoration:none;padding:13px;border-radius:9px;">
-            Go to Booking Form
-        </a>
-    </div>
-</div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════
@@ -1187,7 +1255,6 @@ const CHILD_PRICE = {{ $package->child_price ?? ($package->effectivePrice() * 0.
 const INFANT_PRICE = {{ $package->infant_price ?? 0 }};
 
 let selectedDate = '';
-let currentYear, currentMonth;
 let pax = { adults: 1, children: 0, infants: 0 };
 let currentStep = 1;
 
@@ -1214,60 +1281,55 @@ function toggleFaq(btn) {
 /* ═══════════════════════════════════════════════════════════
    CALENDAR
 ═══════════════════════════════════════════════════════════ */
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
+/**
+ * Every open departure is shown as one large button. A month grid made people
+ * hunt for the few green days and page between months; a list does not.
+ */
 function renderCalendar() {
-    document.getElementById('cal-month-label').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
     const grid = document.getElementById('cal-days');
     grid.innerHTML = '';
 
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-    for (let i = 0; i < firstDay; i++) {
-        const e = document.createElement('div'); e.className = 'ud-day other'; grid.appendChild(e);
+    const open = activeDepartures.filter(d => d.seats > 0).slice(0, 12);
+    if (!open.length) {
+        grid.innerHTML = '<div class="ud-dates-empty">No travel dates are open right now. ' +
+            'Please <a href="https://wa.me/971543651065" target="_blank" rel="noopener">message us on WhatsApp</a> and we will book it for you.</div>';
+        return;
     }
 
-    for (let d = 1; d <= totalDays; d++) {
-        const cell = document.createElement('div');
-        const mm  = String(currentMonth + 1).padStart(2,'0');
-        const dd  = String(d).padStart(2,'0');
-        const iso = `${currentYear}-${mm}-${dd}`;
-        const dep = activeDepartures.find(x => x.date === iso);
-
-        if (dep && dep.seats > 0) {
-            cell.className = 'ud-day avail' + (selectedDate === iso ? ' selected' : '');
-            cell.title     = dep.seats + ' seats available';
-            cell.innerHTML = d + '<span class="seats-dot"></span>';
-            cell.onclick   = () => selectDate(iso, cell);
-        } else {
-            cell.className = 'ud-day grey';
-            cell.textContent = d;
-        }
-
-        grid.appendChild(cell);
-    }
+    open.forEach(dep => {
+        const [y, m, d] = dep.date.split('-').map(Number);
+        const dt  = new Date(y, m - 1, d);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ud-date' + (selectedDate === dep.date ? ' selected' : '');
+        btn.setAttribute('aria-pressed', selectedDate === dep.date ? 'true' : 'false');
+        btn.innerHTML =
+            `<span class="d-dow">${dt.toLocaleDateString('en-US', { weekday: 'short' })}</span>` +
+            `<span class="d-day">${d}</span>` +
+            `<span class="d-mon">${dt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>` +
+            `<span class="d-seats">${dep.seats} seats left</span>`;
+        btn.onclick = () => selectDate(dep.date, btn);
+        grid.appendChild(btn);
+    });
 }
 
-function navigateMonth(dir) {
-    currentMonth += dir;
-    if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
-    if (currentMonth > 11) { currentMonth = 0;  currentYear++; }
-    renderCalendar();
+function formatDate(iso, opts) {
+    const [y, m, d] = iso.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', opts);
 }
 
 function selectDate(iso, cell) {
     selectedDate = iso;
     document.getElementById('departure_date').value = iso;
-    document.querySelectorAll('.ud-day.avail').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.ud-date').forEach(c => { c.classList.remove('selected'); c.setAttribute('aria-pressed', 'false'); });
     cell.classList.add('selected');
+    cell.setAttribute('aria-pressed', 'true');
 
-    // Enable step-1 next button
-    document.getElementById('btn-step1-next').disabled = false;
-    document.getElementById('btn-step1-next').textContent = '✓ Date Selected — Choose Passengers →';
+    const next = document.getElementById('btn-step1-next');
+    next.disabled = false;
+    next.innerHTML = 'Next: Travellers <i class="bi bi-arrow-right"></i>';
 
     updateSummary();
-    updateMobileDateLabel();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1298,8 +1360,7 @@ function updateSummary() {
     document.getElementById('sum-total').textContent    = 'AED ' + total.toLocaleString();
 
     if (selectedDate) {
-        const opts = { day:'numeric', month:'short', year:'numeric' };
-        document.getElementById('sum-date').textContent = new Date(selectedDate).toLocaleDateString('en-US', opts);
+        document.getElementById('sum-date').textContent = formatDate(selectedDate, { weekday:'short', day:'numeric', month:'short', year:'numeric' });
     }
 
     // Installment widget
@@ -1333,11 +1394,11 @@ function goStep(n) {
 
     // Validate before advancing
     if (n > 1 && !selectedDate) {
-        alert.textContent = '📅 Please select a departure date first.';
+        alert.textContent = 'Please pick a travel date first.';
         alert.style.display = 'block'; goStep(1); return;
     }
     if (n > 2 && pax.adults < 1) {
-        alert.textContent = '👥 At least 1 adult is required.';
+        alert.textContent = 'At least 1 adult is needed.';
         alert.style.display = 'block'; return;
     }
     if (n > 3) {
@@ -1347,12 +1408,12 @@ function goStep(n) {
         for (let card of cards) {
             const nameEl = card.querySelector('input[name$="[name]"]');
             if (!nameEl || !nameEl.value.trim()) {
-                alert.textContent = '✏️ Please enter a name for every passenger.';
+                alert.textContent = 'Please type a name for every person.';
                 alert.style.display = 'block'; goStep(3); return;
             }
             const copyEl = card.querySelector('input[name$="[passport_copy]"]');
             if (!copyEl || !copyEl.value) {
-                alert.textContent = '📄 Please upload a passport copy for every passenger.';
+                alert.textContent = 'Please upload a passport photo for every person.';
                 alert.style.display = 'block'; goStep(3); return;
             }
         }
@@ -1362,7 +1423,7 @@ function goStep(n) {
         const email = document.querySelector('input[name="customer_email"]').value;
         const phone = document.querySelector('input[name="customer_phone"]').value;
         if (!name || !email || !phone) {
-            alert.textContent = '📋 Please complete your contact information.';
+            alert.textContent = 'Please fill in your name, email and mobile number.';
             alert.style.display = 'block'; goStep(4); return;
         }
     }
@@ -1394,27 +1455,15 @@ function goStep(n) {
 }
 
 /**
- * Bring the booking form back to the top of whichever container is scrolling —
- * the sticky desktop column, the mobile sheet, or the page itself.
+ * Bring the top of the booking card back into view when a step change has
+ * left it scrolled away (long passenger lists on phones).
  */
 function scrollStepIntoView() {
-    const modal = document.getElementById('mob-modal');
-    if (modal && modal.classList.contains('open')) {
-        const inner = modal.querySelector('.ud-mobile-modal-inner');
-        if (inner) inner.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-    }
-
-    const col = document.getElementById('bookingCardCol');
-    if (!col) return;
-
-    col.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // On narrow screens the column is not its own scroller, so nudge the page
-    // instead — but only when the card has actually scrolled out of view.
-    const box = col.getBoundingClientRect();
+    const card = document.getElementById('bookingCardCol');
+    if (!card) return;
+    const box = card.getBoundingClientRect();
     if (box.top < 0 || box.top > window.innerHeight * 0.5) {
-        col.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
@@ -1441,7 +1490,7 @@ function generatePassengerFields() {
                     <div class="full">
                         <label class="ud-pax-upload" for="pax-file-${idx}">
                             <i class="bi bi-cloud-arrow-up-fill"></i>
-                            <span class="ud-pax-upload-text">Upload passport copy</span>
+                            <span class="ud-pax-upload-text">Upload passport photo</span>
                             <span class="ud-pax-upload-hint">JPG, PNG or PDF</span>
                         </label>
                         <input type="file" id="pax-file-${idx}" class="ud-pax-file"
@@ -1530,7 +1579,7 @@ function populateReview() {
     const total = (pax.adults * ADULT_PRICE) + (pax.children * CHILD_PRICE) + (pax.infants * INFANT_PRICE);
     const gw = document.querySelector('input[name="payment_gateway"]:checked').value;
 
-    document.getElementById('rv-date').textContent     = selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', fmt) : '—';
+    document.getElementById('rv-date').textContent     = selectedDate ? formatDate(selectedDate, { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : '—';
     document.getElementById('rv-adults').textContent   = pax.adults;
     document.getElementById('rv-children').textContent = pax.children;
     document.getElementById('rv-infants').textContent  = pax.infants;
@@ -1550,7 +1599,7 @@ function submitBooking(e) {
     const alert = document.getElementById('ud-alert');
 
     btn.disabled = true;
-    btn.textContent = 'Adding to Cart…';
+    btn.textContent = 'Please wait…';
     alert.style.display = 'none';
 
     // Read by field name, not position — the card now holds a file input and
@@ -1600,14 +1649,14 @@ function submitBooking(e) {
             alert.textContent = data.error || 'Something went wrong. Please try again.';
             alert.style.display = 'block';
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-cart-plus me-1"></i> Add to Cart';
+            btn.innerHTML = '<i class="bi bi-lock-fill"></i> Confirm and pay';
         }
     })
     .catch(() => {
         alert.textContent = 'Network error. Please check your connection.';
         alert.style.display = 'block';
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-cart-plus me-1"></i> Add to Cart';
+        btn.innerHTML = '<i class="bi bi-lock-fill"></i> Confirm and pay';
     });
 }
 
@@ -1615,56 +1664,13 @@ function submitBooking(e) {
    SCROLL HELPERS
 ═══════════════════════════════════════════════════════════ */
 function scrollToBooking() {
-    document.getElementById('bookingCardCol').scrollIntoView({ behavior: 'smooth' });
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MOBILE MODAL
-═══════════════════════════════════════════════════════════ */
-/**
- * Mobile "Book Now" — reveal the real booking form and jump to it.
- *
- * This used to open a modal whose only advice was to switch to desktop. There
- * is no reason a phone cannot complete this booking, so it now shows the same
- * wizard the desktop uses.
- */
-function openMobileModal() {
-    const col = document.getElementById('bookingCardCol');
-    if (!col) return;
-
-    col.classList.add('mobile-open');
-
-    // Give the browser a frame to lay the newly shown column out before scrolling.
-    requestAnimationFrame(() => {
-        col.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-}
-
-function closeMobileModal() {
-    const modal = document.getElementById('mob-modal');
-    if (modal) modal.classList.remove('open');
-}
-
-function updateMobileDateLabel() {
-    if (selectedDate) {
-        const fmt = { day:'numeric', month:'short' };
-        document.getElementById('mob-date-label').textContent = new Date(selectedDate).toLocaleDateString('en-US', fmt);
-    }
+    document.getElementById('bookingCardCol').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ═══════════════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
-    if (activeDepartures.length > 0) {
-        const d = new Date(activeDepartures[0].date);
-        currentYear  = d.getFullYear();
-        currentMonth = d.getMonth();
-    } else {
-        const t = new Date();
-        currentYear  = t.getFullYear();
-        currentMonth = t.getMonth();
-    }
     renderCalendar();
     updateSummary();
 });

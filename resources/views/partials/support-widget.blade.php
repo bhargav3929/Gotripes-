@@ -9,30 +9,49 @@
 <div class="gt-support" id="gtSupport" data-create-url="{{ route('support.tickets.store') }}" data-track-url="{{ route('support.tickets.track') }}" data-reply-url="{{ route('support.tickets.reply') }}">
     <button class="gt-support-launcher" id="gtSupportLauncher" type="button" aria-haspopup="dialog" aria-controls="gtSupportPanel" aria-expanded="false" aria-label="Help: raise or track a support ticket">
         <span class="gt-support-medal" aria-hidden="true">
-            {{-- Three local personas cycling in turn, not one fixed face —
-                 Amer asked for an Emirati man and woman "one after other pop
-                 up", then added a third for balance ("add one asian also...
-                 or else racism"). Same gold/cream/black palette as the ring. --}}
-            <span class="gt-support-persona">
-                <svg viewBox="0 0 48 48" fill="none">
-                    <path d="M9 42c0-8 6.7-12.6 15-12.6S39 34 39 42" fill="#e6c65a"/>
-                    <path d="M12.5 20c0-7 5.2-12.5 11.5-12.5S35.5 13 35.5 20c0 4-1.3 7.4-2.6 10.2l-3-1.4c1.2-2.6 2.1-5.5 2.1-8.8 0-5-3.6-9-8-9s-8 4-8 9c0 3.3.9 6.2 2.1 8.8l-3 1.4C13.8 27.4 12.5 24 12.5 20z" fill="#f7f3e6" stroke="#050505" stroke-width="0.6"/>
-                    <circle cx="24" cy="19.5" r="7" fill="#f0cf6b"/>
-                    <ellipse cx="24" cy="12.5" rx="8.6" ry="2.4" fill="#050505"/>
+            {{-- Three support agents take turns: an Emirati man, an Emirati woman
+                 and an Asian man (Amer: "one after other pop up ... add one asian
+                 also"). They were faceless gold silhouettes; Amer asked for
+                 characters people can actually see (11 Nov 2026), so each now has
+                 a face, a headset and real clothing. --}}
+            <span class="gt-support-persona" title="Emirati support agent">
+                <svg viewBox="0 0 64 64" fill="none" role="img" aria-label="Support agent">
+                    <path d="M8 64c0-10.5 10.7-16.5 24-16.5S56 53.5 56 64z" fill="#f4f1e8"/>
+                    <path d="M32 49v9" stroke="#cfc8b4" stroke-width="1"/>
+                    <path d="M14.8 31c0-11.3 7.7-19.6 17.2-19.6S49.2 19.7 49.2 31v19c-4 1.3-8.4 1.4-11 .2V38H26v12.2c-2.6 1.2-7 1.1-11.2-.2z" fill="#fbfaf6" stroke="#cfc8b4" stroke-width=".7"/>
+                    <rect x="28.4" y="37" width="7.2" height="9" rx="2" fill="#c98f61"/>
+                    <ellipse cx="32" cy="29" rx="9.4" ry="11.4" fill="#d9a072"/>
+                    <path d="M23.4 31.2c.4 6 4 10.2 8.6 10.2s8.2-4.2 8.6-10.2c-1.6 2.6-3.2 3.7-4.7 3.9-1.2-1.4-2.4-2-3.9-2s-2.7.6-3.9 2c-1.5-.2-3.1-1.3-4.7-3.9z" fill="#2a1d14"/>
+                    <ellipse cx="28" cy="28" rx="1.45" ry="1.5" fill="#1b130d"/><ellipse cx="36" cy="28" rx="1.45" ry="1.5" fill="#1b130d"/><circle cx="28.5" cy="27.5" r=".45" fill="#fff"/><circle cx="36.5" cy="27.5" r=".45" fill="#fff"/><path d="M25.4 24.6q2.6-1.5 5 0M33.6 24.6q2.6-1.5 5 0" stroke="#2a1d14" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M32 29.2v2.6q-.7.5-1.5.3" stroke="rgba(0,0,0,.25)" stroke-width=".9" fill="none" stroke-linecap="round"/>
+                    <path d="M29.3 35.8q2.7 1.8 5.4 0" stroke="#f4f1e8" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                    <path d="M22.4 23.4c1.4-5.4 5.2-8.4 9.6-8.4s8.2 3 9.6 8.4c-2.8-1.3-6.2-1.9-9.6-1.9s-6.8.6-9.6 1.9z" fill="#fbfaf6" stroke="#cfc8b4" stroke-width=".6"/>
+                    <g class="gt-headset" fill="none" stroke="#e0b93b" stroke-linecap="round"><path d="M19.6 28a12.4 13.4 0 0 1 24.8 0" stroke-width="2.2"/><path d="M21 33.5q1.2 5.6 7.6 5.8" stroke-width="1.5"/></g><rect x="18" y="25.5" width="4" height="7" rx="2" fill="#e0b93b"/><rect x="42" y="25.5" width="4" height="7" rx="2" fill="#e0b93b"/><circle cx="29.2" cy="39.3" r="1.6" fill="#e0b93b"/>
+                    <ellipse cx="32" cy="14.6" rx="11.2" ry="2.6" stroke="#111" stroke-width="2.3"/>
+                    <ellipse cx="32" cy="17.2" rx="10.4" ry="2.2" stroke="#111" stroke-width="1.5"/>
                 </svg>
             </span>
-            <span class="gt-support-persona">
-                <svg viewBox="0 0 48 48" fill="none">
-                    <path d="M9 42c0-8 6.7-12.6 15-12.6S39 34 39 42" fill="#e6c65a"/>
-                    <path d="M13 22c-1-8 3.7-15 11-15s12 7 11 15c-.6 5-2.3 8.6-3.6 11l-3-1.6c1.3-2.4 2.7-5.5 3.2-9.6.7-6-2.9-11-7.6-11s-8.3 5-7.6 11c.5 4.1 1.9 7.2 3.2 9.6l-3 1.6C15.3 30.6 13.6 27 13 22z" fill="#8f6a16" stroke="#050505" stroke-width="0.6"/>
-                    <circle cx="24" cy="20" r="6.6" fill="#f0cf6b"/>
+            <span class="gt-support-persona" title="Emirati support agent">
+                <svg viewBox="0 0 64 64" fill="none" role="img" aria-label="Support agent">
+                    <path d="M8 64c0-10.5 10.7-16.5 24-16.5S56 53.5 56 64z" fill="#161616" stroke="#d4af37" stroke-width="1"/>
+                    <path d="M14.4 31c0-11.6 7.8-20 17.6-20s17.6 8.4 17.6 20c0 8-2 14-6 19-3.6 1.5-7.6 2.1-11.6 2.1s-8-.6-11.6-2.1c-4-5-6-11-6-19z" fill="#1c1c1c" stroke="#d4af37" stroke-width="1"/>
+                    <ellipse cx="32" cy="29.5" rx="9" ry="11" fill="#e4b48c"/>
+                    <ellipse cx="28" cy="28" rx="1.45" ry="1.5" fill="#1b130d"/><ellipse cx="36" cy="28" rx="1.45" ry="1.5" fill="#1b130d"/><circle cx="28.5" cy="27.5" r=".45" fill="#fff"/><circle cx="36.5" cy="27.5" r=".45" fill="#fff"/><path d="M25.6 27.1l-1-.8M38.4 27.1l1-.8" stroke="#141414" stroke-width=".9" stroke-linecap="round"/><path d="M25.4 24.6q2.6-1.5 5 0M33.6 24.6q2.6-1.5 5 0" stroke="#3a2414" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M32 29.2v2.6q-.7.5-1.5.3" stroke="rgba(0,0,0,.25)" stroke-width=".9" fill="none" stroke-linecap="round"/><circle cx="25.6" cy="32" r="1.7" fill="#e8907a" opacity=".3"/><circle cx="38.4" cy="32" r="1.7" fill="#e8907a" opacity=".3"/>
+                    <path d="M28.8 34.6q3.2 2.6 6.4 0" stroke="#b5523f" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                    <path d="M22.6 24.4c1-5.8 4.8-9.2 9.4-9.2s8.4 3.4 9.4 9.2c-2.8-1.5-6-2.2-9.4-2.2s-6.6.7-9.4 2.2z" fill="#1c1c1c"/>
+                    <ellipse cx="32" cy="29.5" rx="9.5" ry="11.5" stroke="#d4af37" stroke-width=".7"/>
+                    <g class="gt-headset" fill="none" stroke="#e0b93b" stroke-linecap="round"><path d="M19.6 28a12.4 13.4 0 0 1 24.8 0" stroke-width="2.2"/><path d="M21 33.5q1.2 5.6 7.6 5.8" stroke-width="1.5"/></g><rect x="18" y="25.5" width="4" height="7" rx="2" fill="#e0b93b"/><rect x="42" y="25.5" width="4" height="7" rx="2" fill="#e0b93b"/><circle cx="29.2" cy="39.3" r="1.6" fill="#e0b93b"/>
                 </svg>
             </span>
-            <span class="gt-support-persona">
-                <svg viewBox="0 0 48 48" fill="none">
-                    <path d="M9 42c0-8 6.7-12.6 15-12.6S39 34 39 42" fill="#e6c65a"/>
-                    <circle cx="24" cy="19.5" r="7.5" fill="#f0cf6b"/>
-                    <path d="M16.3 18.5a7.7 7.7 0 0 1 15.4 0c0-.3-.2-3-2-4.6-1.5-1.3-3.8-2-5.7-2s-4.2.7-5.7 2c-1.8 1.6-2 4.3-2 4.6z" fill="#050505"/>
+            <span class="gt-support-persona" title="Support agent">
+                <svg viewBox="0 0 64 64" fill="none" role="img" aria-label="Support agent">
+                    <path d="M8 64c0-10.5 10.7-16.5 24-16.5S56 53.5 56 64z" fill="#e6c65a"/>
+                    <path d="M25.6 48.2l6.4 6.6 6.4-6.6" fill="#f7e7a4" stroke="#b8961c" stroke-width=".8"/>
+                    <rect x="28.4" y="37" width="7.2" height="11" rx="2" fill="#e2b58a"/>
+                    <ellipse cx="32" cy="28.5" rx="10" ry="12" fill="#f1c9a0"/>
+                    <ellipse cx="28" cy="28" rx="1.45" ry="1.15" fill="#1b130d"/><ellipse cx="36" cy="28" rx="1.45" ry="1.15" fill="#1b130d"/><circle cx="28.5" cy="27.5" r=".45" fill="#fff"/><circle cx="36.5" cy="27.5" r=".45" fill="#fff"/><path d="M25.4 24.6q2.6-1.5 5 0M33.6 24.6q2.6-1.5 5 0" stroke="#141414" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M32 29.2v2.6q-.7.5-1.5.3" stroke="rgba(0,0,0,.25)" stroke-width=".9" fill="none" stroke-linecap="round"/><circle cx="25.6" cy="32" r="1.7" fill="#e8907a" opacity=".3"/><circle cx="38.4" cy="32" r="1.7" fill="#e8907a" opacity=".3"/>
+                    <path d="M28.6 34q3.4 2.8 6.8 0" stroke="#9a3b2a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                    <path d="M21.4 26.5c-1.2-9.4 4.4-15 10.8-15 7.4 0 11.8 5.2 10.6 14-1.6-3.8-4-6.2-7.4-6.8-3.8 2.5-9.6 4-14 7.8z" fill="#141414"/>
+                    <g class="gt-headset" fill="none" stroke="#e0b93b" stroke-linecap="round"><path d="M19.6 28a12.4 13.4 0 0 1 24.8 0" stroke-width="2.2"/><path d="M21 33.5q1.2 5.6 7.6 5.8" stroke-width="1.5"/></g><rect x="18" y="25.5" width="4" height="7" rx="2" fill="#e0b93b"/><rect x="42" y="25.5" width="4" height="7" rx="2" fill="#e0b93b"/><circle cx="29.2" cy="39.3" r="1.6" fill="#e0b93b"/>
                 </svg>
             </span>
         </span>
@@ -118,13 +137,13 @@
 .gt-support-launcher{right:22px;bottom:26px;z-index:9000;padding:0;border:0;border-radius:50%;background:none;box-shadow:none;display:block;gap:0;color:inherit}
 .gt-support-launcher:hover{transform:none}
 .gt-support-launcher:focus-visible{outline:none}
-.gt-support-medal{position:relative;display:grid;place-items:center;width:66px;height:66px;border-radius:50%;border:4px solid transparent;background:radial-gradient(circle at 50% 36%,#1d1d1d 0,#060606 72%) padding-box,var(--gm-gold-metal) border-box;box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 0 1px rgba(255,236,170,.3);transition:transform .2s ease,box-shadow .2s ease}
-.gt-support-medal svg{width:38px;height:38px;margin-top:2px}
+.gt-support-medal{position:relative;display:grid;place-items:center;width:80px;height:80px;border-radius:50%;border:4px solid transparent;background:radial-gradient(circle at 50% 36%,#1d1d1d 0,#060606 72%) padding-box,var(--gm-gold-metal) border-box;box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 0 1px rgba(255,236,170,.3);transition:transform .2s ease,box-shadow .2s ease}
+.gt-support-medal svg{position:absolute;left:50%;top:-6px;width:92px;height:92px;transform:translateX(-50%)}
 /* Three personas share the same spot, popping in and out in turn rather than
    one fixed face — see the persona SVGs above for why. 6s loop, three 2s
    slots, each visible for most of its slot with a quick pop in/out at the
    edges so the medallion is never left empty between faces. */
-.gt-support-persona{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transform:scale(.55);animation:gtPersonaCycle 6s ease-in-out infinite}
+.gt-support-persona{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;overflow:hidden;opacity:0;transform:scale(.55);animation:gtPersonaCycle 6s ease-in-out infinite}
 .gt-support-persona:nth-child(2){animation-delay:2s}
 .gt-support-persona:nth-child(3){animation-delay:4s}
 @keyframes gtPersonaCycle{0%,100%{opacity:0;transform:scale(.55)}5%,28%{opacity:1;transform:scale(1)}33%{opacity:0;transform:scale(.55)}}
@@ -135,9 +154,9 @@
 .gt-support-launcher:hover .gt-support-medal,.gt-support-launcher:focus-visible .gt-support-medal{transform:translateY(-3px);box-shadow:0 18px 38px rgba(0,0,0,.6),0 0 0 3px #f0cf6b,0 0 26px rgba(212,175,55,.5)}
 .gt-support-launcher:hover .gt-support-tag,.gt-support-launcher:focus-visible .gt-support-tag{filter:brightness(1.1)}
 .gt-support-launcher[aria-expanded="true"] .gt-support-medal::after{animation:none;opacity:0}
-/* The medallion stands about 75px tall with its tag, so the panel sits higher
+/* The medallion stands about 90px tall with its tag, so the panel sits higher
    than it did above the old 50px pill. */
-.gt-support-panel{--gt-lift:114px}
+.gt-support-panel{--gt-lift:126px}
 @media(max-width:1100px){.gt-support-launcher{bottom:92px}.gt-support-panel{--gt-lift:180px}}
 @media(max-width:520px){.gt-support-launcher{right:14px}.gt-support-panel{right:12px;--gt-lift:178px}}
 @media(prefers-reduced-motion:reduce){.gt-support-medal::after{animation:none;opacity:0}.gt-support-medal{transition:none}}

@@ -79,6 +79,51 @@ class UmrahPackage extends Model
         return $this->hasMany(UmrahDeparture::class, 'umrah_package_id');
     }
 
+    /**
+     * Keep a rolling run of weekly departures open so the booking calendar is
+     * never empty. Departures used to be typed in by hand; once the last one
+     * passed, every package showed a calendar with nothing to pick.
+     *
+     * Only dates with no row at all are created, so a date staff closed or
+     * edited in the manager panel is left as they set it. New dates fall on the
+     * package's usual weekday (Wednesday for bus) with the seat count of its
+     * most recent departure.
+     */
+    public function ensureUpcomingDepartures(int $weeks = 12): void
+    {
+        $latest = $this->departures()->orderByDesc('departure_date')->first();
+
+        $weekday = $this->category === 'bus' || !$latest
+            ? 3
+            : (int) $latest->departure_date->format('w');
+        $seats = (int) ($latest?->seats_total ?: $latest?->seats_available ?: 45);
+
+        $date = now()->addDays(5)->startOfDay();
+        while ((int) $date->format('w') !== $weekday) {
+            $date->addDay();
+        }
+        $end = now()->addWeeks($weeks);
+
+        $existing = $this->departures()
+            ->where('departure_date', '>=', $date->toDateString())
+            ->pluck('departure_date')
+            ->map(fn ($d) => $d->toDateString())
+            ->all();
+
+        for (; $date->lte($end); $date->addWeek()) {
+            if (in_array($date->toDateString(), $existing, true)) {
+                continue;
+            }
+            $this->departures()->create([
+                'departure_date'  => $date->toDateString(),
+                'seats_total'     => $seats,
+                'seats_available' => $seats,
+                'seats_booked'    => 0,
+                'status'          => 'available',
+            ]);
+        }
+    }
+
     public function bookings()
     {
         return $this->hasMany(UmrahBooking::class, 'umrah_package_id');

@@ -29,8 +29,10 @@
   /* ── HERO overlay ── */
   .tp-hero {
     position: relative;
-    height: 100vh;
-    min-height: 560px;
+    min-height: calc(100vh - 170px);
+    /* The theme pads every <section> by 90px+; that was the empty band
+       between the menu and the title. */
+    padding: 0;
     background: url('{{ asset('assets/index_files/533419533.jpg') }}') center/cover no-repeat;
     display: flex;
     align-items: flex-start;
@@ -44,13 +46,13 @@
   .tp-hero-inner {
     position: relative; z-index: 2;
     width: 100%; max-width: 1400px;
-    padding: 140px 20px 20px;
+    padding: 20px 20px 20px;
   }
 
   /* ── Title + search row ── */
   .tp-toprow {
     display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
+    flex-wrap: wrap; gap: 14px; margin-bottom: 12px;
   }
   .tp-hero-title {
     color: #fff; font-size: clamp(24px, 4vw, 40px); font-weight: 800;
@@ -79,7 +81,7 @@
   /* ── Legend strip ── */
   .tp-legend {
     display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 14px;
-    font-size: 12px; color: #aaa; align-items: center;
+    font-size: 13px; color: #aaa; align-items: center;
   }
   .tp-legend-dot {
     display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px;
@@ -95,9 +97,11 @@
   }
   .tp-country-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 14px;
-    max-height: 62vh;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    max-height: calc(100vh - 290px);
+    min-height: 320px;
+    align-items: start;
     overflow-y: auto;
     scrollbar-width: thin; scrollbar-color: #FFD23F #111;
     display: none;
@@ -108,7 +112,7 @@
   .tp-country-card {
     background: rgba(15,15,15,.95);
     border: 1px solid rgba(255,210,63,.1);
-    border-radius: 12px; padding: 12px;
+    border-radius: 12px; padding: 8px;
     transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
     position: relative; z-index: 1; cursor: default;
   }
@@ -119,13 +123,13 @@
     z-index: 10;
   }
   .tp-country-card img {
-    width: 100%; height: 110px; object-fit: cover; border-radius: 7px;
-    margin-bottom: 10px; border: 1px solid rgba(255,255,255,.05); pointer-events: none;
+    width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 7px;
+    margin-bottom: 8px; border: 1px solid rgba(255,255,255,.05); pointer-events: none;
     display: block;
   }
   .tp-country-name {
-    color: #FFD23F; font-weight: 700; font-size: 14px; display: block;
-    text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px;
+    color: #FFD23F; font-weight: 700; font-size: 12px; display: block;
+    text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; line-height: 1.3;
   }
 
   /* Featured (has real packages) */
@@ -137,15 +141,15 @@
     display: inline-flex; align-items: center; gap: 4px;
     font-size: 10px; font-weight: 700; letter-spacing: 1px;
     text-transform: uppercase; color: #000; background: #FFD700;
-    border-radius: 999px; padding: 3px 9px; margin-bottom: 7px;
+    border-radius: 999px; padding: 2px 8px; margin-bottom: 4px;
   }
   .tp-feat-btn {
     display: block; width: 100%; text-align: center;
     background: linear-gradient(135deg,#FFD700,#D4AF37); color: #000;
     font-size: 11px; font-weight: 700; letter-spacing: .5px;
-    border-radius: 8px; padding: 7px 4px; text-decoration: none;
+    border-radius: 8px; padding: 6px 4px; text-decoration: none;
     transition: transform .14s ease, box-shadow .14s ease;
-    margin-top: 8px;
+    margin-top: 4px;
   }
   .tp-feat-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(212,175,55,.35); color: #000; text-decoration: none; }
 
@@ -186,10 +190,11 @@
 
 
   /* ── Responsive ── */
-  @media (max-width: 1200px) { .tp-country-grid { grid-template-columns: repeat(5, 1fr); } }
+  @media (max-width: 1399px) { .tp-country-grid { grid-template-columns: repeat(8, 1fr); } }
+  @media (max-width: 1200px) { .tp-country-grid { grid-template-columns: repeat(6, 1fr); } }
   @media (max-width: 991px)  { .tp-country-grid { grid-template-columns: repeat(4, 1fr); } }
   @media (max-width: 768px)  {
-    .tp-hero-inner { padding-top: 110px; }
+    .tp-hero-inner { padding-top: 16px; }
     .tp-country-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 54vh; }
   }
   @media (max-width: 575px)  {

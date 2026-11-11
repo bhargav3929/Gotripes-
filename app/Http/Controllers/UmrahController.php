@@ -94,6 +94,7 @@ class UmrahController extends Controller
     public function show($id)
     {
         $package = UmrahPackage::where('isActive', 1)->findOrFail($id);
+        $package->ensureUpcomingDepartures();
 
         // Fetch active departures for this package, at least 5 days in the future, with seats left.
         // The Wednesday-only rule is a Bus-package restriction — Air packages can depart any day.
@@ -101,6 +102,7 @@ class UmrahController extends Controller
         $departures = $package->departures()
             ->where('status', 'available')
             ->where('departure_date', '>=', $minDate)
+            ->orderBy('departure_date')
             ->get()
             ->filter(function ($dep) use ($package) {
                 if ($package->category !== 'bus') {
@@ -123,6 +125,7 @@ class UmrahController extends Controller
     public function checkout(Request $request, $id)
     {
         $package = UmrahPackage::where('isActive', 1)->findOrFail($id);
+        $package->ensureUpcomingDepartures();
 
         $validated = $request->validate([
             'departure_date'     => 'required|date',

@@ -172,7 +172,7 @@
     }
 
     .gotrips-lead-brand-badge span {
-        font-size: 9px;
+        font-size: 11px;
         font-weight: 700;
         color: var(--gm-gold-lite);
         text-transform: uppercase;
@@ -185,7 +185,7 @@
     }
 
     .gotrips-lead-form-title {
-        font-size: calc(var(--disc) * .03);
+        font-size: calc(var(--disc) * .037);
         font-weight: 800;
         letter-spacing: .045em;
         color: var(--gm-gold);
@@ -200,7 +200,7 @@
     }
 
     .gotrips-lead-form-subtitle {
-        font-size: 12px;
+        font-size: 15px;
         color: #9a9a9a;
         margin: 0;
     }
@@ -220,7 +220,7 @@
         display: block;
         margin-bottom: 5px;
         color: var(--gm-gold-lite);
-        font-size: 10px;
+        font-size: 13px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -229,14 +229,14 @@
     .gotrips-lead-form-input,
     .gotrips-lead-form-select {
         width: 100%;
-        height: 44px;
+        height: 48px;
         background: #080808;
         border: 1px solid #222;
         border-radius: 12px;
         padding: 0 16px;
         color: #fff;
         font-family: 'Outfit', sans-serif;
-        font-size: 13px;
+        font-size: 16px;
         transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
     }
 
@@ -267,14 +267,14 @@
         flex: none;
         width: calc(var(--disc) * .34);
         min-width: 230px;
-        height: 46px;
+        height: 50px;
         margin-top: 6px;
         background: var(--gm-gold-metal);
         color: #000;
         border: none;
         border-radius: 50px;
         font-family: 'Outfit', sans-serif;
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1.6px;
@@ -297,10 +297,10 @@
     /* The bottom of a disc is its narrowest part, so this line wraps to two
        short lines instead of running as wide as the fields above it. */
     .gotrips-lead-disclaimer {
-        max-width: 250px;
+        max-width: 290px;
         margin: 10px auto 0;
         text-wrap: balance;
-        font-size: 10.5px;
+        font-size: 13px;
         color: #8a8a8a;
         text-align: center;
         line-height: 1.4;
@@ -334,7 +334,7 @@
     }
 
     .gotrips-lead-success p {
-        font-size: 13px;
+        font-size: 16px;
         line-height: 1.55;
         color: #b5b5b5;
         margin: 0;
@@ -387,7 +387,7 @@
         }
 
         .gotrips-lead-form-title {
-            font-size: 18px;
+            font-size: 22px;
             white-space: normal;
             text-align: center;
         }
@@ -473,7 +473,7 @@
 
     .gotrips-country-selected span {
         color: #fff;
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 600;
     }
 
@@ -528,7 +528,7 @@
         padding: 0 15px;
         color: #fff;
         font-family: 'Outfit', sans-serif;
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .gotrips-country-search:focus {
@@ -590,12 +590,12 @@
     .gotrips-country-item .country-name {
         flex: 1;
         color: #ccc;
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .gotrips-country-item .country-code {
         color: #FFD700;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
     }
 
