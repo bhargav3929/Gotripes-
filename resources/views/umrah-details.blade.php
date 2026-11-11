@@ -628,7 +628,9 @@ body, main { font-family: 'Outfit', sans-serif; }
             <span class="badge-cat">{{ $package->category === 'air' ? 'Umrah by Air' : 'Umrah by Bus' }}</span>
             <h1>{{ $package->title }}</h1>
             <div class="d-flex flex-wrap gap-2">
+                @if($package->duration)
                 <span class="info-pill"><i class="bi bi-clock text-warning"></i>{{ $package->duration }}</span>
+                @endif
                 <span class="info-pill"><i class="bi bi-building text-warning"></i>{{ $package->hotels ? Str::limit($package->hotels, 40) : 'Hotels Included' }}</span>
                 <span class="info-pill"><i class="bi bi-bus-front text-warning"></i>{{ $package->transport ? Str::limit($package->transport, 40) : 'Coach Travel' }}</span>
             </div>
@@ -853,11 +855,14 @@ body, main { font-family: 'Outfit', sans-serif; }
                         <p class="ud-aside-title">Your booking</p>
                         <div class="ud-sum-row"><span>Package</span><span class="val">{{ $package->title }}</span></div>
                         <div class="ud-sum-row"><span>Travel date</span><span class="val" id="sum-date">Not picked yet</span></div>
-                        <div class="ud-sum-row"><span>Hotel</span><span class="val">{{ $package->hotels ? Str::limit($package->hotels, 30) : '—' }}</span></div>
-                        @if($package->category === 'air')
-                        <div class="ud-sum-row"><span>Airline</span><span class="val">{{ $package->airline ?: '—' }}</span></div>
-                        @else
-                        <div class="ud-sum-row"><span>Transport</span><span class="val">{{ $package->transport ? Str::limit($package->transport, 30) : '—' }}</span></div>
+                        {{-- Blank fields are left out rather than shown as a dash. --}}
+                        @if($package->hotels)
+                        <div class="ud-sum-row"><span>Hotel</span><span class="val">{{ Str::limit($package->hotels, 30) }}</span></div>
+                        @endif
+                        @if($package->category === 'air' && $package->airline)
+                        <div class="ud-sum-row"><span>Airline</span><span class="val">{{ $package->airline }}</span></div>
+                        @elseif($package->category !== 'air' && $package->transport)
+                        <div class="ud-sum-row"><span>Transport</span><span class="val">{{ Str::limit($package->transport, 30) }}</span></div>
                         @endif
                         <div class="ud-sum-row"><span>Adults</span><span class="val" id="sum-adults">1</span></div>
                         <div class="ud-sum-row"><span>Children</span><span class="val" id="sum-children">0</span></div>
