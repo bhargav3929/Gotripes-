@@ -13,6 +13,9 @@
 
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+{{-- The panel's dark theme makes text near-white; the editor box is white,
+     so typed descriptions were invisible. --}}
+<style>#descEditor .ql-editor{color:#1f1f1f}#descEditor .ql-editor.ql-blank::before{color:#8a8a8a}</style>
 
 <div class="wp-page-header">
     <h1 class="wp-page-title">Add Tour Package</h1>
