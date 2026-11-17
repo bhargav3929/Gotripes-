@@ -29,6 +29,10 @@ trait TourPackageFixture
 
     protected function georgia(Company $company, array $attrs = []): TravelPackage
     {
+        // Visa answers come from the staff rules below, never the live eVisa API.
+        // VisaEligibilityTest turns Fluxir back on against a faked API.
+        config(['fluxir.client_id' => null]);
+
         $p = TravelPackage::withoutCompanyScope()->create(array_merge([
             'company_id' => $company->id, 'title' => 'Georgia Highlights', 'country' => 'Georgia',
             'package_type' => 'wizard', 'price' => 0, 'description' => 'Tbilisi, Kazbegi and wine country.',

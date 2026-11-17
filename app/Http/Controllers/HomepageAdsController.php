@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HomepageAd;
+use App\Models\TravelPackage;
 
 class HomepageAdsController extends Controller
 {
@@ -24,6 +25,16 @@ class HomepageAdsController extends Controller
             ->orderBy('slotOrder', 'asc')
             ->orderBy('displayOrder', 'asc')
             ->get();
-        return view('welcome', compact('carouselImages', 'adSlots'));
+        // Bookable tour packages first, so a visitor can go straight into the wizard.
+        $tourPackages = TravelPackage::where('isActive', 1)
+            ->with('rates')
+            ->orderByRaw("CASE WHEN package_type = 'wizard' THEN 0 WHEN package_type = 'purchase' THEN 1 ELSE 2 END")
+            ->orderByDesc('createdDate')
+            ->take(8)
+            ->get()
+            ->sortBy(fn ($p) => $p->isBookableOnline() ? 0 : 1)
+            ->values();
+
+        return view('welcome', compact('carouselImages', 'adSlots', 'tourPackages'));
     }
 }

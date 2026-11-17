@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DestinationVisaRule;
 use App\Models\NomodTransaction;
 use App\Models\TourPackageBooking;
 use App\Models\TravelPackage;
 use App\Services\NomodService;
 use App\Services\TourPackages\TourPackageQuote;
+use App\Services\TourPackages\VisaEligibility;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,12 @@ class TourPackageBookingController extends Controller
         return view('tour-package-book', [
             'package'     => $package,
             'durations'   => $package->rates->pluck('days')->unique()->sort()->values(),
-            'tiers'       => $package->rates->groupBy('days')->map(fn ($r) => $r->pluck('hotel_stars')->unique()->sort()->values()),
+            // Packages are the hotel levels; each lists its trip lengths and the
+            // lowest per-adult selling price across them.
+            'packs'       => $package->rates->groupBy('hotel_stars')->sortKeys()->map(fn ($r) => [
+                'days' => $r->pluck('days')->unique()->sort()->values(),
+                'from' => round($r->min('adult_net') * (1 + (float) $package->margin_percent / 100), 2),
+            ]),
             'countries'   => array_keys(config('countries')),
             'fromPrice'   => $package->wizardFromPrice(),
         ]);
@@ -55,8 +60,7 @@ class TourPackageBookingController extends Controller
     {
         $package = $this->package($id);
         $nationality = (string) $request->query('nationality', '');
-        $rule = $nationality !== '' ? DestinationVisaRule::lookup((string) $package->country, $nationality) : null;
-        return response()->json(TourPackageQuote::visaPayload($rule));
+        return response()->json(VisaEligibility::check((string) $package->country, $nationality));
     }
 
     public function book(Request $request, int $id): JsonResponse

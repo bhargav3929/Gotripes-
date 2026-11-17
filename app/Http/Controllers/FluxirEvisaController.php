@@ -74,6 +74,12 @@ class FluxirEvisaController extends Controller
     {
     }
 
+    /** ISO alpha-3 code (what Fluxir uses) for an alpha-2 code, e.g. GE -> GEO. */
+    public static function alpha3(string $alpha2): ?string
+    {
+        return self::$codeMap[strtoupper($alpha2)] ?? null;
+    }
+
     /** The picker page. */
     public function form()
     {

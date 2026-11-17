@@ -47,6 +47,14 @@ class FluxirService
         $this->debug        = (bool) config('fluxir.debug', false);
     }
 
+    /** A copy that gives up sooner, for lookups a customer is waiting on. */
+    public function withTimeout(int $seconds): static
+    {
+        $copy = clone $this;
+        $copy->timeout = $seconds;
+        return $copy;
+    }
+
     /** Whether the integration has the credentials it needs to run. */
     public function isConfigured(): bool
     {

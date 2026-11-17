@@ -6,7 +6,7 @@
     $cover = $package->image ?: ($package->galleryImages()[0] ?? null);
     $coverUrl = $cover ? (str_starts_with($cover, 'http') ? $cover : asset($cover)) : null;
     $img = fn ($p) => $p ? (str_starts_with($p, 'http') ? $p : asset($p)) : null;
-    $stepLabels = ['Dates & visa', 'Travellers', 'Stay', 'Options', 'Itinerary', 'Checkout'];
+    $stepLabels = ['Visa check', 'Package', 'Days', 'Dates & travellers', 'Options', 'Pay'];
 
     // Everything the page needs, with selling prices only (never net).
     $wizard = [
@@ -17,7 +17,7 @@
         ],
         'destination' => $package->country,
         'durations' => $durations->values(),
-        'tiers' => $tiers,
+        'packs' => $packs,
         'insuranceRequired' => (bool) $package->insurance_required,
         'childMaxAge' => (int) $package->child_max_age,
         'infantMaxAge' => (int) $package->infant_max_age,
@@ -64,14 +64,11 @@
             <form id="tpwForm" class="tpw-panel" novalidate>
                 @csrf
 
-                {{-- 1. Dates & eligibility --}}
+                {{-- 1. Visa eligibility, checked live with the e-Visa service --}}
                 <section class="tpw-step" data-step="1">
-                    <h2>When are you travelling, and on which passport?</h2>
-                    <p class="tpw-lede">We check your entry requirements for {{ $package->country }} straight away.</p>
+                    <h2>Can you travel to {{ $package->country }}?</h2>
+                    <p class="tpw-lede">Choose your passport. We check it straight away with our e-Visa service.</p>
                     <div class="tpw-grid2">
-                        <label class="tpw-field"><span>Start date</span>
-                            <input type="date" name="start_date" min="{{ now()->addDay()->toDateString() }}" max="{{ now()->addYears(2)->toDateString() }}" required>
-                        </label>
                         <label class="tpw-field"><span>Passport nationality</span>
                             <select name="nationality" required>
                                 <option value="">Choose your passport</option>
@@ -83,10 +80,30 @@
                     <div id="tpwVisa" class="tpw-visa" hidden></div>
                 </section>
 
-                {{-- 2. Travellers --}}
+                {{-- 2. Package (hotel level) --}}
                 <section class="tpw-step" data-step="2" hidden>
-                    <h2>Who is travelling?</h2>
-                    <p class="tpw-lede">Children's ages decide bedding and child rates.</p>
+                    <h2>Choose your package</h2>
+                    <p class="tpw-lede">Prices are per adult, sharing a room.</p>
+                    <div class="tpw-cards3 tpw-packs" id="tpwPacks" role="radiogroup" aria-label="Package"></div>
+                    <div id="tpwHotelPolicy" class="tpw-policy" hidden></div>
+                </section>
+
+                {{-- 3. Days, with the day-by-day plan --}}
+                <section class="tpw-step" data-step="3" hidden>
+                    <h2>How many days?</h2>
+                    <div class="tpw-tabs tpw-tabs-gap" id="tpwDurations" role="radiogroup" aria-label="Trip length"></div>
+                    <div class="tpw-sub">Your trip, day by day</div>
+                    <div id="tpwTimeline" class="tpw-timeline"></div>
+                </section>
+
+                {{-- 4. Dates and travellers --}}
+                <section class="tpw-step" data-step="4" hidden>
+                    <h2>When, and who is travelling?</h2>
+                    <div class="tpw-grid2">
+                        <label class="tpw-field"><span>Start date</span>
+                            <input type="date" name="start_date" min="{{ now()->addDay()->toDateString() }}" max="{{ now()->addYears(2)->toDateString() }}" required>
+                        </label>
+                    </div>
                     <div class="tpw-cards4" role="radiogroup" aria-label="Traveller type">
                         @foreach(['solo' => ['Solo', '1 adult', 'bi-person'], 'couple' => ['Couple', '2 adults', 'bi-people'], 'family' => ['Family', 'Adults and children', 'bi-house-heart'], 'group' => ['Group', '5 people or more', 'bi-people-fill']] as $val => [$t, $s, $icon])
                             <label class="tpw-card"><input type="radio" name="traveler_type" value="{{ $val }}" @checked($val === 'couple')>
@@ -105,30 +122,14 @@
                     </div>
                 </section>
 
-                {{-- 3. Duration & hotel --}}
-                <section class="tpw-step" data-step="3" hidden>
-                    <h2>How long, and where do you stay?</h2>
-                    <div class="tpw-sub">Trip length</div>
-                    <div class="tpw-tabs" id="tpwDurations" role="radiogroup" aria-label="Trip length"></div>
-                    <div class="tpw-sub">Hotel</div>
-                    <div class="tpw-cards3" id="tpwTiers" role="radiogroup" aria-label="Hotel"></div>
-                    <div id="tpwHotelPolicy" class="tpw-policy" hidden></div>
-                </section>
-
-                {{-- 4. Customisation --}}
-                <section class="tpw-step" data-step="4" hidden>
+                {{-- 5. Options --}}
+                <section class="tpw-step" data-step="5" hidden>
                     <h2>Make it yours</h2>
                     <div id="tpwGuide"></div>
                     <div id="tpwTransport"></div>
                     <div id="tpwMeals"></div>
                     <div id="tpwInsurance"></div>
-                </section>
-
-                {{-- 5. Itinerary --}}
-                <section class="tpw-step" data-step="5" hidden>
-                    <h2>Your trip, day by day</h2>
-                    <div id="tpwTimeline" class="tpw-timeline"></div>
-                    <div id="tpwTransfer"></div>
+                    <div id="tpwTransfer" class="tpw-opt"></div>
                 </section>
 
                 {{-- 6. Checkout --}}
@@ -169,7 +170,7 @@
                         <div class="tpw-summary-title">Your trip</div>
                         <button type="button" class="tpw-sheet-close" id="tpwSheetClose" aria-label="Close"><i class="bi bi-x-lg"></i></button>
                     </div>
-                    <div id="tpwSummary" class="tpw-summary-body"><p class="tpw-muted">Choose your dates to see the price.</p></div>
+                    <div id="tpwSummary" class="tpw-summary-body"><p class="tpw-muted">Choose your passport to start.</p></div>
                     <div class="tpw-summary-total"><span>Total</span><strong id="tpwTotal">—</strong></div>
                     <p class="tpw-small">Prices in AED, final when you pay. Card fees included.</p>
                 </div>
@@ -258,6 +259,12 @@
     .tpw-visa.ok { background:var(--ok-bg); border-color:rgba(74,222,128,.35); } .tpw-visa.ok strong i { color:var(--ok); }
     .tpw-visa.warn { background:var(--warn-bg); border-color:rgba(245,181,68,.4); } .tpw-visa.warn strong i { color:var(--warn); }
     .tpw-visa.unknown { background:var(--surface-2); border-color:var(--line-2); }
+    .tpw-visa.is-checking { background:var(--surface-2); border-color:var(--line-2); color:var(--mute); }
+    .tpw-visa.is-checking strong i { animation:tpwSpin 1s linear infinite; color:var(--gold); }
+    .tpw-evisa { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-top:12px !important; padding:12px 14px; border-radius:var(--r-sm); background:var(--bg); border:1px solid var(--line-2); }
+    .tpw-evisa b { display:block; color:var(--ink); font-weight:600; font-size:14px; }
+    .tpw-evisa small { color:var(--mute); font-size:13px; }
+    .tpw-evisa .tpw-price { flex:none; font-size:15px; }
 
     /* ---------- choice cards ---------- */
     .tpw-cards4, .tpw-cards3 { display:grid; gap:12px; }
@@ -275,6 +282,11 @@
         opacity:0; transform:scale(.6); transition:opacity .18s, transform .18s var(--ease); }
     .tpw-card:has(input:checked) .tpw-tick { opacity:1; transform:none; }
     .tpw-stars { color:var(--gold); font-size:14px; letter-spacing:2px; margin-bottom:4px; }
+    .tpw-packs { margin-top:24px; }
+    .tpw-pack-from { margin-top:auto; padding-top:12px; font-size:13px; color:var(--mute); }
+    .tpw-pack-from b { display:block; font-size:20px; font-weight:700; color:var(--gold); letter-spacing:-.01em; font-variant-numeric:tabular-nums; }
+    .tpw-pack-days { font-size:12px; color:var(--ink-2); margin-top:6px; }
+    .tpw-tabs-gap { margin-top:24px; }
 
     /* ---------- travellers ---------- */
     .tpw-counts { margin-top:24px; border-top:1px solid var(--line); }
@@ -446,6 +458,7 @@
         .tpw-cards4 { grid-template-columns:repeat(2,minmax(0,1fr)); }
         .tpw-cards3 { grid-template-columns:minmax(0,1fr); }
         .tpw-cards3 .tpw-card { padding:14px 48px 14px 16px; }
+        .tpw-evisa { flex-direction:column; align-items:flex-start; gap:6px; }
         .tpw-policy dl { grid-template-columns:minmax(0,1fr); gap:2px; } .tpw-policy dd { margin-bottom:10px; } .tpw-policy dd:last-child { margin-bottom:0; }
         .tpw-receipt { padding:4px 16px 16px; }
         .tpw-radio { padding:14px; gap:12px; }
@@ -475,7 +488,8 @@
     let step = 1, lastQuote = null, quoteTimer = null, quoteSeq = 0, shownTotal = null;
 
     // ---------- state ----------
-    const state = { days: W.durations[0], stars: null, childAges: [] };
+    const packStars = Object.keys(W.packs).map(Number);
+    const state = { stars: packStars[0] ?? null, days: null, childAges: [] };
 
     function payload() {
         const fd = new FormData(form);
@@ -487,12 +501,20 @@
         return data;
     }
 
-    // ---------- step 1: visa ----------
+    // ---------- step 1: visa eligibility ----------
+    let visaSeq = 0;
     form.nationality.addEventListener('change', async () => {
-        const box = $('tpwVisa');
+        const box = $('tpwVisa'), seq = ++visaSeq;
         if (!form.nationality.value) { box.hidden = true; return; }
-        const r = await fetch(W.urls.visa + '?nationality=' + encodeURIComponent(form.nationality.value), {headers: {Accept: 'application/json'}});
-        renderVisa(await r.json());
+        box.className = 'tpw-visa is-checking';
+        box.innerHTML = '<strong><i class="bi bi-arrow-repeat"></i>Checking ' + esc(form.nationality.value) + ' passport for ' + esc(W.destination) + '…</strong>';
+        box.hidden = false;
+        try {
+            const r = await fetch(W.urls.visa + '?nationality=' + encodeURIComponent(form.nationality.value), {headers: {Accept: 'application/json'}});
+            if (seq === visaSeq) renderVisa(await r.json());
+        } catch (e) {
+            if (seq === visaSeq) renderVisa({tone: 'unknown', label: 'Our visa team will check this passport for you', notes: 'You can carry on and choose your package. We confirm the visa with you before you travel.'});
+        }
     });
     function renderVisa(v) {
         const box = $('tpwVisa');
@@ -501,11 +523,13 @@
         let html = '<strong><i class="bi ' + icon + '"></i>' + esc(v.label) + '</strong>';
         const facts = [];
         if (v.max_stay_days) facts.push('Stay up to ' + v.max_stay_days + ' days');
-        if (v.processing_days) facts.push('Processing about ' + v.processing_days + ' days');
+        if (v.processing_days) facts.push('Ready in about ' + v.processing_days + ' day' + (v.processing_days > 1 ? 's' : ''));
         if (v.fee) facts.push('Fee about ' + money(v.fee));
         if (facts.length) html += '<div>' + facts.map(esc).join(' · ') + '</div>';
-        if (v.documents) html += '<div>Documents: ' + esc(v.documents) + '</div>';
+        if (v.documents) html += '<div>You need: ' + esc(v.documents) + '</div>';
         if (v.notes) html += '<div>' + esc(v.notes) + '</div>';
+        if (v.evisa) html += '<div class="tpw-evisa"><span><b>' + esc(v.evisa.name) + '</b><small>Applied for by our visa team once you book</small></span>' +
+            (v.evisa.price ? '<span class="tpw-price">USD ' + esc(v.evisa.price) + '<small>per person</small></span>' : '') + '</div>';
         box.innerHTML = html; box.hidden = false;
     }
 
@@ -538,25 +562,28 @@
         syncSteppers(); renderChildren(); requote();
     }
 
-    // ---------- step 3: duration & hotel ----------
-    function renderDurations() {
-        $('tpwDurations').innerHTML = W.durations.map(d =>
-            '<label class="tpw-tab"><input type="radio" name="days_choice" value="' + d + '"' + (d === state.days ? ' checked' : '') + '><strong>' + d + ' days</strong><small>' + (d - 1) + ' nights</small></label>').join('');
-        renderTiers();
-    }
-    $('tpwDurations').addEventListener('change', e => { state.days = +e.target.value; renderTiers(); renderTimeline(); requote(); });
-    function renderTiers() {
-        const tiers = W.tiers[state.days] || [];
-        if (!tiers.includes(state.stars)) state.stars = tiers[0] ?? null;
-        $('tpwTiers').innerHTML = tiers.map(s => {
-            const h = W.hotels[s];
-            return '<label class="tpw-card"><input type="radio" name="tier_choice" value="' + s + '"' + (s === state.stars ? ' checked' : '') + '>' +
-                '<span class="tpw-stars" aria-label="' + s + ' stars">' + '★'.repeat(s) + '</span><strong>' + (h ? esc(h.name) : s + '-star hotel') + '</strong>' +
-                (h && h.location ? '<small>' + esc(h.location) + '</small>' : '') + '<span class="tpw-tick" aria-hidden="true"><i class="bi bi-check-lg"></i></span></label>';
+    // ---------- step 2: package, step 3: days ----------
+    function renderPacks() {
+        $('tpwPacks').innerHTML = packStars.map(st => {
+            const h = W.hotels[st], p = W.packs[st];
+            return '<label class="tpw-card"><input type="radio" name="tier_choice" value="' + st + '"' + (st === state.stars ? ' checked' : '') + '>' +
+                '<span class="tpw-stars" aria-label="' + st + ' stars">' + '★'.repeat(st) + '</span><strong>' + (h ? esc(h.name) : st + '-star package') + '</strong>' +
+                (h && h.location ? '<small>' + esc(h.location) + '</small>' : '') +
+                '<span class="tpw-pack-days">' + p.days.join(', ') + ' days</span>' +
+                (p.from ? '<span class="tpw-pack-from">From<b>' + money(p.from) + '</b></span>' : '') +
+                '<span class="tpw-tick" aria-hidden="true"><i class="bi bi-check-lg"></i></span></label>';
         }).join('');
-        renderPolicy(); renderOptions();
+        renderPolicy(); renderDurations(); renderOptions();
     }
-    $('tpwTiers').addEventListener('change', e => { state.stars = +e.target.value; renderPolicy(); renderOptions(); requote(); });
+    $('tpwPacks').addEventListener('change', e => { state.stars = +e.target.value; renderPolicy(); renderDurations(); renderOptions(); requote(); });
+    function renderDurations() {
+        const days = (W.packs[state.stars] || {days: []}).days;
+        if (!days.includes(state.days)) state.days = days[0] ?? null;
+        $('tpwDurations').innerHTML = days.map(d =>
+            '<label class="tpw-tab"><input type="radio" name="days_choice" value="' + d + '"' + (d === state.days ? ' checked' : '') + '><strong>' + d + ' days</strong><small>' + (d - 1) + ' nights</small></label>').join('');
+        renderTimeline();
+    }
+    $('tpwDurations').addEventListener('change', e => { state.days = +e.target.value; renderTimeline(); requote(); });
     function renderPolicy() {
         const h = W.hotels[state.stars], box = $('tpwHotelPolicy');
         if (!h) { box.hidden = true; return; }
@@ -600,7 +627,7 @@
     }
     form.addEventListener('change', e => { if (['guide_language', 'transport', 'meal_plan', 'insurance', 'airport_transfer', 'start_date', 'nationality'].includes(e.target.name)) requote(); });
 
-    // ---------- step 5: itinerary ----------
+    // ---------- itinerary and airport pickup ----------
     function renderTimeline() {
         const own = W.days.filter(d => d.duration === state.days);
         const days = (own.length ? own : W.days.filter(d => d.duration === null && d.day <= state.days)).sort((a, b) => a.day - b.day);
@@ -622,7 +649,7 @@
     async function fetchQuote() {
         const seq = ++quoteSeq;
         const data = payload();
-        if (!data.start_date || !state.stars) return;
+        if (!data.start_date || !state.stars || !state.days) { renderPicks(); return; }
         setLoading(true);
         try {
             const r = await fetch(W.urls.quote, {method: 'POST', headers: {'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': csrf}, body: JSON.stringify(data)});
@@ -635,6 +662,17 @@
         } finally {
             if (seq === quoteSeq) setLoading(false);
         }
+    }
+    // Before there is a date to price, the summary lists what has been chosen so far.
+    function renderPicks() {
+        const h = W.hotels[state.stars], rows = [];
+        if (form.nationality.value) rows.push(['Passport', form.nationality.value]);
+        if (state.stars && step > 1) rows.push(['Package', state.stars + '★' + (h ? ' ' + h.name : '')]);
+        if (state.days && step > 2) rows.push(['Days', state.days + ' days, ' + (state.days - 1) + ' nights']);
+        $('tpwSummary').innerHTML = rows.length
+            ? rows.map(r => '<div><span>' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span></div>').join('') + '<p class="tpw-small">Choose your start date to see the full price.</p>'
+            : '<p class="tpw-muted">Choose your passport to start.</p>';
+        showTotal(null);
     }
     // The total counts to its new value instead of jumping.
     function showTotal(v) {
@@ -660,7 +698,8 @@
         const d = (s) => new Date(s + 'T00:00:00').toLocaleDateString('en-GB', {day: 'numeric', month: 'short'});
         $('tpwSummary').innerHTML =
             '<div><span>Dates</span><span>' + esc(d(q.start_date)) + ' – ' + esc(d(q.end_date)) + '</span></div>' +
-            '<div><span>Stay</span><span>' + q.days + ' days · ' + q.hotel_stars + '★' + (q.hotel ? ' ' + esc(q.hotel.name) : '') + '</span></div>' +
+            '<div><span>Package</span><span>' + q.hotel_stars + '★' + (q.hotel ? ' ' + esc(q.hotel.name) : '') + '</span></div>' +
+            '<div><span>Days</span><span>' + q.days + ' days, ' + q.nights + ' nights</span></div>' +
             '<div><span>Travellers</span><span>' + esc(who) + '</span></div>' +
             '<div><span>Meals</span><span>' + esc(q.selections.meal_plan_label) + '</span></div>' +
             (q.season ? '<div><span>Season</span><span>' + esc(q.season) + '</span></div>' : '');
@@ -670,7 +709,9 @@
             '<div class="tpw-receipt-total"><span>Total to pay</span><span>' + money(q.total) + '</span></div>' +
             (q.hotel ? '<p class="tpw-small">' + esc(q.hotel.name) + ': check-in from ' + esc(q.hotel.check_in) + ', check-out by ' + esc(q.hotel.check_out) + '.' +
                 (q.hotel.late_check_in ? ' Late check-in: ' + esc(q.hotel.late_check_in) : '') + (q.hotel.late_check_out ? ' Late check-out: ' + esc(q.hotel.late_check_out) : '') + '</p>' : '') +
-            (q.visa ? '<p class="tpw-small">Visa: ' + esc(q.visa.label) + (q.visa.documents ? ' (' + esc(q.visa.documents) + ')' : '') + '. Visa fees are not included.</p>' : '');
+            (q.visa ? '<p class="tpw-small">Visa: ' + esc(q.visa.label) + '.' +
+                (q.visa.evisa && q.visa.evisa.price ? ' ' + esc(q.visa.evisa.name) + ' about USD ' + esc(q.visa.evisa.price) + ' per person, charged separately.' :
+                 q.visa.requirement === 'visa_free' ? '' : ' Visa fees are not included.') + '</p>' : '');
     }
 
     // ---------- summary sheet (phones and tablets) ----------
@@ -698,12 +739,13 @@
     // or moves on to the next thing still missing.
     ['input', 'change'].forEach(t => form.addEventListener(t, () => { if (!$('tpwStepError').hidden) stepError(check(step)); }));
     function check(n) {
-        if (n === 1) {
+        if (n === 1 && !form.nationality.value) return 'Choose your passport nationality.';
+        if (n === 2 && !state.stars) return 'Choose a package.';
+        if (n === 3 && !state.days) return 'Choose how many days.';
+        if (n === 4) {
             if (!form.start_date.value) return 'Choose your travel start date.';
-            if (!form.nationality.value) return 'Choose your passport nationality.';
+            if (form.traveler_type.value === 'family' && !state.childAges.length) return 'Add each child\'s age, or choose another traveller type.';
         }
-        if (n === 2 && form.traveler_type.value === 'family' && !state.childAges.length) return 'Add each child\'s age, or choose another traveller type.';
-        if (n === 3 && !state.stars) return 'Choose a hotel.';
         return '';
     }
     function go(n, first) {
@@ -725,6 +767,7 @@
         $('tpwNext').hidden = step === 6;
         $('tpwPay').hidden = step !== 6;
         stepError(''); sheet(false);
+        if (!lastQuote) renderPicks();
         if (first) return;
         // Land with the progress bar just below the sticky header, whatever its height on this screen.
         const header = document.querySelector('.gt-header');
@@ -740,9 +783,9 @@
         btn.disabled = true;
         const slow = setTimeout(() => btn.classList.add('is-busy'), 250);
         try {
-            if (step >= 2) {
+            if (step >= 4) {
                 await fetchQuote();
-                if (!lastQuote && step >= 3) return showStepError($('tpwSummary').textContent);
+                if (!lastQuote) return showStepError($('tpwSummary').textContent);
             }
             go(step + 1);
         } finally {
@@ -773,7 +816,7 @@
         }
     });
 
-    renderDurations(); renderTimeline(); applyType(); go(1, true);
+    renderPacks(); applyType(); go(1, true);
 })();
 </script>
 

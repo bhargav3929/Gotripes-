@@ -100,6 +100,27 @@ class TravelPackage extends Model
         return $this->package_type === 'wizard';
     }
 
+    /** A wizard package with a rate sheet: the customer can book and pay online. */
+    public function isBookableOnline(): bool
+    {
+        return $this->isWizard() && ($this->relationLoaded('rates') ? $this->rates->isNotEmpty() : $this->rates()->exists());
+    }
+
+    /** Where a package card should go: straight into the booking wizard when there is one. */
+    public function bookingUrl(): string
+    {
+        return $this->isBookableOnline()
+            ? route('tour-packages.book', $this->id)
+            : route('tour-packages.show', $this->id);
+    }
+
+    /** "From" price for a card: the wizard's lowest rate, otherwise the package price. */
+    public function cardFromPrice(): ?float
+    {
+        $p = $this->isBookableOnline() ? $this->wizardFromPrice() : (float) $this->price;
+        return $p > 0 ? $p : null;
+    }
+
     public function rates()
     {
         return $this->hasMany(TourPackageRate::class, 'package_id')->orderBy('days')->orderBy('hotel_stars');

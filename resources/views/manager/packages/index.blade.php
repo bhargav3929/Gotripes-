@@ -65,6 +65,16 @@
                     </td>
                     <td>
                         <strong style="color: var(--wp-text);">{{ Str::limit($package->title, 50) }}</strong>
+                        <br>
+                        @if($package->isWizard() && $package->rates_count)
+                            <span class="wp-badge wp-badge-green" style="margin-top:4px;" title="Customers check their visa, choose package and days, and pay online">Booking wizard · live</span>
+                        @elseif($package->isWizard())
+                            <span class="wp-badge wp-badge-amber" style="margin-top:4px;" title="Customers still see an enquiry form until rates are added">Booking wizard · add rates to go live</span>
+                        @elseif($package->isPurchasable())
+                            <span class="wp-badge" style="margin-top:4px;">Fixed price · pay online</span>
+                        @else
+                            <span class="wp-badge" style="margin-top:4px;" title="Customers only see an enquiry form">Enquiry form only</span>
+                        @endif
                         @if($package->description)
                             <br><span style="font-size: 11px; color: var(--wp-text-muted);">{{ Str::limit(strip_tags($package->description), 70) }}</span>
                         @endif
@@ -85,6 +95,14 @@
                     </td>
                     <td>
                         <div style="display: flex; gap: 6px;">
+                            @if(!$package->isWizard())
+                            <form action="{{ route('manager.packages.use-wizard', $package->id) }}" method="POST" style="margin:0;">
+                                @csrf
+                                <button type="submit" class="wp-btn wp-btn-primary wp-btn-sm" title="Let customers check their visa, pick a package and days, and pay online">
+                                    <i class="fas fa-route"></i> Use booking wizard
+                                </button>
+                            </form>
+                            @endif
                             @if($package->isWizard())
                             <a href="{{ route('manager.packages.booking-setup', $package->id) }}" class="wp-btn wp-btn-primary wp-btn-sm" title="Rates, hotels, options, itinerary">
                                 <i class="fas fa-route"></i> Booking setup

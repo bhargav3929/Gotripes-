@@ -209,8 +209,9 @@
                         <span class="tpc-duration-badge">
                             <i class="bi bi-clock"></i> {{ $pkg->duration }}
                         </span>
-                        <span class="tpc-type-badge {{ $pkg->package_type === 'purchase' ? 'purchase' : 'enquire' }}">
-                            {{ $pkg->package_type === 'purchase' ? 'Book Online' : 'Enquire' }}
+                        @php $online = $pkg->isPurchasable() || $pkg->isBookableOnline(); @endphp
+                        <span class="tpc-type-badge {{ $online ? 'purchase' : 'enquire' }}">
+                            {{ $online ? 'Book Online' : 'Enquire' }}
                         </span>
                     </div>
                     <div class="tpc-card-body">
@@ -219,10 +220,10 @@
                         <div class="tpc-card-footer">
                             <div>
                                 <span class="tpc-price-label">From</span>
-                                <span class="tpc-price">AED {{ number_format($pkg->price, 0) }}</span>
+                                <span class="tpc-price">AED {{ number_format($pkg->cardFromPrice() ?? 0, 0) }}</span>
                             </div>
-                            <a href="{{ route('tour-packages.show', $pkg->id) }}" class="tpc-cta">
-                                View Details <i class="bi bi-arrow-right"></i>
+                            <a href="{{ $pkg->bookingUrl() }}" class="tpc-cta">
+                                {{ $pkg->isBookableOnline() ? 'Book now' : 'View Details' }} <i class="bi bi-arrow-right"></i>
                             </a>
                         </div>
                     </div>

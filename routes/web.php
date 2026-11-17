@@ -629,6 +629,7 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     // BelongsToCompany trait auto-scopes queries; CRUD is per-tenant.
     Route::resource('packages', ManagerTravelPackagesController::class)->except(['show']);
     // Booking-wizard packages: rates, hotels, options, itinerary, seasons; bookings; visa rules.
+    Route::post('packages/{id}/use-wizard', [ManagerTravelPackagesController::class, 'useWizard'])->whereNumber('id')->name('packages.use-wizard');
     Route::get('packages/{id}/booking-setup', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'show'])->whereNumber('id')->name('packages.booking-setup');
     Route::put('packages/{id}/booking-setup/rates', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveRates'])->whereNumber('id')->name('packages.booking-setup.rates');
     Route::post('packages/{id}/booking-setup/rates/import', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'importRates'])->whereNumber('id')->name('packages.booking-setup.import');

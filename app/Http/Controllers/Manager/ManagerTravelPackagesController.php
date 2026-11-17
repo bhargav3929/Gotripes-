@@ -27,7 +27,7 @@ class ManagerTravelPackagesController extends Controller
 
     public function index(Request $request)
     {
-        $query = TravelPackage::where('isActive', 1);
+        $query = TravelPackage::where('isActive', 1)->withCount('rates');
 
         // Filter by country if requested
         if ($request->filled('country')) {
@@ -247,5 +247,15 @@ class ManagerTravelPackagesController extends Controller
         $file->move($destination, $filename);
 
         return $relativeDir . '/' . $filename;
+    }
+
+    /** One click from the list: turn an enquiry package into a booking wizard package. */
+    public function useWizard(int $id)
+    {
+        $package = TravelPackage::findOrFail($id);
+        $package->update(['package_type' => 'wizard', 'modifiedDate' => now(), 'modifiedBy' => auth()->user()?->name ?? 'manager']);
+
+        return redirect()->route('manager.packages.booking-setup', $package->id)
+            ->with('success', 'This package now uses the booking wizard. Add its rates below and it goes live for customers.');
     }
 }

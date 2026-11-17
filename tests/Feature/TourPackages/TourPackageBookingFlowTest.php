@@ -43,8 +43,9 @@ class TourPackageBookingFlowTest extends TestCase
         $html = $this->get($this->host($company, "/tour-packages/{$p->id}/book"))->assertOk()->getContent();
 
         $this->assertStringContainsString('Georgia Highlights', $html);
-        $this->assertStringContainsString('Dates &amp; visa', $html);
-        $this->assertStringContainsString('"durations":[4,5,6]', $html);
+        $this->assertStringContainsString('Visa check', $html);
+        // Packages (hotel levels) come before days; 3-star from 1000 net + 10% = 1100.
+        $this->assertStringContainsString('"packs":{"3":{"days":[4,5,6],"from":1100}', $html);
         // Arabic guide is net 40 per day; the page may only show the 10%-margin price.
         $this->assertStringContainsString('"price":44', $html);
         $this->assertStringNotContainsString('"net_price"', $html);

@@ -929,6 +929,10 @@
 
 <!------ End of services ------->
 
+@feature('tours')
+  @include('partials.home-tour-packages', ['tourPackages' => $tourPackages ?? collect()])
+@endfeature
+
 <!-- TRIPS Section -->
 <section class="blodgdf" style="margin-top:-10px;">
   <div class="container">

@@ -187,8 +187,7 @@ class TourPackageQuote
         $visa = null;
         $nationality = trim((string) ($input['nationality'] ?? ''));
         if ($nationality !== '' && $package->country) {
-            $rule = DestinationVisaRule::lookup($package->country, $nationality);
-            $visa = self::visaPayload($rule);
+            $visa = VisaEligibility::check((string) $package->country, $nationality);
         }
 
         return ['ok' => true, 'errors' => [], 'quote' => [
@@ -230,7 +229,8 @@ class TourPackageQuote
     public static function visaPayload(?DestinationVisaRule $rule): array
     {
         if (!$rule) {
-            return ['known' => false, 'tone' => 'unknown', 'label' => 'We will confirm the visa requirement for your passport', 'requirement' => null];
+            return ['known' => false, 'tone' => 'unknown', 'label' => 'Our visa team will check this passport for you', 'requirement' => null,
+                'notes' => 'You can carry on and choose your package. We confirm the visa with you before you travel.'];
         }
         return [
             'known'       => true,
