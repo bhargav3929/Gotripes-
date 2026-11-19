@@ -1,6 +1,6 @@
 {{-- Booking wizard settings. Shown when Package Type is "Booking wizard". $package may be null (create). --}}
 @php $pk = $package ?? null; @endphp
-<div class="wp-card" id="wizardSettings" @if(old('package_type', $pk?->package_type) !== 'wizard') hidden @endif>
+<div class="wp-card" id="wizardSettings" @if(old('package_type', $pk?->package_type ?? 'wizard') !== 'wizard') hidden @endif>
     <div class="wp-card-header"><i class="fas fa-route text-secondary-wp"></i> Booking wizard pricing</div>
     <div class="wp-card-body">
         <div class="wp-form-group">

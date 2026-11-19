@@ -91,7 +91,13 @@
                         {{ $package->duration }}
                     </td>
                     <td>
-                        <strong style="color: var(--wp-primary);">${{ number_format($package->price, 2) }}</strong>
+                        @php $from = $package->isWizard() && $package->rates_count ? $package->wizardFromPrice() : (float) $package->price; @endphp
+                        @if($from > 0)
+                            <span style="font-size: 11px; color: var(--wp-text-muted);">From</span><br>
+                            <strong style="color: var(--wp-primary);">AED {{ number_format($from, 0) }}</strong>
+                        @else
+                            <span class="text-muted-wp" style="font-size: 12px;">—</span>
+                        @endif
                     </td>
                     <td>
                         <div style="display: flex; gap: 6px;">

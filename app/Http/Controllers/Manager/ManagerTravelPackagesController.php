@@ -27,7 +27,7 @@ class ManagerTravelPackagesController extends Controller
 
     public function index(Request $request)
     {
-        $query = TravelPackage::where('isActive', 1)->withCount('rates');
+        $query = TravelPackage::where('isActive', 1)->withCount('rates')->with('rates');
 
         // Filter by country if requested
         if ($request->filled('country')) {
