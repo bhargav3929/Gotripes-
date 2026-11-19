@@ -37,6 +37,8 @@ class TravelPackage extends Model
         'insurance_required',
         'child_max_age',
         'infant_max_age',
+        'child_land_percent',
+        'child_sharing_max_age',
     ];
 
     protected $casts = [
@@ -51,6 +53,8 @@ class TravelPackage extends Model
         'insurance_required' => 'boolean',
         'child_max_age' => 'integer',
         'infant_max_age' => 'integer',
+        'child_land_percent' => 'float',
+        'child_sharing_max_age' => 'integer',
     ];
 
     public function scopeActive($query)
@@ -100,10 +104,30 @@ class TravelPackage extends Model
         return $this->package_type === 'wizard';
     }
 
-    /** A wizard package with a rate sheet: the customer can book and pay online. */
+    /**
+     * Priced per room and per group size: at least one hotel level with room
+     * prices and at least one land price. Packages set up before that still
+     * have per-person rates (rates()) and are priced from those.
+     */
+    public function usesRoomPricing(): bool
+    {
+        $this->loadMissing(['hotels', 'landRates']);
+        return $this->landRates->isNotEmpty() && $this->hotels->contains(fn ($h) => $h->isPriced());
+    }
+
+    /** Priced either way, so the wizard can quote it. */
+    public function hasPricing(): bool
+    {
+        if ($this->usesRoomPricing()) {
+            return true;
+        }
+        return $this->relationLoaded('rates') ? $this->rates->isNotEmpty() : $this->rates()->exists();
+    }
+
+    /** A wizard package with prices: the customer can book and pay online. */
     public function isBookableOnline(): bool
     {
-        return $this->isWizard() && ($this->relationLoaded('rates') ? $this->rates->isNotEmpty() : $this->rates()->exists());
+        return $this->isWizard() && $this->hasPricing();
     }
 
     /** Where a package card should go: straight into the booking wizard when there is one. */
@@ -119,6 +143,11 @@ class TravelPackage extends Model
     {
         $p = $this->isBookableOnline() ? $this->wizardFromPrice() : (float) $this->price;
         return $p > 0 ? $p : null;
+    }
+
+    public function landRates()
+    {
+        return $this->hasMany(TourPackageLandRate::class, 'package_id')->orderBy('days')->orderBy('min_group');
     }
 
     public function rates()
@@ -151,9 +180,16 @@ class TravelPackage extends Model
         return $this->hasMany(TourPackageBooking::class, 'package_id');
     }
 
-    /** Lowest adult selling price across all durations and tiers (for "From AED x"). */
+    /** Lowest selling price per adult, two sharing a double room (for "From AED x"). */
     public function wizardFromPrice(): ?float
     {
+        if ($this->usesRoomPricing()) {
+            $prices = $this->hotels->filter(fn ($h) => $h->isPriced())
+                ->map(fn ($h) => \App\Services\TourPackages\TourPackageQuote::fromPerAdult($this, $h->hotel_stars))
+                ->filter();
+            return $prices->isEmpty() ? null : $prices->min();
+        }
+        $this->loadMissing('rates');
         $min = $this->rates->min('adult_net');
         return $min === null ? null : round($min * (1 + (float) $this->margin_percent / 100), 2);
     }

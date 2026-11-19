@@ -631,8 +631,8 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     // Booking-wizard packages: rates, hotels, options, itinerary, seasons; bookings; visa rules.
     Route::post('packages/{id}/use-wizard', [ManagerTravelPackagesController::class, 'useWizard'])->whereNumber('id')->name('packages.use-wizard');
     Route::get('packages/{id}/booking-setup', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'show'])->whereNumber('id')->name('packages.booking-setup');
-    Route::put('packages/{id}/booking-setup/rates', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveRates'])->whereNumber('id')->name('packages.booking-setup.rates');
-    Route::post('packages/{id}/booking-setup/rates/import', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'importRates'])->whereNumber('id')->name('packages.booking-setup.import');
+    Route::put('packages/{id}/booking-setup/rooms', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveRooms'])->whereNumber('id')->name('packages.booking-setup.rooms');
+    Route::put('packages/{id}/booking-setup/land', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveLand'])->whereNumber('id')->name('packages.booking-setup.land');
     Route::put('packages/{id}/booking-setup/hotels', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveHotels'])->whereNumber('id')->name('packages.booking-setup.hotels');
     Route::put('packages/{id}/booking-setup/addons', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveAddons'])->whereNumber('id')->name('packages.booking-setup.addons');
     Route::post('packages/{id}/booking-setup/days', [\App\Http\Controllers\Manager\ManagerTourPackageSetupController::class, 'saveDays'])->whereNumber('id')->name('packages.booking-setup.days');

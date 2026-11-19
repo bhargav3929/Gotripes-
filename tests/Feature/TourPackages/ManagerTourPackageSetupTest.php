@@ -11,7 +11,6 @@ use App\Models\TourPackageHotel;
 use App\Models\TourPackageRate;
 use App\Models\TravelPackage;
 use App\Models\User;
-use App\Services\TourPackages\RateSheetImport;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
@@ -65,62 +64,83 @@ class ManagerTourPackageSetupTest extends TestCase
     public function test_setup_page_renders(): void
     {
         $company = $this->tenant();
+        $p = $this->georgiaRooms($company);
+        $this->actingAs($this->owner($company))->get($this->url($company, "/manager/packages/{$p->id}/booking-setup"))
+            ->assertOk()->assertSee('Hotels and room prices')->assertSee('Tours, transfers and guide')
+            ->assertSee('Price check')->assertSee('1 Double room')->assertSee('Tbilisi Inn')->assertSee('Open the booking page');
+    }
+
+    public function test_old_rate_packages_are_told_how_to_switch(): void
+    {
+        $company = $this->tenant();
         $p = $this->georgia($company);
         $this->actingAs($this->owner($company))->get($this->url($company, "/manager/packages/{$p->id}/booking-setup"))
-            ->assertOk()->assertSee('Net rates per person')->assertSee('Tbilisi Inn')->assertSee('Open the booking page');
+            ->assertOk()->assertSee('still priced from its old per-person rates');
     }
 
-    public function test_rates_are_saved_replacing_the_old_ones(): void
+    public function test_hotels_and_room_prices_are_saved(): void
     {
         $company = $this->tenant();
         $p = $this->georgia($company);
-        $this->actingAs($this->owner($company))->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/rates"), ['rates' => [
-            ['days' => 5, 'hotel_stars' => 4, 'adult_net' => 1500, 'child_net' => 700, 'infant_net' => 0, 'single_supplement_net' => 300],
-            ['days' => 6, 'hotel_stars' => 4, 'adult_net' => 1750],
-            ['days' => '', 'adult_net' => ''], // empty row is ignored
+        $this->actingAs($this->owner($company))->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/rooms"), ['hotels' => [
+            3 => ['name' => 'Old Town Inn', 'location' => 'Old Tbilisi', 'single_net' => 250, 'double_net' => 300, 'triple_net' => '', 'extra_bed_net' => 60],
+            4 => ['name' => ''], // empty name: not offered
+            5 => ['name' => 'Stamba', 'double_net' => 900],
         ]])->assertSessionHasNoErrors();
 
-        $this->assertSame(2, TourPackageRate::where('package_id', $p->id)->count());
-        $this->assertSame(1500.0, TourPackageRate::where('package_id', $p->id)->where('days', 5)->value('adult_net'));
+        $h3 = TourPackageHotel::where('package_id', $p->id)->where('hotel_stars', 3)->first();
+        $this->assertSame('Old Town Inn', $h3->name);
+        $this->assertSame(300.0, $h3->double_net);
+        $this->assertNull($h3->triple_net);
+        $this->assertSame('14:00', $h3->check_in_time, 'The details saved earlier are kept.');
+        $this->assertNull(TourPackageHotel::where('package_id', $p->id)->where('hotel_stars', 4)->first());
+        $this->assertGreaterThan(0, TourPackageRate::where('package_id', $p->id)->count(), 'Old rates stay until tour prices are entered too.');
     }
 
-    public function test_duplicate_rate_rows_are_refused(): void
+    public function test_a_hotel_needs_a_double_room_price(): void
     {
         $company = $this->tenant();
         $p = $this->georgia($company);
-        $before = TourPackageRate::where('package_id', $p->id)->count();
-        $this->actingAs($this->owner($company))->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/rates"), ['rates' => [
-            ['days' => 5, 'hotel_stars' => 4, 'adult_net' => 1500], ['days' => 5, 'hotel_stars' => 4, 'adult_net' => 1600],
-        ]])->assertSessionHasErrors('rates');
-        $this->assertSame($before, TourPackageRate::where('package_id', $p->id)->count(), 'Nothing changes when the sheet is refused.');
+        $this->actingAs($this->owner($company))->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/rooms"), ['hotels' => [
+            3 => ['name' => 'Old Town Inn', 'single_net' => 250],
+        ]])->assertSessionHasErrors('hotels');
     }
 
-    public function test_supplier_rate_sheet_import(): void
+    public function test_tour_prices_are_saved_by_group_size_and_retire_the_old_rates(): void
     {
         $company = $this->tenant();
         $p = $this->georgia($company);
-        $csv = "\xEF\xBB\xBFDays;Hotel;Adult (AED);Child;Infant;SGL Supp\n4;3;\"1.250,50\";600;0;250\n5;3;1 450;700;0;300\n\n";
-        $file = UploadedFile::fake()->createWithContent('vietnam-rates.csv', $csv);
+        $owner = $this->owner($company);
+        $this->actingAs($owner)->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/rooms"), ['hotels' => [
+            3 => ['name' => 'Old Town Inn', 'double_net' => 300],
+        ]])->assertSessionHasNoErrors();
+        $this->actingAs($owner)->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/land"), [
+            'land' => [
+                ['days' => 6, 'g1' => 1800, 'g2' => 1100, 'g3' => '', 'g5' => 750],
+                ['days' => '', 'g1' => ''], // empty row is ignored
+            ],
+            'child_land_percent' => 40, 'child_sharing_max_age' => 4,
+        ])->assertSessionHasNoErrors();
 
-        $this->actingAs($this->owner($company))->post($this->url($company, "/manager/packages/{$p->id}/booking-setup/rates/import"), ['rate_sheet' => $file])
-            ->assertSessionHasNoErrors()->assertSessionHas('success');
-
-        $rates = TourPackageRate::where('package_id', $p->id)->orderBy('days')->get();
-        $this->assertCount(2, $rates);
-        $this->assertSame(1250.5, $rates[0]->adult_net);
-        $this->assertSame(1450.0, $rates[1]->adult_net);
-        $this->assertSame(300.0, $rates[1]->single_supplement_net);
+        $p = TravelPackage::withoutCompanyScope()->with('landRates')->find($p->id);
+        $this->assertSame([1, 2, 5], $p->landRates->pluck('min_group')->all());
+        $this->assertSame(40.0, $p->child_land_percent);
+        $this->assertSame(4, $p->child_sharing_max_age);
+        $this->assertTrue($p->usesRoomPricing());
+        $this->assertSame(0, TourPackageRate::where('package_id', $p->id)->count(), 'The old per-person rates are gone.');
     }
 
-    public function test_rate_sheet_errors_are_listed_by_line_and_nothing_is_imported(): void
+    public function test_tour_prices_refuse_duplicates_and_empty_rows(): void
     {
-        $r = RateSheetImport::parse("days,hotel_stars,adult_net\n5,4,1000\nfive,4,1000\n5,9,abc\n");
-        $this->assertSame([], $r['rows']);
-        $this->assertStringContainsString('Line 3', implode(' ', $r['errors']));
-        $this->assertStringContainsString('Line 4', implode(' ', $r['errors']));
-
-        $r = RateSheetImport::parse("price,name\n1,2\n");
-        $this->assertStringContainsString('Missing: days, hotel_stars, adult_net', $r['errors'][0]);
+        $company = $this->tenant();
+        $p = $this->georgia($company);
+        $owner = $this->owner($company);
+        $this->actingAs($owner)->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/land"), [
+            'land' => [['days' => 6, 'g2' => 1000], ['days' => 6, 'g2' => 1100]], 'child_land_percent' => 50, 'child_sharing_max_age' => 5,
+        ])->assertSessionHasErrors('land');
+        $this->actingAs($owner)->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/land"), [
+            'land' => [['days' => 6]], 'child_land_percent' => 50, 'child_sharing_max_age' => 5,
+        ])->assertSessionHasErrors('land');
     }
 
     public function test_hotels_meals_and_policies_are_saved(): void
@@ -128,20 +148,19 @@ class ManagerTourPackageSetupTest extends TestCase
         $company = $this->tenant();
         $p = $this->georgia($company);
         $this->actingAs($this->owner($company))->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/hotels"), ['hotels' => [
-            3 => ['name' => 'Old Town Inn', 'check_in_time' => '15:00', 'check_out_time' => '11:00',
+            3 => ['check_in_time' => '15:00', 'check_out_time' => '11:00',
                   'late_check_in_policy' => 'Free until midnight', 'late_check_out_policy' => '30 AED per hour', 'meal_plans' => ['breakfast']],
-            4 => ['name' => ''], // blank removes the tier's hotel
-            5 => ['name' => 'Stamba', 'meal_plans' => ['breakfast', 'half_board', 'full_board']],
+            5 => ['meal_plans' => ['breakfast', 'half_board', 'full_board']],
         ]])->assertSessionHasNoErrors();
 
         $h3 = TourPackageHotel::where('package_id', $p->id)->where('hotel_stars', 3)->first();
-        $this->assertSame('Old Town Inn', $h3->name);
+        $this->assertSame('Tbilisi Inn', $h3->name, 'The name is set with the room prices, not here.');
         $this->assertSame('15:00', $h3->check_in_time);
         $this->assertSame('30 AED per hour', $h3->late_check_out_policy);
-        $this->assertNull(TourPackageHotel::where('package_id', $p->id)->where('hotel_stars', 4)->first());
+        $this->assertSame(['breakfast', 'half_board', 'full_board'], TourPackageHotel::where('package_id', $p->id)->where('hotel_stars', 5)->first()->meal_plans);
 
         $this->actingAs($this->owner($company))->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/hotels"), ['hotels' => [
-            3 => ['name' => 'X', 'check_in_time' => '3pm'],
+            3 => ['check_in_time' => '3pm'],
         ]])->assertSessionHasErrors('hotels.3.check_in_time');
     }
 

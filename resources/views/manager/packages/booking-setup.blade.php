@@ -29,8 +29,8 @@
 @section('content')
 @php
     $ready = [
-        'Rates' => $package->rates->isNotEmpty(),
-        'Hotels' => $package->hotels->isNotEmpty(),
+        'Hotel prices' => $pricedHotels->isNotEmpty(),
+        'Tour prices' => $package->landRates->isNotEmpty(),
         'Options' => $package->addons->isNotEmpty(),
         'Itinerary' => $package->itineraryDays->isNotEmpty(),
     ];
@@ -47,79 +47,134 @@
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <a href="{{ route('manager.packages.edit', $package->id) }}" class="wp-btn wp-btn-secondary"><i class="fas fa-pen"></i> Package details & margin</a>
-        @if($package->rates->isNotEmpty())
+        @if($package->hasPricing())
             <a href="{{ route('tour-packages.book', $package->id) }}" target="_blank" rel="noopener" class="wp-btn wp-btn-primary"><i class="fas fa-external-link-alt"></i> Open the booking page</a>
         @endif
     </div>
 </div>
 
-@unless($package->rates->isNotEmpty())
-    <div class="wp-notice wp-notice-info"><span><i class="fas fa-info-circle me-2"></i>Customers can book this package once it has at least one rate. Start with the supplier's rate sheet below.</span></div>
-@endunless
+@if(!$package->usesRoomPricing() && $package->rates->isNotEmpty())
+    <div class="wp-notice wp-notice-info"><span><i class="fas fa-info-circle me-2"></i>This package is still priced from its old per-person rates. Fill in parts 1 and 2 below and it switches to room and group pricing; the old rates are then removed.</span></div>
+@elseif(!$package->hasPricing())
+    <div class="wp-notice wp-notice-info"><span><i class="fas fa-info-circle me-2"></i>Customers can book this package once parts 1 and 2 are filled in: at least one hotel with a double room price, and the tour price for at least one trip length.</span></div>
+@endif
 
 <nav class="bs-steps">
-    <a href="#rates" class="wp-btn wp-btn-secondary wp-btn-sm">1. Rates</a>
-    <a href="#hotels" class="wp-btn wp-btn-secondary wp-btn-sm">2. Hotels</a>
-    <a href="#addons" class="wp-btn wp-btn-secondary wp-btn-sm">3. Options</a>
-    <a href="#itinerary" class="wp-btn wp-btn-secondary wp-btn-sm">4. Itinerary</a>
-    <a href="#seasons" class="wp-btn wp-btn-secondary wp-btn-sm">5. Peak seasons</a>
+    <a href="#rooms" class="wp-btn wp-btn-secondary wp-btn-sm">1. Hotels & room prices</a>
+    <a href="#land" class="wp-btn wp-btn-secondary wp-btn-sm">2. Tours & transfers</a>
+    <a href="#check" class="wp-btn wp-btn-secondary wp-btn-sm">Price check</a>
+    <a href="#hotels" class="wp-btn wp-btn-secondary wp-btn-sm">3. Hotel details</a>
+    <a href="#addons" class="wp-btn wp-btn-secondary wp-btn-sm">4. Options</a>
+    <a href="#itinerary" class="wp-btn wp-btn-secondary wp-btn-sm">5. Itinerary</a>
+    <a href="#seasons" class="wp-btn wp-btn-secondary wp-btn-sm">6. Peak seasons</a>
 </nav>
 
-{{-- 1. Rates --}}
-<div class="wp-card" id="rates">
-    <div class="wp-card-header"><i class="fas fa-coins text-secondary-wp"></i> 1. Net rates per person, whole stay</div>
+{{-- 1. Hotels and room prices --}}
+<div class="wp-card" id="rooms">
+    <div class="wp-card-header"><i class="fas fa-bed text-secondary-wp"></i> 1. Hotels and room prices <span class="text-muted-wp" style="font-weight:400;">· net, per room, per night</span></div>
     <div class="wp-card-body">
-        <form method="POST" action="{{ route('manager.packages.booking-setup.import', $package->id) }}" enctype="multipart/form-data" style="display:flex; gap:8px; align-items:end; flex-wrap:wrap; margin-bottom:16px;">
-            @csrf
-            <div class="wp-form-group" style="margin:0; flex:1; min-width:240px;">
-                <label class="wp-form-label" for="rate_sheet">Import the supplier's rate sheet (CSV)</label>
-                <input type="file" class="wp-input" id="rate_sheet" name="rate_sheet" accept=".csv,text/csv" required>
-                <p class="wp-form-help">Columns: <code>days, hotel_stars, adult_net, child_net, infant_net, single_supplement_net</code>. In Excel: File → Save As → CSV. Importing replaces the rates below.</p>
-            </div>
-            <button class="wp-btn wp-btn-secondary"><i class="fas fa-file-import"></i> Import</button>
-        </form>
-
-        <form method="POST" action="{{ route('manager.packages.booking-setup.rates', $package->id) }}">
+        <form method="POST" action="{{ route('manager.packages.booking-setup.rooms', $package->id) }}">
             @csrf @method('PUT')
             <div class="table-responsive">
-                <table class="wp-table bs-table" id="rateTable">
-                    <thead><tr><th>Days</th><th>Hotel ★</th><th>Adult</th><th>Child</th><th>Infant</th><th>Single supplement</th><th>Customer pays (adult)</th><th></th></tr></thead>
+                <table class="wp-table bs-table" id="roomTable">
+                    <thead><tr><th>Level</th><th>Hotel name</th><th>Area</th><th>Single room</th><th>Double room</th><th>Triple room <small>optional</small></th><th>Extra bed <small>optional</small></th></tr></thead>
                     <tbody>
-                        @foreach($package->rates->values() as $i => $r)
-                            @include('manager.packages._rate-row', ['i' => $i, 'r' => $r])
+                        @foreach([3, 4, 5, 2] as $stars)
+                            @php $h = $package->hotels->firstWhere('hotel_stars', $stars); @endphp
+                            <tr data-stars="{{ $stars }}">
+                                <td style="white-space:nowrap; color:var(--wp-primary);">{{ str_repeat('★', $stars) }}</td>
+                                <td><input class="wp-input" name="hotels[{{ $stars }}][name]" value="{{ old("hotels.$stars.name", $h?->name) }}" placeholder="Not offered" aria-label="{{ $stars }}-star hotel name"></td>
+                                <td><input class="wp-input" name="hotels[{{ $stars }}][location]" value="{{ old("hotels.$stars.location", $h?->location) }}" aria-label="{{ $stars }}-star area"></td>
+                                @foreach(['single_net' => 'Single', 'double_net' => 'Double', 'triple_net' => 'Triple', 'extra_bed_net' => 'Extra bed'] as $f => $l)
+                                    <td><input type="number" step="0.01" min="0" class="wp-input" name="hotels[{{ $stars }}][{{ $f }}]" value="{{ old("hotels.$stars.$f", $h?->$f ?: null) }}" aria-label="{{ $stars }}-star {{ $l }} room per night"></td>
+                                @endforeach
+                            </tr>
                         @endforeach
-                        @if($package->rates->isEmpty())
-                            @include('manager.packages._rate-row', ['i' => 0, 'r' => null])
-                        @endif
                     </tbody>
                 </table>
             </div>
-            <template id="rateRowTpl">@include('manager.packages._rate-row', ['i' => '__I__', 'r' => null])</template>
-            <div style="display:flex; gap:8px; margin-top:12px;">
-                <button type="button" class="wp-btn wp-btn-secondary" data-add-row="rate"><i class="fas fa-plus"></i> Add a row</button>
-                <button class="wp-btn wp-btn-primary"><i class="fas fa-save"></i> Save rates</button>
-            </div>
-            <p class="wp-form-help">Net prices in AED per person for the whole trip, twin sharing. Each row is one trip length at one hotel category. The single supplement is charged once when one adult has a room alone.</p>
+            <button class="wp-btn wp-btn-primary" style="margin-top:12px;"><i class="fas fa-save"></i> Save hotels & room prices</button>
+            <p class="wp-form-help">What the hotel charges you for the whole room for one night, in AED. Fill in one row per hotel you sell; the <strong>double room</strong> price is required. The booking works out the rooms from who travels: 1 adult gets a single, 2 a double, 3 a triple (or a double with an extra bed), 4 two doubles, and so on. Leave Triple or Extra bed empty if the hotel has none.</p>
         </form>
+    </div>
+</div>
+
+{{-- 2. Land: tours, transfers, guide --}}
+@php
+    $landDays = $package->landRates->pluck('days')->unique()->sort()->values();
+    if ($landDays->isEmpty()) { $landDays = collect([null]); }
+@endphp
+<div class="wp-card" id="land">
+    <div class="wp-card-header"><i class="fas fa-route text-secondary-wp"></i> 2. Tours, transfers and guide <span class="text-muted-wp" style="font-weight:400;">· net, per adult, whole trip, by group size</span></div>
+    <div class="wp-card-body">
+        <form method="POST" action="{{ route('manager.packages.booking-setup.land', $package->id) }}">
+            @csrf @method('PUT')
+            <div class="table-responsive">
+                <table class="wp-table bs-table" id="landTable">
+                    <thead><tr><th>Trip length (days)</th>@foreach($groups as $min => $label)<th>{{ $label }} {{ $min === 1 ? 'adult' : 'adults' }}</th>@endforeach<th></th></tr></thead>
+                    <tbody>
+                        @foreach($landDays as $i => $d)
+                            @include('manager.packages._land-row', ['i' => $i, 'd' => $d])
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <template id="landRowTpl">@include('manager.packages._land-row', ['i' => '__I__', 'd' => null])</template>
+            <div class="bs-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); margin-top:12px;">
+                <div class="wp-form-group" style="margin:0;"><label class="wp-form-label" for="child_land_percent">Children pay this % of the adult tour price</label>
+                    <input type="number" min="0" max="100" step="1" class="wp-input" id="child_land_percent" name="child_land_percent" value="{{ old('child_land_percent', rtrim(rtrim(number_format($package->child_land_percent, 2), '0'), '.')) }}"></div>
+                <div class="wp-form-group" style="margin:0;"><label class="wp-form-label" for="child_sharing_max_age">Children up to this age share the parents' bed (no hotel cost)</label>
+                    <input type="number" min="0" max="17" class="wp-input" id="child_sharing_max_age" name="child_sharing_max_age" value="{{ old('child_sharing_max_age', $package->child_sharing_max_age) }}"></div>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button type="button" class="wp-btn wp-btn-secondary" data-add-row="land"><i class="fas fa-plus"></i> Add a trip length</button>
+                <button class="wp-btn wp-btn-primary"><i class="fas fa-save"></i> Save tour prices</button>
+            </div>
+            <p class="wp-form-help">Everything that is not the hotel: airport transfers, tours, entry tickets, guide and vehicle, per adult for the whole trip. Bigger groups share the car and guide, so the price per adult goes down. An empty box uses the price to its left. Children (ages {{ $package->infant_max_age + 1 }}–{{ $package->child_max_age }}) pay the % above; infants are free; anyone older than {{ $package->child_max_age }} pays as an adult.</p>
+        </form>
+    </div>
+</div>
+
+{{-- Price check: what customers will pay for typical bookings --}}
+<div class="wp-card" id="check">
+    <div class="wp-card-header"><i class="fas fa-calculator text-secondary-wp"></i> Price check <span class="text-muted-wp" style="font-weight:400;">· what customers pay, with your {{ rtrim(rtrim(number_format($package->margin_percent, 2), '0'), '.') }}% margin</span></div>
+    <div class="wp-card-body">
+        @if(empty($priceCheck['rows']))
+            <p class="wp-form-help">Fill in parts 1 and 2 and save. This table then shows the total a customer pays for common bookings, so you can spot a wrong number before anyone books.</p>
+        @else
+            <div class="table-responsive">
+                <table class="wp-table" id="priceCheck">
+                    <thead><tr><th>{{ $priceCheck['days'] }}-day trip</th>@foreach($priceCheck['hotels'] as $h)<th>{{ str_repeat('★', $h->hotel_stars) }} {{ $h->name }}</th>@endforeach</tr></thead>
+                    <tbody>
+                        @foreach($priceCheck['rows'] as $row)
+                            <tr><td><strong>{{ $row['label'] }}</strong></td>
+                                @foreach($row['cells'] as $c)
+                                    <td>@if($c)<strong style="color:var(--wp-primary);">AED {{ number_format($c['total'], 0) }}</strong><br><small class="text-muted-wp">{{ $c['rooms'] }} · AED {{ number_format($c['per_person'], 0) }} each</small>@else — @endif</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <p class="wp-form-help">Totals for the shortest trip, outside peak seasons (starting {{ $priceCheck['date'] }}), with the included options. "Each" is the total divided by everyone who pays.</p>
+        @endif
     </div>
 </div>
 
 {{-- 2. Hotels --}}
 <div class="wp-card" id="hotels">
-    <div class="wp-card-header"><i class="fas fa-hotel text-secondary-wp"></i> 2. Hotels, check-in policy and meals</div>
+    <div class="wp-card-header"><i class="fas fa-hotel text-secondary-wp"></i> 3. Hotel details: check-in, policies and meals</div>
     <div class="wp-card-body">
         @if($tiers->isEmpty())
-            <p class="wp-form-help">Add rates first; a hotel box appears for each star category you price.</p>
+            <p class="wp-form-help">Add your hotels in part 1 first; a box appears here for each one.</p>
         @else
         <form method="POST" action="{{ route('manager.packages.booking-setup.hotels', $package->id) }}">
             @csrf @method('PUT')
             @foreach($tiers as $stars)
                 @php $h = $package->hotels->firstWhere('hotel_stars', $stars); $plans = $h?->meal_plans ?? ['breakfast']; @endphp
                 <div class="bs-hotel">
-                    <h3>{{ str_repeat('★', $stars) }} {{ $stars }}-star</h3>
+                    <h3>{{ str_repeat('★', $stars) }} {{ $h?->name ?? $stars . '-star' }}</h3>
                     <div class="bs-grid">
-                        <div class="wp-form-group"><label class="wp-form-label">Hotel name</label><input class="wp-input" name="hotels[{{ $stars }}][name]" value="{{ old("hotels.$stars.name", $h?->name) }}" placeholder="Leave blank to hide"></div>
-                        <div class="wp-form-group"><label class="wp-form-label">Area</label><input class="wp-input" name="hotels[{{ $stars }}][location]" value="{{ old("hotels.$stars.location", $h?->location) }}"></div>
                         <div class="wp-form-group"><label class="wp-form-label">Check-in from</label><input class="wp-input" name="hotels[{{ $stars }}][check_in_time]" value="{{ old("hotels.$stars.check_in_time", $h?->check_in_time ?? '14:00') }}" placeholder="14:00"></div>
                         <div class="wp-form-group"><label class="wp-form-label">Check-out by</label><input class="wp-input" name="hotels[{{ $stars }}][check_out_time]" value="{{ old("hotels.$stars.check_out_time", $h?->check_out_time ?? '12:00') }}" placeholder="12:00"></div>
                     </div>
@@ -146,7 +201,7 @@
 
 {{-- 3. Options --}}
 <div class="wp-card" id="addons">
-    <div class="wp-card-header"><i class="fas fa-list-check text-secondary-wp"></i> 3. Options: guide, transport, meal supplements, airport transfer, insurance</div>
+    <div class="wp-card-header"><i class="fas fa-list-check text-secondary-wp"></i> 4. Options: guide, transport, meal supplements, airport transfer, insurance</div>
     <div class="wp-card-body">
         <form method="POST" action="{{ route('manager.packages.booking-setup.addons', $package->id) }}">
             @csrf @method('PUT')
@@ -177,7 +232,7 @@
 
 {{-- 4. Itinerary --}}
 <div class="wp-card" id="itinerary">
-    <div class="wp-card-header"><i class="fas fa-route text-secondary-wp"></i> 4. Day-by-day itinerary</div>
+    <div class="wp-card-header"><i class="fas fa-route text-secondary-wp"></i> 5. Day-by-day itinerary</div>
     <div class="wp-card-body">
         <form method="POST" action="{{ route('manager.packages.booking-setup.days', $package->id) }}" enctype="multipart/form-data">
             @csrf
@@ -203,7 +258,7 @@
 
 {{-- 5. Seasons --}}
 <div class="wp-card" id="seasons">
-    <div class="wp-card-header"><i class="fas fa-calendar-alt text-secondary-wp"></i> 5. Peak seasons</div>
+    <div class="wp-card-header"><i class="fas fa-calendar-alt text-secondary-wp"></i> 6. Peak seasons</div>
     <div class="wp-card-body">
         <form method="POST" action="{{ route('manager.packages.booking-setup.seasons', $package->id) }}">
             @csrf @method('PUT')
@@ -235,7 +290,7 @@
 <script>
 (function () {
     const margin = {{ (float) $package->margin_percent }} / 100;
-    const targets = { rate: ['rateTable', 'rateRowTpl'], addon: ['addonTable', 'addonRowTpl'], day: ['dayList', 'dayRowTpl'], season: ['seasonTable', 'seasonRowTpl'] };
+    const targets = { land: ['landTable', 'landRowTpl'], addon: ['addonTable', 'addonRowTpl'], day: ['dayList', 'dayRowTpl'], season: ['seasonTable', 'seasonRowTpl'] };
     let counter = 1000;
     document.querySelectorAll('[data-add-row]').forEach(btn => btn.addEventListener('click', () => {
         const [listId, tplId] = targets[btn.dataset.addRow];

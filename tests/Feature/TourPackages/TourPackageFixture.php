@@ -83,6 +83,26 @@ trait TourPackageFixture
         return $p->fresh();
     }
 
+    /**
+     * The Georgia package priced the new way: room prices per night and tour
+     * prices per adult by group size (6 days only), no per-person rates.
+     *   3★ Tbilisi Inn: single 250, double 300, triple 390, extra bed 60
+     *   4★ Rooms Tbilisi: double 500 only
+     *   land, 6 days: 1 adult 1800, 2 adults 1100, 3-4 adults 900, 5+ adults 750
+     */
+    protected function georgiaRooms(Company $company, array $attrs = []): TravelPackage
+    {
+        $p = $this->georgia($company, $attrs);
+        \App\Models\TourPackageRate::where('package_id', $p->id)->delete();
+        TourPackageHotel::where('package_id', $p->id)->where('hotel_stars', 3)->update(['single_net' => 250, 'double_net' => 300, 'triple_net' => 390, 'extra_bed_net' => 60]);
+        TourPackageHotel::where('package_id', $p->id)->where('hotel_stars', 4)->update(['double_net' => 500]);
+        foreach ([1 => 1800, 2 => 1100, 3 => 900, 5 => 750] as $g => $net) {
+            \App\Models\TourPackageLandRate::create(['package_id' => $p->id, 'days' => 6, 'min_group' => $g, 'adult_net' => $net]);
+        }
+        $p->forceFill(['child_land_percent' => 50, 'child_sharing_max_age' => 5])->save();
+        return $p->fresh();
+    }
+
     protected function input(array $over = []): array
     {
         return array_merge([

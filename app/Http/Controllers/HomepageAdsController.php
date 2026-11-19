@@ -27,7 +27,7 @@ class HomepageAdsController extends Controller
             ->get();
         // Bookable tour packages first, so a visitor can go straight into the wizard.
         $tourPackages = TravelPackage::where('isActive', 1)
-            ->with('rates')
+            ->with(['rates', 'landRates', 'hotels'])
             ->orderByRaw("CASE WHEN package_type = 'wizard' THEN 0 WHEN package_type = 'purchase' THEN 1 ELSE 2 END")
             ->orderByDesc('createdDate')
             ->take(8)

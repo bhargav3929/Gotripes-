@@ -83,7 +83,7 @@
                 {{-- 2. Package (hotel level) --}}
                 <section class="tpw-step" data-step="2" hidden>
                     <h2>Choose your package</h2>
-                    <p class="tpw-lede">Prices are per adult, sharing a room.</p>
+                    <p class="tpw-lede">"From" prices are per adult, two sharing a room. Your rooms are worked out from who is travelling.</p>
                     <div class="tpw-cards3 tpw-packs" id="tpwPacks" role="radiogroup" aria-label="Package"></div>
                     <div id="tpwHotelPolicy" class="tpw-policy" hidden></div>
                 </section>
@@ -699,6 +699,7 @@
         $('tpwSummary').innerHTML =
             '<div><span>Dates</span><span>' + esc(d(q.start_date)) + ' – ' + esc(d(q.end_date)) + '</span></div>' +
             '<div><span>Package</span><span>' + q.hotel_stars + '★' + (q.hotel ? ' ' + esc(q.hotel.name) : '') + '</span></div>' +
+            (q.rooms ? '<div><span>Rooms</span><span>' + esc(q.rooms) + '</span></div>' : '') +
             '<div><span>Days</span><span>' + q.days + ' days, ' + q.nights + ' nights</span></div>' +
             '<div><span>Travellers</span><span>' + esc(who) + '</span></div>' +
             '<div><span>Meals</span><span>' + esc(q.selections.meal_plan_label) + '</span></div>' +

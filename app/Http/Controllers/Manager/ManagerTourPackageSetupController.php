@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\TourPackageAddon;
 use App\Models\TourPackageDay;
 use App\Models\TourPackageHotel;
+use App\Models\TourPackageLandRate;
 use App\Models\TourPackageRate;
 use App\Models\TourPackageSeason;
 use App\Models\TravelPackage;
-use App\Services\TourPackages\RateSheetImport;
+use App\Services\TourPackages\TourPackageQuote;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,9 +20,9 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
- * Manager setup for a booking-wizard package: net rates (typed or imported
- * from the supplier's sheet), hotels per tier, add-ons, itinerary and
- * seasons. Each section saves on its own and replaces that section whole,
+ * Manager setup for a booking-wizard package: hotels with NET room prices
+ * per night, tour/land prices per adult by group size, hotel details,
+ * add-ons, itinerary and seasons. Each section saves on its own and replaces that section whole,
  * so what is on screen is exactly what customers are priced from.
  */
 class ManagerTourPackageSetupController extends Controller
@@ -30,77 +31,176 @@ class ManagerTourPackageSetupController extends Controller
     {
         // TravelPackage is tenant-scoped: another tenant's id is a 404 here.
         $package = TravelPackage::where('isActive', 1)->where('package_type', 'wizard')->findOrFail($id);
-        return $package->load(['rates', 'hotels', 'addons', 'itineraryDays', 'seasons']);
+        return $package->load(['rates', 'landRates', 'hotels', 'addons', 'itineraryDays', 'seasons']);
     }
 
     public function show(int $id): View
     {
         $package = $this->package($id);
+        $priced = $package->hotels->filter(fn ($h) => $h->isPriced())->values();
+        $legacy = !$package->usesRoomPricing() && $package->rates->isNotEmpty();
+
         return view('manager.packages.booking-setup', [
-            'package'    => $package,
-            'mealPlans'  => TourPackageHotel::MEAL_PLANS,
-            'categories' => TourPackageAddon::CATEGORIES,
-            'bases'      => TourPackageAddon::BASES,
-            'tiers'      => $package->rates->pluck('hotel_stars')->unique()->sort()->values(),
-            'durations'  => $package->rates->pluck('days')->unique()->sort()->values(),
+            'package'      => $package,
+            'mealPlans'    => TourPackageHotel::MEAL_PLANS,
+            'categories'   => TourPackageAddon::CATEGORIES,
+            'bases'        => TourPackageAddon::BASES,
+            'groups'       => TourPackageLandRate::GROUPS,
+            'pricedHotels' => $priced,
+            'priceCheck'   => $this->priceCheck($package, $priced),
+            'tiers'        => $legacy ? $package->rates->pluck('hotel_stars')->unique()->sort()->values() : $package->hotels->pluck('hotel_stars')->sort()->values(),
+            'durations'    => $package->landRates->isNotEmpty() ? $package->landRates->pluck('days')->unique()->sort()->values() : $package->rates->pluck('days')->unique()->sort()->values(),
         ]);
     }
 
-    public function saveRates(Request $request, int $id): RedirectResponse
+    /** Hotels sold with this package and their NET room prices per night. */
+    public function saveRooms(Request $request, int $id): RedirectResponse
     {
         $package = $this->package($id);
-        $rows = collect($request->input('rates', []))->filter(fn ($r) => filled($r['days'] ?? null) || filled($r['adult_net'] ?? null))->values();
-        $request->merge(['rates' => $rows->all()]);
         $request->validate([
-            'rates'                         => 'array|max:200',
-            'rates.*.days'                  => 'required|integer|min:1|max:60',
-            'rates.*.hotel_stars'           => 'required|integer|min:1|max:5',
-            'rates.*.adult_net'             => 'required|numeric|min:0|max:1000000',
-            'rates.*.child_net'             => 'nullable|numeric|min:0|max:1000000',
-            'rates.*.infant_net'            => 'nullable|numeric|min:0|max:1000000',
-            'rates.*.single_supplement_net' => 'nullable|numeric|min:0|max:1000000',
-        ], [], ['rates.*.days' => 'days', 'rates.*.hotel_stars' => 'hotel stars', 'rates.*.adult_net' => 'adult net price']);
-
-        $this->replaceRates($package, $rows->all());
-        return back()->with('success', $rows->count() . ' rate rows saved.');
-    }
-
-    public function importRates(Request $request, int $id): RedirectResponse
-    {
-        $package = $this->package($id);
-        $request->validate(['rate_sheet' => 'required|file|mimes:csv,txt|max:2048'], [
-            'rate_sheet.mimes' => 'Upload the rate sheet as a .csv file (in Excel: File → Save As → CSV).',
+            'hotels'                 => 'array',
+            'hotels.*.name'          => 'nullable|string|max:190',
+            'hotels.*.location'      => 'nullable|string|max:190',
+            'hotels.*.single_net'    => 'nullable|numeric|min:0|max:1000000',
+            'hotels.*.double_net'    => 'nullable|numeric|min:0|max:1000000',
+            'hotels.*.triple_net'    => 'nullable|numeric|min:0|max:1000000',
+            'hotels.*.extra_bed_net' => 'nullable|numeric|min:0|max:1000000',
         ]);
-
-        $result = RateSheetImport::parse((string) file_get_contents($request->file('rate_sheet')->getRealPath()));
-        if ($result['errors']) {
-            throw ValidationException::withMessages(['rate_sheet' => $result['errors']]);
+        $missing = collect((array) $request->input('hotels', []))
+            ->filter(fn ($h) => filled($h['name'] ?? null) && !((float) ($h['double_net'] ?? 0) > 0))
+            ->keys();
+        if ($missing->isNotEmpty()) {
+            throw ValidationException::withMessages(['hotels' => 'Enter the double room price for the ' . $missing->map(fn ($s) => $s . '-star')->join(', ', ' and ') . ' hotel.']);
         }
-        $this->replaceRates($package, $result['rows']);
-        return back()->with('success', count($result['rows']) . ' rate rows imported from the sheet. They replace the previous rates.');
-    }
 
-    private function replaceRates(TravelPackage $package, array $rows): void
-    {
-        $seen = [];
-        foreach ($rows as $r) {
-            $key = (int) $r['days'] . '/' . (int) $r['hotel_stars'];
-            if (isset($seen[$key])) {
-                throw ValidationException::withMessages(['rates' => "There are two rows for {$r['days']} days at {$r['hotel_stars']} stars. Keep one."]);
-            }
-            $seen[$key] = true;
-        }
-        DB::transaction(function () use ($package, $rows) {
-            TourPackageRate::where('package_id', $package->id)->delete();
-            foreach ($rows as $r) {
-                TourPackageRate::create([
-                    'package_id' => $package->id,
-                    'days' => (int) $r['days'], 'hotel_stars' => (int) $r['hotel_stars'],
-                    'adult_net' => (float) $r['adult_net'], 'child_net' => (float) ($r['child_net'] ?? 0),
-                    'infant_net' => (float) ($r['infant_net'] ?? 0), 'single_supplement_net' => (float) ($r['single_supplement_net'] ?? 0),
+        $count = 0;
+        DB::transaction(function () use ($request, $package, &$count) {
+            foreach ((array) $request->input('hotels', []) as $stars => $h) {
+                $stars = (int) $stars;
+                if ($stars < 1 || $stars > 5) {
+                    continue;
+                }
+                if (!filled($h['name'] ?? null)) {
+                    TourPackageHotel::where('package_id', $package->id)->where('hotel_stars', $stars)->delete();
+                    continue;
+                }
+                $money = fn ($k) => filled($h[$k] ?? null) && (float) $h[$k] > 0 ? round((float) $h[$k], 2) : null;
+                $hotel = TourPackageHotel::firstOrNew(['package_id' => $package->id, 'hotel_stars' => $stars]);
+                $hotel->fill([
+                    'name' => $h['name'], 'location' => $h['location'] ?? null,
+                    'single_net' => $money('single_net'), 'double_net' => $money('double_net'),
+                    'triple_net' => $money('triple_net'), 'extra_bed_net' => $money('extra_bed_net'),
                 ]);
+                if (!$hotel->exists) {
+                    $hotel->fill(['check_in_time' => '14:00', 'check_out_time' => '12:00', 'meal_plans' => ['breakfast']]);
+                }
+                $hotel->save();
+                $count++;
             }
         });
+        $this->retireOldRates($package);
+        return back()->with('success', $count . ' ' . ($count === 1 ? 'hotel' : 'hotels') . ' and room prices saved.');
+    }
+
+    /** Tours, transfers and guide: NET per adult for the whole trip, by trip length and group size. */
+    public function saveLand(Request $request, int $id): RedirectResponse
+    {
+        $package = $this->package($id);
+        $bands = array_keys(TourPackageLandRate::GROUPS);
+        $rows = collect($request->input('land', []))
+            ->filter(fn ($r) => filled($r['days'] ?? null) || collect($bands)->contains(fn ($g) => filled($r['g' . $g] ?? null)))
+            ->values();
+        $request->merge(['land' => $rows->all()]);
+        $rules = [
+            'land'                  => 'array|max:30',
+            'land.*.days'           => 'required|integer|min:1|max:60',
+            'child_land_percent'    => 'required|numeric|min:0|max:100',
+            'child_sharing_max_age' => 'required|integer|min:0|max:17',
+        ];
+        foreach ($bands as $g) {
+            $rules['land.*.g' . $g] = 'nullable|numeric|min:0|max:1000000';
+        }
+        $request->validate($rules, [], ['land.*.days' => 'trip length']);
+
+        $seen = [];
+        foreach ($rows as $r) {
+            $d = (int) $r['days'];
+            if (isset($seen[$d])) {
+                throw ValidationException::withMessages(['land' => "There are two rows for {$d} days. Keep one."]);
+            }
+            $seen[$d] = true;
+            if (!collect($bands)->contains(fn ($g) => (float) ($r['g' . $g] ?? 0) > 0)) {
+                throw ValidationException::withMessages(['land' => "Enter at least one price for the {$d}-day trip."]);
+            }
+        }
+
+        DB::transaction(function () use ($package, $rows, $bands, $request) {
+            TourPackageLandRate::where('package_id', $package->id)->delete();
+            foreach ($rows as $r) {
+                foreach ($bands as $g) {
+                    if ((float) ($r['g' . $g] ?? 0) > 0) {
+                        TourPackageLandRate::create(['package_id' => $package->id, 'days' => (int) $r['days'],
+                            'min_group' => $g, 'adult_net' => round((float) $r['g' . $g], 2)]);
+                    }
+                }
+            }
+            $package->update([
+                'child_land_percent' => (float) $request->input('child_land_percent'),
+                'child_sharing_max_age' => (int) $request->input('child_sharing_max_age'),
+            ]);
+        });
+        $this->retireOldRates($package);
+        return back()->with('success', 'Tour prices saved for ' . $rows->count() . ' trip ' . ($rows->count() === 1 ? 'length' : 'lengths') . '.');
+    }
+
+    /** Once room and group pricing is complete, the old per-person rates are no longer used. */
+    private function retireOldRates(TravelPackage $package): void
+    {
+        $fresh = TravelPackage::with(['hotels', 'landRates'])->find($package->id);
+        if ($fresh && $fresh->usesRoomPricing()) {
+            TourPackageRate::where('package_id', $package->id)->delete();
+        }
+    }
+
+    /**
+     * Totals for common bookings, for every priced hotel, so staff can check
+     * their numbers. Uses the same TourPackageQuote customers are charged by.
+     */
+    private function priceCheck(TravelPackage $package, $hotels): array
+    {
+        if (!$package->usesRoomPricing()) {
+            return ['rows' => []];
+        }
+        $days = (int) $package->landRates->min('days');
+        // A normal-season date, so the check shows the base prices.
+        $start = now()->addDays(30)->startOfDay();
+        for ($i = 0; $i < 400 && $package->seasons->contains(fn ($s) => $start->between($s->starts_on->copy()->startOfDay(), $s->ends_on->copy()->endOfDay())); $i++) {
+            $start->addDay();
+        }
+        $cases = [
+            ['1 adult', 1, []],
+            ['2 adults', 2, []],
+            ['3 adults', 3, []],
+            ['2 adults + child (8)', 2, [8]],
+            ['2 adults + child (4)', 2, [4]],
+            ['4 adults', 4, []],
+            ['6 adults', 6, []],
+        ];
+        $rows = [];
+        foreach ($cases as [$label, $adults, $ages]) {
+            $cells = [];
+            foreach ($hotels as $h) {
+                $res = TourPackageQuote::make($package, [
+                    'start_date' => $start->toDateString(), 'days' => $days, 'hotel_stars' => $h->hotel_stars,
+                    'adults' => $adults, 'child_ages' => $ages,
+                ], false);
+                $q = $res['quote'] ?? null;
+                $paying = $q ? $q['adults'] + $q['children'] : 0;
+                $cells[] = $q ? ['total' => $q['total'], 'rooms' => $q['rooms'], 'per_person' => $paying ? $q['total'] / $paying : $q['total']] : null;
+            }
+            $rows[] = ['label' => $label, 'cells' => $cells];
+        }
+        return ['rows' => $rows, 'hotels' => $hotels, 'days' => $days, 'date' => $start->format('j M Y')];
     }
 
     public function saveHotels(Request $request, int $id): RedirectResponse
@@ -120,16 +220,12 @@ class ManagerTourPackageSetupController extends Controller
 
         DB::transaction(function () use ($request, $package) {
             foreach ((array) $request->input('hotels', []) as $stars => $h) {
-                $stars = (int) $stars;
-                if ($stars < 1 || $stars > 5) {
+                // Names and room prices are set in part 1; this saves the details of hotels already there.
+                $hotel = TourPackageHotel::where('package_id', $package->id)->where('hotel_stars', (int) $stars)->first();
+                if (!$hotel) {
                     continue;
                 }
-                if (!filled($h['name'] ?? null)) {
-                    TourPackageHotel::where('package_id', $package->id)->where('hotel_stars', $stars)->delete();
-                    continue;
-                }
-                TourPackageHotel::updateOrCreate(['package_id' => $package->id, 'hotel_stars' => $stars], [
-                    'name' => $h['name'], 'location' => $h['location'] ?? null,
+                $hotel->update([
                     'check_in_time' => ($h['check_in_time'] ?? null) ?: '14:00', 'check_out_time' => ($h['check_out_time'] ?? null) ?: '12:00',
                     'late_check_in_policy' => $h['late_check_in_policy'] ?? null,
                     'late_check_out_policy' => $h['late_check_out_policy'] ?? null,

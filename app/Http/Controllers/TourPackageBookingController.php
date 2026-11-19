@@ -24,8 +24,8 @@ class TourPackageBookingController extends Controller
     private function package(int $id): TravelPackage
     {
         $package = TravelPackage::where('isActive', 1)->where('package_type', 'wizard')->findOrFail($id);
-        $package->load(['rates', 'hotels', 'addons', 'itineraryDays', 'seasons', 'images']);
-        abort_if($package->rates->isEmpty(), 404);
+        $package->load(['rates', 'landRates', 'hotels', 'addons', 'itineraryDays', 'seasons', 'images']);
+        abort_if(!$package->hasPricing(), 404);
         return $package;
     }
 
@@ -33,12 +33,19 @@ class TourPackageBookingController extends Controller
     {
         $package = $this->package($id);
 
+        if ($package->usesRoomPricing()) {
+            // Every priced hotel can be had for every trip length.
+            $days = $package->landRates->pluck('days')->unique()->sort()->values();
+            $packs = $package->hotels->filter(fn ($h) => $h->isPriced())->keyBy('hotel_stars')->sortKeys()
+                ->map(fn ($h) => ['days' => $days, 'from' => TourPackageQuote::fromPerAdult($package, $h->hotel_stars)]);
+        }
+
         return view('tour-package-book', [
             'package'     => $package,
-            'durations'   => $package->rates->pluck('days')->unique()->sort()->values(),
+            'durations'   => $days ?? $package->rates->pluck('days')->unique()->sort()->values(),
             // Packages are the hotel levels; each lists its trip lengths and the
             // lowest per-adult selling price across them.
-            'packs'       => $package->rates->groupBy('hotel_stars')->sortKeys()->map(fn ($r) => [
+            'packs'       => $packs ?? $package->rates->groupBy('hotel_stars')->sortKeys()->map(fn ($r) => [
                 'days' => $r->pluck('days')->unique()->sort()->values(),
                 'from' => round($r->min('adult_net') * (1 + (float) $package->margin_percent / 100), 2),
             ]),
@@ -105,7 +112,7 @@ class TourPackageBookingController extends Controller
                 'infants'          => $q['infants'],
                 'child_ages'       => $q['child_ages'],
                 'selections'       => $q['selections'],
-                'price_breakdown'  => ['lines' => $q['net_lines'], 'hotel' => $q['hotel'], 'season' => $q['season'],
+                'price_breakdown'  => ['lines' => $q['net_lines'], 'hotel' => $q['hotel'], 'rooms' => $q['rooms'], 'season' => $q['season'],
                                        'margin_percent' => (float) $package->margin_percent],
                 'net_total'        => $q['net_total'],
                 'total'            => $q['total'],

@@ -32,9 +32,10 @@ class TourPackageQuote
     /**
      * @return array{ok: bool, errors: array<string,string>, quote: ?array}
      */
-    public static function make(TravelPackage $package, array $input): array
+    public static function make(TravelPackage $package, array $input, bool $checkTravellerType = true): array
     {
-        $package->loadMissing(['rates', 'hotels', 'addons', 'seasons']);
+        $package->loadMissing(['rates', 'landRates', 'hotels', 'addons', 'seasons']);
+        $rooms = $package->usesRoomPricing();
         $errors = [];
         $margin = max(0.0, (float) $package->margin_percent) / 100;
         $sell = fn (float $net) => round($net * (1 + $margin), 2);
@@ -42,11 +43,20 @@ class TourPackageQuote
         // ---- dates and duration ----
         $days = (int) ($input['days'] ?? 0);
         $stars = (int) ($input['hotel_stars'] ?? 0);
-        $rate = $package->rates->first(fn ($r) => $r->days === $days && $r->hotel_stars === $stars);
-        if (!$package->rates->contains('days', $days)) {
-            $errors['days'] = 'Choose one of the available trip lengths.';
-        } elseif (!$rate) {
-            $errors['hotel_stars'] = 'That hotel category is not available for a ' . $days . '-day trip.';
+        $rate = null;
+        if ($rooms) {
+            if (!$package->landRates->contains('days', $days)) {
+                $errors['days'] = 'Choose one of the available trip lengths.';
+            } elseif (!$package->hotels->first(fn ($h) => $h->hotel_stars === $stars && $h->isPriced())) {
+                $errors['hotel_stars'] = 'Choose one of the listed hotels.';
+            }
+        } else {
+            $rate = $package->rates->first(fn ($r) => $r->days === $days && $r->hotel_stars === $stars);
+            if (!$package->rates->contains('days', $days)) {
+                $errors['days'] = 'Choose one of the available trip lengths.';
+            } elseif (!$rate) {
+                $errors['hotel_stars'] = 'That hotel category is not available for a ' . $days . '-day trip.';
+            }
         }
 
         $start = null;
@@ -66,7 +76,7 @@ class TourPackageQuote
         $type = (string) ($input['traveler_type'] ?? '');
         $adults = (int) ($input['adults'] ?? 0);
         $ages = array_values(array_map('intval', array_filter((array) ($input['child_ages'] ?? []), fn ($a) => $a !== '' && $a !== null)));
-        $children = $infants = 0;
+        $children = $infants = $sharing = 0;
         foreach ($ages as $age) {
             if ($age < 0 || $age > 17) {
                 $errors['child_ages'] = 'Children\'s ages must be between 0 and 17.';
@@ -76,6 +86,9 @@ class TourPackageQuote
                 $infants++;
             } elseif ($age <= $package->child_max_age) {
                 $children++;
+                if ($age <= (int) $package->child_sharing_max_age) {
+                    $sharing++; // sleeps in the parents' bed: no hotel cost
+                }
             } else {
                 $adults++; // older children pay the adult rate
             }
@@ -83,10 +96,12 @@ class TourPackageQuote
         $kids = count($ages);
         $everyone = (int) ($input['adults'] ?? 0) + $kids;
 
-        if (!in_array($type, self::TRAVELER_TYPES, true)) {
+        if ($checkTravellerType && !in_array($type, self::TRAVELER_TYPES, true)) {
             $errors['traveler_type'] = 'Choose who is travelling.';
         } elseif ((int) ($input['adults'] ?? 0) < 1) {
             $errors['adults'] = 'At least one adult must travel.';
+        } elseif (!$checkTravellerType) {
+            // Staff price check: any mix of travellers.
         } elseif ($type === 'solo' && ($input['adults'] != 1 || $kids)) {
             $errors['traveler_type'] = 'A solo trip is for one adult.';
         } elseif ($type === 'couple' && ($input['adults'] != 2 || $kids)) {
@@ -150,16 +165,32 @@ class TourPackageQuote
             $lines[] = ['key' => $key, 'label' => $label, 'detail' => $detail, 'net' => round($net, 2), 'amount' => $sell($net)];
         };
 
-        $tier = $stars . '-star hotel';
-        $line('adults', "Package, {$days} days, {$tier}", self::count($adults, 'adult'), $adults * $rate->adult_net);
-        $line('children', 'Children (ages ' . ($package->infant_max_age + 1) . '–' . $package->child_max_age . ')', self::count($children, 'child', 'children'), $children * $rate->child_net);
-        $line('infants', 'Infants (under ' . ($package->infant_max_age + 1) . ')', self::count($infants, 'infant'), $infants * $rate->infant_net);
-        if ($adults % 2 === 1) {
-            $line('single_supplement', 'Single room supplement', 'one adult in a room of their own', $rate->single_supplement_net);
-        }
+        $roomPlan = null;
+        if ($rooms) {
+            $hotelRow = $package->hotels->first(fn ($h) => $h->hotel_stars === $stars);
+            $nights = max(1, $days - 1);
+            $roomPlan = self::allocateRooms($adults + $children - $sharing, $hotelRow);
+            $hotelNet = $nights * $roomPlan['per_night'];
+            $line('hotel', "Hotel, {$nights} " . ($nights === 1 ? 'night' : 'nights') . ' · ' . $stars . '★ ' . $hotelRow->name, $roomPlan['label'], $hotelNet);
 
-        $rateNet = $adults * $rate->adult_net + $children * $rate->child_net + $infants * $rate->infant_net
-            + ($adults % 2 === 1 ? $rate->single_supplement_net : 0);
+            $group = $adults + $children;
+            $land = self::landPrice($package, $days, $group);
+            $childLand = round($land * (float) $package->child_land_percent / 100, 2);
+            $line('land_adults', "Tours, transfers and guide, {$days} days", self::count($adults, 'adult') . ' × AED ' . number_format($land * (1 + $margin), 2) . ' (group of ' . $group . ')', $adults * $land);
+            $line('land_children', 'Tours, transfers and guide: children', self::count($children, 'child', 'children') . ' at ' . rtrim(rtrim(number_format($package->child_land_percent, 2), '0'), '.') . '% of the adult price', $children * $childLand);
+            $rateNet = $hotelNet + $adults * $land + $children * $childLand;
+        } else {
+            $tier = $stars . '-star hotel';
+            $line('adults', "Package, {$days} days, {$tier}", self::count($adults, 'adult'), $adults * $rate->adult_net);
+            $line('children', 'Children (ages ' . ($package->infant_max_age + 1) . '–' . $package->child_max_age . ')', self::count($children, 'child', 'children'), $children * $rate->child_net);
+            $line('infants', 'Infants (under ' . ($package->infant_max_age + 1) . ')', self::count($infants, 'infant'), $infants * $rate->infant_net);
+            if ($adults % 2 === 1) {
+                $line('single_supplement', 'Single room supplement', 'one adult in a room of their own', $rate->single_supplement_net);
+            }
+
+            $rateNet = $adults * $rate->adult_net + $children * $rate->child_net + $infants * $rate->infant_net
+                + ($adults % 2 === 1 ? $rate->single_supplement_net : 0);
+        }
         $season = $package->seasons
             ->filter(fn ($s) => $start->between($s->starts_on->copy()->startOfDay(), $s->ends_on->copy()->endOfDay()))
             ->sortByDesc('surcharge_percent')->first();
@@ -202,6 +233,7 @@ class TourPackageQuote
                 'check_in' => $hotel->check_in_time, 'check_out' => $hotel->check_out_time,
                 'late_check_in' => $hotel->late_check_in_policy, 'late_check_out' => $hotel->late_check_out_policy,
             ] : null,
+            'rooms'      => $roomPlan['label'] ?? null,
             'traveler_type' => $type,
             'adults'     => $adults,
             'children'   => $children,
@@ -224,6 +256,81 @@ class TourPackageQuote
             'total'      => round(array_sum(array_column($lines, 'amount')), 2),
             'visa'       => $visa,
         ]];
+    }
+
+    /**
+     * Rooms for the guests who need a bed (adults and children too old to share
+     * the parents' bed). Two to a double; an odd guest out makes one room a
+     * triple, or gets an extra bed, or a single room, whichever the hotel has.
+     *
+     * @return array{rooms: array<int,string>, extra_beds: int, per_night: float, label: string}
+     */
+    public static function allocateRooms(int $guests, \App\Models\TourPackageHotel $hotel): array
+    {
+        $guests = max(1, $guests);
+        $single = (float) $hotel->single_net > 0 ? (float) $hotel->single_net : null;
+        $double = (float) $hotel->double_net;
+        $triple = (float) $hotel->triple_net > 0 ? (float) $hotel->triple_net : null;
+        $extra = (float) $hotel->extra_bed_net > 0 ? (float) $hotel->extra_bed_net : null;
+
+        $rooms = [];
+        $extraBeds = 0;
+        if ($guests === 1) {
+            $rooms[] = $single ? 'single' : 'double';
+        } else {
+            $doubles = intdiv($guests, 2);
+            $odd = $guests % 2 === 1;
+            $rooms = array_fill(0, $doubles, 'double');
+            if ($odd) {
+                if ($triple) {
+                    $rooms[0] = 'triple';
+                } elseif ($extra) {
+                    $extraBeds = 1;
+                } else {
+                    $rooms[] = $single ? 'single' : 'double';
+                }
+            }
+        }
+
+        $price = ['single' => $single ?? $double, 'double' => $double, 'triple' => $triple ?? $double];
+        $perNight = array_sum(array_map(fn ($r) => $price[$r], $rooms)) + $extraBeds * ($extra ?? 0);
+
+        $counts = array_count_values($rooms);
+        $names = ['single' => 'Single', 'double' => 'Double', 'triple' => 'Triple'];
+        $parts = [];
+        foreach (['single', 'double', 'triple'] as $t) {
+            if (!empty($counts[$t])) {
+                $parts[] = $counts[$t] . ' ' . $names[$t] . ' room' . ($counts[$t] > 1 ? 's' : '');
+            }
+        }
+        if ($extraBeds) {
+            $parts[] = $extraBeds . ' extra bed';
+        }
+
+        return ['rooms' => $rooms, 'extra_beds' => $extraBeds, 'per_night' => round($perNight, 2), 'label' => implode(' + ', $parts)];
+    }
+
+    /**
+     * Land price per adult (NET, whole trip) for a group of this size: the band
+     * with the largest starting size that fits, or the smallest band set.
+     */
+    public static function landPrice(\App\Models\TravelPackage $package, int $days, int $group): float
+    {
+        $rows = $package->landRates->where('days', $days)->sortBy('min_group');
+        $fit = $rows->filter(fn ($r) => $r->min_group <= max(1, $group))->last() ?? $rows->first();
+        return (float) ($fit?->adult_net ?? 0);
+    }
+
+    /** Selling price per adult, two adults sharing a double, shortest trip (for "From AED x"). */
+    public static function fromPerAdult(\App\Models\TravelPackage $package, int $stars): ?float
+    {
+        $hotel = $package->hotels->first(fn ($h) => $h->hotel_stars === $stars && $h->isPriced());
+        $days = $package->landRates->pluck('days')->unique()->sort()->values();
+        if (!$hotel || $days->isEmpty()) {
+            return null;
+        }
+        $margin = 1 + max(0.0, (float) $package->margin_percent) / 100;
+        return $days->map(fn ($d) => round(((max(1, $d - 1) * (float) $hotel->double_net) / 2 + self::landPrice($package, $d, 2)) * $margin, 2))->min();
     }
 
     public static function visaPayload(?DestinationVisaRule $rule): array

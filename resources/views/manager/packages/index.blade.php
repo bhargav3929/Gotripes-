@@ -66,7 +66,7 @@
                     <td>
                         <strong style="color: var(--wp-text);">{{ Str::limit($package->title, 50) }}</strong>
                         <br>
-                        @if($package->isWizard() && $package->rates_count)
+                        @if($package->isBookableOnline())
                             <span class="wp-badge wp-badge-green" style="margin-top:4px;" title="Customers check their visa, choose package and days, and pay online">Booking wizard · live</span>
                         @elseif($package->isWizard())
                             <span class="wp-badge wp-badge-amber" style="margin-top:4px;" title="Customers still see an enquiry form until rates are added">Booking wizard · add rates to go live</span>
@@ -91,7 +91,7 @@
                         {{ $package->duration }}
                     </td>
                     <td>
-                        @php $from = $package->isWizard() && $package->rates_count ? $package->wizardFromPrice() : (float) $package->price; @endphp
+                        @php $from = $package->isBookableOnline() ? $package->wizardFromPrice() : (float) $package->price; @endphp
                         @if($from > 0)
                             <span style="font-size: 11px; color: var(--wp-text-muted);">From</span><br>
                             <strong style="color: var(--wp-primary);">AED {{ number_format($from, 0) }}</strong>

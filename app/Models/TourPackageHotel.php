@@ -21,9 +21,19 @@ class TourPackageHotel extends Model
     protected $fillable = [
         'package_id', 'hotel_stars', 'name', 'location', 'check_in_time', 'check_out_time',
         'late_check_in_policy', 'late_check_out_policy', 'meal_plans',
+        'single_net', 'double_net', 'triple_net', 'extra_bed_net',
     ];
 
-    protected $casts = ['hotel_stars' => 'integer', 'meal_plans' => 'array'];
+    protected $casts = [
+        'hotel_stars' => 'integer', 'meal_plans' => 'array',
+        'single_net' => 'float', 'double_net' => 'float', 'triple_net' => 'float', 'extra_bed_net' => 'float',
+    ];
+
+    /** Room prices are set: this hotel level can be sold with room-based pricing. */
+    public function isPriced(): bool
+    {
+        return (float) $this->double_net > 0;
+    }
 
     public function package()
     {

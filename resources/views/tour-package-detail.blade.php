@@ -51,8 +51,8 @@
                     <h1 class="tpd-title">{{ $package->title }}</h1>
                     <p class="tpd-duration"><i class="bi bi-clock"></i> {{ $package->duration }}</p>
 
-                    @if($package->isWizard() && $package->rates()->exists())
-                        @php $package->load('rates'); $wizFrom = $package->wizardFromPrice(); @endphp
+                    @if($package->isBookableOnline())
+                        @php $wizFrom = $package->wizardFromPrice(); @endphp
                         {{-- Priced online from supplier rates: the booking wizard does the rest. --}}
                         @if($wizFrom)<div class="tpd-from">From <strong>AED {{ number_format($wizFrom, 0) }}</strong> / adult</div>@endif
                         <p class="tpd-enquire-note">Choose your dates, travellers, hotel and options, see the full price, and pay securely online. Visa requirements are checked as you go.</p>
