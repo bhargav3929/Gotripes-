@@ -32,7 +32,7 @@ class TourPackageQuote
     /**
      * @return array{ok: bool, errors: array<string,string>, quote: ?array}
      */
-    public static function make(TravelPackage $package, array $input, bool $checkTravellerType = true): array
+    public static function make(TravelPackage $package, array $input): array
     {
         $package->loadMissing(['rates', 'landRates', 'hotels', 'addons', 'seasons']);
         $rooms = $package->usesRoomPricing();
@@ -73,7 +73,6 @@ class TourPackageQuote
         }
 
         // ---- travellers ----
-        $type = (string) ($input['traveler_type'] ?? '');
         $adults = (int) ($input['adults'] ?? 0);
         $ages = array_values(array_map('intval', array_filter((array) ($input['child_ages'] ?? []), fn ($a) => $a !== '' && $a !== null)));
         $children = $infants = $sharing = 0;
@@ -96,20 +95,12 @@ class TourPackageQuote
         $kids = count($ages);
         $everyone = (int) ($input['adults'] ?? 0) + $kids;
 
-        if ($checkTravellerType && !in_array($type, self::TRAVELER_TYPES, true)) {
-            $errors['traveler_type'] = 'Choose who is travelling.';
-        } elseif ((int) ($input['adults'] ?? 0) < 1) {
+        // The customer only gives adults and children's ages; the kind of trip
+        // is worked out from them (kept on the booking for staff).
+        $booked = (int) ($input['adults'] ?? 0);
+        $type = $kids ? 'family' : ($booked === 1 ? 'solo' : ($booked === 2 ? 'couple' : 'group'));
+        if ($booked < 1) {
             $errors['adults'] = 'At least one adult must travel.';
-        } elseif (!$checkTravellerType) {
-            // Staff price check: any mix of travellers.
-        } elseif ($type === 'solo' && ($input['adults'] != 1 || $kids)) {
-            $errors['traveler_type'] = 'A solo trip is for one adult.';
-        } elseif ($type === 'couple' && ($input['adults'] != 2 || $kids)) {
-            $errors['traveler_type'] = 'A couple trip is for two adults.';
-        } elseif ($type === 'family' && $kids < 1) {
-            $errors['traveler_type'] = 'Add the children\'s ages for a family trip.';
-        } elseif ($type === 'group' && $everyone < 5) {
-            $errors['traveler_type'] = 'A group is five people or more.';
         } elseif ($everyone > self::MAX_TRAVELLERS) {
             $errors['adults'] = 'For more than ' . self::MAX_TRAVELLERS . ' travellers, please contact us.';
         }

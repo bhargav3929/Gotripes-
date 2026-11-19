@@ -30,6 +30,14 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var sel = document.querySelector('select[name=package_type]'), box = document.getElementById('wizardSettings');
-        if (sel && box) sel.addEventListener('change', function () { box.hidden = sel.value !== 'wizard'; });
+        function apply() {
+            var wiz = sel.value === 'wizard';
+            if (box) box.hidden = !wiz;
+            document.querySelectorAll('#pricingCard [data-not-wizard]').forEach(function (el) { el.hidden = wiz; });
+            document.querySelectorAll('#pricingCard [data-wizard-only]').forEach(function (el) { el.hidden = !wiz; });
+            document.querySelectorAll('[data-required-not-wizard]').forEach(function (el) { el.required = !wiz; });
+            document.querySelectorAll('[data-hide-for-wizard]').forEach(function (el) { el.hidden = wiz; });
+        }
+        if (sel) { sel.addEventListener('change', apply); apply(); }
     });
 </script>

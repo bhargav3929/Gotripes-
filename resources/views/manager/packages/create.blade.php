@@ -78,13 +78,15 @@
                 </div>
             </div>
 
-            {{-- Pricing --}}
-            <div class="wp-card">
+            {{-- Pricing (not used by booking-wizard packages: those are priced in Booking setup) --}}
+            <div class="wp-card" id="pricingCard">
                 <div class="wp-card-header"><i class="fas fa-tags text-secondary-wp"></i> Pricing</div>
                 <div class="wp-card-body">
+                    <p class="wp-form-help" data-wizard-only style="margin:0;"><strong>Booking wizard:</strong> customers pay what Booking setup works out from your hotel room prices and tour prices, plus your margin. Nothing here is added to it, and the "From" price on the package card is calculated for you.</p>
+                    <div data-not-wizard>
                     <div class="wp-form-group">
                         <label class="wp-form-label">"From" Price (AED) <span class="required">*</span></label>
-                        <input type="number" class="wp-input" name="price" value="{{ old('price') }}" step="0.01" min="0" required placeholder="e.g. 299.00">
+                        <input type="number" class="wp-input" name="price" value="{{ old('price') }}" step="0.01" min="0" required data-required-not-wizard placeholder="e.g. 299.00">
                         <p class="wp-form-help">Shown on the package card (e.g. "From AED 299").</p>
                     </div>
                     <div class="row">
@@ -108,11 +110,12 @@
                         </div>
                     </div>
                     <p class="wp-form-help">Per-person prices power the booking calculator on "Purchase" packages. Leave blank to just use the "From" price.</p>
+                    </div>
                 </div>
             </div>
 
-            {{-- Partner contact --}}
-            <div class="wp-card">
+            {{-- Partner contact: only shown to customers on enquiry packages --}}
+            <div class="wp-card" data-hide-for-wizard>
                 <div class="wp-card-header"><i class="fas fa-handshake text-secondary-wp"></i> Local Partner Contact <span style="font-weight:400;color:#888;">(for enquiries)</span></div>
                 <div class="wp-card-body">
                     <div class="row">

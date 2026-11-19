@@ -213,7 +213,7 @@
                             @include('manager.packages._addon-row', ['i' => $i, 'a' => $a])
                         @endforeach
                         @if($package->addons->isEmpty())
-                            @foreach([['guide_language','English',0,'per_booking'],['transport','Standard bus',0,'per_booking'],['airport_transfer','Airport to hotel pickup',0,'per_booking'],['insurance','Travel insurance',0,'per_person']] as $i => [$cat, $label, $price, $basis])
+                            @foreach([['guide_language','English-speaking guide',0,'per_booking'],['transport','Private car with driver',0,'per_booking']] as $i => [$cat, $label, $price, $basis])
                                 @include('manager.packages._addon-row', ['i' => $i, 'a' => new \App\Models\TourPackageAddon(['category' => $cat, 'label' => $label, 'net_price' => $price, 'charge_basis' => $basis])])
                             @endforeach
                         @endif
@@ -225,7 +225,7 @@
                 <button type="button" class="wp-btn wp-btn-secondary" data-add-row="addon"><i class="fas fa-plus"></i> Add an option</button>
                 <button class="wp-btn wp-btn-primary"><i class="fas fa-save"></i> Save options</button>
             </div>
-            <p class="wp-form-help">A net price of 0 means included. Meal plan rows are the supplement on top of the room (breakfast is normally in the rate). Insurance is offered as optional unless you made it compulsory under Package details.</p>
+            <p class="wp-form-help">A price of 0 means included: customers see it under "Included in your trip". Only add what this package really includes or sells. Meal plan rows are the supplement on top of the room (breakfast is normally in the rate). Insurance is offered as optional unless you made it compulsory under Package details.</p>
         </form>
     </div>
 </div>

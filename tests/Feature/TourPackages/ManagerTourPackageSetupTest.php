@@ -61,6 +61,21 @@ class ManagerTourPackageSetupTest extends TestCase
         File::delete(public_path($p->image));
     }
 
+    public function test_a_wizard_package_needs_no_from_price_but_others_do(): void
+    {
+        $company = $this->tenant();
+        $base = fn (array $more) => array_merge(['country' => 'Georgia', 'description' => 'x', 'duration' => '6 days',
+            'image' => UploadedFile::fake()->image('c.jpg')], $more);
+        $this->actingAs($this->owner($company))->post($this->url($company, '/manager/packages'), $base(['title' => 'No Price Wizard', 'package_type' => 'wizard']))
+            ->assertSessionHasNoErrors();
+        $p = TravelPackage::withoutCompanyScope()->where('title', 'No Price Wizard')->first();
+        $this->assertSame(0.0, (float) $p->price);
+        File::delete(public_path($p->image));
+
+        $this->actingAs($this->owner($company))->post($this->url($company, '/manager/packages'), $base(['title' => 'No Price Enquiry', 'package_type' => 'enquire']))
+            ->assertSessionHasErrors('price');
+    }
+
     public function test_setup_page_renders(): void
     {
         $company = $this->tenant();

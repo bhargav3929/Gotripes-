@@ -48,7 +48,7 @@ class RoomPricingTest extends TestCase
     public function test_four_adults_get_two_doubles(): void
     {
         $p = $this->georgiaRooms($this->tenant());
-        $q = TourPackageQuote::make($p, $this->input(['days' => 6, 'hotel_stars' => 3, 'traveler_type' => 'group', 'adults' => 4]), false)['quote'];
+        $q = TourPackageQuote::make($p, $this->input(['days' => 6, 'hotel_stars' => 3, 'traveler_type' => 'group', 'adults' => 4]))['quote'];
         $this->assertSame('2 Double rooms', $q['rooms']);
         $this->assertSame(round((600 * 5 + 4 * 900) * 1.1, 2), $q['total']);
     }
@@ -56,7 +56,7 @@ class RoomPricingTest extends TestCase
     public function test_a_hotel_without_triples_or_singles_uses_another_double(): void
     {
         $p = $this->georgiaRooms($this->tenant());
-        $q = TourPackageQuote::make($p, $this->input(['days' => 6, 'hotel_stars' => 4, 'adults' => 3]), false)['quote'];
+        $q = TourPackageQuote::make($p, $this->input(['days' => 6, 'hotel_stars' => 4, 'adults' => 3]))['quote'];
         $this->assertSame('2 Double rooms', $q['rooms']);
     }
 

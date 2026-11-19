@@ -193,7 +193,7 @@ class ManagerTourPackageSetupController extends Controller
                 $res = TourPackageQuote::make($package, [
                     'start_date' => $start->toDateString(), 'days' => $days, 'hotel_stars' => $h->hotel_stars,
                     'adults' => $adults, 'child_ages' => $ages,
-                ], false);
+                ]);
                 $q = $res['quote'] ?? null;
                 $paying = $q ? $q['adults'] + $q['children'] : 0;
                 $cells[] = $q ? ['total' => $q['total'], 'rooms' => $q['rooms'], 'per_person' => $paying ? $q['total'] / $paying : $q['total']] : null;

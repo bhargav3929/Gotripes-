@@ -104,17 +104,11 @@
                             <input type="date" name="start_date" min="{{ now()->addDay()->toDateString() }}" max="{{ now()->addYears(2)->toDateString() }}" required>
                         </label>
                     </div>
-                    <div class="tpw-cards4" role="radiogroup" aria-label="Traveller type">
-                        @foreach(['solo' => ['Solo', '1 adult', 'bi-person'], 'couple' => ['Couple', '2 adults', 'bi-people'], 'family' => ['Family', 'Adults and children', 'bi-house-heart'], 'group' => ['Group', '5 people or more', 'bi-people-fill']] as $val => [$t, $s, $icon])
-                            <label class="tpw-card"><input type="radio" name="traveler_type" value="{{ $val }}" @checked($val === 'couple')>
-                                <i class="bi {{ $icon }}" aria-hidden="true"></i><strong>{{ $t }}</strong><small>{{ $s }}</small><span class="tpw-tick" aria-hidden="true"><i class="bi bi-check-lg"></i></span></label>
-                        @endforeach
-                    </div>
                     <div id="tpwCounts" class="tpw-counts">
                         <div class="tpw-counter"><span class="tpw-counter-label">Adults <small>12 and over</small></span>
                             <div class="tpw-stepper"><button type="button" data-adj="adults" data-by="-1" aria-label="Fewer adults"><i class="bi bi-dash-lg"></i></button><input name="adults" value="2" inputmode="numeric" readonly aria-label="Adults"><button type="button" data-adj="adults" data-by="1" aria-label="More adults"><i class="bi bi-plus-lg"></i></button></div>
                         </div>
-                        <div id="tpwKids" class="tpw-kids">
+                        <div class="tpw-kids">
                             <div class="tpw-kids-head"><span class="tpw-counter-label">Children <small>age on the travel date</small></span>
                                 <button type="button" class="tpw-link" id="tpwAddChild"><i class="bi bi-plus-lg"></i> Add a child</button></div>
                             <div id="tpwChildList" class="tpw-child-list"></div>
@@ -125,6 +119,7 @@
                 {{-- 5. Options --}}
                 <section class="tpw-step" data-step="5" hidden>
                     <h2>Make it yours</h2>
+                    <div id="tpwIncluded" class="tpw-included" hidden></div>
                     <div id="tpwGuide"></div>
                     <div id="tpwTransport"></div>
                     <div id="tpwMeals"></div>
@@ -343,6 +338,11 @@
     .tpw-price small { display:block; font-size:11px; font-weight:400; color:var(--mute); }
     .tpw-price.is-free { color:var(--mute); font-weight:500; }
 
+    .tpw-included { margin-top:16px; padding:16px; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--bg); font-size:14px; color:var(--ink-2); line-height:1.6; }
+    .tpw-included strong { display:block; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--mute); margin-bottom:6px; }
+    .tpw-included span { display:inline-flex; align-items:center; gap:6px; margin-right:16px; }
+    .tpw-included i { color:var(--ok); }
+
     /* ---------- itinerary ---------- */
     .tpw-timeline { position:relative; margin:24px 0; padding-left:28px; }
     .tpw-timeline::before { content:''; position:absolute; left:7px; top:8px; bottom:8px; width:2px; background:linear-gradient(var(--gold-line),var(--line)); }
@@ -496,7 +496,7 @@
         const data = Object.fromEntries(fd.entries());
         data.days = state.days; data.hotel_stars = state.stars;
         data.child_ages = state.childAges;
-        data.airport_transfer = !!form.querySelector('[name=airport_transfer]:checked');
+        data.airport_transfer = !!form.querySelector('[name=airport_transfer]:checked, input[type=hidden][name=airport_transfer]');
         data.insurance = W.insuranceRequired || !!form.querySelector('[name=insurance]:checked');
         return data;
     }
@@ -536,9 +536,9 @@
     // ---------- step 2: travellers ----------
     function setAdults(n) { form.adults.value = Math.max(1, Math.min(50, n)); syncSteppers(); requote(); }
     function syncSteppers() {
-        const t = form.traveler_type.value, fixed = (t === 'solo' || t === 'couple'), n = +form.adults.value;
-        form.querySelector('[data-adj][data-by="-1"]').disabled = fixed || n <= 1;
-        form.querySelector('[data-adj][data-by="1"]').disabled = fixed || n >= 50;
+        const n = +form.adults.value;
+        form.querySelector('[data-adj][data-by="-1"]').disabled = n <= 1;
+        form.querySelector('[data-adj][data-by="1"]').disabled = n >= 50;
     }
     form.querySelectorAll('[data-adj]').forEach(b => b.addEventListener('click', () => setAdults(+form.adults.value + +b.dataset.by)));
     const ageLabel = (a) => a === 0 ? 'Under 1' : a + (a === 1 ? ' year' : ' years');
@@ -551,16 +551,6 @@
     $('tpwAddChild').addEventListener('click', () => { state.childAges.push(5); renderChildren(); requote(); });
     $('tpwChildList').addEventListener('change', e => { if (e.target.dataset.child !== undefined) { state.childAges[+e.target.dataset.child] = +e.target.value; requote(); } });
     $('tpwChildList').addEventListener('click', e => { const b = e.target.closest('[data-remove]'); if (b) { state.childAges.splice(+b.dataset.remove, 1); renderChildren(); requote(); } });
-    form.querySelectorAll('[name=traveler_type]').forEach(r => r.addEventListener('change', applyType));
-    function applyType() {
-        const t = form.traveler_type.value;
-        $('tpwKids').hidden = (t === 'solo' || t === 'couple');
-        if (t === 'solo') { form.adults.value = 1; state.childAges = []; }
-        if (t === 'couple') { form.adults.value = 2; state.childAges = []; }
-        if (t === 'family' && !state.childAges.length) state.childAges = [5];
-        if (t === 'group' && +form.adults.value < 5) form.adults.value = 5;
-        syncSteppers(); renderChildren(); requote();
-    }
 
     // ---------- step 2: package, step 3: days ----------
     function renderPacks() {
@@ -605,12 +595,19 @@
             '<span class="tpw-ind' + (type === 'checkbox' ? ' is-box' : '') + '" aria-hidden="true"></span>' +
             '<span class="tpw-opt-text">' + esc(o.label) + (o.description ? '<small>' + esc(o.description) + '</small>' : '') + '</span>' + priceTag(o) + '</label>';
     }
+    // Something that costs nothing and has no alternative is not a choice: it is listed as included.
+    let included = [];
     function radioGroup(name, title, options, current) {
         if (!options || !options.length) return '';
+        if (options.length === 1 && !(options[0].price > 0)) {
+            included.push(options[0].label);
+            return '<input type="hidden" name="' + name + '" value="' + esc(options[0].code) + '">';
+        }
         const sel = current && options.some(o => o.code === current) ? current : (options.find(o => !o.price) || options[0]).code;
         return '<div class="tpw-opt" role="radiogroup"><div class="tpw-opt-title">' + title + '</div>' + options.map(o => optRow('radio', name, o, o.code === sel)).join('') + '</div>';
     }
     function renderOptions() {
+        included = [];
         const keep = (n) => form.querySelector('[name=' + n + ']:checked')?.value;
         $('tpwGuide').innerHTML = radioGroup('guide_language', 'Tour guide language', W.addons.guide_language, keep('guide_language'));
         $('tpwTransport').innerHTML = radioGroup('transport', 'Daily transport', W.addons.transport, keep('transport'));
@@ -621,9 +618,17 @@
             .map(m => ({...m, label: W.mealPlans[m.code] || m.label}));
         $('tpwMeals').innerHTML = radioGroup('meal_plan', 'Meals <small>· only what this hotel serves</small>', meals, keep('meal_plan'));
         const ins = (W.addons.insurance || [])[0];
-        $('tpwInsurance').innerHTML = !ins ? '' : '<div class="tpw-opt"><div class="tpw-opt-title">Travel insurance</div>' +
-            optRow('checkbox', 'insurance', {...ins, code: '1', description: W.insuranceRequired ? 'Required for this destination' : ins.description},
-                W.insuranceRequired || !!keep('insurance'), W.insuranceRequired ? ' disabled' : '') + '</div>';
+        const insFree = ins && !(ins.price > 0);
+        if (ins && (insFree || W.insuranceRequired)) included.push(ins.label);
+        $('tpwInsurance').innerHTML = !ins || insFree || W.insuranceRequired ? '' : '<div class="tpw-opt"><div class="tpw-opt-title">Travel insurance</div>' +
+            optRow('checkbox', 'insurance', ins, !!keep('insurance')) + '</div>';
+        renderTransfer();
+        $('tpwIncluded').innerHTML = included.length ? '<strong>Included in your trip</strong>' + included.map(l => '<span><i class="bi bi-check-circle-fill"></i>' + esc(l) + '</span>').join('') : '';
+        $('tpwIncluded').hidden = !included.length;
+    }
+    // Step 5 is skipped when there is nothing to choose.
+    function hasChoices() {
+        return !!document.querySelector('#tpwGuide .tpw-radio, #tpwTransport .tpw-radio, #tpwMeals .tpw-radio, #tpwInsurance .tpw-radio, #tpwTransfer .tpw-toggle');
     }
     form.addEventListener('change', e => { if (['guide_language', 'transport', 'meal_plan', 'insurance', 'airport_transfer', 'start_date', 'nationality'].includes(e.target.name)) requote(); });
 
@@ -636,10 +641,13 @@
             (d.image ? '<img src="' + esc(d.image) + '" alt="' + esc(d.title) + '" loading="lazy">' : '') +
             (d.description ? '<p>' + esc(d.description) + '</p>' : '') + '</div>').join('')
             : '<p class="tpw-muted">The detailed day-by-day plan is sent with your confirmation.</p>';
+    }
+    function renderTransfer() {
         const t = (W.addons.airport_transfer || [])[0];
+        if (t && !(t.price > 0)) { included.push(t.label); $('tpwTransfer').innerHTML = '<input type="hidden" name="airport_transfer" value="1">'; return; }
         const was = !!form.querySelector('[name=airport_transfer]:checked');
         $('tpwTransfer').innerHTML = !t ? '' : '<label class="tpw-toggle"><input type="checkbox" role="switch" name="airport_transfer" value="1"' + (was ? ' checked' : '') + '>' +
-            '<span><strong>Airport pickup to your hotel</strong><small>' + esc(t.label) + ' · ' + (t.price > 0 ? '+' + money(t.price) + ' ' + esc(t.basis) : 'Included') + '</small></span>' +
+            '<span><strong>Airport pickup to your hotel</strong><small>' + esc(t.label) + ' · +' + money(t.price) + ' ' + esc(t.basis) + '</small></span>' +
             '<span class="tpw-switch" aria-hidden="true"></span></label>';
     }
 
@@ -745,12 +753,12 @@
         if (n === 3 && !state.days) return 'Choose how many days.';
         if (n === 4) {
             if (!form.start_date.value) return 'Choose your travel start date.';
-            if (form.traveler_type.value === 'family' && !state.childAges.length) return 'Add each child\'s age, or choose another traveller type.';
         }
         return '';
     }
     function go(n, first) {
         const back = n < step;
+        if (n === 5 && !hasChoices()) n = back ? 4 : 6;
         step = Math.max(1, Math.min(6, n));
         document.querySelectorAll('.tpw-step').forEach(s => {
             const on = +s.dataset.step === step;
@@ -817,7 +825,7 @@
         }
     });
 
-    renderPacks(); applyType(); go(1, true);
+    renderPacks(); syncSteppers(); renderChildren(); go(1, true);
 })();
 </script>
 
