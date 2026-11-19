@@ -111,7 +111,7 @@
             @csrf @method('PUT')
             <div class="table-responsive">
                 <table class="wp-table bs-table" id="landTable">
-                    <thead><tr><th>Trip length (days)</th>@foreach($groups as $min => $label)<th>{{ $label }} {{ $min === 1 ? 'adult' : 'adults' }}</th>@endforeach<th></th></tr></thead>
+                    <thead><tr><th>Trip length (days)</th>@foreach($groups as $min => $label)<th>{{ $min === 1 ? 'Price per adult · 1 adult' : $label . ' adults' }}</th>@endforeach<th></th></tr></thead>
                     <tbody>
                         @foreach($landDays as $i => $d)
                             @include('manager.packages._land-row', ['i' => $i, 'd' => $d])
@@ -130,7 +130,7 @@
                 <button type="button" class="wp-btn wp-btn-secondary" data-add-row="land"><i class="fas fa-plus"></i> Add a trip length</button>
                 <button class="wp-btn wp-btn-primary"><i class="fas fa-save"></i> Save tour prices</button>
             </div>
-            <p class="wp-form-help">Everything that is not the hotel: airport transfers, tours, entry tickets, guide and vehicle, per adult for the whole trip. Bigger groups share the car and guide, so the price per adult goes down. An empty box uses the price to its left. Children (ages {{ $package->infant_max_age + 1 }}–{{ $package->child_max_age }}) pay the % above; infants are free; anyone older than {{ $package->child_max_age }} pays as an adult.</p>
+            <p class="wp-form-help"><strong>Trip length</strong> is required: it is the number of days customers can choose (add a row for each, e.g. 4 and 6). Then the cost of everything that is not the hotel (airport transfers, tours, entry tickets, guide and vehicle) per adult for the whole trip. <strong>Same price whatever the group size? Fill only the first box.</strong> If the supplier gives a lower price for bigger groups (they share the car and guide), fill those boxes too; an empty box uses the price to its left. Hotel only, no tours? Enter 0. Children (ages {{ $package->infant_max_age + 1 }}–{{ $package->child_max_age }}) pay the % above; infants are free; anyone older than {{ $package->child_max_age }} pays as an adult.</p>
         </form>
     </div>
 </div>

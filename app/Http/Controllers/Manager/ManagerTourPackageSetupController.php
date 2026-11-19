@@ -129,8 +129,8 @@ class ManagerTourPackageSetupController extends Controller
                 throw ValidationException::withMessages(['land' => "There are two rows for {$d} days. Keep one."]);
             }
             $seen[$d] = true;
-            if (!collect($bands)->contains(fn ($g) => (float) ($r['g' . $g] ?? 0) > 0)) {
-                throw ValidationException::withMessages(['land' => "Enter at least one price for the {$d}-day trip."]);
+            if (!collect($bands)->contains(fn ($g) => filled($r['g' . $g] ?? null))) {
+                throw ValidationException::withMessages(['land' => "Enter the price for the {$d}-day trip (0 if the hotel is all you sell)."]);
             }
         }
 
@@ -138,7 +138,7 @@ class ManagerTourPackageSetupController extends Controller
             TourPackageLandRate::where('package_id', $package->id)->delete();
             foreach ($rows as $r) {
                 foreach ($bands as $g) {
-                    if ((float) ($r['g' . $g] ?? 0) > 0) {
+                    if (filled($r['g' . $g] ?? null)) {
                         TourPackageLandRate::create(['package_id' => $package->id, 'days' => (int) $r['days'],
                             'min_group' => $g, 'adult_net' => round((float) $r['g' . $g], 2)]);
                     }

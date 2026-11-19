@@ -156,6 +156,11 @@ class ManagerTourPackageSetupTest extends TestCase
         $this->actingAs($owner)->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/land"), [
             'land' => [['days' => 6]], 'child_land_percent' => 50, 'child_sharing_max_age' => 5,
         ])->assertSessionHasErrors('land');
+        // Hotel only: a trip length with a 0 tour price is fine.
+        $this->actingAs($owner)->put($this->url($company, "/manager/packages/{$p->id}/booking-setup/land"), [
+            'land' => [['days' => 4, 'g1' => 0]], 'child_land_percent' => 50, 'child_sharing_max_age' => 5,
+        ])->assertSessionHasNoErrors();
+        $this->assertSame(0.0, \App\Models\TourPackageLandRate::where('package_id', $p->id)->where('days', 4)->value('adult_net'));
     }
 
     public function test_hotels_meals_and_policies_are_saved(): void
