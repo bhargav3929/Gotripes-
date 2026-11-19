@@ -81,7 +81,7 @@ class ManagerTourPackageSetupTest extends TestCase
         $company = $this->tenant();
         $p = $this->georgiaRooms($company);
         $this->actingAs($this->owner($company))->get($this->url($company, "/manager/packages/{$p->id}/booking-setup"))
-            ->assertOk()->assertSee('Hotels and room prices')->assertSee('Tours, transfers and guide')
+            ->assertOk()->assertSee('Hotels and room prices')->assertSee('Trip length and tour price')->assertSee('Price per person (AED)')
             ->assertSee('Price check')->assertSee('1 Double room')->assertSee('Tbilisi Inn')->assertSee('Open the booking page');
     }
 

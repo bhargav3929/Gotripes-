@@ -105,13 +105,13 @@
     if ($landDays->isEmpty()) { $landDays = collect([null]); }
 @endphp
 <div class="wp-card" id="land">
-    <div class="wp-card-header"><i class="fas fa-route text-secondary-wp"></i> 2. Tours, transfers and guide <span class="text-muted-wp" style="font-weight:400;">· net, per adult, whole trip, by group size</span></div>
+    <div class="wp-card-header"><i class="fas fa-route text-secondary-wp"></i> 2. Trip length and tour price <span class="text-muted-wp" style="font-weight:400;">· everything except the hotel</span></div>
     <div class="wp-card-body">
         <form method="POST" action="{{ route('manager.packages.booking-setup.land', $package->id) }}">
             @csrf @method('PUT')
             <div class="table-responsive">
                 <table class="wp-table bs-table" id="landTable">
-                    <thead><tr><th>Trip length (days)</th>@foreach($groups as $min => $label)<th>{{ $min === 1 ? 'Price per adult · 1 adult' : $label . ' adults' }}</th>@endforeach<th></th></tr></thead>
+                    <thead><tr><th>Trip length (days)</th>@foreach($groups as $min => $label)<th @if($min > 1) data-group-col @endif>{{ $min === 1 ? 'Price per person (AED)' : 'Group of ' . $label }}</th>@endforeach<th></th></tr></thead>
                     <tbody>
                         @foreach($landDays as $i => $d)
                             @include('manager.packages._land-row', ['i' => $i, 'd' => $d])
@@ -120,6 +120,10 @@
                 </table>
             </div>
             <template id="landRowTpl">@include('manager.packages._land-row', ['i' => '__I__', 'd' => null])</template>
+            <label style="display:flex; gap:8px; align-items:center; margin-top:12px; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="groupPricing" @checked($package->landRates->contains(fn ($r) => $r->min_group > 1))>
+                The supplier charges less per person for bigger groups (show group prices)
+            </label>
             <div class="bs-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); margin-top:12px;">
                 <div class="wp-form-group" style="margin:0;"><label class="wp-form-label" for="child_land_percent">Children pay this % of the adult tour price</label>
                     <input type="number" min="0" max="100" step="1" class="wp-input" id="child_land_percent" name="child_land_percent" value="{{ old('child_land_percent', rtrim(rtrim(number_format($package->child_land_percent, 2), '0'), '.')) }}"></div>
@@ -130,7 +134,7 @@
                 <button type="button" class="wp-btn wp-btn-secondary" data-add-row="land"><i class="fas fa-plus"></i> Add a trip length</button>
                 <button class="wp-btn wp-btn-primary"><i class="fas fa-save"></i> Save tour prices</button>
             </div>
-            <p class="wp-form-help"><strong>Trip length</strong> is required: it is the number of days customers can choose (add a row for each, e.g. 4 and 6). Then the cost of everything that is not the hotel (airport transfers, tours, entry tickets, guide and vehicle) per adult for the whole trip. <strong>Same price whatever the group size? Fill only the first box.</strong> If the supplier gives a lower price for bigger groups (they share the car and guide), fill those boxes too; an empty box uses the price to its left. Hotel only, no tours? Enter 0. Children (ages {{ $package->infant_max_age + 1 }}–{{ $package->child_max_age }}) pay the % above; infants are free; anyone older than {{ $package->child_max_age }} pays as an adult.</p>
+            <p class="wp-form-help"><strong>Trip length:</strong> the number of days customers can book (one row each, e.g. 3, or 3 and 5). <strong>Price per person:</strong> what the supplier charges you per adult for the whole trip for everything except the hotel: airport pickup, sightseeing, tickets, guide, car. Hotel only? Enter 0. Group prices are optional; an empty one uses the price to its left. Children (ages {{ $package->infant_max_age + 1 }}–{{ $package->child_max_age }}) pay the % above; infants are free; anyone older than {{ $package->child_max_age }} pays as an adult.</p>
         </form>
     </div>
 </div>
@@ -309,6 +313,10 @@
         const v = parseFloat(e.target.value);
         out.textContent = isNaN(v) ? '—' : 'AED ' + (Math.round(v * (1 + margin) * 100) / 100).toLocaleString('en-US');
     });
+    // Group-size prices are optional and hidden unless used.
+    const groupBox = document.getElementById('groupPricing');
+    const showGroups = () => document.querySelectorAll('#landTable [data-group-col]').forEach(el => el.hidden = !groupBox.checked);
+    if (groupBox) { groupBox.addEventListener('change', showGroups); showGroups(); document.querySelectorAll('[data-add-row=land]').forEach(b => b.addEventListener('click', () => setTimeout(showGroups))); }
     // Meal-plan rows need a plan; other rows don't.
     document.addEventListener('change', e => {
         if (!e.target.matches('[data-addon-cat]')) return;
