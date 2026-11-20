@@ -238,6 +238,18 @@ Route::prefix('/')->group(function () {
         Route::post('tour-packages/{id}/checkout', [\App\Http\Controllers\TourPackageBookingController::class, 'book'])->middleware('throttle:tour-checkout')->name('tour-packages.checkout');
     });
 
+    // Supplier rate form: suppliers with an access code from staff send their
+    // hotels, room prices, tour prices, extras and photos (see Manager > Supplier forms).
+    Route::middleware('tenant.feature:tours')->prefix('suppliers')->name('suppliers.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\SupplierFormController::class, 'start'])->name('start');
+        Route::post('/', [\App\Http\Controllers\SupplierFormController::class, 'access'])->middleware('throttle:8,1')->name('access');
+        Route::get('form', [\App\Http\Controllers\SupplierFormController::class, 'form'])->name('form');
+        Route::post('form', [\App\Http\Controllers\SupplierFormController::class, 'submit'])->middleware('throttle:20,1')->name('submit');
+        Route::get('thanks', [\App\Http\Controllers\SupplierFormController::class, 'thanks'])->name('thanks');
+        Route::post('leave', [\App\Http\Controllers\SupplierFormController::class, 'leave'])->name('leave');
+        Route::get('photo/{index}', [\App\Http\Controllers\SupplierFormController::class, 'photo'])->whereNumber('index')->name('photo');
+    });
+
     // Dedicated country packages page — e.g. /tour-packages/canada
     // whereNumber on the route above ensures numeric IDs never reach here.
     Route::get('tour-packages/{country}', function (string $country) {
@@ -640,6 +652,13 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
     Route::get('tour-bookings', [\App\Http\Controllers\Manager\ManagerTourBookingsController::class, 'index'])->name('tour-bookings.index');
     Route::get('tour-bookings/{id}', [\App\Http\Controllers\Manager\ManagerTourBookingsController::class, 'show'])->whereNumber('id')->name('tour-bookings.show');
     Route::post('tour-bookings/{id}/status', [\App\Http\Controllers\Manager\ManagerTourBookingsController::class, 'updateStatus'])->whereNumber('id')->name('tour-bookings.status');
+    Route::get('supplier-forms', [\App\Http\Controllers\Manager\ManagerSupplierFormsController::class, 'index'])->name('supplier-forms.index');
+    Route::post('supplier-forms/codes', [\App\Http\Controllers\Manager\ManagerSupplierFormsController::class, 'storeInvite'])->name('supplier-forms.codes.store');
+    Route::post('supplier-forms/codes/{id}/toggle', [\App\Http\Controllers\Manager\ManagerSupplierFormsController::class, 'toggleInvite'])->whereNumber('id')->name('supplier-forms.codes.toggle');
+    Route::get('supplier-forms/{id}', [\App\Http\Controllers\Manager\ManagerSupplierFormsController::class, 'show'])->whereNumber('id')->name('supplier-forms.show');
+    Route::get('supplier-forms/{id}/photos/{index}', [\App\Http\Controllers\Manager\ManagerSupplierFormsController::class, 'photo'])->whereNumber(['id', 'index'])->name('supplier-forms.photo');
+    Route::get('supplier-forms/{id}/photos.zip', [\App\Http\Controllers\Manager\ManagerSupplierFormsController::class, 'photosZip'])->whereNumber('id')->name('supplier-forms.photos-zip');
+    Route::post('supplier-forms/{id}/apply', [\App\Http\Controllers\Manager\ManagerSupplierFormsController::class, 'apply'])->whereNumber('id')->name('supplier-forms.apply');
     Route::get('visa-rules', [\App\Http\Controllers\Manager\ManagerVisaRulesController::class, 'index'])->name('visa-rules.index');
     Route::post('visa-rules', [\App\Http\Controllers\Manager\ManagerVisaRulesController::class, 'store'])->name('visa-rules.store');
     Route::put('visa-rules/{id}', [\App\Http\Controllers\Manager\ManagerVisaRulesController::class, 'update'])->whereNumber('id')->name('visa-rules.update');

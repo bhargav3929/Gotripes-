@@ -685,6 +685,12 @@
                     </a>
                 </li>
                 <li class="wp-nav-item">
+                    <a href="{{ route('manager.supplier-forms.index') }}" class="{{ request()->routeIs('manager.supplier-forms.*') ? 'active' : '' }}">
+                        <i class="fas fa-file-signature"></i>
+                        <span>Supplier Forms</span>
+                    </a>
+                </li>
+                <li class="wp-nav-item">
                     <a href="{{ route('manager.visa-rules.index') }}" class="{{ request()->routeIs('manager.visa-rules.*') ? 'active' : '' }}">
                         <i class="fas fa-passport"></i>
                         <span>Visa Rules</span>
