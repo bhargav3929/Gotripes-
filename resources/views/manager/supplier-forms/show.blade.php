@@ -138,7 +138,7 @@
                 </table>
             </div>
             @endif
-            <p class="text-muted-wp" style="padding:12px 24px; margin:0; font-size:13px;">Children pay <strong>{{ $s->get('child_percent') ?? '–' }}%</strong> of the adult tour price · children up to age <strong>{{ $s->get('child_free_age') ?? '–' }}</strong> share the parents' room free.</p>
+            <p class="text-muted-wp" style="padding:12px 24px; margin:0; font-size:13px;">Free up to age <strong>{{ $s->get('child_free_age') ?? '–' }}</strong> · older children pay <strong>{{ $s->get('child_percent') ?? '–' }}%</strong> of the adult price (room share and tour) · adult price from age <strong>{{ $s->get('child_adult_age') ?? '12 (not given)' }}</strong>.</p>
         </div>
     </div>
 
@@ -205,7 +205,7 @@
             @if($s->photos)
                 <div class="sf-photos">
                     @foreach($s->photos as $i => $p)
-                        <a href="{{ route('manager.supplier-forms.photo', [$s->id, $i]) }}?download=1" title="Download {{ $p['name'] }}"><img src="{{ route('manager.supplier-forms.photo', [$s->id, $i]) }}" alt="{{ $p['name'] }}" loading="lazy"></a>
+                        <a href="{{ route('manager.supplier-forms.photo', [$s->id, $i]) }}?download=1" title="Download {{ $p['name'] }}" style="position:relative;"><img src="{{ route('manager.supplier-forms.photo', [$s->id, $i]) }}" alt="{{ $p['name'] }}" loading="lazy">@if($i === 0)<span style="position:absolute; left:8px; top:8px; background:var(--wp-primary); color:#111; font-size:11px; font-weight:700; padding:2px 8px; border-radius:50px;">Cover</span>@endif</a>
                     @endforeach
                 </div>
             @endif

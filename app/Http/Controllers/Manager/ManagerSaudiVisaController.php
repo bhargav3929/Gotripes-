@@ -74,11 +74,13 @@ class ManagerSaudiVisaController extends Controller
 
     public function destroy($id)
     {
+        // Soft delete: gone from this list and the website, while past
+        // applications keep showing which visa they bought.
         $visaType = SaudiVisaType::findOrFail($id);
-        $visaType->update(['isActive' => false]);
+        $visaType->delete();
 
         return redirect()->route('manager.saudi-visas.index')
-            ->with('success', 'Saudi Visa Type deactivated.');
+            ->with('success', "\"{$visaType->name}\" deleted.");
     }
 
     private function parseDocuments(?string $raw): array

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SaudiVisaType extends Model
 {
-    use BelongsToCompany;
+    use BelongsToCompany, SoftDeletes;
 
     protected $table = 'tbl_saudi_visa_types';
 

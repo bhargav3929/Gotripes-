@@ -19,7 +19,8 @@
     <p class="lead">The {{ $company?->name ?? 'GoTrips' }} team will check them and contact you if anything is unclear.</p>
     <p class="lead" style="margin-top:16px;">When your prices change, open this page again with your code <strong style="font-family:ui-monospace,Menlo,monospace; font-weight:700;">{{ $invite->display_code }}</strong>. The form opens with what you sent, so you only change the prices.</p>
     <div class="done-actions">
-        <a href="{{ route('suppliers.form') }}" class="btn btn-primary">Review or change what I sent</a>
+        <a href="{{ route('suppliers.preview') }}" class="btn btn-primary">Preview as a traveller</a>
+        <a href="{{ route('suppliers.form') }}" class="btn btn-ghost" style="padding:16px 24px;">Change what I sent</a>
         <form method="POST" action="{{ route('suppliers.leave') }}">@csrf<button class="btn btn-ghost" style="padding:16px 24px;">Close</button></form>
     </div>
 </main>

@@ -62,7 +62,7 @@
         <div class="flash-grid">
             @foreach($menuFlashItems as $key => $label)
             <label class="toggle-row">
-                <input type="checkbox" name="flash_{{ $key }}" value="1" @checked($flash[$key] ?? false)>
+                <input type="checkbox" name="flash_{{ $key }}" value="1" @checked($flash[$key] ?? in_array($key, \App\Http\Controllers\Manager\SettingsController::MENU_FLASH_DEFAULT_ON, true))>
                 <span class="toggle-text"><strong>{{ $label }}</strong></span>
             </label>
             @endforeach

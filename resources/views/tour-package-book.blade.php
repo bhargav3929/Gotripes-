@@ -94,6 +94,7 @@
                     <div class="tpw-tabs tpw-tabs-gap" id="tpwDurations" role="radiogroup" aria-label="Trip length"></div>
                     <div class="tpw-sub">Your trip, day by day</div>
                     <div id="tpwTimeline" class="tpw-timeline"></div>
+                    @include('partials.tour-package-covers', ['package' => $package])
                 </section>
 
                 {{-- 4. Dates and travellers --}}
@@ -131,6 +132,12 @@
                 <section class="tpw-step" data-step="6" hidden>
                     <h2>Check and pay</h2>
                     <div id="tpwReceipt" class="tpw-receipt"></div>
+                    @if($package->includedList() || $package->excludedList())
+                        <details class="tpw-covers-recap">
+                            <summary>What the price covers <i class="bi bi-chevron-down"></i></summary>
+                            @include('partials.tour-package-covers', ['package' => $package, 'compact' => true])
+                        </details>
+                    @endif
                     <div class="tpw-sub">Lead traveller</div>
                     <div class="tpw-grid2">
                         <label class="tpw-field"><span>Full name, as on passport</span><input name="customer_name" autocomplete="name" required></label>
@@ -345,6 +352,23 @@
 
     /* ---------- itinerary ---------- */
     .tpw-timeline { position:relative; margin:24px 0; padding-left:28px; }
+    .tpw-covers { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:32px; }
+    .tpw-covers-box { padding:24px; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--bg); }
+    .tpw-covers-box h3 { font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:600; color:var(--mute); margin:0 0 16px; }
+    .tpw-covers-box ul { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+    .tpw-covers-box li { display:flex; gap:10px; font-size:15px; line-height:1.5; color:var(--ink-2); }
+    .tpw-covers-box li i { flex:none; margin-top:2px; }
+    .tpw-covers-in li i { color:var(--ok); }
+    .tpw-covers-out li i { color:var(--err); }
+    .tpw-covers.is-compact { margin-top:16px; }
+    .tpw-covers.is-compact .tpw-covers-box { padding:16px; }
+    .tpw-covers.is-compact li { font-size:14px; }
+    .tpw-covers-recap { margin-top:16px; border:1px solid var(--line); border-radius:var(--r-sm); padding:16px; }
+    .tpw-covers-recap summary { cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; font-weight:600; color:var(--ink); }
+    .tpw-covers-recap summary::-webkit-details-marker { display:none; }
+    .tpw-covers-recap summary i { transition:transform .2s var(--ease); color:var(--mute); }
+    .tpw-covers-recap[open] summary i { transform:rotate(180deg); }
+    @media (max-width:720px) { .tpw-covers { grid-template-columns:1fr; } }
     .tpw-timeline::before { content:''; position:absolute; left:7px; top:8px; bottom:8px; width:2px; background:linear-gradient(var(--gold-line),var(--line)); }
     .tpw-day { position:relative; padding-bottom:28px; }
     .tpw-day:last-child { padding-bottom:0; }

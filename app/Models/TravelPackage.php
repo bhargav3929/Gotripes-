@@ -27,6 +27,8 @@ class TravelPackage extends Model
         'price_child',
         'price_infant',
         'description',
+        'included',
+        'excluded',
         'duration',
         'isActive',
         'createdBy',
@@ -60,6 +62,32 @@ class TravelPackage extends Model
     public function scopeActive($query)
     {
         return $query->where('isActive', 1);
+    }
+
+    /** "Included" as a list: one item per line, bullets and blank lines dropped. */
+    public function includedList(): array
+    {
+        return self::lines($this->included);
+    }
+
+    public function excludedList(): array
+    {
+        return self::lines($this->excluded);
+    }
+
+    private static function lines(?string $text): array
+    {
+        return array_values(array_filter(array_map(
+            fn ($l) => trim(preg_replace('/^\s*(?:[-•*–·]|\d+[.)])\s*/u', '', $l)),
+            preg_split('/\R/', (string) $text)
+        ), fn ($l) => $l !== ''));
+    }
+
+    /** Plain text (as typed in a form) to the HTML the description is shown as. */
+    public static function textToHtml(string $text): string
+    {
+        $paras = array_filter(array_map('trim', preg_split('/\R{2,}/', trim($text))), fn ($p) => $p !== '');
+        return implode('', array_map(fn ($p) => '<p>' . nl2br(e($p), false) . '</p>', $paras));
     }
 
     /**

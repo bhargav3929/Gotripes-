@@ -135,7 +135,10 @@ class SupplierFormTest extends TestCase
         $this->post($this->url($company, '/suppliers/form'), $this->form(['hotels' => [3 => ['name' => '']], 'tours' => [['days' => '', 'g1' => '']]]))
             ->assertSessionHasErrors('hotels');
         $this->post($this->url($company, '/suppliers/form'), $this->form(['tours' => [['days' => 4, 'g1' => 200], ['days' => 4, 'g1' => 300]]]))
-            ->assertSessionHasErrors('tours');
+            ->assertSessionHasErrors('tours.1.days');
+        // A price with no trip length points at that row's Days box
+        $this->post($this->url($company, '/suppliers/form'), $this->form(['tours' => [['days' => 4, 'g1' => 200], ['days' => '', 'g1' => 300]]]))
+            ->assertSessionHasErrors('tours.1.days');
         $this->assertSame(0, SupplierSubmission::withoutCompanyScope()->where('supplier_invite_id', $inv->id)->count());
     }
 
@@ -187,6 +190,71 @@ class SupplierFormTest extends TestCase
         $q = TourPackageQuote::make($p, ['start_date' => now()->addDays(40)->toDateString(), 'days' => 4, 'hotel_stars' => 3, 'adults' => 2]);
         $this->assertNotNull($q['quote'] ?? null);
         $this->assertEquals(0, collect($q['quote']['lines'])->where('key', 'guide_language')->sum('amount')); // upgrade not charged unless picked
+    }
+
+    public function test_cover_photo_child_ages_preview_and_package_text(): void
+    {
+        Mail::fake();
+        $company = $this->tenant();
+        $owner = $this->owner($company);
+        $inv = $this->invite($company);
+        $this->post($this->url($company, '/suppliers'), ['code' => $inv->code]);
+
+        // The supplier picks the second new photo as the cover, and gives three child bands
+        $this->post($this->url($company, '/suppliers/form'), $this->form([
+            'photos' => [UploadedFile::fake()->image('deck.jpg', 800, 600), UploadedFile::fake()->image('bay.jpg', 800, 600)],
+            'cover' => 'new:1', 'child_free_age' => 5, 'child_adult_age' => 8,
+            'package' => ['excluded' => "Flights\n- Tips"],
+        ]))->assertRedirect();
+        $s = SupplierSubmission::withoutCompanyScope()->where('supplier_invite_id', $inv->id)->sole();
+        $this->assertSame(['bay.jpg', 'deck.jpg'], array_column($s->photos, 'name'));
+        $this->assertSame(8, $s->get('child_adult_age'));
+
+        $this->get($this->url($company, '/suppliers/thanks'))->assertOk()->assertSee('Preview as a traveller');
+        $this->get($this->url($company, '/suppliers/preview'))->assertOk()
+            ->assertSee('Georgia Classic')->assertSee('Airport pickup')->assertSee('Tips')->assertSee('From age 8, the adult price.');
+
+        // Keeping both photos later and choosing the old second one moves it first again
+        $again = $this->form(['keep_photos' => [0, 1], 'cover' => 'old:1']);
+        unset($again['photos']);
+        $this->post($this->url($company, '/suppliers/form'), $again)->assertSessionHasNoErrors();
+        $latest = SupplierSubmission::withoutCompanyScope()->where('supplier_invite_id', $inv->id)->latest('id')->first();
+        $this->assertSame(['deck.jpg', 'bay.jpg'], array_column($latest->photos, 'name'));
+
+        // Ages that overlap are refused
+        $this->post($this->url($company, '/suppliers/form'), $this->form(['child_free_age' => 6, 'child_adult_age' => 7]))
+            ->assertSessionHasErrors('child_adult_age');
+
+        $this->actingAs($owner)->post($this->url($company, '/manager/supplier-forms/' . $s->id . '/apply'), [
+            'target' => 'new', 'rate' => 3.6725, 'sections' => ['tours'],
+        ]);
+        $p = TravelPackage::withoutCompanyScope()->where('company_id', $company->id)->where('title', 'Georgia Classic')->sole();
+        $this->cleanup[] = public_path($p->image);
+        foreach ($p->images as $img) {
+            $this->cleanup[] = public_path($img->image_path);
+        }
+        $this->assertSame(['Airport pickup', 'Car'], $p->includedList());
+        $this->assertSame(['Flights', 'Tips'], $p->excludedList());
+        $this->assertStringNotContainsString('Included:', $p->description);
+        $this->assertSame('<p>Mountains and wine.</p><p>Places: Tbilisi, Kazbegi</p>', $p->description);
+        $this->assertSame(7, $p->child_max_age);
+        $this->assertSame(5, $p->infant_max_age);
+        $this->assertSame(5, $p->child_sharing_max_age);
+        $this->assertSame(1, $p->images()->count());
+
+        // Package text and photos can be applied again to the package later
+        $p->update(['included' => 'Old list', 'description' => '<p>Ours</p>']);
+        $this->post($this->url($company, '/manager/supplier-forms/' . $latest->id . '/apply'), [
+            'target' => $p->id, 'rate' => 3.6725, 'sections' => ['details', 'photos'],
+        ])->assertSessionHasNoErrors();
+        $p = $p->fresh();
+        $this->cleanup[] = public_path($p->image);
+        foreach ($p->images as $img) {
+            $this->cleanup[] = public_path($img->image_path);
+        }
+        $this->assertSame(['Airport pickup', 'Car'], $p->includedList());
+        $this->assertFileExists(public_path($p->image));
+        $this->get($this->url($company, '/tour-packages/' . $p->id))->assertOk()->assertSee('What the price covers')->assertSee('Airport pickup');
     }
 
     public function test_applying_to_an_existing_package_keeps_our_insurance_and_other_tenants_are_kept_out(): void

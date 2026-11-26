@@ -125,7 +125,7 @@
                 The supplier charges less per person for bigger groups (show group prices)
             </label>
             <div class="bs-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); margin-top:12px;">
-                <div class="wp-form-group" style="margin:0;"><label class="wp-form-label" for="child_land_percent">Children pay this % of the adult tour price</label>
+                <div class="wp-form-group" style="margin:0;"><label class="wp-form-label" for="child_land_percent">Children pay this % of the adult price</label>
                     <input type="number" min="0" max="100" step="1" class="wp-input" id="child_land_percent" name="child_land_percent" value="{{ old('child_land_percent', rtrim(rtrim(number_format($package->child_land_percent, 2), '0'), '.')) }}"></div>
                 <div class="wp-form-group" style="margin:0;"><label class="wp-form-label" for="child_sharing_max_age">Children up to this age share the parents' bed (no hotel cost)</label>
                     <input type="number" min="0" max="17" class="wp-input" id="child_sharing_max_age" name="child_sharing_max_age" value="{{ old('child_sharing_max_age', $package->child_sharing_max_age) }}"></div>
@@ -134,7 +134,7 @@
                 <button type="button" class="wp-btn wp-btn-secondary" data-add-row="land"><i class="fas fa-plus"></i> Add a trip length</button>
                 <button class="wp-btn wp-btn-primary"><i class="fas fa-save"></i> Save tour prices</button>
             </div>
-            <p class="wp-form-help"><strong>Trip length:</strong> the number of days customers can book (one row each, e.g. 3, or 3 and 5). <strong>Price per person:</strong> what the supplier charges you per adult for the whole trip for everything except the hotel: airport pickup, sightseeing, tickets, guide, car. Hotel only? Enter 0. Group prices are optional; an empty one uses the price to its left. Children (ages {{ $package->infant_max_age + 1 }}–{{ $package->child_max_age }}) pay the % above; infants are free; anyone older than {{ $package->child_max_age }} pays as an adult.</p>
+            <p class="wp-form-help"><strong>Trip length:</strong> the number of days customers can book (one row each, e.g. 3, or 3 and 5). <strong>Price per person:</strong> what the supplier charges you per adult for the whole trip for everything except the hotel: airport pickup, sightseeing, tickets, guide, car. Hotel only? Enter 0. Group prices are optional; an empty one uses the price to its left. Children (ages {{ $package->infant_max_age + 1 }}–{{ $package->child_max_age }}) pay the % above of the tour price; those older than the bed-sharing age also share an adult's room and pay that % of an adult's half of a double room. Infants are free; anyone older than {{ $package->child_max_age }} pays as an adult.</p>
         </form>
     </div>
 </div>

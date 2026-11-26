@@ -21,7 +21,7 @@ class SettingsController extends Controller
         'tour_packages'  => 'Tour Packages',
         'hajj_umrah'     => 'Hajj & Umrah',
         'esim'           => 'eSIM',
-        'evisa'          => 'e-Visa (30 countries)',
+        'evisa'          => 'e-Visa (80+ countries)',
         'insurance'      => 'Insurance',
         'cruises'        => 'Cruise',
         'transport'      => 'Transport',
@@ -31,7 +31,11 @@ class SettingsController extends Controller
         'local_tours'    => 'Local Tours',
         'festival_tours' => 'Festival Tours',
         'medical_tours'  => 'Medical Tours',
+        'study_abroad'   => 'Study Abroad',
     ];
+
+    // Items that were always highlighted before they got a switch: on until the manager turns them off.
+    public const MENU_FLASH_DEFAULT_ON = ['study_abroad'];
 
     private const TIMEZONES = [
         'Asia/Dubai',

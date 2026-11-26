@@ -76,10 +76,10 @@
                             <i class="fas fa-pen"></i> Edit
                         </button>
                         <form action="{{ route('manager.saudi-visas.destroy', $visa->id) }}" method="POST" style="display:inline;"
-                              onsubmit="return confirm('Deactivate this visa type?');">
+                              onsubmit="return confirm('Delete this visa type? It is removed from this list and the website. Past applications keep their details. To hide it for a while instead, use Edit and set Status to Inactive.');">
                             @csrf @method('DELETE')
-                            <button type="submit" class="wp-btn wp-btn-danger wp-btn-sm">
-                                <i class="fas fa-ban"></i>
+                            <button type="submit" class="wp-btn wp-btn-danger wp-btn-sm" title="Delete this visa type">
+                                <i class="fas fa-trash"></i> Delete
                             </button>
                         </form>
                     </div>

@@ -49,7 +49,7 @@
     .check input { width: 18px; height: 18px; accent-color: var(--ink); }
     .rows { display: grid; gap: 12px; }
     .row { display: grid; gap: 12px; align-items: end; padding: 16px; border: 1px solid var(--line); border-radius: var(--r); background: #fff; position: relative; }
-    .row-tour { grid-template-columns: 140px minmax(160px, 260px); padding-right: 72px; }
+    .row-tour { grid-template-columns: 140px minmax(160px, 260px); padding-right: 72px; align-items: start; }
     .grouped .row-tour { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); }
     .row-tour .rm, .row-extra .rm, .row-season .rm { position: absolute; top: 16px; right: 16px; }
     .row-extra { grid-template-columns: 1.1fr 1.4fr 130px 1fr; padding-right: 72px; }
@@ -61,10 +61,31 @@
     [data-band]:not(.show) { display: none; }
     .add { margin-top: 16px; }
     .photos-old { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 16px; }
-    .photos-old label { position: relative; display: block; border-radius: var(--r); overflow: hidden; aspect-ratio: 4/3; cursor: pointer; border: 2px solid transparent; }
-    .photos-old img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .15s ease; }
-    .photos-old input { position: absolute; top: 8px; left: 8px; width: 18px; height: 18px; accent-color: var(--ink); }
-    .photos-old input:not(:checked) + img { opacity: .3; }
+    .ph { display: grid; gap: 8px; }
+    .ph-img { position: relative; display: block; border-radius: var(--r); overflow: hidden; aspect-ratio: 4/3; cursor: pointer; border: 2px solid transparent; transition: border-color .15s ease; }
+    .ph-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .15s ease; }
+    .ph-img input { position: absolute; top: 8px; left: 8px; width: 18px; height: 18px; accent-color: var(--ink); }
+    .ph-img input:not(:checked) + img { opacity: .3; }
+    .ph:has(.ph-cover input:checked) .ph-img { border-color: var(--ink); }
+    .ph-cover { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+    .ph-cover input { width: 16px; height: 16px; accent-color: var(--ink); }
+    .photos-new:empty { display: none; }
+    .photos-new { margin-top: 16px; }
+    .kids { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line); }
+    .kids h3, .estimate h3 { font-size: 17px; margin: 0 0 8px; }
+    .kid-band { display: grid; grid-template-columns: 120px 180px 1fr; gap: 16px; align-items: end; padding: 16px 0; border-bottom: 1px dashed var(--line); }
+    .kid-band:last-of-type { border-bottom: 0; }
+    .kid-tag { font-weight: 600; font-size: 14px; align-self: center; }
+    .kid-say { margin: 0; font-size: 14px; color: var(--ink-2); align-self: center; }
+    .estimate { margin-top: 32px; border: 1px solid var(--line-strong); border-radius: var(--r); background: #fff; padding: 24px; }
+    .est-head { margin-bottom: 16px; }
+    .est-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .est-table th { text-align: left; font-weight: 600; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 8px 8px 8px 0; border-bottom: 1px solid var(--line); }
+    .est-table td { padding: 12px 8px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .est-table td.n, .est-table th.n { text-align: right; padding-right: 0; }
+    .est-table tr:last-child td { border-bottom: 0; }
+    .est-table small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .est-warn { margin: 16px 0 0; padding: 12px 16px; border-radius: var(--r); background: var(--err-soft); color: var(--err); font-size: 14px; }
     .drop { border: 1px dashed var(--line-strong); border-radius: var(--r); padding: 24px; text-align: center; background: #fff; }
     .drop input { width: 100%; }
     .send { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(247, 244, 236, .92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-top: 1px solid var(--line); z-index: 15; }
@@ -87,6 +108,10 @@
         .row .rm { position: absolute; top: 16px; right: 16px; }
         .row-extra > .field:nth-child(2) { grid-column: span 2; }
         .row-season > .field:first-child { grid-column: span 2; }
+        .kid-band { grid-template-columns: 1fr 1fr; }
+        .kid-say { grid-column: 1 / -1; }
+        .estimate { padding: 16px; }
+        .est-table .hide-sm { display: none; }
         .send-in .hint { display: none; }
         .send-in .btn { width: 100%; }
     }
@@ -113,7 +138,7 @@
             <h1>{{ $last ? 'Update your rates' : 'Your rates' }}</h1>
             <p class="lead">
                 @if($last)
-                    This is what you sent on {{ $last->created_at->format('j M Y') }}. Change what is different and send it again.
+                    This is what you sent on {{ $last->created_at->format('j M Y') }}. Change what is different and send it again. <a href="{{ route('suppliers.preview') }}">See how travellers will see it</a>.
                 @else
                     Enter your <strong>net prices</strong>, what you charge us. We add our margin on top for our customers. Fill in what you sell and leave the rest empty.
                 @endif
@@ -192,7 +217,7 @@
                                 </div>
                             @endforeach
                         </div>
-                        <small class="hint" style="margin-top:-8px;">Per room per night. Triple: a room for 3. Extra bed: added to a double room.</small>
+                        <small class="hint" style="margin-top:-8px;">Per room per night. Single: one person alone in the room. Triple: a room for 3. Extra bed: a third person in a double room. With no triple or extra bed price, children share their parents' room at the child % (section 4). A cruise cabin counts as a room.</small>
                         <div class="field"><span class="label">Meals included in the room price</span>
                             <div class="meals">
                                 @foreach($mealPlans as $code => $label)
@@ -222,9 +247,34 @@
             </div>
             <template id="tourTpl">@include('suppliers._tour-row', ['i' => '__I__', 't' => []])</template>
             <button type="button" class="btn btn-ghost add" data-add="tour">+ Add a trip length</button>
-            <div class="grid2" style="margin-top:32px;">
-                <div class="field"><label for="child_percent">Children pay this % of the adult tour price</label><input type="number" inputmode="decimal" min="0" max="100" step="1" id="child_percent" name="child_percent" value="{{ $v('child_percent') }}"><small>For example 50.</small></div>
-                <div class="field"><label for="child_free_age">Children up to this age stay free in the parents' room</label><input type="number" inputmode="numeric" min="0" max="17" id="child_free_age" name="child_free_age" value="{{ $v('child_free_age') }}"><small>Without an extra bed. For example 5.</small></div>
+            <div class="kids" id="childPolicy">
+                <h3>Children's prices</h3>
+                <p class="hint" style="margin:0 0 16px;">Three age bands. Children share their parents' room.</p>
+                <div class="kid-band">
+                    <span class="kid-tag">Free</span>
+                    <div class="field"><label for="child_free_age">Up to and including age</label><input type="number" inputmode="numeric" min="0" max="17" id="child_free_age" name="child_free_age" value="{{ $v('child_free_age') }}" data-kid="free" class="@error('child_free_age') is-invalid @enderror"></div>
+                    <p class="kid-say" data-kid-say="free"></p>
+                </div>
+                <div class="kid-band">
+                    <span class="kid-tag">Child price</span>
+                    <div class="field"><label for="child_percent">% of the adult price</label><input type="number" inputmode="decimal" min="0" max="100" step="1" id="child_percent" name="child_percent" value="{{ $v('child_percent') }}" data-kid="percent" class="@error('child_percent') is-invalid @enderror"></div>
+                    <p class="kid-say" data-kid-say="percent"></p>
+                </div>
+                <div class="kid-band">
+                    <span class="kid-tag">Adult price</span>
+                    <div class="field"><label for="child_adult_age">From age</label><input type="number" inputmode="numeric" min="1" max="18" id="child_adult_age" name="child_adult_age" value="{{ $v('child_adult_age', 12) }}" data-kid="adult" class="@error('child_adult_age') is-invalid @enderror"></div>
+                    <p class="kid-say" data-kid-say="adult"></p>
+                </div>
+                @error('child_adult_age')<p class="err">{{ $message }}</p>@enderror
+                <p class="hint" style="margin:16px 0 0;">The child % is of everything an adult pays: their half of a double room and the tour price.</p>
+            </div>
+
+            <div class="estimate" id="estimate" aria-live="polite">
+                <div class="est-head">
+                    <h3>Check your prices</h3>
+                    <p class="hint" style="margin:0;">What we pay you, worked out from sections 3 and 4. Our margin is added on top for travellers.</p>
+                </div>
+                <div id="estimateBody"><p class="hint" style="margin:0;">Add a hotel with its double room price and a trip length to see totals here.</p></div>
             </div>
         </section>
 
@@ -267,11 +317,16 @@
         {{-- 8 --}}
         <section class="sec" id="photos">
             <div class="sec-head"><h2><span class="num">8</span>Photos and notes</h2><p>Hotel rooms, places on the tour, the car. Up to {{ $maxPhotos }} photos, JPG, PNG or WEBP, 8 MB each.</p></div>
+            <p class="hint" style="margin:0 0 16px;"><strong>Cover photo:</strong> choose the one travellers see first, at the top of your package. If you don't choose, the first photo is used.</p>
+            @php $coverPick = old('cover', $photos ? 'old:0' : ''); @endphp
             @if($photos)
                 <p class="label" style="margin:0 0 8px;">Photos you sent before <span class="hint">(untick to remove)</span></p>
                 <div class="photos-old">
                     @foreach($photos as $i => $p)
-                        <label title="{{ $p['name'] }}"><input type="checkbox" name="keep_photos[]" value="{{ $i }}" checked data-keep><img src="{{ route('suppliers.photo', $i) }}" alt="{{ $p['name'] }}" loading="lazy"></label>
+                        <div class="ph">
+                            <label class="ph-img" title="{{ $p['name'] }}"><input type="checkbox" name="keep_photos[]" value="{{ $i }}" checked data-keep aria-label="Keep {{ $p['name'] }}"><img src="{{ route('suppliers.photo', $i) }}" alt="{{ $p['name'] }}" loading="lazy"></label>
+                            <label class="ph-cover"><input type="radio" name="cover" value="old:{{ $i }}" @checked($coverPick === "old:$i")> Cover</label>
+                        </div>
                     @endforeach
                 </div>
             @endif
@@ -279,6 +334,7 @@
                 <input type="file" name="photos[]" id="photoInput" accept="image/jpeg,image/png,image/webp" multiple aria-label="Add photos">
                 <p class="hint" id="photoNote" style="margin:8px 0 0;">Pick several at once.</p>
             </div>
+            <div class="photos-old photos-new" id="newPhotos"></div>
             @error('photos')<p class="err">{{ $message }}</p>@enderror
             <div class="grid2" style="margin-top:24px;">
                 <div class="field span2"><label for="photo_link">Link to more photos <span class="hint">(Google Drive, Dropbox…)</span></label><input type="url" id="photo_link" name="photo_link" value="{{ $v('photo_link') }}" placeholder="https://" class="@error('photo_link') is-invalid @enderror"></div>
@@ -369,8 +425,123 @@
         note.className = bad ? 'err' : 'hint';
         return !bad;
     }
-    input.addEventListener('change', photoCheck);
+    var newBox = document.getElementById('newPhotos'), urls = [];
+    function previews() {
+        urls.forEach(function (u) { URL.revokeObjectURL(u); }); urls = [];
+        var picked = (form.querySelector('input[name=cover]:checked') || {}).value || '';
+        newBox.innerHTML = '';
+        Array.from(input.files || []).forEach(function (f, j) {
+            var u = URL.createObjectURL(f); urls.push(u);
+            var d = document.createElement('div'); d.className = 'ph';
+            d.innerHTML = '<span class="ph-img"><img alt=""></span><label class="ph-cover"><input type="radio" name="cover" value="new:' + j + '"> Cover</label>';
+            d.querySelector('img').src = u; d.querySelector('img').alt = f.name;
+            newBox.appendChild(d);
+        });
+        // Keep the choice if it still exists, else the first photo
+        var still = picked && form.querySelector('input[name=cover][value="' + picked + '"]');
+        var first = still || form.querySelector('input[name=cover]');
+        if (first) first.checked = true;
+    }
+    input.addEventListener('change', function () { photoCheck(); previews(); });
     document.querySelectorAll('[data-keep]').forEach(function (k) { k.addEventListener('change', photoCheck); });
+
+    // Children's age bands, said in words
+    function num(el) { var x = el ? parseFloat(el.value) : NaN; return isNaN(x) ? null : x; }
+    var kidEl = { free: document.getElementById('child_free_age'), percent: document.getElementById('child_percent'), adult: document.getElementById('child_adult_age') };
+    function kids() {
+        var free = num(kidEl.free), pct = num(kidEl.percent), adult = num(kidEl.adult);
+        var say = function (k, t) { document.querySelector('[data-kid-say="' + k + '"]').textContent = t; };
+        say('free', free === null ? 'No free age.' : 'Ages 0 to ' + free + ' travel free.');
+        var from = free === null ? 0 : free + 1, to = adult === null ? null : adult - 1;
+        say('percent', pct === null ? 'Enter a %.' : (to !== null && to < from ? 'No child price band.' : 'Ages ' + from + (to === null ? ' and up' : ' to ' + to) + ' pay ' + pct + '% of the adult price.'));
+        say('adult', adult === null ? 'Children never pay the adult price.' : 'From age ' + adult + ', the full adult price.');
+    }
+
+    // Totals from the room and tour prices, so suppliers see what they entered adds up
+    function money(x) { var whole = Math.round(x) === x; return (cur.value || '') + ' ' + x.toLocaleString(undefined, { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 }); }
+    function estimate() {
+        var hotels = [];
+        @foreach($stars as $s)
+            (function (s) {
+                var name = (document.getElementById('h' + s + '_name').value || '').trim();
+                var dbl = num(document.getElementById('h' + s + '_double'));
+                if (name && dbl > 0) hotels.push({ stars: s, name: name, double: dbl, single: num(document.getElementById('h' + s + '_single')), extra: num(document.getElementById('h' + s + '_extra_bed')), triple: num(document.getElementById('h' + s + '_triple')) });
+            })({{ $s }});
+        @endforeach
+        var trips = [];
+        document.querySelectorAll('[data-tour-row]').forEach(function (r) {
+            var d = num(r.querySelector('[data-tour-days]'));
+            if (!(d >= 1)) return;
+            var p = {}; r.querySelectorAll('[data-tour-price]').forEach(function (i) { var x = num(i); if (x !== null) p[i.dataset.tourPrice] = x; });
+            if (p['1'] === undefined && !Object.keys(p).length) return;
+            trips.push({ days: d, prices: p });
+        });
+        var body = document.getElementById('estimateBody');
+        if (!hotels.length && !trips.length) { body.innerHTML = '<p class="hint" style="margin:0;">Add a hotel with its double room price and a trip length to see totals here.</p>'; return; }
+        if (!trips.length) trips = [{ days: 2, prices: { '1': 0 }, guess: true }];
+        if (!hotels.length) hotels = [{ stars: 0, name: 'No hotel', double: 0, single: 0 }];
+
+        var bandsOn = gp.checked, sizes = [1, 2, 3, 5, 7, 10];
+        function tourPP(t, group) { // price per person for a group of this size: the band it falls in, else the one to its left
+            var best = t.prices['1'] || 0;
+            sizes.forEach(function (g) { if ((bandsOn || g === 1) && g <= group && t.prices[String(g)] !== undefined) best = t.prices[String(g)]; });
+            return best;
+        }
+        var pct = (num(kidEl.percent) || 0) / 100, kidAge = (num(kidEl.free) === null ? 0 : num(kidEl.free) + 1);
+        var parties = [
+            { who: '1 adult', note: 'alone in the room', f: function (h, n, t) { return (h.single > 0 ? h.single : h.double) * n + tourPP(t, 1); } },
+            { who: '2 adults', note: 'sharing a double', f: function (h, n, t) { return h.double * n + 2 * tourPP(t, 2); } },
+            { who: '2 adults + 1 child', note: 'child aged ' + kidAge + ', at ' + Math.round(pct * 100) + '%', f: function (h, n, t) {
+                var room = h.triple > 0 ? h.triple : (h.extra > 0 ? h.double + h.extra : h.double + h.double / 2 * pct);
+                return room * n + (2 + pct) * tourPP(t, 3); } }
+        ];
+        var html = '';
+        trips.forEach(function (t) {
+            var n = Math.max(1, t.days - 1);
+            html += '<table class="est-table"><thead><tr><th>' + (t.guess ? 'Per ' + n + ' night' + (n > 1 ? 's' : '') : t.days + ' days, ' + n + ' night' + (n > 1 ? 's' : '')) + '</th>';
+            hotels.forEach(function (h) { html += '<th class="n">' + (h.stars ? h.stars + '★ ' : '') + escapeHtml(h.name) + '</th>'; });
+            html += '</tr></thead><tbody>';
+            parties.forEach(function (p) {
+                html += '<tr><td>' + p.who + '<small>' + p.note + '</small></td>';
+                hotels.forEach(function (h) { html += '<td class="n"><strong>' + money(Math.round(p.f(h, n, t) * 100) / 100) + '</strong></td>'; });
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+        });
+        var allIn = hotels.some(function (h) { return h.double > 0; }) && trips.some(function (t) { return !t.guess && tourPP(t, 2) > 0; });
+        html += '<p class="hint" style="margin:16px 0 0;">Room prices × nights, plus the tour price per person.' + (allIn ? ' If your room price already includes the tours (a cruise, for example), set the tour price to 0 so it is not charged twice.' : '') + '</p>';
+        body.innerHTML = html;
+    }
+    function escapeHtml(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    form.addEventListener('input', function (e) { if (e.target.closest('#hotels, #tours')) { estimate(); kids(); } });
+    form.addEventListener('change', function (e) { if (e.target.closest('#hotels, #tours') || e.target === cur) { estimate(); kids(); } });
+    form.addEventListener('click', function (e) { if (e.target.closest('[data-remove]')) setTimeout(estimate, 0); });
+
+    // Tour price rows: point at the exact empty box
+    function mark(el, msg) {
+        el.classList.add('is-invalid');
+        var f = el.closest('.field');
+        if (f && !f.querySelector('.err[data-js]')) { var sp = document.createElement('span'); sp.className = 'err'; sp.dataset.js = '1'; sp.textContent = msg; f.appendChild(sp); }
+    }
+    form.addEventListener('input', function (e) {
+        if (e.target.classList.contains('is-invalid') && e.target.value.trim()) {
+            e.target.classList.remove('is-invalid');
+            var sp = e.target.closest('.field') && e.target.closest('.field').querySelector('.err'); if (sp) sp.remove();
+        }
+    });
+    function checkTours() {
+        var bad = null, seen = {};
+        document.querySelectorAll('[data-tour-row]').forEach(function (r, i) {
+            var d = r.querySelector('[data-tour-days]'), p1 = r.querySelector('[data-tour-price="1"]');
+            var anyPrice = Array.from(r.querySelectorAll('[data-tour-price]')).some(function (x) { return x.value.trim() !== ''; });
+            if (!d.value.trim() && !anyPrice) return;
+            if (!d.value.trim() || !(parseInt(d.value, 10) >= 1)) { mark(d, 'Enter the number of days.'); bad = bad || d; }
+            else if (seen[d.value]) { mark(d, 'There are two rows for ' + d.value + ' days.'); bad = bad || d; }
+            else if (!anyPrice) { mark(p1, 'Enter the price per person (0 if you only sell the hotel).'); bad = bad || p1; }
+            seen[d.value] = true;
+        });
+        return bad;
+    }
 
     // Section highlight
     var links = document.querySelectorAll('.toc a');
@@ -392,7 +563,7 @@
         var out = [];
         Array.from(form.elements).forEach(function (el) {
             if (!el.name || el.type === 'file' || el.name === '_token') return;
-            if (el.type === 'checkbox') out.push([el.name, el.value, el.checked]);
+            if (el.type === 'checkbox' || el.type === 'radio') out.push([el.name, el.value, el.checked]);
             else out.push([el.name, el.value]);
         });
         return out;
@@ -414,11 +585,11 @@
         d.fields.forEach(function (f) {
             var els = form.querySelectorAll('[name="' + CSS.escape(f[0]) + '"]');
             els.forEach(function (el) {
-                if (el.type === 'checkbox') { if (el.value === f[1]) el.checked = !!f[2]; }
+                if (el.type === 'checkbox' || el.type === 'radio') { if (el.value === f[1]) el.checked = !!f[2]; }
                 else el.value = f[1];
             });
         });
-        bands(); meals();
+        bands(); meals(); kids(); estimate();
         document.querySelectorAll('[data-hotel-name]').forEach(function (el) { el.dispatchEvent(new Event('input', { bubbles: true })); });
         cur.dispatchEvent(new Event('change'));
     }
@@ -433,7 +604,7 @@
     var sending = false;
     form.addEventListener('submit', function (e) {
         if (!photoCheck()) { e.preventDefault(); input.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-        var missing = Array.from(form.querySelectorAll('[required]')).find(function (el) { return !el.value.trim(); });
+        var missing = Array.from(form.querySelectorAll('[required]')).find(function (el) { return !el.value.trim(); }) || checkTours();
         if (missing) {
             e.preventDefault();
             missing.classList.add('is-invalid');
@@ -447,7 +618,9 @@
     });
     window.addEventListener('beforeunload', function (e) { if (dirty && !sending) { e.preventDefault(); e.returnValue = ''; } });
 
-    bands(); meals();
+    bands(); meals(); kids(); estimate();
+    var firstErr = document.querySelector('.sec .is-invalid');
+    if (firstErr) { firstErr.scrollIntoView({ block: 'center' }); }
 })();
 </script>
 @endpush

@@ -826,6 +826,14 @@
                         <span>Agent Contract</span>
                     </a>
                 </li>
+                @platformOnly
+                <li class="wp-nav-item">
+                    <a href="{{ route('manager.tenant-agreements.index') }}" class="{{ request()->routeIs('manager.tenant-agreements.*') ? 'active' : '' }}">
+                        <i class="fas fa-handshake-simple"></i>
+                        <span>Tenant Agreements</span>
+                    </a>
+                </li>
+                @endplatformOnly
 
                 {{-- ────────────────  SETTINGS  ──────────────── --}}
                 {{-- Profile & Preferences land in Step D. Same coming-soon

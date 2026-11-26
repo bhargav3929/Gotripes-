@@ -75,6 +75,18 @@
                         <textarea name="description" id="descInput" style="display:none;">{{ old('description') }}</textarea>
                         <p class="wp-form-help">Use the toolbar for bold, bullet points and links — this is what customers read on the package page.</p>
                     </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6 wp-form-group" style="margin:0;">
+                            <label class="wp-form-label" for="included">Included</label>
+                            <textarea class="wp-textarea" id="included" name="included" rows="6" maxlength="5000" placeholder="One per line, e.g.&#10;Hotel with breakfast&#10;Airport pickup&#10;Entry tickets">{{ old('included') }}</textarea>
+                        </div>
+                        <div class="col-md-6 wp-form-group" style="margin:0;">
+                            <label class="wp-form-label" for="excluded">Not included</label>
+                            <textarea class="wp-textarea" id="excluded" name="excluded" rows="6" maxlength="5000" placeholder="One per line, e.g.&#10;Flights&#10;Visa&#10;Tips">{{ old('excluded') }}</textarea>
+                        </div>
+                        <p class="wp-form-help" style="margin:0;">Shown to customers as two lists, so they know what the price covers before they pay.</p>
+                    </div>
                 </div>
             </div>
 

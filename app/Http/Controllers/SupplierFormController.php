@@ -81,6 +81,7 @@ class SupplierFormController extends Controller
             'currency' => 'USD',
             'child_percent' => 50,
             'child_free_age' => 5,
+            'child_adult_age' => 12,
         ];
 
         return view('suppliers.form', [
@@ -123,6 +124,19 @@ class SupplierFormController extends Controller
             $kept->push(['path' => $dir . '/' . $name, 'name' => Str::limit($file->getClientOriginalName(), 120, '')]);
         }
 
+        // The photo they picked as the cover goes first; the first photo is the cover everywhere.
+        $keptCount = $kept->count() - count($files);
+        [$from, $n] = array_pad(explode(':', (string) $request->input('cover', '')), 2, null);
+        $coverAt = match ($from) {
+            'old' => array_search((int) $n, collect((array) $request->input('keep_photos', []))->map(fn ($k) => (int) $k)->unique()->sort()->values()->all(), true),
+            'new' => (int) $n < count($files) ? $keptCount + (int) $n : false,
+            default => false,
+        };
+        if ($coverAt !== false && $coverAt > 0 && $kept->has($coverAt)) {
+            $cover = $kept->pull($coverAt);
+            $kept = $kept->prepend($cover)->values();
+        }
+
         $submission = SupplierSubmission::create([
             'company_id' => $invite->company_id,
             'supplier_invite_id' => $invite->id,
@@ -143,6 +157,27 @@ class SupplierFormController extends Controller
             return redirect()->route('suppliers.start');
         }
         return view('suppliers.thanks', ['company' => current_company(), 'invite' => $invite]);
+    }
+
+    /** What travellers will see, built from the last send, before staff publish it. */
+    public function preview(Request $request): View|RedirectResponse
+    {
+        $invite = $this->invite($request);
+        if (!$invite) {
+            return redirect()->route('suppliers.start');
+        }
+        $last = $invite->latestSubmission();
+        if (!$last) {
+            return redirect()->route('suppliers.form');
+        }
+        return view('suppliers.preview', [
+            'company'   => current_company(),
+            'invite'    => $invite,
+            's'         => $last,
+            'mealPlans' => TourPackageHotel::MEAL_PLANS,
+            'included'  => (new \App\Models\TravelPackage(['included' => $last->get('package.included')]))->includedList(),
+            'excluded'  => (new \App\Models\TravelPackage(['excluded' => $last->get('package.excluded')]))->excludedList(),
+        ]);
     }
 
     /** A photo from this supplier's last send, shown back to them on the form. */
@@ -182,6 +217,8 @@ class SupplierFormController extends Controller
             'tours.*.days'       => 'nullable|integer|min:1|max:60',
             'child_percent'      => 'nullable|numeric|min:0|max:100',
             'child_free_age'     => 'nullable|integer|min:0|max:17',
+            'child_adult_age'    => 'nullable|integer|min:1|max:18',
+            'cover'              => ['nullable', 'regex:/^(old|new):\d+$/'],
             'extras'             => 'array|max:30',
             'extras.*.category'  => 'nullable|in:' . implode(',', array_keys(SupplierSubmission::EXTRA_CATEGORIES)),
             'extras.*.meal_code' => 'nullable|in:' . implode(',', array_keys(TourPackageHotel::MEAL_PLANS)),
@@ -252,7 +289,8 @@ class SupplierFormController extends Controller
         $groupPricing = $request->boolean('group_pricing');
         $useBands = $groupPricing ? $bands : [1];
         $tours = [];
-        foreach ((array) $request->input('tours', []) as $t) {
+        // Rows are numbered as the form shows them, so an error can point at its box.
+        foreach (array_values((array) $request->input('tours', [])) as $i => $t) {
             $prices = [];
             foreach ($useBands as $g) {
                 if (filled($t["g$g"] ?? null)) {
@@ -264,15 +302,21 @@ class SupplierFormController extends Controller
             }
             $d = (int) ($t['days'] ?? 0);
             if ($d < 1) {
-                $errors['tours'] = 'Enter the number of days for every tour price row.';
+                $errors["tours.$i.days"] = 'Tour price row ' . ($i + 1) . ': enter the number of days.';
             } elseif (isset($tours[$d])) {
-                $errors['tours'] = "There are two rows for {$d} days. Keep one.";
+                $errors["tours.$i.days"] = "There are two rows for {$d} days. Keep one.";
             } elseif (!$prices) {
-                $errors['tours'] = "Enter the price per person for the {$d}-day trip (0 if you only sell the hotel).";
+                $errors["tours.$i.g1"] = "Enter the price per person for the {$d}-day trip (0 if you only sell the hotel).";
             }
-            $tours[$d] = ['days' => $d] + $prices;
+            $tours[$d ?: 'row' . $i] = ['days' => $d] + $prices;
         }
         ksort($tours);
+
+        $free = filled($request->input('child_free_age')) ? (int) $request->input('child_free_age') : null;
+        $adultAge = filled($request->input('child_adult_age')) ? (int) $request->input('child_adult_age') : null;
+        if ($free !== null && $adultAge !== null && $adultAge <= $free + 1) {
+            $errors['child_adult_age'] = 'The age children pay the adult price from must be at least 2 more than the free age.';
+        }
 
         if (!$hotels && !$tours) {
             $errors['hotels'] = 'Add at least one hotel with its room prices, or a tour price.';
@@ -327,7 +371,8 @@ class SupplierFormController extends Controller
             'group_pricing' => $groupPricing,
             'tours' => array_values($tours),
             'child_percent' => $num($request->input('child_percent')),
-            'child_free_age' => filled($request->input('child_free_age')) ? (int) $request->input('child_free_age') : null,
+            'child_free_age' => $free,
+            'child_adult_age' => $adultAge,
             'extras' => $extras,
             'days' => $days,
             'seasons' => $seasons,

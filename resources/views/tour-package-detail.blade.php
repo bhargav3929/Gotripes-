@@ -42,6 +42,23 @@
                     <h2 class="tpd-section-title">About this package</h2>
                     <div class="tpd-desc-body">{!! $package->description !!}</div>
                 </div>
+
+                @php $tpdIn = $package->includedList(); $tpdOut = $package->excludedList(); @endphp
+                @if($tpdIn || $tpdOut)
+                    <div class="tpd-desc">
+                        <h2 class="tpd-section-title">What the price covers</h2>
+                        <div class="tpd-covers">
+                            @if($tpdIn)
+                                <div class="tpd-covers-box"><h3>Included</h3>
+                                    <ul>@foreach($tpdIn as $l)<li><i class="bi bi-check-circle-fill tpd-yes" aria-hidden="true"></i><span>{{ $l }}</span></li>@endforeach</ul></div>
+                            @endif
+                            @if($tpdOut)
+                                <div class="tpd-covers-box"><h3>Not included</h3>
+                                    <ul>@foreach($tpdOut as $l)<li><i class="bi bi-x-circle-fill tpd-no" aria-hidden="true"></i><span>{{ $l }}</span></li>@endforeach</ul></div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             </div>
 
             {{-- RIGHT: booking box --}}
@@ -168,6 +185,14 @@
     .tpd-desc-body { color:#cfcfcf; line-height:1.7; font-size:15px; }
     .tpd-desc-body ul, .tpd-desc-body ol { padding-left:20px; }
     .tpd-desc-body a { color:#FFD23F; }
+    .tpd-covers { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .tpd-covers-box { border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; }
+    .tpd-covers-box h3 { font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:600; color:#999; margin:0 0 16px; }
+    .tpd-covers-box ul { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+    .tpd-covers-box li { display:flex; gap:10px; color:#cfcfcf; font-size:15px; line-height:1.5; }
+    .tpd-covers-box li i { flex:none; margin-top:2px; }
+    .tpd-yes { color:#4ADE80; } .tpd-no { color:#F58A8B; }
+    @media (max-width:720px) { .tpd-covers { grid-template-columns:1fr; } }
 
     .tpd-box { background:linear-gradient(180deg,#0e0e10 0%,#070708 100%); border:1px solid rgba(255,215,0,0.15); border-radius:16px; padding:26px; position:sticky; top:90px; }
     .tpd-country { color:#FFD23F; font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:600; }

@@ -41,8 +41,13 @@ class TourPackageBooking extends Model
 
     public function travellerSummary(): string
     {
-        $parts = [$this->adults . ' adult' . ($this->adults === 1 ? '' : 's')];
-        if ($this->children) $parts[] = $this->children . ' child' . ($this->children === 1 ? '' : 'ren');
+        // Children old enough to pay the adult price are stored with the adults
+        // for pricing; they are still children to the people travelling.
+        $kids = count((array) $this->child_ages) - (int) $this->infants;
+        $adults = max(1, (int) $this->adults - max(0, $kids - (int) $this->children));
+        $kids = max((int) $this->children, $kids);
+        $parts = [$adults . ' adult' . ($adults === 1 ? '' : 's')];
+        if ($kids) $parts[] = $kids . ' child' . ($kids === 1 ? '' : 'ren');
         if ($this->infants) $parts[] = $this->infants . ' infant' . ($this->infants === 1 ? '' : 's');
         return implode(', ', $parts);
     }

@@ -59,7 +59,7 @@
         }
         textarea { min-height: 96px; resize: vertical; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(242, 194, 0, .45); }
-        .is-invalid { border-color: var(--err) !important; }
+        .is-invalid { border-color: var(--err) !important; background-color: var(--err-soft) !important; box-shadow: 0 0 0 3px rgba(180, 35, 24, .14); }
         .err { color: var(--err); font-size: 13px; font-weight: 500; }
         .notice { border-radius: var(--r); padding: 16px; font-size: 15px; }
         .notice-err { background: var(--err-soft); color: var(--err); }

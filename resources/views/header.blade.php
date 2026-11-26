@@ -1371,6 +1371,9 @@
     // Newly-introduced services (after e-Visa) that don't have a full page yet
     // point to a "Coming Soon" placeholder page with a related picture.
     $gtSoon = fn ($slug) => url('/coming-soon/' . $slug);
+    // Study Abroad was always highlighted before it got a switch, so it stays on until turned off.
+    $gtStudyBadge = ($gtFlash['study_abroad'] ?? true)
+        ? ' <i class="bi bi-mortarboard-fill gt-flash" aria-hidden="true"></i>' : '';
 @endphp
     <!-- ==================== PREMIUM HEADER ==================== -->
     <header class="gt-header">
@@ -1411,7 +1414,7 @@
                         <a href="/our-services" class="gt-nav-link {{ Request::is('our-services') ? 'active' : '' }}">Our Services</a>
                         @feature('shop')<a href="/shopnow" class="gt-nav-link {{ Request::is('shopnow') ? 'active' : '' }}">Shop Online</a>@endfeature
                         @feature('pay_online')<a href="/payonline" class="gt-nav-link {{ Request::is('payonline') ? 'active' : '' }}">Pay Online</a>@endfeature
-                        @platformOnly<a href="{{ $gtSoon('study-abroad') }}" class="gt-nav-link {{ Request::is('coming-soon/study-abroad') ? 'active' : '' }}">Study Abroad <i class="bi bi-mortarboard-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
+                        @platformOnly<a href="{{ $gtSoon('study-abroad') }}" class="gt-nav-link {{ Request::is('coming-soon/study-abroad') ? 'active' : '' }}">Study Abroad{!! $gtStudyBadge !!}</a>@endplatformOnly
                         @feature('careers')<a href="/lookingforajob" class="gt-nav-link {{ Request::is('lookingforajob') ? 'active' : '' }}">Careers</a>@endfeature
                         <a href="/contact-us" class="gt-nav-link {{ Request::is('contact-us') ? 'active' : '' }}">Contact Us</a>
                         <button type="button" class="gt-theme-toggle" id="gtThemeToggle" aria-label="Toggle light / dark mode" title="Toggle light / dark mode">
@@ -1501,7 +1504,7 @@
                     <a href="{{ $gtSoon('business-tourism') }}" class="gt-macc-item">Business Tourism (MICE){!! $gtBadge('mice') !!}</a>
                     @feature('shop')<a href="/shopnow" class="gt-macc-item">Shop Online</a>@endfeature
                     @feature('pay_online')<a href="/payonline" class="gt-macc-item">Pay Online</a>@endfeature
-                    @platformOnly<a href="{{ $gtSoon('study-abroad') }}" class="gt-macc-item">Study Abroad <i class="bi bi-mortarboard-fill gt-flash" aria-hidden="true"></i></a>@endplatformOnly
+                    @platformOnly<a href="{{ $gtSoon('study-abroad') }}" class="gt-macc-item">Study Abroad{!! $gtStudyBadge !!}</a>@endplatformOnly
                     @feature('careers')<a href="/lookingforajob" class="gt-macc-item">Careers</a>@endfeature
                 </div>
             </div>

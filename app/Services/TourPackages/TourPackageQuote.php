@@ -20,6 +20,10 @@ use Carbon\Carbon;
  *   - adults pay the adult rate; children (infant_max_age < age <= child_max_age)
  *     the child rate; infants (age <= infant_max_age) the infant rate;
  *     anyone older than child_max_age is priced as an adult
+ *   - room pricing: children up to child_sharing_max_age share the parents' bed
+ *     for free; older children get a bed when the hotel prices a triple or an
+ *     extra bed, and otherwise share an adult's room and pay child_land_percent
+ *     of an adult's half of a double room (one per room; any more get a bed)
  *   - an odd number of adults leaves one in a single room: single supplement
  *   - a peak season the trip starts in adds its surcharge to the package rate
  *   - per-person add-ons count adults and children; infants travel free on add-ons
@@ -160,7 +164,11 @@ class TourPackageQuote
         if ($rooms) {
             $hotelRow = $package->hotels->first(fn ($h) => $h->hotel_stars === $stars);
             $nights = max(1, $days - 1);
-            $roomPlan = self::allocateRooms($adults + $children - $sharing, $hotelRow);
+            // A hotel with a triple or extra-bed price gives older children a bed at that
+            // price; one without (a cruise cabin, say) has them share at the child %.
+            $roomPlan = $hotelRow->triple_net > 0 || $hotelRow->extra_bed_net > 0
+                ? self::allocateRooms($adults + $children - $sharing, $hotelRow)
+                : self::allocateRooms($adults, $hotelRow, $children - $sharing, (float) $package->child_land_percent);
             $hotelNet = $nights * $roomPlan['per_night'];
             $line('hotel', "Hotel, {$nights} " . ($nights === 1 ? 'night' : 'nights') . ' · ' . $stars . '★ ' . $hotelRow->name, $roomPlan['label'], $hotelNet);
 
@@ -256,8 +264,11 @@ class TourPackageQuote
      *
      * @return array{rooms: array<int,string>, extra_beds: int, per_night: float, label: string}
      */
-    public static function allocateRooms(int $guests, \App\Models\TourPackageHotel $hotel): array
+    public static function allocateRooms(int $guests, \App\Models\TourPackageHotel $hotel, int $sharingChildren = 0, float $childPercent = 0): array
     {
+        if ($sharingChildren > 0) {
+            return self::allocateWithChildren($guests, $hotel, $sharingChildren, $childPercent);
+        }
         $guests = max(1, $guests);
         $single = (float) $hotel->single_net > 0 ? (float) $hotel->single_net : null;
         $double = (float) $hotel->double_net;
@@ -286,6 +297,57 @@ class TourPackageQuote
         $price = ['single' => $single ?? $double, 'double' => $double, 'triple' => $triple ?? $double];
         $perNight = array_sum(array_map(fn ($r) => $price[$r], $rooms)) + $extraBeds * ($extra ?? 0);
 
+        return ['rooms' => $rooms, 'extra_beds' => $extraBeds, 'per_night' => round($perNight, 2), 'label' => self::roomLabel($rooms, $extraBeds)];
+    }
+
+    /**
+     * Rooms when children in the child-price band come along. Each of them
+     * shares an adult's room (one per room) and pays the child % of an adult's
+     * half of a double. A child sharing with an adult who would be alone pays
+     * so that the room costs at least what that adult alone would pay. Children
+     * beyond one per room get a bed like any other guest.
+     */
+    private static function allocateWithChildren(int $adults, \App\Models\TourPackageHotel $hotel, int $kids, float $childPercent): array
+    {
+        $double = (float) $hotel->double_net;
+        $share = round($double / 2 * max(0.0, $childPercent) / 100, 2);
+
+        for ($beds = 0; $beds <= $kids; $beds++) {
+            $plan = self::allocateRooms($adults + $beds, $hotel);
+            if (count($plan['rooms']) >= $kids - $beds) {
+                break;
+            }
+        }
+        $sharing = $kids - $beds;
+
+        // A lone adult's room (a single, or a double for one) takes the first child.
+        $alone = $plan['extra_beds'] === 0 && ($adults + $beds) === 1 ? 1 : count(array_keys($plan['rooms'], 'single', true));
+        $alone = min($alone, $sharing);
+        $perNight = $plan['per_night'];
+        if ($alone) {
+            $roomAlone = (float) $hotel->single_net > 0 && in_array('single', $plan['rooms'], true) ? (float) $hotel->single_net : $double;
+            $perNight += $alone * (max($roomAlone, $double / 2 + $share) - $roomAlone);
+        }
+        $perNight += ($sharing - $alone) * $share;
+
+        // A single room an adult shares with a child is a double room in the label.
+        $rooms = $plan['rooms'];
+        for ($i = 0, $n = $alone; $n > 0 && $i < count($rooms); $i++) {
+            if ($rooms[$i] === 'single') {
+                $rooms[$i] = 'double';
+                $n--;
+            }
+        }
+        $label = self::roomLabel($rooms, $plan['extra_beds']);
+        if ($sharing) {
+            $label .= ', ' . self::count($sharing, 'child', 'children') . ' sharing';
+        }
+
+        return ['rooms' => $rooms, 'extra_beds' => $plan['extra_beds'], 'per_night' => round($perNight, 2), 'label' => $label];
+    }
+
+    private static function roomLabel(array $rooms, int $extraBeds): string
+    {
         $counts = array_count_values($rooms);
         $names = ['single' => 'Single', 'double' => 'Double', 'triple' => 'Triple'];
         $parts = [];
@@ -297,8 +359,7 @@ class TourPackageQuote
         if ($extraBeds) {
             $parts[] = $extraBeds . ' extra bed';
         }
-
-        return ['rooms' => $rooms, 'extra_beds' => $extraBeds, 'per_night' => round($perNight, 2), 'label' => implode(' + ', $parts)];
+        return implode(' + ', $parts);
     }
 
     /**

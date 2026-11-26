@@ -246,6 +246,7 @@ Route::prefix('/')->group(function () {
         Route::get('form', [\App\Http\Controllers\SupplierFormController::class, 'form'])->name('form');
         Route::post('form', [\App\Http\Controllers\SupplierFormController::class, 'submit'])->middleware('throttle:20,1')->name('submit');
         Route::get('thanks', [\App\Http\Controllers\SupplierFormController::class, 'thanks'])->name('thanks');
+        Route::get('preview', [\App\Http\Controllers\SupplierFormController::class, 'preview'])->name('preview');
         Route::post('leave', [\App\Http\Controllers\SupplierFormController::class, 'leave'])->name('leave');
         Route::get('photo/{index}', [\App\Http\Controllers\SupplierFormController::class, 'photo'])->whereNumber('index')->name('photo');
     });
@@ -743,6 +744,15 @@ Route::middleware(['manager.auth'])->prefix('manager')->name('manager.')->group(
         Route::post('/{contract}/activate', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'activate'])->name('activate');
         Route::post('/{contract}/deactivate', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'deactivate'])->name('deactivate');
         Route::delete('/{contract}', [\App\Http\Controllers\Manager\ManagerContractsController::class, 'destroy'])->name('destroy');
+    });
+
+    // B2B Tenant Portal Agreement for partner companies that get their own
+    // portal: fill in the partner, download the PDF, send it on WhatsApp.
+    // Platform (gotrips) owner/admin only — enforced in the controller.
+    Route::prefix('tenant-agreements')->name('tenant-agreements.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Manager\ManagerTenantAgreementsController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Manager\ManagerTenantAgreementsController::class, 'store'])->name('store');
+        Route::get('/{agreement}/pdf', [\App\Http\Controllers\Manager\ManagerTenantAgreementsController::class, 'download'])->name('download');
     });
 
     // Agent application review — approve/deny applications that

@@ -23,6 +23,8 @@ use Illuminate\Support\Str;
 class SupplierRateImporter
 {
     public const SECTIONS = [
+        'details' => 'Description, included and not included',
+        'photos'  => 'Photos (their cover photo first)',
         'hotels'  => 'Hotels and room prices',
         'tours'   => 'Tour prices and child prices',
         'extras'  => 'Extras',
@@ -34,6 +36,8 @@ class SupplierRateImporter
     public static function available(SupplierSubmission $s): array
     {
         return array_filter([
+            'details' => filled($s->get('package.description')) || filled($s->get('package.included')) || filled($s->get('package.excluded')),
+            'photos'  => (bool) self::photos($s),
             'hotels'  => (bool) $s->hotels(),
             'tours'   => (bool) $s->get('tours'),
             'extras'  => (bool) $s->get('extras'),
@@ -45,35 +49,64 @@ class SupplierRateImporter
     /** A new booking-wizard package built from the supplier's package details and photos. */
     public static function createPackage(SupplierSubmission $s, ?string $by): TravelPackage
     {
-        $text = collect([
-            $s->get('package.description'),
-            filled($s->get('package.places')) ? 'Places: ' . $s->get('package.places') : null,
-            filled($s->get('package.included')) ? "Included:\n" . $s->get('package.included') : null,
-            filled($s->get('package.excluded')) ? "Not included:\n" . $s->get('package.excluded') : null,
-        ])->filter()->join("\n\n");
         $days = collect($s->get('tours', []))->pluck('days')->filter()->sort()->values();
         $duration = $days->isEmpty() ? 'Flexible' : ($days->first() === $days->last() ? $days->first() . ' days' : $days->first() . '–' . $days->last() . ' days');
 
-        $photos = array_values(array_filter((array) $s->photos, fn ($p) => is_file(storage_path('app/' . $p['path']))));
-        $package = TravelPackage::create([
+        $package = TravelPackage::create(self::details($s) + [
             'title' => $s->get('package.name'),
             'country' => $s->get('package.country'),
             'package_type' => 'wizard',
             'price' => 0,
-            'description' => $text !== '' ? $text : $s->get('package.name'),
             'duration' => $duration,
             'margin_percent' => 15,
             'child_max_age' => 11,
             'infant_max_age' => 1,
-            'image' => isset($photos[0]) ? self::publish($photos[0]['path']) : null,
             'isActive' => 1,
             'createdBy' => $by ?? 'manager',
             'createdDate' => now(),
         ]);
+        self::applyPhotos($s, $package);
+        return $package;
+    }
+
+    /** Description (as HTML, with the places), included and not included. */
+    private static function details(SupplierSubmission $s): array
+    {
+        $text = collect([
+            $s->get('package.description'),
+            filled($s->get('package.places')) ? 'Places: ' . $s->get('package.places') : null,
+        ])->filter()->join("\n\n");
+        return [
+            'description' => TravelPackage::textToHtml($text !== '' ? $text : (string) $s->get('package.name')),
+            'included' => $s->get('package.included') ?: null,
+            'excluded' => $s->get('package.excluded') ?: null,
+        ];
+    }
+
+    /** The supplier's photos still on disk; the one they chose as cover is first. */
+    private static function photos(SupplierSubmission $s): array
+    {
+        return array_values(array_filter((array) $s->photos, fn ($p) => is_file(storage_path('app/' . $p['path']))));
+    }
+
+    /** Cover = the supplier's chosen photo, gallery = the next 7. Replaces what the package had. */
+    private static function applyPhotos(SupplierSubmission $s, TravelPackage $package): void
+    {
+        $photos = self::photos($s);
+        if (!$photos) {
+            return;
+        }
+        $old = array_merge([$package->image], $package->images()->pluck('image_path')->all());
+        $package->images()->delete();
+        $package->update(['image' => self::publish($photos[0]['path'])]);
         foreach (array_slice($photos, 1, 7) as $i => $p) {
             $package->images()->create(['image_path' => self::publish($p['path']), 'sort_order' => $i + 1]);
         }
-        return $package;
+        foreach (array_filter($old) as $path) {
+            if (str_starts_with($path, 'assets/packages/') && File::exists(public_path($path))) {
+                File::delete(public_path($path));
+            }
+        }
     }
 
     /** @return array<int, string> what was filled in, for the success message */
@@ -83,6 +116,11 @@ class SupplierRateImporter
         $done = [];
 
         DB::transaction(function () use ($s, $package, $sections, $aed, &$done) {
+            if (in_array('details', $sections, true) && isset(self::available($s)['details'])) {
+                $package->update(self::details($s));
+                $done[] = 'description, included and not included';
+            }
+
             if (in_array('hotels', $sections, true) && $s->hotels()) {
                 $keep = [];
                 foreach ($s->hotels() as $stars => $h) {
@@ -112,9 +150,15 @@ class SupplierRateImporter
                         }
                     }
                 }
+                // Free up to child_free_age (sharing the parents' bed), the child % up to
+                // the age before child_adult_age, the adult price from child_adult_age.
+                $free = $s->get('child_free_age');
+                $adultFrom = $s->get('child_adult_age');
                 $package->update(array_filter([
                     'child_land_percent' => $s->get('child_percent'),
-                    'child_sharing_max_age' => $s->get('child_free_age'),
+                    'child_sharing_max_age' => $free,
+                    'child_max_age' => $adultFrom !== null ? max(1, (int) $adultFrom - 1) : null,
+                    'infant_max_age' => $free !== null ? min((int) $free, 5, max(0, (int) ($adultFrom ?? 12) - 2)) : null,
                 ], fn ($v) => $v !== null));
                 $done[] = 'tour prices for ' . count($s->get('tours')) . ' trip ' . (count($s->get('tours')) === 1 ? 'length' : 'lengths');
             }
@@ -179,6 +223,11 @@ class SupplierRateImporter
                 $done[] = count($s->get('seasons')) . ' peak periods';
             }
         });
+
+        if (in_array('photos', $sections, true) && self::photos($s)) {
+            self::applyPhotos($s, $package);
+            $done[] = 'photos';
+        }
 
         // Same as Booking setup: once room and tour prices exist, the old per-person rates go.
         $fresh = TravelPackage::with(['hotels', 'landRates'])->find($package->id);

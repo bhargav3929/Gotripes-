@@ -43,6 +43,7 @@ class SaudiVisaApplication extends Model
 
     public function visaType()
     {
-        return $this->belongsTo(SaudiVisaType::class, 'saudi_visa_type_id');
+        // Deleted visa types stay readable on the applications made with them.
+        return $this->belongsTo(SaudiVisaType::class, 'saudi_visa_type_id')->withTrashed();
     }
 }
